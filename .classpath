@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="tool/src/java"/>
-	<classpathentry kind="src" path="component/src/java"/>
-	<classpathentry kind="src" path="api/src/java"/>
+	<classpathentry kind="src" path="samigo-services/src/java"/>
+	<classpathentry kind="src" path="samigo-audio/src/java"/>
+	<classpathentry kind="src" path="samigo-app/src/java"/>
+	<classpathentry kind="src" path="samigo-hibernate/src/java"/>
+	<classpathentry kind="src" path="samigo-api/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.8.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/navigo/jars/OKI-SPRING-HIBERNATE-0.jar"/>
