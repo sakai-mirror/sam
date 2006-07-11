@@ -56,7 +56,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/gradebook"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsf"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/tool-api"/>
-	<classpathentry sourcepath="/JAVA_DIR/spring-framework-1.2.7" kind="var" path="MAVEN_REPO/springframework/jars/spring-1.2.6.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-1.2.8.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/util-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/util-util"/>
 	<classpathentry kind="var" path="MAVEN_REPO/xerces/jars/xercesImpl-2.6.2.jar"/>
