@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osid.OsidException;
 import org.sakaiproject.tool.assessment.data.model.Tree;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemData;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemText;
 import org.sakaiproject.tool.assessment.data.dao.questionpool.QuestionPoolAccessData;
@@ -406,7 +407,6 @@ public class QuestionPoolFacadeQueries
   }
 
   private void populateQuestionPoolItemDatas(QuestionPoolData qpp) {
-	log.debug("QuestionPoolFacadeQueries: populateQuestionPoolItemDatas start");  
     try {
       Set questionPoolItems = qpp.getQuestionPoolItems();
       if (questionPoolItems != null) {
@@ -551,22 +551,11 @@ public class QuestionPoolFacadeQueries
    */
   public void deletePool(final Long poolId, String agent, Tree tree) {
     try {
-
- 
         QuestionPoolData questionPool = (QuestionPoolData) getHibernateTemplate().load(QuestionPoolData.class, poolId);
-
-// are the following  still valid comments? - lydial
-
-      // I decided not to load the questionpool and delete things that associate with it
-      // because question is associated with it as ItemImpl not AssetBeanie. To delete
-      // AssetBeanie, I would still need to do it manually. I cannot find a way to take advantage of the
-      // Hibernate cascade feature, can you ? - daisyf
 
       // #1. delete all questions which mean AssetBeanie (not ItemImpl) 'cos AssetBeanie
       // is the one that is associated with the DB
-
-
-// lydial:  getting list of items that only belong to this pool and not linked to any assessments. 
+      // lydial:  getting list of items that only belong to this pool and not linked to any assessments. 
       List itemList = getAllItemsInThisPoolOnlyAndDetachFromAssessment(poolId);
 
       int retryCount = PersistenceService.getInstance().getRetryCount().intValue();
@@ -583,88 +572,98 @@ public class QuestionPoolFacadeQueries
 
 
       // #2. delete question and questionpool map.
-      // Sorry! delete(java.lang.String queryString, java.lang.Object[] values, org.hibernate.type.Type[] types)
-      // is not available in this version of Spring that we are using. So, we are a using a long winded method.
-    retryCount = PersistenceService.getInstance().getRetryCount().intValue();
-    while (retryCount > 0){
-      try {
-    	    final HibernateCallback hcb = new HibernateCallback(){
-    	    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
-    	    		Query q = session.createQuery("select qpi from QuestionPoolItemData as qpi where qpi.questionPoolId= ?");
-    	    		q.setLong(0, poolId.longValue());
-    	    		return q.list();
-    	    	};
+      retryCount = PersistenceService.getInstance().getRetryCount().intValue();
+      while (retryCount > 0){
+        try {
+          final HibernateCallback hcb = new HibernateCallback(){
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+              Query q = session.createQuery("select qpi from QuestionPoolItemData as qpi where qpi.questionPoolId= ?");
+              q.setLong(0, poolId.longValue());
+              return q.list();
     	    };
-    	    List list = getHibernateTemplate().executeFind(hcb);
+          };
+          List list = getHibernateTemplate().executeFind(hcb);
 
+          // a. delete item and pool association in SAM_ITEMMETADATA_T - this is the primary
+          // pool that item is attached to
+          ArrayList metaList = new ArrayList();
+          for (int j=0; j<list.size(); j++){
+            String itemId = ((QuestionPoolItemData)list.get(j)).getItemId();
+            String query = "from ItemMetaData as meta where meta.item.itemId="+itemId+
+              " and meta.label='"+ItemMetaDataIfc.POOLID+"'";
+            List m = getHibernateTemplate().find(query);
+            if (m.size()>0){
+              ItemMetaDataIfc meta = (ItemMetaDataIfc)m.get(0);
+              meta.setEntry(null);
+	    }
+          }
+          try{
+            getHibernateTemplate().saveOrUpdateAll(metaList);
+            retryCount = 0;
+	  }
+          catch (Exception e) {
+            log.warn("problem delete question and questionpool map inside itemMetaData: "+e.getMessage());
+            retryCount = PersistenceService.getInstance().retryDeadlock(e, retryCount);
+          }
 
-            if (list.size() > 0) {
-              questionPool.setQuestionPoolItems(new HashSet());
-              getHibernateTemplate().deleteAll(list);
-              retryCount = 0;
-            }
-
-            else retryCount = 0;
+          // b. delete item and pool association in SAM_QUESTIONPOOLITEM_T
+          if (list.size() > 0) {
+            questionPool.setQuestionPoolItems(new HashSet());
+            getHibernateTemplate().deleteAll(list);
+            retryCount = 0;
+          }
+          else retryCount = 0;
+        }
+        catch (Exception e) {
+          log.warn("problem delete question and questionpool map: "+e.getMessage());
+          retryCount = PersistenceService.getInstance().retryDeadlock(e, retryCount);
+        }
       }
-      catch (Exception e) {
-        log.warn("problem delete question and questionpool map: "+e.getMessage());
-        retryCount = PersistenceService.getInstance().retryDeadlock(e, retryCount);
-      }
-    }
-
 
       // #3. Pool is owned by one but can be shared by multiple agents. So need to
       // delete all QuestionPoolAccessData record first. This seems to be missing in Navigo, nope? - daisyf
-    final HibernateCallback hcb = new HibernateCallback(){
+      // Actually, I don't think we have ever implemented sharing between agents. So we may wnat to
+      // clean up this bit of code - daisyf 07/07/06
+      final HibernateCallback hcb = new HibernateCallback(){
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {
-    		Query q = session.createQuery("select qpa from QuestionPoolAccessData as qpa where qpa.questionPoolId= ?");
-    		q.setLong(0, poolId.longValue());
-    		return q.list();
+          Query q = session.createQuery("select qpa from QuestionPoolAccessData as qpa where qpa.questionPoolId= ?");
+          q.setLong(0, poolId.longValue());
+          return q.list();
     	};
-    };
-    List qpaList = getHibernateTemplate().executeFind(hcb);
-
-//      List qpaList = getHibernateTemplate().find(
-//          "select qpa from QuestionPoolAccessData as qpa where qpa.questionPoolId= ?",
-//          new Object[] {poolId}
-//          , new org.hibernate.type.Type[] {Hibernate.LONG});
-    retryCount = PersistenceService.getInstance().getRetryCount().intValue();
-    while (retryCount > 0){
-      try {
-        getHibernateTemplate().deleteAll(qpaList);
-        retryCount = 0;
+      };
+      List qpaList = getHibernateTemplate().executeFind(hcb);
+      retryCount = PersistenceService.getInstance().getRetryCount().intValue();
+      while (retryCount > 0){
+        try {
+          getHibernateTemplate().deleteAll(qpaList);
+          retryCount = 0;
+        }
+        catch (Exception e) {
+          log.warn("problem delete question pool access data: "+e.getMessage());
+          retryCount = PersistenceService.getInstance().retryDeadlock(e, retryCount);
+        }
       }
-      catch (Exception e) {
-        log.warn("problem delete question pool access data: "+e.getMessage());
-        retryCount = PersistenceService.getInstance().retryDeadlock(e, retryCount);
-      }
-    }
 
       // #4. Ready! delete pool now
-    final HibernateCallback hcb2 = new HibernateCallback(){
+      final HibernateCallback hcb2 = new HibernateCallback(){
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {
     		Query q = session.createQuery("select qp from QuestionPoolData as qp where qp.id= ?");
     		q.setLong(0, poolId.longValue());
     		return q.list();
     	};
-    };
-    List qppList = getHibernateTemplate().executeFind(hcb2);
-
-//      List qppList = getHibernateTemplate().find(
-//          "select qp from QuestionPoolData as qp where qp.id= ?",
-//          new Object[] {poolId}
-//          , new org.hibernate.type.Type[] {Hibernate.LONG}); // there should only be one
-    retryCount = PersistenceService.getInstance().getRetryCount().intValue();
-    while (retryCount > 0){
-      try {
-        getHibernateTemplate().deleteAll(qppList);
-        retryCount = 0;
+      };
+      List qppList = getHibernateTemplate().executeFind(hcb2);
+      retryCount = PersistenceService.getInstance().getRetryCount().intValue();
+      while (retryCount > 0){
+        try {
+          getHibernateTemplate().deleteAll(qppList);
+          retryCount = 0;
+        }
+        catch (Exception e) {
+          log.warn("problem delete all pools: "+e.getMessage());
+          retryCount = PersistenceService.getInstance().retryDeadlock(e, retryCount);
+        }
       }
-      catch (Exception e) {
-        log.warn("problem delete all pools: "+e.getMessage());
-        retryCount = PersistenceService.getInstance().retryDeadlock(e, retryCount);
-      }
-    }
 
       // #5. delete all subpools if any, this is recursive
       Iterator citer = (tree.getChildList(poolId)).iterator();
@@ -818,7 +817,6 @@ public class QuestionPoolFacadeQueries
       }
       while (retryCount > 0){
         try {
-          getHibernateTemplate().clear();
           getHibernateTemplate().saveOrUpdate(qpp);
           retryCount = 0;
         }

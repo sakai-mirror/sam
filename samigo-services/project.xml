@@ -2,7 +2,7 @@
 <project>
   <pomVersion>3</pomVersion>
   <extend>../../master/project.xml</extend>
-  <name>Sakai Samigo Components</name>
+  <name>Sakai Samigo Services</name>
   <shortDescription>Test and Quizzes component.</shortDescription>
   <groupId>sakaiproject</groupId>
   <id>sakai-samigo-services</id>
@@ -359,8 +359,8 @@
       <version>1.2-RC1</version>
     </dependency>
     <dependency>
-      <groupId>springframework</groupId>
-      <artifactId>spring</artifactId>
+      <groupId>${sakai.spring.groupId}</groupId>
+      <artifactId>${sakai.spring.artifactId}</artifactId>
       <version>${sakai.spring.version}</version>
     </dependency>
     <dependency>
