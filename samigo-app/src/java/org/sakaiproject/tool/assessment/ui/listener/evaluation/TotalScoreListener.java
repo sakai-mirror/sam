@@ -537,7 +537,8 @@ log.debug("totallistener: firstItem = " + bean.getFirstItem());
              results.setLastInitial(results.getFirstName().substring(0,1));
       else
         results.setLastInitial("Anonymous");
-      results.setIdString(agent.getEidString());
+        results.setIdString(agent.getIdString());
+        results.setAgentEid(agent.getEidString());
 log.debug("testing agent getEid agent.getFirstname= " + agent.getFirstName());
 log.debug("testing agent getEid agent.getid= " + agent.getIdString());
 log.debug("testing agent getEid agent.geteid = " + agent.getEidString());
@@ -651,7 +652,9 @@ log.debug("testing agent getEid agent.geteid = " + agent.getEidString());
       {
         results.setLastInitial("Anonymous");
       }
-      results.setIdString(agent.getEidString());
+      //results.setIdString(agent.getEidString());
+      results.setIdString(agent.getIdString());
+      results.setAgentEid(agent.getEidString());
       results.setRole((String)userRoles.get(studentid));
       // use -1 to indicate this is an unsubmitted agent
       results.setAssessmentGradingId(new Long(-1));

@@ -933,7 +933,7 @@ public class ExtractionHelper
     if (securedIPAddressSet.size()>0)
     {
       //log.info("Setting securedIPAddressSet;addAssessmentMetaData(hasIpAddress, true)");
-      AssessmentService assessmentService = new AssessmentService();
+      //AssessmentService assessmentService = new AssessmentService();
 //      assessment.getData().setSecuredIPAddressSet(securedIPAddressSet);
 //      assessment.getData().addAssessmentMetaData("hasIpAddress", "true");
 //      assessment.getData().addAssessmentMetaData("hasSpecificIP", "true");
@@ -1020,8 +1020,10 @@ public class ExtractionHelper
    */
   private void addItemProperties(ItemFacade item, Map itemMap)
   {
-    String duration = (String) itemMap.get("duration");
-    String triesAllowed = (String) itemMap.get("triesAllowed");
+	//String duration = (String) itemMap.get("duration");
+	//String triesAllowed = (String) itemMap.get("triesAllowed");
+	  
+
     String score = (String) itemMap.get("score");
     String hasRationale =  item.getItemMetaDataByLabel("hasRationale");//rshastri :SAK-1824
     String status = (String) itemMap.get("status");
@@ -1038,15 +1040,19 @@ public class ExtractionHelper
     }
 
     String createdDate = (String) itemMap.get("createdDate");
-
-    if (notNullOrEmpty(duration))
-    {
-      item.setDuration(new Integer(duration));
-    }
-    if (notNullOrEmpty(triesAllowed))
-    {
-      item.setTriesAllowed(new Integer(triesAllowed));
-    }
+    
+    // get Duration and TriesAllowed from metadata.
+    /*
+       if (notNullOrEmpty(duration))
+      {
+        item.setDuration(new Integer(duration));
+      }
+      if (notNullOrEmpty(triesAllowed))
+      {
+        item.setTriesAllowed(new Integer(triesAllowed));
+      }
+      */
+  
     item.setInstruction( (String) itemMap.get("instruction"));
     if (notNullOrEmpty(score))
     {
