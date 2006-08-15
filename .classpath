@@ -67,5 +67,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/site-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/db-api"/>
 	<classpathentry kind="var" path="MAVEN_REPO/xalan/jars/xalan-2.6.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/content-api"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
