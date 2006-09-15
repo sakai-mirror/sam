@@ -5,7 +5,7 @@
 	<classpathentry kind="src" path="samigo-app/src/java"/>
 	<classpathentry kind="src" path="samigo-hibernate/src/java"/>
 	<classpathentry kind="src" path="samigo-api/src/java"/>
-	<classpathentry kind="src" path="samigo-qti/src/java"/> 
+	<classpathentry kind="src" path="samigo-qti/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.8.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/navigo/jars/OKI-SPRING-HIBERNATE-0.jar"/>
@@ -63,11 +63,12 @@
 	<classpathentry kind="var" path="MAVEN_REPO/xerces/jars/xercesImpl-2.6.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/authz-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/user-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/entity-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/sections-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/site-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/db-api"/>
 	<classpathentry kind="var" path="MAVEN_REPO/xalan/jars/xalan-2.6.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/content-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/entity-impl"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/entity-api"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
