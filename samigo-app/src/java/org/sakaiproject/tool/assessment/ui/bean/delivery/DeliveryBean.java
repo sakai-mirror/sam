@@ -2322,18 +2322,24 @@ public class DeliveryBean
       return "error";
     }
 
-    // check 1: check for multiple window & browser trick 
     GradingService service = new GradingService();
-    AssessmentGradingData assessmentGrading = service.load(adata.getAssessmentGradingId().toString());
-    if (!checkDataIntegrity(assessmentGrading)){
+    AssessmentGradingData assessmentGrading=null;
+    if (adata!=null){
+	assessmentGrading = service.load(adata.getAssessmentGradingId().toString());
+    }
+
+    log.debug("check 1");
+    // check 1: check for multiple window & browser trick
+    if (assessmentGrading!=null && !checkDataIntegrity(assessmentGrading)){
 	return ("discrepancyInData");
     }
 
+    log.debug("check 2");
     // check 2: if workingassessment has been submiited?
-    // this is to prevent student submit assessment and use a 2nd window to 
+    // this is to prevent student submit assessment and use a 2nd window to
     // continue working on the submitted work.
-    if (getAssessmentHasBeenSubmitted(assessmentGrading)){
-      return "assessmentHasBeenSubmitted";
+    if (assessmentGrading!=null && getAssessmentHasBeenSubmitted(assessmentGrading)){
+	return "assessmentHasBeenSubmitted";
     }
 
     // check 3: any submission attempt left?
@@ -2343,7 +2349,7 @@ public class DeliveryBean
 
     // check 4: accept late submission?
     boolean acceptLateSubmission = AssessmentAccessControlIfc.
-        ACCEPT_LATE_SUBMISSION.equals(publishedAssessment.getLateHandling());
+        ACCEPT_LATE_SUBMISSION.equals(publishedAssessment.getAssessmentAccessControl().getLateHandling());
 
     // check 5: has dueDate arrived? if so, does it allow late submission?
     if (pastDueDate() && !acceptLateSubmission){
