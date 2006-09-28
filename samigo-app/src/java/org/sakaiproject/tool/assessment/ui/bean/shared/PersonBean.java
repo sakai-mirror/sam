@@ -23,6 +23,7 @@
 package org.sakaiproject.tool.assessment.ui.bean.shared;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 //import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.authz.cover.SecurityService;
@@ -84,6 +85,15 @@ public class PersonBean implements Serializable
   {
     String context = "!admin";
     return SecurityService.unlock("site.upd", "/site/"+context);
+  }
+
+  private HashMap totalSubmissionPerAssessmentHash = new HashMap();
+  public HashMap getTotalSubmissionPerAssessmentHash(){
+    return totalSubmissionPerAssessmentHash;
+  }
+
+  public void setTotalSubmissionPerAssessmentHash(HashMap totalSubmissionPerAssessmentHash){
+    this.totalSubmissionPerAssessmentHash = totalSubmissionPerAssessmentHash;
   }
 
 }
