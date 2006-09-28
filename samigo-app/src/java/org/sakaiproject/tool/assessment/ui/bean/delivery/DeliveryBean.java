@@ -53,6 +53,7 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSecuredIPAd
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.MediaData;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
 import org.sakaiproject.tool.assessment.services.GradingService;
@@ -1259,9 +1260,13 @@ public class DeliveryBean
 
   public String submitForGrade()
   {
+    String nextAction = checkBeforeProceed();
+    log.debug("***** next Action="+nextAction);
+    if (!("safeToProceed").equals(nextAction)){
+      return nextAction;
+    }
+
     setForGrade(true);
-    if (isTimeRunning() && timeExpired()) // is timed assessment? and time has expired?
-      return "timeExpired";
     SessionUtil.setSessionTimeout(FacesContext.getCurrentInstance(), this, false);
 
     SubmitToGradingActionListener listener =
@@ -1286,8 +1291,11 @@ public class DeliveryBean
 
   public String saveAndExit()
   {
-    if (isTimeRunning() && timeExpired())
-      return "timeExpired";
+    String nextAction = checkBeforeProceed();
+    log.debug("***** next Action="+nextAction);
+    if (!("safeToProceed").equals(nextAction)){
+      return nextAction;
+    }
 
     FacesContext context = FacesContext.getCurrentInstance();
     SessionUtil.setSessionTimeout(context, this, false);
@@ -1317,8 +1325,11 @@ public class DeliveryBean
 
   public String next_page()
   {
-    if (isTimeRunning() && timeExpired())
-      return "timeExpired";
+    String nextAction = checkBeforeProceed();
+    log.debug("***** next Action="+nextAction);
+    if (!("safeToProceed").equals(nextAction)){
+      return nextAction;
+    }
 
     if (getSettings().isFormatByPart())
     {
@@ -1349,8 +1360,11 @@ public class DeliveryBean
 
   public String previous()
   {
-    if (isTimeRunning() && timeExpired())
-      return "timeExpired";
+    String nextAction = checkBeforeProceed();
+    log.debug("***** next Action="+nextAction);
+    if (!("safeToProceed").equals(nextAction)){
+      return nextAction;
+    }
 
     if (getSettings().isFormatByPart())
     {
@@ -2299,6 +2313,131 @@ public class DeliveryBean
 
    public void setPublishedAnswerHash(HashMap publishedAnswerHash){
     this.publishedAnswerHash = publishedAnswerHash;
+  }
+
+  public String checkBeforeProceed(){
+    // public method, who know if publishedAssessment is set, so check
+    // to be sure
+    if (getPublishedAssessment() == null){
+      return "error";
+    }
+
+    // check 1: check for multiple window & browser trick 
+    GradingService service = new GradingService();
+    AssessmentGradingData assessmentGrading = service.load(adata.getAssessmentGradingId().toString());
+    if (!checkDataIntegrity(assessmentGrading)){
+	return ("discrepancyInData");
+    }
+
+    // check 2: if workingassessment has been submiited?
+    // this is to prevent student submit assessment and use a 2nd window to 
+    // continue working on the submitted work.
+    if (getAssessmentHasBeenSubmitted(assessmentGrading)){
+      return "assessmentHasBeenSubmitted";
+    }
+
+    // check 3: any submission attempt left?
+    if (!getHasSubmissionLeft()){
+      return "noSubmissionLeft";
+    }
+
+    // check 4: accept late submission?
+    boolean acceptLateSubmission = AssessmentAccessControlIfc.
+        ACCEPT_LATE_SUBMISSION.equals(publishedAssessment.getLateHandling());
+
+    // check 5: has dueDate arrived? if so, does it allow late submission?
+    if (pastDueDate() && !acceptLateSubmission){
+     return "noLateSubmission";
+    }
+
+    // check 6: is it still available?
+    if (isRetracted()){
+     return "isRetracted";
+    }
+
+    // check 7: is timed assessment? and time has expired?
+    if (isTimeRunning() && timeExpired()){ 
+      return "timeExpired";
+    }
+    else return "safeToProceed";
+  }
+
+  private boolean getHasSubmissionLeft(){
+    boolean hasSubmissionLeft = false;
+    int maxSubmissionsAllowed = 9999;
+    PersonBean personBean = (PersonBean) ContextUtil.lookupBean("person");
+    HashMap h = personBean.getTotalSubmissionPerAssessmentHash();
+    if ( (Boolean.FALSE).equals(publishedAssessment.getUnlimitedSubmissions())){
+      maxSubmissionsAllowed = publishedAssessment.getSubmissionsAllowed().intValue();
+    }
+    boolean notSubmitted = false;
+    int totalSubmitted = 0;
+    if (h.get(publishedAssessment.getPublishedAssessmentId()) == null){
+      notSubmitted = true;
+    }
+    else{
+      totalSubmitted = ( (Integer) h.get(publishedAssessment.getPublishedAssessmentId())).intValue();
+    }
+    if (totalSubmitted < maxSubmissionsAllowed){
+      hasSubmissionLeft = true;
+    } 
+    return hasSubmissionLeft;
+  }
+
+  private boolean pastDueDate(){
+    boolean pastDue = true;
+    Date currentDate = new Date();
+    Date dueDate = publishedAssessment.getAssessmentAccessControl().getDueDate();
+    if (dueDate == null || dueDate.after(currentDate)){
+        pastDue = false;
+    }
+    return pastDue;
+  }
+
+  private boolean isRetracted(){
+    boolean isRetracted = true;
+    Date currentDate = new Date();
+    Date retractDate = publishedAssessment.getAssessmentAccessControl().getRetractDate();
+    if (retractDate == null || retractDate.after(currentDate)){
+        isRetracted = false;
+    }
+    return isRetracted;
+  }
+
+  private boolean checkDataIntegrity(AssessmentGradingData assessmentGrading){
+    // get assessmentGrading from DB, this is to avoid same assessment being
+    // opened in the differnt browser
+    if (assessmentGrading !=null){
+      long DBdate = 0;
+      if (assessmentGrading.getSubmittedDate()!=null){
+         DBdate = assessmentGrading.getSubmittedDate().getTime();
+      }
+      String browserDateString = ContextUtil.lookupParam("lastSubmittedDate"); 
+      long browserDate=0;
+      try{
+        if (browserDateString!=null){
+          browserDate = Long.parseLong(browserDateString);
+	}
+      }
+      catch(Exception e){
+	  log.warn(e.getMessage());
+      }
+      
+      log.debug("last modified date in DB="+DBdate);
+      log.debug("last modified date in browser="+browserDate);
+      log.debug("date is equal="+(DBdate==browserDate));
+      return (DBdate==browserDate);
+    }
+    else return false;
+  }
+
+  private boolean getAssessmentHasBeenSubmitted(AssessmentGradingData assessmentGrading){
+    // get assessmentGrading from DB, this is to avoid same assessment being
+    // opened in the differnt browser
+    if (assessmentGrading !=null){
+      return assessmentGrading.getForGrade().booleanValue();
+    }
+    else return false;
   }
  
 }

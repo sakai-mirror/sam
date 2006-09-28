@@ -118,6 +118,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 			if (isForGrade(adata) && !isUnlimited(publishedAssessment)) {
 				delivery.setSubmissionsRemaining(delivery
 						.getSubmissionsRemaining() - 1);
+                                updateTotalSubmissionHash(publishedAssessment);
 			}
 
 		} catch (GradebookServiceException ge) {
@@ -581,5 +582,16 @@ public class SubmitToGradingActionListener implements ActionListener {
 		else
 			return Boolean.FALSE;
 	}
+
+    private void updateTotalSubmissionHash(PublishedAssessmentIfc publishedAssessment){
+      PersonBean personBean = (PersonBean) ContextUtil.lookupBean("person");
+      HashMap h = personBean.getTotalSubmissionPerAssessmentHash();
+      int totalSubmitted = 1;
+      if (h.get(publishedAssessment.getPublishedAssessmentId()) != null){
+        totalSubmitted = ( (Integer) h.get(publishedAssessment.getPublishedAssessmentId())).intValue();
+        totalSubmitted++;
+      }
+      h.put(publishedAssessment.getPublishedAssessmentId(), new Integer(totalSubmitted));
+    }
 
 }
