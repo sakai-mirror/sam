@@ -1260,6 +1260,7 @@ public class DeliveryBean
 
   public String submitForGrade()
   {
+    //# SAK-6564
     String nextAction = checkBeforeProceed();
     log.debug("***** next Action="+nextAction);
     if (!("safeToProceed").equals(nextAction)){
@@ -1291,6 +1292,7 @@ public class DeliveryBean
 
   public String saveAndExit()
   {
+    //# SAK-6564
     String nextAction = checkBeforeProceed();
     log.debug("***** next Action="+nextAction);
     if (!("safeToProceed").equals(nextAction)){
@@ -1325,6 +1327,7 @@ public class DeliveryBean
 
   public String next_page()
   {
+    //# SAK-6564
     String nextAction = checkBeforeProceed();
     log.debug("***** next Action="+nextAction);
     if (!("safeToProceed").equals(nextAction)){
@@ -1360,6 +1363,7 @@ public class DeliveryBean
 
   public String previous()
   {
+    //# SAK-6564
     String nextAction = checkBeforeProceed();
     log.debug("***** next Action="+nextAction);
     if (!("safeToProceed").equals(nextAction)){
@@ -1644,14 +1648,15 @@ public class DeliveryBean
     {
     System.out.println("****"+mediaLocation+" "+(new Date()));
     GradingService gradingService = new GradingService();
-    //PublishedAssessmentService publishedService = new PublishedAssessmentService();
+    PublishedAssessmentService publishedService = new
+      PublishedAssessmentService();
     HashMap itemHash = getPublishedItemHash();
     PersonBean person = (PersonBean) ContextUtil.lookupBean("person");
     String agent = person.getId();
 
     // 2. format of the media location is: assessmentXXX/questionXXX/agentId/myfile
     // 3. get the questionId (which is the PublishedItemData.itemId)
-    //int assessmentIndex = mediaLocation.indexOf("assessment");
+    int assessmentIndex = mediaLocation.indexOf("assessment");
     int questionIndex = mediaLocation.indexOf("question");
     int agentIndex = mediaLocation.indexOf("/", questionIndex + 8);
     int myfileIndex = mediaLocation.lastIndexOf("/");
@@ -1660,7 +1665,8 @@ public class DeliveryBean
     {
       agentIndex = mediaLocation.indexOf("\\", questionIndex + 8);
     }
-    //String pubAssessmentId = mediaLocation.substring(assessmentIndex + 10, questionIndex - 1);
+    String pubAssessmentId = mediaLocation.substring(assessmentIndex + 10,
+      questionIndex - 1);
     String questionId = mediaLocation.substring(questionIndex + 8, agentIndex);
     log.debug("***3a. addMediaToItemGrading, questionId =" + questionId);
     log.debug("***3b. addMediaToItemGrading, assessmentId =" + assessmentId);
@@ -2111,11 +2117,11 @@ public class DeliveryBean
   }
 
   // delivery action
-  public static final int TAKE_ASSESSMENT = 1;
-  public static final int PREVIEW_ASSESSMENT = 2;
-  public static final int REVIEW_ASSESSMENT = 3;
-  public static final int GRADE_ASSESSMENT = 4;
-  public static final int TAKE_ASSESSMENT_VIA_URL = 5;
+  public static int TAKE_ASSESSMENT = 1;
+  public static int PREVIEW_ASSESSMENT = 2;
+  public static int REVIEW_ASSESSMENT = 3;
+  public static int GRADE_ASSESSMENT = 4;
+  public static int TAKE_ASSESSMENT_VIA_URL = 5;
   private int actionMode;
   private String actionString;
 
@@ -2315,6 +2321,7 @@ public class DeliveryBean
     this.publishedAnswerHash = publishedAnswerHash;
   }
 
+  //# SAK-6564
   public String checkBeforeProceed(){
     // public method, who know if publishedAssessment is set, so check
     // to be sure
@@ -2322,18 +2329,24 @@ public class DeliveryBean
       return "error";
     }
 
-    // check 1: check for multiple window & browser trick 
     GradingService service = new GradingService();
-    AssessmentGradingData assessmentGrading = service.load(adata.getAssessmentGradingId().toString());
-    if (!checkDataIntegrity(assessmentGrading)){
+    AssessmentGradingData assessmentGrading=null;
+    if (adata!=null){
+	assessmentGrading = service.load(adata.getAssessmentGradingId().toString());
+    }
+
+    log.debug("check 1");
+    // check 1: check for multiple window & browser trick
+    if (assessmentGrading!=null && !checkDataIntegrity(assessmentGrading)){
 	return ("discrepancyInData");
     }
 
+    log.debug("check 2");
     // check 2: if workingassessment has been submiited?
-    // this is to prevent student submit assessment and use a 2nd window to 
+    // this is to prevent student submit assessment and use a 2nd window to
     // continue working on the submitted work.
-    if (getAssessmentHasBeenSubmitted(assessmentGrading)){
-      return "assessmentHasBeenSubmitted";
+    if (assessmentGrading!=null && getAssessmentHasBeenSubmitted(assessmentGrading)){
+	return "assessmentHasBeenSubmitted";
     }
 
     // check 3: any submission attempt left?
@@ -2343,7 +2356,7 @@ public class DeliveryBean
 
     // check 4: accept late submission?
     boolean acceptLateSubmission = AssessmentAccessControlIfc.
-        ACCEPT_LATE_SUBMISSION.equals(publishedAssessment.getLateHandling());
+        ACCEPT_LATE_SUBMISSION.equals(publishedAssessment.getAssessmentAccessControl().getLateHandling());
 
     // check 5: has dueDate arrived? if so, does it allow late submission?
     if (pastDueDate() && !acceptLateSubmission){
@@ -2439,5 +2452,5 @@ public class DeliveryBean
     }
     else return false;
   }
- 
+  // end of SAK-6564 
 }
