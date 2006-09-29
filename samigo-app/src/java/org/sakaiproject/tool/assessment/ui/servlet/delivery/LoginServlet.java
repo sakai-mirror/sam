@@ -132,8 +132,11 @@ public class LoginServlet
       else { // check membership
 	agentIdString = req.getRemoteUser();
         isAuthenticated = ( agentIdString!= null && !("").equals(agentIdString));
-        if (isAuthenticated)
+        if (isAuthenticated){
           isAuthorized = checkMembership(pub, req, res);
+          // SAK-6564: in 2.2, agentId is differnt from req.getRemoteUser()
+          agentIdString = AgentFacade.getAgentString();
+	}
       }
 
       log.debug("*** agentIdString: "+agentIdString);
