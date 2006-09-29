@@ -132,8 +132,11 @@ public class LoginServlet
       else { // check membership
 	agentIdString = req.getRemoteUser();
         isAuthenticated = ( agentIdString!= null && !("").equals(agentIdString));
-        if (isAuthenticated)
+        if (isAuthenticated){
           isAuthorized = checkMembership(pub, req, res);
+          // in 2.2, agentId is differnt from req.getRemoteUser()
+          agentIdString = AgentFacade.getAgentString();
+	}
       }
 
       log.debug("*** agentIdString: "+agentIdString);
@@ -160,7 +163,7 @@ public class LoginServlet
             path = "/jsf/delivery/login.faces";
           else{
             relativePath = false;
-            path = "/authn/login?url=" + URLEncoder.encode(req.getRequestURL().toString()+"?id="+alias, "UTF-8");
+            path = "/portal/login?url=" + URLEncoder.encode(req.getRequestURL().toString()+"?id="+alias, "UTF-8");
 	  }
         }
         else { //isAuthenticated but not authorized
@@ -201,6 +204,7 @@ public class LoginServlet
     return isMember;
   }
 
+  //SAK-6564
   private boolean isAvailable(DeliveryBean delivery, PersonBean person, HashMap h) {
     log.debug("inside isAvaialbel");
     boolean returnValue = false;
@@ -214,7 +218,7 @@ public class LoginServlet
   }
 
   // check if assessment is available based on criteria like
-  // dueDate
+  // dueDate. SAK-6564
   public boolean assessmentIsAvailable(PublishedAssessmentService service,
       String agentIdString, PublishedAssessmentFacade pub,
       DeliveryBean delivery, PersonBean person){
