@@ -2431,6 +2431,7 @@ public class DeliveryBean
         if (browserDateString!=null){
           browserDate = Long.parseLong(browserDateString);
 	}
+        else return true;
       }
       catch(Exception e){
 	  log.warn(e.getMessage());
