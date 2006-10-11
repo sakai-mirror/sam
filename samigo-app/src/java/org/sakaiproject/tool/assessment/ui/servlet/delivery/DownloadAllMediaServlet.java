@@ -115,7 +115,7 @@ private static Log log = LogFactory.getLog(DownloadAllMediaServlet.class);
     	String assessmentName = req.getParameter("assessmentName");
   	    StringBuffer zipFilename = new StringBuffer();
   	    zipFilename.append(assessmentName);
-  	    String partAndQues = getPartNumAndQuestionNum(publishedItemId.toString());
+  	    String partAndQues = getPartNumAndQuestionNum(publishedItemId);
 	    log.debug("partAndQues = " + partAndQues);
 	    zipFilename.append(partAndQues);
   	    zipFilename.append((".zip"));
@@ -180,9 +180,9 @@ private static Log log = LogFactory.getLog(DownloadAllMediaServlet.class);
 	  log.debug("scoringType = " + scoringType);
 	  
       HashMap hashByAgentId = new HashMap();
-      HashMap subHashByAssessmentGradingId = new HashMap();
+      HashMap subHashByAssessmentGradingId;
       MediaIfc mediaData;
-      ArrayList list = new ArrayList();
+      ArrayList list;
       ItemGradingData itemGradingData;
 
 	  List mediaList;

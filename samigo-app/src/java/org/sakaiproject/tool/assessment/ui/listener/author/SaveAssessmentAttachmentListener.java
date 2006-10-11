@@ -28,10 +28,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
@@ -61,20 +59,14 @@ public class SaveAssessmentAttachmentListener
     implements ActionListener
 {
   private static Log log = LogFactory.getLog(SaveAssessmentAttachmentListener.class);
-  private static ContextUtil cu;
 
   public SaveAssessmentAttachmentListener()
   {
   }
 
   public void processAction(ActionEvent ae) throws AbortProcessingException {
-
-    FacesContext context = FacesContext.getCurrentInstance();
-    Map reqMap = context.getExternalContext().getRequestMap();
-    Map requestParams = context.getExternalContext().getRequestParameterMap();
-
-    AssessmentSettingsBean assessmentSettings = (AssessmentSettingsBean) cu.lookupBean("assessmentSettings");
-    String assessmentId = assessmentSettings.getAssessmentId().toString();
+    AssessmentSettingsBean assessmentSettings = (AssessmentSettingsBean) ContextUtil.lookupBean("assessmentSettings");
+    //String assessmentId = assessmentSettings.getAssessmentId().toString();
 
     // attach item attachemnt to assessmentBean
     List attachmentList = prepareAssessmentAttachment((AssessmentIfc)assessmentSettings.getAssessment().getData());
@@ -108,7 +100,7 @@ public class SaveAssessmentAttachmentListener
 
       List refs = (List)session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
       if (refs!=null && refs.size() > 0){
-        Reference ref = (Reference)refs.get(0);
+        Reference ref;
 
         for(int i=0; i<refs.size(); i++) {
           ref = (Reference) refs.get(i);

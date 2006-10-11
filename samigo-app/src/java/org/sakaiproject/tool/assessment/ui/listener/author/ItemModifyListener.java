@@ -58,12 +58,6 @@ import org.sakaiproject.tool.assessment.ui.bean.author.ItemBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.MatchItemBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 
-import org.sakaiproject.content.api.FilePickerHelper;
-import org.sakaiproject.tool.cover.SessionManager;
-import org.sakaiproject.tool.api.ToolSession;
-import org.sakaiproject.entity.api.Reference;
-
-
 /**
  * <p>Title: Samigo</p>
  * <p>Description: Sakai Assessment Manager</p>
@@ -73,8 +67,7 @@ import org.sakaiproject.entity.api.Reference;
 public class ItemModifyListener implements ActionListener
 {
   private static Log log = LogFactory.getLog(ItemModifyListener.class);
-  private static ContextUtil cu;
-  private String scalename;  // used for multiple choice Survey
+  //private String scalename;  // used for multiple choice Survey
 
   /**
    * Standard process action method.
@@ -84,10 +77,9 @@ public class ItemModifyListener implements ActionListener
   public void processAction(ActionEvent ae) throws AbortProcessingException
   {
     //log.info("ItemModify LISTENER.");
-    ItemAuthorBean itemauthorbean = (ItemAuthorBean) cu.lookupBean("itemauthor");
+    ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 
-    String itemId= cu.lookupParam("itemid");
-    System.out.println("****itemId="+itemId); 
+    String itemId= ContextUtil.lookupParam("itemid");
     if (itemId != null){
       itemauthorbean.setItemId(itemId);
     }
@@ -98,14 +90,13 @@ public class ItemModifyListener implements ActionListener
       // so i can't read itemId from a form. - daisyf
       itemId = itemauthorbean.getItemId();
     }
-    System.out.println("****itemId="+itemId); 
  
-    String poolid = cu.lookupParam("poolId");
+    String poolid = ContextUtil.lookupParam("poolId");
     if(poolid!=null) {
        itemauthorbean.setQpoolId(poolid);
     }
 
-    String target= cu.lookupParam("target");
+    String target= ContextUtil.lookupParam("target");
     if (target!=null){
       itemauthorbean.setTarget(target);
     }
@@ -177,7 +168,7 @@ public class ItemModifyListener implements ActionListener
       }
 
       // attach item attachemnt to itemAuthorBean
-      List attachmentList = prepareItemAttachment(itemfacade.getData());
+      List attachmentList = itemfacade.getData().getItemAttachmentList(); 
       itemauthorbean.setAttachmentList(attachmentList);
 
       int itype=0; // default to true/false
@@ -247,7 +238,7 @@ public class ItemModifyListener implements ActionListener
     if ("assessment".equals(itemauthorbean.getTarget())) {
 // check for metadata settings
       AssessmentService assessdelegate = new AssessmentService();
-      AssessmentBean assessmentBean = (AssessmentBean) cu.lookupBean("assessmentBean");
+      AssessmentBean assessmentBean = (AssessmentBean) ContextUtil.lookupBean("assessmentBean");
       AssessmentFacade assessment = assessdelegate.getAssessment(assessmentBean.getAssessmentId());
       itemauthorbean.setShowMetadata(assessment.getHasMetaDataForQuestions());
     }
@@ -550,13 +541,15 @@ public class ItemModifyListener implements ActionListener
 	// get settings for case sensitivity for fib 
         // If metadata doesn't exist, by default it is false. 
        if (meta.getLabel().equals(ItemMetaDataIfc.CASE_SENSITIVE_FOR_FIB)){
-	 bean.setCaseSensitiveForFib((new Boolean(meta.getEntry())).booleanValue());
+	 //bean.setCaseSensitiveForFib((new Boolean(meta.getEntry())).booleanValue());
+	 bean.setCaseSensitiveForFib(Boolean.valueOf(meta.getEntry()).booleanValue());
        }
 
 	// get settings for mutually exclusive for fib. 
         // If metadata doesn't exist, by default it is false. 
        if (meta.getLabel().equals(ItemMetaDataIfc.MUTUALLY_EXCLUSIVE_FOR_FIB)){
-	 bean.setMutuallyExclusiveForFib((new Boolean(meta.getEntry())).booleanValue());
+	 //bean.setMutuallyExclusiveForFib((new Boolean(meta.getEntry())).booleanValue());
+	 bean.setMutuallyExclusiveForFib(Boolean.valueOf(meta.getEntry()).booleanValue());
        }
        
        
@@ -585,78 +578,6 @@ public class ItemModifyListener implements ActionListener
 
 
      }
-  }
-
-  private HashMap getResourceIdHash(Set attachmentSet){
-    HashMap map = new HashMap();
-    if (attachmentSet !=null ){
-      Iterator iter = attachmentSet.iterator();
-      while (iter.hasNext()){
-        ItemAttachmentIfc attach = (ItemAttachmentIfc) iter.next();
-        map.put(attach.getResourceId(), attach);
-      }
-    }
-    return map;
-  }
-
-  private List prepareItemAttachment(ItemDataIfc item){
-    ToolSession session = SessionManager.getCurrentToolSession();
-    if (session.getAttribute(FilePickerHelper.FILE_PICKER_CANCEL) == null  &&
-        session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
-      
-      Set attachmentSet = item.getItemAttachmentSet();
-      HashMap map = getResourceIdHash(attachmentSet);
-      ArrayList newAttachmentList = new ArrayList();
-      HashSet newAttachmentSet = new HashSet();
-
-      AssessmentService assessmentService = new AssessmentService();
-      String protocol = ContextUtil.getProtocol();
-
-      List refs = (List)session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
-      if (refs!=null && refs.size() > 0){
-        Reference ref = (Reference)refs.get(0);
-
-        for(int i=0; i<refs.size(); i++) {
-          ref = (Reference) refs.get(i);
-          String resourceId = ref.getId();
-          if (map.get(resourceId) == null){
-            // new attachment, add 
-            log.debug("**** ref.Id="+ref.getId());
-            log.debug("**** ref.name="+ref.getProperties().getProperty(
-                       ref.getProperties().getNamePropDisplayName()));
-            ItemAttachmentIfc newAttach = assessmentService.createItemAttachment(
-                                          item,
-                                          ref.getId(), ref.getProperties().getProperty(
-                                                       ref.getProperties().getNamePropDisplayName()),
-                                        protocol);
-            newAttachmentList.add(newAttach);
-            newAttachmentSet.add(newAttach);
-	  }
-          else{ 
-            // attachment already exist, let's add it to new list and
-	    // check it off from map
-            newAttachmentList.add((ItemAttachmentIfc)map.get(resourceId));
-            newAttachmentSet.add((ItemAttachmentIfc)map.get(resourceId));
-            map.remove(resourceId);
-	  }
-        }
-      }
-
-      // the resulting map should now contain attachment that has been removed
-      // inside filepicker, we will now get rid of its association with the item
-      Collection oldAttachs = map.values();
-      Iterator iter1 = oldAttachs.iterator();
-      while (iter1.hasNext()){
-        ItemAttachmentIfc oldAttach = (ItemAttachmentIfc)iter1.next();
-        assessmentService.removeItemAttachment(oldAttach.getAttachmentId().toString());
-      }
-
-      session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
-      session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
-      item.setItemAttachmentSet(newAttachmentSet);
-      return newAttachmentList;
-    }
-    else return item.getItemAttachmentList();
   }
 
 }

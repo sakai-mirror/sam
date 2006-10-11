@@ -340,7 +340,7 @@ public class AssessmentSettingsBean
         if (evaluation.getAnonymousGrading()!=null)
           this.anonymousGrading = evaluation.getAnonymousGrading().toString();
         if (evaluation.getToGradeBook()!=null )
-          this.toDefaultGradebook = evaluation.getToGradeBook().toString();
+          this.toDefaultGradebook = evaluation.getToGradeBook();
         if (evaluation.getScoringType()!=null)
           this.scoringType = evaluation.getScoringType().toString();
 
@@ -1235,7 +1235,6 @@ public class AssessmentSettingsBean
         ContentResource cr = ContentHostingService.getResource(attach.getResourceId());
         if (cr!=null){
           ReferenceComponent ref = new ReferenceComponent(cr.getReference());
-          System.out.println("**** ref="+ref);
           if (ref !=null ) list.add(ref);
         }
       }

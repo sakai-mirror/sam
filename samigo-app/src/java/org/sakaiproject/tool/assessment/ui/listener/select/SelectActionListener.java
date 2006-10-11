@@ -38,6 +38,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentFeedbackIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.PublishedAssessmentIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentGradingFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
@@ -95,14 +97,14 @@ public class SelectActionListener
     if (!deliveryBean.getAnonymousLogin() && !authzBean.getTakeAssessment())
       return;
 
-    deliveryBean = new DeliveryBean();
-
     // get service and managed bean
     PublishedAssessmentService publishedAssessmentService = new
         PublishedAssessmentService();
     SelectAssessmentBean select = (SelectAssessmentBean) ContextUtil.lookupBean(
         "select");
 
+    select.setHasHighestMultipleSubmission(false);  // reset property
+    
     // look for some sort information passed as parameters
     processSortInfo(select);
 
@@ -163,7 +165,13 @@ public class SelectActionListener
     HashMap publishedAssessmentHash = getPublishedAssessmentHash(publishedAssessmentList);
     ArrayList submittedAssessmentGradingList = new ArrayList();
     //log.info("recentSubmittedList size="+recentSubmittedList.size());
+    boolean hasHighest = false;
+    boolean hasMultipleSubmission = false;
+
     for (int k = 0; k < recentSubmittedList.size(); k++) {
+        hasHighest = false;
+        hasMultipleSubmission = false;
+
       AssessmentGradingFacade g = (AssessmentGradingFacade)
           recentSubmittedList.get(k);
       // check
@@ -181,6 +189,31 @@ public class SelectActionListener
       if (authorizedToSite || authorizedToAuthenticated){
         DeliveryBeanie delivery = new DeliveryBeanie();
         delivery.setAssessmentId(g.getPublishedAssessmentId().toString());
+        PublishedAssessmentIfc pub = publishedAssessmentService.getPublishedAssessment(delivery.getAssessmentId());
+        AssessmentAccessControlIfc ac = pub.getAssessmentAccessControl();
+         
+        if (ac.getSubmissionsAllowed()!=null){
+          	if (ac.getSubmissionsAllowed().intValue()> 1){
+          		delivery.setMultipleSubmissions(true);
+          		hasMultipleSubmission=true;
+          	}
+          	else {
+          		delivery.setMultipleSubmissions(false);
+          	}
+          }
+          else {
+        	  delivery.setMultipleSubmissions(true);
+        	  hasMultipleSubmission=true;
+          }
+        
+         
+        delivery.setScoringOption(pub.getEvaluationModel().getScoringType().toString());
+        if ((EvaluationModelIfc.HIGHEST_SCORE.toString()).equals(delivery.getScoringOption())){
+        	hasHighest=true;
+        }
+        if (hasHighest && hasMultipleSubmission){
+        	select.setHasHighestMultipleSubmission(true);
+        }
         delivery.setAssessmentTitle(g.getPublishedAssessmentTitle());
         delivery.setFeedbackDelivery(getFeedbackDelivery(g.getPublishedAssessmentId(),
                                                  publishedAssessmentHash));

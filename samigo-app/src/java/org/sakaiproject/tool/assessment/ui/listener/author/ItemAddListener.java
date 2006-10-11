@@ -42,9 +42,11 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.dao.assessment.Answer;
 import org.sakaiproject.tool.assessment.data.dao.assessment.AnswerFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemMetaData;
-import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemText;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerFeedbackIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.ItemFacade;
@@ -419,7 +421,7 @@ public class ItemAddListener
       }
       // update hasRationale
       if (bean.getRationale() != null) {
-        item.setHasRationale(new Boolean(bean.getRationale()));
+        item.setHasRationale(Boolean.valueOf(bean.getRationale()));
       }
       else {
         item.setHasRationale(Boolean.FALSE);
@@ -499,6 +501,10 @@ public class ItemAddListener
       if ( (itemauthor.getTarget() != null) &&
           (itemauthor.getTarget().equals(ItemAuthorBean.FROM_QUESTIONPOOL))) {
         // Came from Pool manager
+
+        // added by daisyf, 10/10/06
+        Set set = prepareItemAttachmentSet(itemauthor.getAttachmentList(), item.getData());
+        item.setItemAttachmentSet(set);
 
         delegate.saveItem(item);
         QuestionPoolService qpdelegate = new QuestionPoolService();
@@ -586,6 +592,10 @@ public class ItemAddListener
               itemauthor.setInsertPosition("");
             }
           }
+
+          // added by daisyf, 10/10/06
+          Set set = prepareItemAttachmentSet(itemauthor.getAttachmentList(), item.getData());
+          item.setItemAttachmentSet(set);
 
           delegate.saveItem(item);
           /*
@@ -742,7 +752,7 @@ public class ItemAddListener
       Answer newanswer = null;
       for (int i = 0; i < bean.getAnswers().length; i++) {
         String theanswer = bean.getAnswers()[i];
-        String thelabel = bean.getAnswerLabels()[i]; // store thelabel as the answer text
+        //String thelabel = bean.getAnswerLabels()[i]; // store thelabel as the answer text
         if (theanswer.equals(bean.getCorrAnswer())) {
           // label is null because we don't use labels in true/false questions
           // labels are like a, b, c, or i, ii, iii, in multiple choice type
@@ -1213,7 +1223,8 @@ public class ItemAddListener
     // all answer sets have to be identical, case insensitive
 
      String entiretext = bean.getItemText();
-      String fibtext = entiretext.replaceAll("[\\{][^\\}]*[\\}]", "{}");
+     //String fibtext = 
+     entiretext.replaceAll("[\\{][^\\}]*[\\}]", "{}");
 
 Object[] fibanswers = getFIBanswers(entiretext).toArray();
       List blanklist = new  ArrayList();
@@ -1283,4 +1294,17 @@ Object[] fibanswers = getFIBanswers(entiretext).toArray();
 	    return !invalid; 
 	  } 
   */
+
+   public Set  prepareItemAttachmentSet(List attachmentList, ItemDataIfc item){
+     Set set = new HashSet();
+     if (attachmentList!=null){
+       for (int i=0; i<attachmentList.size(); i++){
+         ItemAttachmentIfc attach = (ItemAttachmentIfc) attachmentList.get(i);
+         attach.setItem(item);
+         set.add(attach);
+       }
+     }
+    return set;
+  }
+
 }

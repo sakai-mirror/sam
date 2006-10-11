@@ -22,14 +22,13 @@
 
 
 package org.sakaiproject.tool.assessment.ui.servlet.delivery;
+import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.data.dao.grading.MediaData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.PublishedAssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
-//import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
-import org.sakaiproject.tool.assessment.ui.bean.authz.AuthorizationBean;
 import org.sakaiproject.tool.assessment.ui.bean.shared.PersonBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import java.io.*;
@@ -103,8 +102,7 @@ private static Log log = LogFactory.getLog(ShowMediaServlet.class);
         PublishedAssessmentService service = new PublishedAssessmentService();
         currentSiteId = service.getPublishedAssessmentOwner(pub.getPublishedAssessmentId());
       }
-      //Long typeId = gradingService.getTypeId(mediaData.getItemGradingData().getItemGradingId());
-      Long typeId = TypeIfc.AUDIO_RECORDING;
+      Long typeId = gradingService.getTypeId(mediaData.getItemGradingData().getItemGradingId());
       if (typeId.equals(TypeIfc.AUDIO_RECORDING)) {
     	  isAudio = true;
       }
@@ -248,11 +246,13 @@ private static Log log = LogFactory.getLog(ShowMediaServlet.class);
 
   public boolean canGrade(HttpServletRequest req,  HttpServletResponse res,
                           String agentId, String currentSiteId){
-    AuthorizationBean authzBean = (AuthorizationBean) ContextUtil.lookupBeanFromExternalServlet("authorization", req, res);
-    boolean hasPrivilege_any = authzBean.getGradeAnyAssessment(req, currentSiteId);
-    boolean hasPrivilege_own = authzBean.getGradeOwnAssessment(req, currentSiteId);
+    boolean hasPrivilege_any = hasPrivilege(req, "grade_any_assessment", currentSiteId);
+    boolean hasPrivilege_own = hasPrivilege(req, "grade_own_assessment", currentSiteId);
+    log.debug("hasPrivilege_any="+hasPrivilege_any);
+    log.debug("hasPrivilege_own="+hasPrivilege_own);
     boolean hasPrivilege = (hasPrivilege_any || hasPrivilege_own);
     return hasPrivilege;    
+
   }
 
 
@@ -260,5 +260,11 @@ private static Log log = LogFactory.getLog(ShowMediaServlet.class);
     boolean isOwner = false;
     isOwner = agentId.equals(ownerId);
     return isOwner;
+  }
+  
+  public boolean hasPrivilege(HttpServletRequest req, String functionKey, String context){
+	  String functionName=(String)ContextUtil.getLocalizedString(req,"org.sakaiproject.tool.assessment.bundle.AuthzPermissions", functionKey);
+	  boolean privilege = SecurityService.unlock(functionName, "/site/"+context);
+	  return privilege;
   }
 }
