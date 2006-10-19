@@ -1,5 +1,4 @@
-/**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/trunk/component/src/java/org/sakaiproject/tool/assessment/facade/ItemFacade.java $
+/* $URL: https://source.sakaiproject.org/svn/sam/trunk/component/src/java/org/sakaiproject/tool/assessment/facade/ItemFacade.java $
  * $Id: ItemFacade.java 9273 2006-05-10 22:34:28Z daisyf@stanford.edu $
  ***********************************************************************************
  *
@@ -148,8 +147,10 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
     this.itemFeedbackSet = getItemFeedbackSet();
     this.itemFeedbackMap = getItemFeedbackMap(this.itemFeedbackSet);
     this.hasRationale= data.getHasRationale();//rshastri :SAK-1824
+    this.itemAttachmentSet = getItemAttachmentSet();
   }
 
+    /*
   public Object clone() throws CloneNotSupportedException{
         ItemData itemdataOrig = (ItemData) this.data;
   ItemData cloneditemdata = (ItemData) itemdataOrig.clone();
@@ -159,6 +160,7 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
         Object cloned = new ItemFacade(cloneditemdata);
         return cloned;
     }
+    */
 
   // the following method's signature has a one to one relationship to
   // org.sakaiproject.tool.assessment.osid.item.ItemImpl
@@ -1012,7 +1014,13 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
   }
 
   public Set getItemAttachmentSet() {
-    return itemAttachmentSet;
+    try {
+      this.data = (ItemDataIfc) item.getData();
+    }
+    catch (AssessmentException ex) {
+      throw new DataFacadeException(ex.getMessage());
+    }
+    return this.data.getItemAttachmentSet();
   }
 
   public void setItemAttachmentSet(Set itemAttachmentSet) {
@@ -1022,8 +1030,9 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
 
   public List getItemAttachmentList() {
     ArrayList list = new ArrayList();
-    if (itemAttachmentSet !=null ){
-      Iterator iter = itemAttachmentSet.iterator();
+    Set set = getItemAttachmentSet(); 
+    if (set !=null ){
+      Iterator iter = set.iterator();
       while (iter.hasNext()){
         ItemAttachmentIfc a = (ItemAttachmentIfc)iter.next();
         list.add(a);

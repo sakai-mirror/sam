@@ -332,7 +332,8 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     }
   }
 
-  public HashMap getSubmitData(final Long publishedId, final String agentId)
+ 
+  public HashMap getSubmitData(final Long publishedId, final String agentId, final Integer scoringoption)
   {
     try {
 //      Object[] objects = new Object[3];
@@ -343,14 +344,27 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 //      types[0] = Hibernate.LONG;
 //      types[1] = Hibernate.STRING;
 //      types[2] = Hibernate.BOOLEAN;
-
+    	
+    		
       final HibernateCallback hcb = new HibernateCallback(){
       	public Object doInHibernate(Session session) throws HibernateException, SQLException {
+      		log.debug("scoringoption = " + scoringoption);
+      		if (EvaluationModelIfc.LAST_SCORE.equals(scoringoption)){
+      			// last submission
       		Query q = session.createQuery("from AssessmentGradingData a where a.publishedAssessmentId=? and a.agentId=? and a.forGrade=? order by a.submittedDate DESC");
       		q.setLong(0, publishedId.longValue());
       		q.setString(1, agentId);
       		q.setBoolean(2, true);
       		return q.list();
+      		}
+      		else {
+      			//highest submission
+          		Query q1 = session.createQuery("from AssessmentGradingData a where a.publishedAssessmentId=? and a.agentId=? and a.forGrade=? order by a.finalScore DESC, a.submittedDate DESC");
+          		q1.setLong(0, publishedId.longValue());
+          		q1.setString(1, agentId);
+          		q1.setBoolean(2, true);
+          		return q1.list();     			
+      		}
       	};
       };
       List scores = getHibernateTemplate().executeFind(hcb);
@@ -457,14 +471,16 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   public void removeMediaById(Long mediaId){
     String mediaLocation = null;
     Session session = null;
+    Connection conn = null;
+    ResultSet rs = null;
     try{
       session = getSessionFactory().openSession();
-      Connection conn = session.connection();
+      conn = session.connection();
       log.debug("****Connection="+conn);
       String query0="select LOCATION from SAM_MEDIA_T where MEDIAID=?";
       PreparedStatement statement0 = conn.prepareStatement(query0);
       statement0.setLong(1, mediaId.longValue());
-      ResultSet rs =statement0.executeQuery();
+      rs =statement0.executeQuery();
       if (rs.next()){
         mediaLocation = rs.getString("LOCATION");
       }
@@ -481,6 +497,8 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     finally{
       try{
         if (session !=null) session.close();
+        if (conn !=null) conn.close();
+        if (rs !=null) rs.close();
       }
       catch(Exception ex){
         log.warn(ex.getMessage());
@@ -667,7 +685,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     return ag;
   }
 
-  public AssessmentGradingData getLastAssessmentGradingByAgentId(final Long publishedAssessmentId, final String agentIdString) {
+  public AssessmentGradingIfc getLastAssessmentGradingByAgentId(final Long publishedAssessmentId, final String agentIdString) {
     AssessmentGradingData ag = null;
 
     final HibernateCallback hcb = new HibernateCallback(){
@@ -730,14 +748,16 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     Session session = null;
     Connection conn = null;
     InputStream in = null; 
+    ResultSet rs = null;
+    PreparedStatement statement = null;
     try{
       session = getSessionFactory().openSession();
       conn = session.connection();
       log.debug("****Connection="+conn);
       String query="select MEDIA from SAM_MEDIA_T where MEDIAID=?";
-      PreparedStatement statement = conn.prepareStatement(query);
+      statement = conn.prepareStatement(query);
       statement.setLong(1, mediaId.longValue());
-      ResultSet rs = statement.executeQuery();
+      rs = statement.executeQuery();
       if (rs.next()){
         java.lang.Object o = rs.getObject("MEDIA");
         if (o!=null){
@@ -762,6 +782,8 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
         if (session !=null) session.close();
         if (in !=null) in.close();
         if (conn !=null) conn.close();
+        if (rs != null) rs.close();
+        if (statement != null) statement.close();
       }
       catch(Exception ex){
         log.warn(ex.getMessage());
@@ -794,7 +816,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     AssessmentGradingData ag = null;
     final String query ="from AssessmentGradingData a "+
                   " where a.publishedAssessmentId=? and "+
-                  " a.agentId=? order by a.finalScore desc";
+                  " a.agentId=? order by a.finalScore desc, a.submittedDate desc";
 
     final HibernateCallback hcb = new HibernateCallback(){
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {

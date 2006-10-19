@@ -12,20 +12,19 @@
 <%--
 ***********************************************************************************
 *
-* Copyright (c) 2005 The Regents of the University of Michigan, Trustees of Indiana University,
-*                  Board of Trustees of the Leland Stanford, Jr., University, and The MIT Corporation
+* Copyright (c) 2004, 2005, 2006 The Sakai Foundation.
 *
-* Licensed under the Educational Community License Version 1.0 (the "License");
-* By obtaining, using and/or copying this Original Work, you agree that you have read,
-* understand, and will comply with the terms and conditions of the Educational Community License.
-* You may obtain a copy of the License at:
+* Licensed under the Educational Community License, Version 1.0 (the"License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 *
-*      http://cvs.sakaiproject.org/licenses/license_1_0.html
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
-* AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-* DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*      http://www.opensource.org/licenses/ecl1.php
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License. 
 *
 **********************************************************************************/
 --%>
@@ -251,9 +250,10 @@ function saveTime()
   <%-- SUBMIT FOR GRADE --%>
   <h:commandButton id="submitforGrade" accesskey="#{msg.a_submit}" type="submit" value="#{msg.button_submit_grading}"
     action="#{delivery.submitForGrade}" styleClass="active" 
-    rendered="#{delivery.actionString=='takeAssessment'
+    rendered="#{(delivery.actionString=='takeAssessment' || delivery.actionString=='previewAssessment') 
              && delivery.navigation ne '1' 
              && !delivery.continue}"
+	disabled="#{delivery.actionString=='previewAssessment'}" 
     onclick="disableSubmitForGrade()" onkeypress="disableSubmitForGrade()" />
 
   <%-- PREVIOUS --%>
@@ -266,22 +266,17 @@ function saveTime()
     onclick="disablePrevious()" onkeypress="disablePrevious()" />
 
   <!-- check for submit for grade permission to determine if button can be displayed -->
-  <%-- SUBMIT FOR GRADE --%>
-  <h:panelGroup rendered="#{(delivery.actionString=='takeAssessment' || delivery.actionString=='previewAssessment') 
-                        || (authorization!=null && authorization.takeAssessment 
-                            && authorization.submitAssessmentForGrade)}">
+  <%-- SUBMIT FOR GRADE FOR LINEAR ACCESS --%>
+  <h:panelGroup rendered="#{(authorization!=null && authorization.takeAssessment && authorization.submitAssessmentForGrade) || delivery.actionString=='previewAssessment'}">
     <h:commandButton accesskey="#{msg.a_submit}" type="submit" value="#{msg.button_submit_grading}"
       action="#{delivery.submitForGrade}"  id="submitForm" styleClass="active"
-      rendered="#{delivery.navigation eq '1' && !delivery.continue}" 
+      rendered="#{(delivery.actionString=='takeAssessment'
+                   || delivery.actionString=='takeAssessmentViaUrl'
+				   || delivery.actionString=='previewAssessment')
+				   && delivery.navigation eq '1' && !delivery.continue}" 
       disabled="#{delivery.actionString=='previewAssessment'}"
       onclick="pauseTiming='false'; disableSubmit()" onkeypress="pauseTiming='false'; disableSubmit()"/>
   </h:panelGroup>
-
-  <%-- SUBMIT FOR GRADE DURING PAU --%>
-  <h:commandButton type="submit" value="#{msg.button_submit}"
-    action="#{delivery.submitForGrade}"  id="submitForm2" styleClass="active"
-    rendered="#{delivery.actionString=='takeAssessmentViaUrl'}"
-    onclick="pauseTiming='false'; disableSubmit2();" onkeypress="pauseTiming='false'; disableSubmit2();"/>
 
   <%-- SAVE AND EXIT --%>
   <h:commandButton accesskey="#{msg.a_saveAndExit}" type="submit" value="#{msg.button_save_x}"
@@ -292,13 +287,19 @@ function saveTime()
     onclick="pauseTiming='false'; disableSave();" onkeypress="pauseTiming='false'; disableSave();" 
     disabled="#{delivery.actionString=='previewAssessment'}" />
 
-  <%-- SAVE AND EXIT DURING PAU --%>
+  <%-- SUBMIT FOR GRADE DURING PAU --%>
+  <h:commandButton type="submit" value="#{msg.button_submit}"
+    action="#{delivery.submitForGrade}"  id="submitForm2" styleClass="active"
+    rendered="#{delivery.actionString=='takeAssessmentViaUrl'}"
+    onclick="pauseTiming='false'; disableSubmit2();" onkeypress="pauseTiming='false'; disableSubmit2();"/>
+
+  <%-- SAVE AND EXIT DURING PAU WITH ANONYMOUS LOGIN--%>
   <h:commandButton accesskey="#{msg.a_quit}" type="submit" value="#{msg.button_quit}"
     action="#{delivery.saveAndExit}" id="quit"
-    rendered="#{(delivery.actionString=='takeAssessmentViaUrl')}"
+    rendered="#{(delivery.actionString=='takeAssessmentViaUrl' && delivery.anonymousLogin)}"
     onclick="pauseTiming='false'; disableQuit()" onkeypress="pauseTiming='false'; disableQuit()"  /> 
 
-  <%-- SAVE AND EXIT --%>
+  <%-- SAVE AND EXIT FOR LINEAR ACCESS --%>
   <h:commandButton accesskey="#{msg.a_saveAndExit}" type="submit" value="#{msg.button_save_x}"
     action="#{delivery.saveAndExit}" id="saveAndExit2"
     rendered="#{delivery.actionString=='takeAssessment'

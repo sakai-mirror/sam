@@ -408,11 +408,14 @@ log.debug("item!=null steting type id = " + item.getTypeId().toString());
         	Iterator iterator = publishedAnswerHash.values().iterator();
             while (iterator.hasNext()) {
             	PublishedAnswer publishedAnswer = (PublishedAnswer) iterator.next();
-            	if (publishedAnswer.getText() == null || publishedAnswer.getText().equals("")) {
-            		bean.setHaveModelShortAnswer(false);
-            	}
-            	else {
-            		bean.setHaveModelShortAnswer(true);
+            	if (publishedAnswer.getItem().getItemId().equals(item.getItemId())) {
+            		if (publishedAnswer.getText() == null || publishedAnswer.getText().equals("")) {
+            			bean.setHaveModelShortAnswer(false);
+            		}
+            		else {
+            			bean.setHaveModelShortAnswer(true);
+            		}
+            		break;
             	}
             }
         }
@@ -567,7 +570,7 @@ log.debug("item==null ");
             results.setRationale(rationale);
             results.setSubmittedDate(gdata.getSubmittedDate());
 
-            if (dueDate == null || gdata.getSubmittedDate().before(dueDate))
+            if (dueDate == null || gdata.getSubmittedDate() == null || gdata.getSubmittedDate().before(dueDate))
               results.setIsLate(Boolean.FALSE);
             else
               results.setIsLate(Boolean.TRUE);
@@ -648,14 +651,15 @@ log.debug("item==null ");
 	  log.debug("getItemScores: isValueChange ?" + isValueChange);
 	  
 	  if (itemScoresMap == null || isValueChange){
-		  log.debug("getItemScores: itemScoresMap ==null or isValueChange==true " + itemScoresMap );
+		  log.debug("getItemScores: itemScoresMap == null or isValueChange == true ");
+		  log.debug("getItemScores: isValueChange = " + isValueChange);
 		  itemScoresMap = new HashMap();
 		  questionScoresBean.setItemScoresMap(itemScoresMap);
 	  }
 	  log.debug("getItemScores: itemScoresMap.size() " + itemScoresMap.size() );
 	  HashMap map = (HashMap) itemScoresMap.get(itemId);
 	  if (map == null){
-		  log.debug("getItemScores: map == null " + map );
+		  log.debug("getItemScores: map == null ");
 		  map = delegate.getItemScores(publishedId, itemId, which);
 		  log.debug("getItemScores: map size " + map.size() );
 		  itemScoresMap.put(itemId, map);

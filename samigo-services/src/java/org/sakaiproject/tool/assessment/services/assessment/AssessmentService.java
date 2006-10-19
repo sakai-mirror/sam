@@ -49,6 +49,16 @@ import org.sakaiproject.tool.assessment.facade.SectionFacade;
 import org.sakaiproject.tool.assessment.facade.TypeFacade;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.content.cover.ContentHostingService;
+import org.sakaiproject.exception.IdInvalidException;
+import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.exception.IdUsedException;
+import org.sakaiproject.exception.InUseException;
+import org.sakaiproject.exception.InconsistentException;
+import org.sakaiproject.exception.OverQuotaException;
+import org.sakaiproject.exception.PermissionException;
+import org.sakaiproject.exception.ServerOverloadException;
+import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.content.api.ContentResource;
 
 /**
  * The AssessmentService calls the service locator to reach the
@@ -529,11 +539,66 @@ public void deleteAssessment(Id assessmentId)
           log.debug("removing="+resourceId);
           ContentHostingService.removeResource(resourceId);
         }
-        catch(Exception e){
+	catch (PermissionException e) {                                                      
           log.warn("cannot remove resourceId="+resourceId+":"+e.getMessage());
-        }
+          log.warn("PermissionException from ContentHostingService:"+e.getMessage());        
+	}                                                                                    
+	catch (IdUnusedException e) {                                                        
+          log.warn("cannot remove resourceId="+resourceId+":"+e.getMessage());
+          log.warn("IdUnusedException from ContentHostingService:"+e.getMessage());          
+	}                                                                                    
+	catch (TypeException e) {                                                            
+          log.warn("cannot remove resourceId="+resourceId+":"+e.getMessage());
+          log.warn("TypeException from ContentHostingService:"+e.getMessage());              
+	}                                                                                    
+	catch (InUseException e) {                                                           
+          log.warn("cannot remove resourceId="+resourceId+":"+e.getMessage());
+          log.warn("InUseException from ContentHostingService:"+e.getMessage());             
+	}                                                                                    
       }      
     }
   }
+
+  public void saveOrUpdateAttachments(List list){
+    PersistenceService.getInstance().getAssessmentFacadeQueries().
+        saveOrUpdateAttachments(list);
+  }
+
+  public ContentResource createCopyOfContentResource(String resourceId, String filename){
+    ContentResource cr_copy = null; 
+    try{
+      // create a copy of the resource
+      ContentResource cr = ContentHostingService.getResource(resourceId);
+      cr_copy = ContentHostingService.addAttachmentResource(
+                filename, cr.getContentType(), cr.getContent(),
+                cr.getProperties());
+    }
+    catch (IdInvalidException e){
+      log.warn(e.getMessage());
+    } 
+    catch (PermissionException e) {
+      log.warn(e.getMessage());
+    }
+    catch (IdUnusedException e) {
+      log.warn(e.getMessage());
+    }
+    catch (TypeException e) {
+      log.warn(e.getMessage());
+    }
+    catch (InconsistentException e) {
+      log.warn(e.getMessage());
+    }
+    catch (IdUsedException e) {
+      log.warn(e.getMessage());
+    }
+    catch (OverQuotaException e) {
+      log.warn(e.getMessage());
+    }
+    catch (ServerOverloadException e) {
+      log.warn(e.getMessage());
+    }
+    return cr_copy;
+  }
+
 
 }

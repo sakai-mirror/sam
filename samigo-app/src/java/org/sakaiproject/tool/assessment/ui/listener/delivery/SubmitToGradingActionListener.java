@@ -122,7 +122,6 @@ public class SubmitToGradingActionListener implements ActionListener {
 			if (isForGrade(adata) && !isUnlimited(publishedAssessment)) {
 				delivery.setSubmissionsRemaining(delivery
 						.getSubmissionsRemaining() - 1);
-                                updateTotalSubmissionHash(publishedAssessment);
 			}
 
 
@@ -332,6 +331,13 @@ public class SubmitToGradingActionListener implements ActionListener {
 		
 		if (delivery.getNavigation().equals("1") && ae != null && "showFeedback".equals(ae.getComponent().getId())) {
 			log.debug("Do not persist to db if it is linear access and the action is show feedback");
+			// 3. let's build three HashMap with (publishedItemId, publishedItem),
+			// (publishedItemTextId, publishedItem), (publishedAnswerId,
+			// publishedItem) to help with storing grades to adata only, not db
+			HashMap publishedItemHash = delivery.getPublishedItemHash();
+			HashMap publishedItemTextHash = delivery.getPublishedItemTextHash();
+			HashMap publishedAnswerHash = delivery.getPublishedAnswerHash();
+			service.storeGrades(adata, publishedAssessment, publishedItemHash, publishedItemTextHash, publishedAnswerHash, false);
 		}
 		else {
 			log.debug("Persist to db otherwise");
@@ -339,13 +345,11 @@ public class SubmitToGradingActionListener implements ActionListener {
 			log.debug("*** 3. before storingGrades, did all the removes and adds " + (new Date()));
 			// 3. let's build three HashMap with (publishedItemId, publishedItem),
 			// (publishedItemTextId, publishedItem), (publishedAnswerId,
-			// publishedItem) to help with
-			// storing grades
+			// publishedItem) to help with storing grades to adata and then persist to DB
 			HashMap publishedItemHash = delivery.getPublishedItemHash();
 			HashMap publishedItemTextHash = delivery.getPublishedItemTextHash();
 			HashMap publishedAnswerHash = delivery.getPublishedAnswerHash();
 			service.storeGrades(adata, publishedAssessment, publishedItemHash, publishedItemTextHash, publishedAnswerHash);
-		
 			log.debug("*** 4. after storingGrades, did all the removes and adds " + (new Date()));
 		}
 		return adata;
@@ -737,17 +741,5 @@ public class SubmitToGradingActionListener implements ActionListener {
 		GradingService gradingService = new GradingService();
 		gradingService.saveItemGrading(itemGradingData);
 	}
-
-    private void updateTotalSubmissionHash(PublishedAssessmentIfc publishedAssessment){
-      PersonBean personBean = (PersonBean) ContextUtil.lookupBean("person");
-      HashMap h = personBean.getTotalSubmissionPerAssessmentHash();
-      int totalSubmitted = 1;
-      if (h.get(publishedAssessment.getPublishedAssessmentId()) != null){
-        totalSubmitted = ( (Integer) h.get(publishedAssessment.getPublishedAssessmentId())).intValue();
-        totalSubmitted++;
-      }
-      h.put(publishedAssessment.getPublishedAssessmentId(), new Integer(totalSubmitted));
-    }
-
 
 }

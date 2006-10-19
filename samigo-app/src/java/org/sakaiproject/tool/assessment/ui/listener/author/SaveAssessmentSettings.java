@@ -23,9 +23,12 @@
 
 package org.sakaiproject.tool.assessment.ui.listener.author;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,11 +38,13 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.EvaluationModel;
 import org.sakaiproject.tool.assessment.data.dao.assessment.SecuredIPAddress;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentMetaDataIfc;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.ItemAuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentSettingsBean;
+import org.sakaiproject.content.cover.ContentHostingService;
 
 /**
  * <p>Title: Samigo</p>2
@@ -225,9 +230,13 @@ public class SaveAssessmentSettings
       }
     }
     assessment.setSecuredIPAddressSet(ipSet);
+
     // l. FINALLY: save the assessment
     assessmentService.saveAssessment(assessment);
-    //assessmentService.saveOrUpdate(template);
+
+    // added by daisyf, 10/10/06
+    updateAttachment(assessment.getAssessmentAttachmentList(), assessmentSettings.getAttachmentList(),(AssessmentIfc)assessment.getData());
+    assessment = assessmentService.getAssessment(assessmentId.toString());
     return assessment;
   }
 
@@ -291,7 +300,42 @@ public class SaveAssessmentSettings
 	return true;
     }
   
-    
+  private void updateAttachment(List oldList, List newList, AssessmentIfc assessment){
+    if (newList == null || newList.size()==0) return;
+    List list = new ArrayList();
+    HashMap map = getAttachmentIdHash(oldList);
+    for (int i=0; i<newList.size(); i++){
+      AssessmentAttachmentIfc a = (AssessmentAttachmentIfc)newList.get(i);
+      if (map.get(a.getAttachmentId())!=null){
+        // exist already, remove it from map
+        map.remove(a.getAttachmentId());
+      }
+      else{
+        // new attachments
+        a.setAssessment(assessment);
+        list.add(a);
+      }
+    }      
+    // save new ones
+    AssessmentService assessmentService = new AssessmentService();
+    assessmentService.saveOrUpdateAttachments(list);
 
+    // remove old ones
+    Set set = map.keySet();
+    Iterator iter = set.iterator();
+    while (iter.hasNext()){
+      Long attachmentId = (Long)iter.next();
+      assessmentService.removeAssessmentAttachment(attachmentId.toString());
+    }
+  }
+
+  private HashMap getAttachmentIdHash(List list){
+    HashMap map = new HashMap();
+    for (int i=0; i<list.size(); i++){
+      AssessmentAttachmentIfc a = (AssessmentAttachmentIfc)list.get(i);
+      map.put(a.getAttachmentId(), a);
+    }
+    return map;
+  }
 
 }

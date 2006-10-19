@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
+import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentSettingsBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
@@ -66,10 +67,9 @@ public class SaveAssessmentAttachmentListener
 
   public void processAction(ActionEvent ae) throws AbortProcessingException {
     AssessmentSettingsBean assessmentSettings = (AssessmentSettingsBean) ContextUtil.lookupBean("assessmentSettings");
-    //String assessmentId = assessmentSettings.getAssessmentId().toString();
 
     // attach item attachemnt to assessmentBean
-    List attachmentList = prepareAssessmentAttachment((AssessmentIfc)assessmentSettings.getAssessment().getData());
+    List attachmentList = prepareAssessmentAttachment(assessmentSettings);
     assessmentSettings.setAttachmentList(attachmentList);
   }
 
@@ -85,15 +85,24 @@ public class SaveAssessmentAttachmentListener
     return map;
   }
 
-  private List prepareAssessmentAttachment(AssessmentIfc assessment){
+  private List prepareAssessmentAttachment(AssessmentSettingsBean bean){
+    AssessmentFacade assessment = null;
+    // assessment == null => assessment does not exist yet
+    if (bean.getAssessment() != null){
+	assessment = bean.getAssessment();
+    }
+
     ToolSession session = SessionManager.getCurrentToolSession();
     if (session.getAttribute(FilePickerHelper.FILE_PICKER_CANCEL) == null  &&
         session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
       
-      Set attachmentSet = assessment.getAssessmentAttachmentSet();
+      Set attachmentSet = new HashSet();
+      if (assessment!=null){
+        attachmentSet = assessment.getAssessmentAttachmentSet();
+        System.out.println("*** set="+attachmentSet);
+      } 
       HashMap map = getResourceIdHash(attachmentSet);
       ArrayList newAttachmentList = new ArrayList();
-      HashSet newAttachmentSet = new HashSet();
 
       AssessmentService assessmentService = new AssessmentService();
       String protocol = ContextUtil.getProtocol();
@@ -111,38 +120,26 @@ public class SaveAssessmentAttachmentListener
             log.debug("**** ref.name="+ref.getProperties().getProperty(
                        ref.getProperties().getNamePropDisplayName()));
             AssessmentAttachmentIfc newAttach = assessmentService.createAssessmentAttachment(
-                                          assessment,
-                                          ref.getId(), ref.getProperties().getProperty(
-                                                       ref.getProperties().getNamePropDisplayName()),
-                                        protocol);
+                                                (AssessmentIfc)assessment.getData(),
+                                                ref.getId(), ref.getProperties().getProperty(
+                                                ref.getProperties().getNamePropDisplayName()),
+                                                protocol);
             newAttachmentList.add(newAttach);
-            newAttachmentSet.add(newAttach);
 	  }
           else{ 
             // attachment already exist, let's add it to new list and
 	    // check it off from map
             newAttachmentList.add((AssessmentAttachmentIfc)map.get(resourceId));
-            newAttachmentSet.add((AssessmentAttachmentIfc)map.get(resourceId));
             map.remove(resourceId);
 	  }
         }
       }
 
-      // the resulting map should now contain attachment that has been removed
-      // inside filepicker, we will now get rid of its association with the assessment
-      Collection oldAttachs = map.values();
-      Iterator iter1 = oldAttachs.iterator();
-      while (iter1.hasNext()){
-        AssessmentAttachmentIfc oldAttach = (AssessmentAttachmentIfc)iter1.next();
-        assessmentService.removeAssessmentAttachment(oldAttach.getAttachmentId().toString());
-      }
-
       session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
       session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
-      assessment.setAssessmentAttachmentSet(newAttachmentSet);
       return newAttachmentList;
     }
-    else return assessment.getAssessmentAttachmentList();
+    return new ArrayList();
   }
 
  }

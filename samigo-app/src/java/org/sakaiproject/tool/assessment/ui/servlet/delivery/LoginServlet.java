@@ -117,13 +117,12 @@ private static Log log = LogFactory.getLog(LoginServlet.class);
     boolean isAuthorized = false;
     boolean isAuthenticated = false;
 
-    if (pub != null){
       // Determine if assessment accept Anonymous Users. If so, starting in version 2.0.1
       // all users will be authenticated as anonymous for the assessment in this case.
-      boolean anonymousAllowed = false;
+      //boolean anonymousAllowed = false;
       String releaseTo = pub.getAssessmentAccessControl().getReleaseTo();
       if (releaseTo != null && releaseTo.indexOf("Anonymous Users")> -1){
-        anonymousAllowed = true;
+        //anonymousAllowed = true;
         agentIdString = AgentFacade.createAnonymous();
         isAuthenticated = true;
         isAuthorized = true;
@@ -137,7 +136,7 @@ private static Log log = LogFactory.getLog(LoginServlet.class);
           isAuthorized = checkMembership(pub, req, res);
           // in 2.2, agentId is differnt from req.getRemoteUser()
           agentIdString = AgentFacade.getAgentString();
-	}
+        }
       }
 
       log.debug("*** agentIdString: "+agentIdString);
@@ -146,7 +145,7 @@ private static Log log = LogFactory.getLog(LoginServlet.class);
       // We are getting the total no. of submission (for grade) per assessment
       // by the given agent at the same time
       boolean assessmentIsAvailable = assessmentIsAvailable(service, agentIdString, pub,
-                                      delivery, person);
+                                      delivery);
       if (isAuthorized){
         if (!assessmentIsAvailable) {
           path = "/jsf/delivery/assessmentNotAvailable.faces";
@@ -171,7 +170,6 @@ private static Log log = LogFactory.getLog(LoginServlet.class);
           path = "/jsf/delivery/accessDenied.faces";
         }
       }
-    }
 
     log.debug("***path"+path);
     if (relativePath){
@@ -205,33 +203,17 @@ private static Log log = LogFactory.getLog(LoginServlet.class);
     return isMember;
   }
 
-  private boolean isAvailable(DeliveryBean delivery, PersonBean person, HashMap h) {
-    log.debug("inside isAvaialbel");
-    boolean returnValue = false;
-    person.setTotalSubmissionPerAssessmentHash(h);
-    String nextAction = delivery.checkBeforeProceed();
-    log.debug("nextAction="+nextAction);
-    if (("safeToProceed").equals(nextAction)){
-      returnValue = true;
-    }
-    return returnValue;
-  }
-
   // check if assessment is available based on criteria like
   // dueDate
   public boolean assessmentIsAvailable(PublishedAssessmentService service,
       String agentIdString, PublishedAssessmentFacade pub,
-      DeliveryBean delivery, PersonBean person){
+      DeliveryBean delivery){
     boolean assessmentIsAvailable = false;
-    Integer submissions = service.getTotalSubmission(agentIdString,
-      pub.getPublishedAssessmentId().toString());
-    HashMap h = new HashMap();
-    if (submissions.intValue()>0)
-      h.put(pub.getPublishedAssessmentId(), submissions);
-    assessmentIsAvailable = isAvailable(delivery, person, h);
-    log.debug("**** assessmentIsAvailable="+assessmentIsAvailable);
-    log.debug("pub assessmentId="+pub.getPublishedAssessmentId());
-    log.debug("pub assessment relaeseTo="+pub.getAssessmentAccessControl().getReleaseTo());
+    String nextAction = delivery.checkBeforeProceed();
+    log.debug("nextAction="+nextAction);
+    if (("safeToProceed").equals(nextAction)){
+      assessmentIsAvailable = true;
+    }
     return assessmentIsAvailable;
   }
 }

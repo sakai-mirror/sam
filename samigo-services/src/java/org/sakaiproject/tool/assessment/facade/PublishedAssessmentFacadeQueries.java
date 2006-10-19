@@ -88,6 +88,7 @@ import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceH
 import org.sakaiproject.tool.assessment.integration.helper.ifc.PublishingTargetHelper;
 import org.sakaiproject.tool.assessment.osid.shared.impl.IdImpl;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
+import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.facade.util.PagingUtilQueriesAPI;
 import org.sakaiproject.tool.assessment.qti.constants.AuthoringConstantStrings;
 import org.sakaiproject.content.api.ContentResource;
@@ -307,13 +308,11 @@ public class PublishedAssessmentFacadeQueries
   public Set preparePublishedSecuredIPSet(PublishedAssessmentData p, Set ipSet) {
     HashSet h = new HashSet();
     Iterator i = ipSet.iterator();
-    if (ipSet != null) {
-      while (i.hasNext()) {
-        SecuredIPAddress ip = (SecuredIPAddress) i.next();
-        PublishedSecuredIPAddress publishedIP = new PublishedSecuredIPAddress(
-            p, ip.getHostname(), ip.getIpAddress());
-        h.add(publishedIP);
-      }
+    while (i.hasNext()) {
+      SecuredIPAddress ip = (SecuredIPAddress) i.next();
+      PublishedSecuredIPAddress publishedIP = new PublishedSecuredIPAddress(
+          p, ip.getHostname(), ip.getIpAddress());
+      h.add(publishedIP);
     }
     return h;
   }
@@ -451,11 +450,9 @@ public class PublishedAssessmentFacadeQueries
       ItemAttachment itemAttachment = (ItemAttachment) o.next();
       try{
         // create a copy of the resource
-        ContentResource cr = ContentHostingService.getResource(itemAttachment.getResourceId());
-        ContentResource cr_copy = ContentHostingService.addAttachmentResource(
-                                  itemAttachment.getFilename(), cr.getContentType(), cr.getContent(),
-                                  cr.getProperties());
-
+        AssessmentService service = new AssessmentService();
+        ContentResource cr_copy = service.createCopyOfContentResource(
+                                  itemAttachment.getResourceId(), itemAttachment.getFilename());
         //get relative path
         String url = getRelativePath(cr_copy.getUrl(), protocol);
         
@@ -467,32 +464,22 @@ public class PublishedAssessmentFacadeQueries
           itemAttachment.getLastModifiedDate());
         h.add(publishedItemAttachment);
       }
-      catch (IdInvalidException e){
+      catch (Exception e){
         log.warn(e.getMessage());
       } 
-      catch (PermissionException e) {
-    	  log.warn(e.getMessage());
-      }
-      catch (IdUnusedException e) {
-		log.warn(e.getMessage());
-      }
-      catch (TypeException e) {
-		log.warn(e.getMessage());
-	  }
-      catch (InconsistentException e) {
-		log.warn(e.getMessage());
-	  }
-      catch (IdUsedException e) {
-		log.warn(e.getMessage());
-	  }
-      catch (OverQuotaException e) {
-		log.warn(e.getMessage());
-  	  }
-      catch (ServerOverloadException e) {
-		log.warn(e.getMessage());
-      }
     }
     return h;
+  }
+
+  public String getRelativePath(String url, String protocol){
+    // replace whitespace with %20
+    url = replaceSpace(url);
+    String location = url;
+    int index = url.lastIndexOf(protocol);
+    if (index == 0){
+      location = url.substring(protocol.length());
+    }
+    return location;
   }
 
   public Set preparePublishedSectionAttachmentSet(PublishedSectionData publishedSection,
@@ -847,12 +834,6 @@ public class PublishedAssessmentFacadeQueries
         " a.publishedAssessmentId, count(a)) " +
         " from AssessmentGradingData as a where a.agentId=? and a.forGrade=?" +
         " group by a.publishedAssessmentId";
-//    Object[] objects = new Object[2];
-//    objects[0] = agentId;
-//    objects[1] = new Boolean(true);
-//    Type[] types = new Type[2];
-//    types[0] = Hibernate.STRING;
-//    types[1] = Hibernate.BOOLEAN;
 
     final HibernateCallback hcb = new HibernateCallback(){
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -863,9 +844,30 @@ public class PublishedAssessmentFacadeQueries
     	};
     };
     return getHibernateTemplate().executeFind(hcb);
-
-//    return getHibernateTemplate().find(query, objects, types);
   }
+
+
+  public List getNumberOfSubmissionsOfAllAssessmentsByAgent(final String agentId, final String siteId) {
+    final String query = "select new AssessmentGradingData(" +
+        " a.publishedAssessmentId, count(a)) " +
+        " from AssessmentGradingData as a, AuthorizationData as az "+
+        " where a.agentId=? and a.forGrade=? and az.agentIdString=? "+ 
+        " and az.functionId='TAKE_PUBLISHED_ASSESSMENT' and az.qualifierId=a.publishedAssessmentId" +
+        " group by a.publishedAssessmentId";
+
+    final HibernateCallback hcb = new HibernateCallback(){
+    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
+    		Query q = session.createQuery(query);
+    		q.setString(0, agentId);
+    		q.setBoolean(1, true);
+    		q.setString(2, siteId);
+    		return q.list();
+    	};
+    };
+    return getHibernateTemplate().executeFind(hcb);
+  }
+
+
 
   public ArrayList getAllPublishedAssessments(String sortString) {
     String orderBy = getOrderBy(sortString);
@@ -1150,7 +1152,7 @@ public class PublishedAssessmentFacadeQueries
 
   // added by daisy - please check the logic - I based this on the getBasicInfoOfAllActiveAssessment
   public ArrayList getBasicInfoOfAllPublishedAssessments(String orderBy,
-      boolean ascending, final Integer status) {
+                    boolean ascending, final Integer status, final String siteId) {
 
     String query =
         "select new PublishedAssessmentData(p.publishedAssessmentId, p.title, " +
@@ -1158,10 +1160,12 @@ public class PublishedAssessmentFacadeQueries
         " c.feedbackDate, f.feedbackDelivery,  f.feedbackAuthoring, c.lateHandling, " +
         " c.unlimitedSubmissions, c.submissionsAllowed) " +
         " from PublishedAssessmentData as p, PublishedAccessControl as c," +
-        " PublishedFeedback as f" +
+        " PublishedFeedback as f, AuthorizationData as az" +
         " where c.assessment.publishedAssessmentId=p.publishedAssessmentId " +
         " and p.publishedAssessmentId = f.assessment.publishedAssessmentId " +
-        " and p.status=? order by ";
+        " and p.status=? and az.agentIdString=? "+
+        " and az.functionId='TAKE_PUBLISHED_ASSESSMENT' and az.qualifierId=p.publishedAssessmentId" +
+        " order by ";
 
     if (ascending == false) {
 
@@ -1186,16 +1190,11 @@ public class PublishedAssessmentFacadeQueries
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {
     		Query q = session.createQuery(hql);
     		q.setInteger(0, status.intValue());
+    		q.setString(1, siteId);
     		return q.list();
     	};
     };
     List list = getHibernateTemplate().executeFind(hcb);
-
-//    List list = getHibernateTemplate().find(query, new Object[] {status}
-//                                            ,
-//                                            new org.hibernate.type.Type[] {
-//                                            Hibernate.INTEGER});
-
     ArrayList pubList = new ArrayList();
     for (int i = 0; i < list.size(); i++) {
       PublishedAssessmentData p = (PublishedAssessmentData) list.get(i);
@@ -1288,6 +1287,18 @@ public class PublishedAssessmentFacadeQueries
    */
   public HashMap getTotalSubmissionPerAssessment(String agentId) {
     List l = getNumberOfSubmissionsOfAllAssessmentsByAgent(agentId);
+    HashMap h = new HashMap();
+    for (int i = 0; i < l.size(); i++) {
+      AssessmentGradingData d = (AssessmentGradingData) l.get(i);
+      h.put(d.getPublishedAssessmentId(), new Integer(d.getTotalSubmitted()));
+      log.debug("pId=" + d.getPublishedAssessmentId() + " submitted=" +
+                         d.getTotalSubmitted());
+    }
+    return h;
+  }
+
+  public HashMap getTotalSubmissionPerAssessment(String agentId, String siteId) {
+    List l = getNumberOfSubmissionsOfAllAssessmentsByAgent(agentId, siteId);
     HashMap h = new HashMap();
     for (int i = 0; i < l.size(); i++) {
       AssessmentGradingData d = (AssessmentGradingData) l.get(i);
@@ -1649,17 +1660,6 @@ public class PublishedAssessmentFacadeQueries
     return newString;
   }
 
-  public String getRelativePath(String url, String protocol){
-    // replace whitespace with %20
-    url = replaceSpace(url);
-    String location = url;
-    int index = url.lastIndexOf(protocol);
-    if (index == 0){
-      location = url.substring(protocol.length());
-    }
-    return location;
-  }
-
   public boolean isRandomDrawPart(final Long publishedAssessmentId, final Long sectionId){
 	    boolean isRandomDrawPart = false;
 	    final String key = SectionDataIfc.AUTHOR_TYPE;
@@ -1685,5 +1685,157 @@ public class PublishedAssessmentFacadeQueries
 	    	isRandomDrawPart=true;
 	    return isRandomDrawPart;
 	  }
+
+  /**
+   * return an array list of the AssessmentGradingFacade that
+* a user has submitted for grade. one per published assessment. 
+* If an assessment allows multiple submissions and its grading option
+*  is to send highest, then return only the submission with highest finalScore.  If an assessment allows multiple submissions and its grading option
+*  is to send last, then return only the last submission.
+* @param agentId 
+* @param siteId 
+* @return
+*/
+	public ArrayList getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(
+		final String agentId, final String siteId) {
+		// Get total no. of submission per assessment by the given agent
+		// sorted by submittedData DESC
+		final String last_query = "select new AssessmentGradingData("
+				+ " a.assessmentGradingId, p.publishedAssessmentId, p.title, a.agentId,"
+				+ " a.submittedDate, a.isLate,"
+				+ " a.forGrade, a.totalAutoScore, a.totalOverrideScore,a.finalScore,"
+				+ " a.comments, a.status, a.gradedBy, a.gradedDate, a.attemptDate,"
+				+ " a.timeElapsed) "
+				+ " from AssessmentGradingData a, PublishedAssessmentData p, AuthorizationData az"
+				+ " where a.publishedAssessmentId = p.publishedAssessmentId"
+                                + " and a.forGrade=1 and a.agentId=? and az.agentIdString=? "
+                                + " and az.functionId='TAKE_PUBLISHED_ASSESSMENT' and az.qualifierId=p.publishedAssessmentId" 
+				+ " order by p.publishedAssessmentId DESC, a.submittedDate DESC";
+
+		// Get total no. of submission per assessment by the given agent
+		// sorted by finalScore DESC
+
+		final String highest_query = "select new AssessmentGradingData("
+			+ " a.assessmentGradingId, p.publishedAssessmentId, p.title, a.agentId,"
+			+ " a.submittedDate, a.isLate,"
+			+ " a.forGrade, a.totalAutoScore, a.totalOverrideScore,a.finalScore,"
+			+ " a.comments, a.status, a.gradedBy, a.gradedDate, a.attemptDate,"
+			+ " a.timeElapsed) "
+			+ " from AssessmentGradingData a, PublishedAssessmentData p, AuthorizationData az"
+			+ " where a.publishedAssessmentId = p.publishedAssessmentId"
+                        + " and a.forGrade=1 and a.agentId=? and az.agentIdString=? "
+                        + " and az.functionId='TAKE_PUBLISHED_ASSESSMENT' and az.qualifierId=p.publishedAssessmentId"
+			+ " order by p.publishedAssessmentId DESC, a.finalScore DESC, a.submittedDate DESC";
+
+		final HibernateCallback hcb_last = new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				Query q = session.createQuery(last_query);
+				q.setString(0, agentId);
+				q.setString(1, siteId);
+				return q.list();
+			};
+		};
+		
+		// this list is sorted by submittedDate desc.
+		List last_list = getHibernateTemplate().executeFind(hcb_last);
+
+		final HibernateCallback hcb_highest = new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				Query q = session.createQuery(highest_query);
+				q.setString(0, agentId);
+				q.setString(1, siteId);
+				return q.list();
+			};
+		};
+		
+		// this list is sorted by finalScore desc.
+
+		List highest_list = getHibernateTemplate().executeFind(hcb_highest);
+
+
+		// The sorting for each column will be done in the action listener.
+
+		ArrayList assessmentList = new ArrayList();
+		Long currentid = new Long("0");
+		Integer scoringOption = EvaluationModelIfc.LAST_SCORE; // use Last as
+		boolean multiSubmissionAllowed = false;
+		
+		// now go through the last_list, and get the first entry in the list for each publishedAssessment, if 
+		// not 
+		
+		for (int i = 0; i < last_list.size(); i++) {
+			AssessmentGradingData a = (AssessmentGradingData) last_list.get(i);
+
+			// get the scoring option
+			PublishedAssessmentFacade paf = getPublishedAssessment(a
+					.getPublishedAssessmentId());
+			multiSubmissionAllowed = false;
+			if (paf != null) {
+				scoringOption = paf.getEvaluationModel().getScoringType();
+				AssessmentAccessControlIfc ac = paf.getAssessmentAccessControl();
+		         
+		        if (ac.getSubmissionsAllowed() != null) {
+					if (ac.getSubmissionsAllowed().intValue() > 1) {
+						multiSubmissionAllowed = true;
+					} else {
+						multiSubmissionAllowed = false;
+					}
+				} else {
+					multiSubmissionAllowed = true;
+				}
+
+			}
+
+
+			if ((!multiSubmissionAllowed )|| ((multiSubmissionAllowed)&& 
+					(EvaluationModelIfc.LAST_SCORE.equals(scoringOption)) && 
+					(!a.getPublishedAssessmentId().equals(currentid)))){
+					currentid = a.getPublishedAssessmentId();
+					AssessmentGradingFacade f = new AssessmentGradingFacade(a);
+					assessmentList.add(f);
+ 			}
+			
+  
+		}
+ 		
+		// now go through the highest_list ,and get the first entry in the list for each publishedAssessment. 
+
+		for (int i = 0; i < highest_list.size(); i++) {
+			AssessmentGradingData a = (AssessmentGradingData) highest_list.get(i);
+
+			// get the scoring option
+			PublishedAssessmentFacade paf = getPublishedAssessment(a
+					.getPublishedAssessmentId());
+			multiSubmissionAllowed = false;
+			if (paf != null) {
+				scoringOption = paf.getEvaluationModel().getScoringType();
+				AssessmentAccessControlIfc ac = paf.getAssessmentAccessControl();
+		         
+		         
+		        if (ac.getSubmissionsAllowed() != null) {
+					if (ac.getSubmissionsAllowed().intValue() > 1) {
+						multiSubmissionAllowed = true;
+					} else {
+						multiSubmissionAllowed = false;
+					}
+				} else {
+					multiSubmissionAllowed = true;
+				}
+
+			}
+			if ((multiSubmissionAllowed)&& 
+					(EvaluationModelIfc.HIGHEST_SCORE.equals(scoringOption))&& 
+					(!a.getPublishedAssessmentId().equals(currentid))) {
+					currentid = a.getPublishedAssessmentId();
+					AssessmentGradingFacade f = new AssessmentGradingFacade(a);
+					assessmentList.add(f);
+ 			}
+
+		}
+
+		return assessmentList;
+	}
 
 }

@@ -619,11 +619,22 @@ public class AssessmentFacadeQueries
     if (control == null) {
       control = new AssessmentAccessControl();
     }
+
+    // set accessControl.releaseTo based on default setting in metaData
+    String defaultReleaseTo = template.getAssessmentMetaDataByLabel("releaseTo");
+    if (("ANONYMOUS_USERS").equals(defaultReleaseTo)){
+      control.setReleaseTo("Anonymous Users");
+    }
+    else{
+      control.setReleaseTo(AgentFacade.getCurrentSiteName());
+    }
+
+    /*
     if (AgentFacade.isStandaloneEnvironment())
       control.setReleaseTo("Authenticated Users");
     else
       control.setReleaseTo(AgentFacade.getCurrentSiteName());
-
+    */
     EvaluationModel evaluation = (EvaluationModel) assessment.
         getEvaluationModel();
     if (evaluation == null) {
@@ -1423,10 +1434,6 @@ public class AssessmentFacadeQueries
           Set set = item.getItemAttachmentSet();
           set.remove(itemAttachment);
           getHibernateTemplate().delete(itemAttachment);
-	  /*
-          if(resourceId.toLowerCase().startsWith("/attachment"))
-            ContentHostingService.removeResource(resourceId);
-	  */
           retryCount = 0;
 	}
       }
@@ -1518,7 +1525,7 @@ public class AssessmentFacadeQueries
 	attach.setLastModifiedBy(p.getProperty(p.getNamePropModifiedBy()));
         attach.setLastModifiedDate(new Date());
         attach.setLocation(getRelativePath(cr.getUrl(), protocol));
-        getHibernateTemplate().save(attach);
+        //getHibernateTemplate().save(attach);
       }
     }
     catch(PermissionException pe){
@@ -1580,7 +1587,7 @@ public class AssessmentFacadeQueries
 	attach.setLastModifiedBy(p.getProperty(p.getNamePropModifiedBy()));
         attach.setLastModifiedDate(new Date());
         attach.setLocation(getRelativePath(cr.getUrl(), protocol));
-        getHibernateTemplate().save(attach);
+        //getHibernateTemplate().save(attach);
       }
     }
     catch(PermissionException pe){
@@ -1617,5 +1624,7 @@ public class AssessmentFacadeQueries
     }
   }
 
-
+  public void saveOrUpdateAttachments(List list){
+    getHibernateTemplate().saveOrUpdateAll(list);
+  }
 }

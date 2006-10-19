@@ -44,7 +44,7 @@ import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentGradingFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacadeQueries;
-import org.sakaiproject.tool.assessment.services.PersistenceService;
+//import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.authz.AuthorizationBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.DeliveryBean;
@@ -109,9 +109,9 @@ public class SelectActionListener
     processSortInfo(select);
 
     // ----------------- prepare Takeable assessment list -------------
-    // 1a. get total no. of submission (for grade) per assessment by the given agent
+    // 1a. get total no. of submission (for grade) per assessment by the given agent in current site
     HashMap h = publishedAssessmentService.getTotalSubmissionPerAssessment(
-        AgentFacade.getAgentString());
+                AgentFacade.getAgentString(), AgentFacade.getCurrentSiteId());
     // store it in personBean 'cos we would be using it to check if the total submisison
     // allowed is met later - extra protection to avoid students being too enterprising
     // e.g. open multiple windows so they can ride on the last attempt multiple times.
@@ -122,7 +122,7 @@ public class SelectActionListener
     ArrayList publishedAssessmentList =
         publishedAssessmentService.getBasicInfoOfAllPublishedAssessments(
         AgentFacade.getAgentString(), this.getTakeableOrderBy(select),
-        select.isTakeableAscending());
+        select.isTakeableAscending(), AgentFacade.getCurrentSiteId());
 
     // filter out the one that the given user do not have right to access
     ArrayList takeableList = getTakeableList(publishedAssessmentList,  h);
@@ -152,16 +152,19 @@ public class SelectActionListener
 
     // --------------- prepare Submitted assessment grading list --------------
     // 1. get the most recent submission of a user
+    /*
     ArrayList recentSubmittedList =
         publishedAssessmentService.getBasicInfoOfLastSubmittedAssessments(
         AgentFacade.getAgentString(), this.getSubmittedOrderBy(select),
         Boolean.getBoolean( (String) ContextUtil.lookupParam("reviewAscending")));
+        */
 
-    HashMap authorizationHash = PersistenceService.getInstance().getAuthzQueriesFacade().
-        getAuthorizationToViewAssessments(AgentFacade.getCurrentSiteId()) ;
-    //log.info("currentSiteId="+AgentFacade.getCurrentSiteId());
-    //log.info("currentAgentId="+AgentFacade.getAgentString());
-    HashMap authenticatedHash = publishedAssessmentService.getAllAssessmentsReleasedToAuthenticatedUsers() ;
+    // 1. get the most recent submission, or the highest submissions of each assessment for a user, depending on grading option
+     
+    ArrayList recentSubmittedList =
+        publishedAssessmentService.getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(
+			  AgentFacade.getAgentString(), AgentFacade.getCurrentSiteId());
+
     HashMap publishedAssessmentHash = getPublishedAssessmentHash(publishedAssessmentList);
     ArrayList submittedAssessmentGradingList = new ArrayList();
     //log.info("recentSubmittedList size="+recentSubmittedList.size());
@@ -174,19 +177,7 @@ public class SelectActionListener
 
       AssessmentGradingFacade g = (AssessmentGradingFacade)
           recentSubmittedList.get(k);
-      // check
-      // 1. the assessment is released to any authenticated users. OR
-      // 2. if publishedAssessment belongs to the current site. If so,
-      // continue. This is really for the integrated
-      // environment when there is multiple site. In standalone, there is no
-      // concept of site - daisyf
-      boolean authorizedToSite= (authorizationHash.get(g.getPublishedAssessmentId().toString())!=null);
-      boolean authorizedToAuthenticated = (authenticatedHash.get(g.getPublishedAssessmentId())!=null);
 
-      //log.info("authorizedToSite="+authorizedToSite);
-      //log.info("authorizedToAuthenticated="+authorizedToAuthenticated);
-
-      if (authorizedToSite || authorizedToAuthenticated){
         DeliveryBeanie delivery = new DeliveryBeanie();
         delivery.setAssessmentId(g.getPublishedAssessmentId().toString());
         PublishedAssessmentIfc pub = publishedAssessmentService.getPublishedAssessment(delivery.getAssessmentId());
@@ -257,7 +248,6 @@ public class SelectActionListener
 
         // to do: set statistics and time for delivery here.
         submittedAssessmentGradingList.add(delivery);
-      }
     }
     // to do: set statistics and time for delivery here.
 
@@ -416,10 +406,7 @@ public class SelectActionListener
     ArrayList takeableList = new ArrayList();
     for (int i = 0; i < assessmentList.size(); i++) {
       PublishedAssessmentFacade f = (PublishedAssessmentFacade)assessmentList.get(i);
-      if (PersistenceService.getInstance().getAuthzQueriesFacade().isAuthorized(
-           AgentFacade.getAgentString(), "TAKE_PUBLISHED_ASSESSMENT",
-           f.getPublishedAssessmentId().toString())
-          && f.getReleaseTo()!=null && !("").equals(f.getReleaseTo())
+      if (f.getReleaseTo()!=null && !("").equals(f.getReleaseTo())
           && f.getReleaseTo().indexOf("Anonymous Users") == -1 ) {
         if (isAvailable(f, h))
           takeableList.add(f);

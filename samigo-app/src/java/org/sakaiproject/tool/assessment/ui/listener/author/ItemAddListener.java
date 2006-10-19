@@ -26,6 +26,7 @@ package org.sakaiproject.tool.assessment.ui.listener.author;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -95,7 +96,11 @@ public class ItemAddListener
     String err="";
     FacesContext context=FacesContext.getCurrentInstance();
    
-    if((!iType.equals(TypeFacade.MATCHING.toString())&&((iText==null)||(iText.replaceAll("<.*?>", "").trim().equals(""))))|| (iType.equals(TypeFacade.MATCHING.toString()) && ((iInstruction==null)||(iInstruction.replaceAll("<.*?>", "").trim().equals(""))))){
+    // SAK-6050
+    // if((!iType.equals(TypeFacade.MATCHING.toString())&&((iText==null)||(iText.replaceAll("<.*?>", "").trim().equals(""))))|| (iType.equals(TypeFacade.MATCHING.toString()) && ((iInstruction==null)||(iInstruction.replaceAll("<.*?>", "").trim().equals(""))))){
+    if((!iType.equals(TypeFacade.MATCHING.toString())&&((iText==null)||(iText.toLowerCase().replaceAll("<^[^(img)]*?>", "").trim().equals(""))))|| (iType.equals(TypeFacade.MATCHING.toString()) && ((iInstruction==null)||(iInstruction.toLowerCase().replaceAll("<^[^(img)]*?>", "").trim().equals(""))))){ 
+	
+ 
 	String emptyText_err = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","emptyText_error");     
 	context.addMessage(null,new FacesMessage(emptyText_err));
 	return;
@@ -177,7 +182,10 @@ public class ItemAddListener
 	    while (iter.hasNext()) {
 		AnswerBean answerbean = (AnswerBean) iter.next();
                 String answerTxt=ContextUtil.stringWYSIWYG(answerbean.getText());
-		if(answerTxt.replaceAll("<.*?>", "").trim().equals(""))
+ 		//  if(answerTxt.replaceAll("<.*?>", "").trim().equals(""))        
+        // SAK-6050
+		if(answerTxt.toLowerCase().replaceAll("<^[^(img)]*?>", "").trim().equals("")) 
+
                     answerbean.setText("");
 		label = answerbean.getLabel();
                 txt=answerbean.getText();
@@ -502,11 +510,14 @@ public class ItemAddListener
           (itemauthor.getTarget().equals(ItemAuthorBean.FROM_QUESTIONPOOL))) {
         // Came from Pool manager
 
-        // added by daisyf, 10/10/06
-        Set set = prepareItemAttachmentSet(itemauthor.getAttachmentList(), item.getData());
-        item.setItemAttachmentSet(set);
-
         delegate.saveItem(item);
+
+       // added by daisyf, 10/10/06
+       updateAttachment(item.getItemAttachmentList(), itemauthor.getAttachmentList(),
+                        (ItemDataIfc)item.getData());
+       item = delegate.getItem(item.getItemId().toString());
+
+
         QuestionPoolService qpdelegate = new QuestionPoolService();
 
         if (!qpdelegate.hasItem(item.getItemIdString(),
@@ -593,15 +604,12 @@ public class ItemAddListener
             }
           }
 
-          // added by daisyf, 10/10/06
-          Set set = prepareItemAttachmentSet(itemauthor.getAttachmentList(), item.getData());
-          item.setItemAttachmentSet(set);
-
           delegate.saveItem(item);
-          /*
-               section.addItem(item);
-                      assessdelegate.saveOrUpdateSection(section);
-           */
+
+          // added by daisyf, 10/10/06
+          updateAttachment(item.getItemAttachmentList(), itemauthor.getAttachmentList(),
+                           (ItemDataIfc)item.getData());
+          item = delegate.getItem(item.getItemId().toString());
 
         }
 
@@ -641,7 +649,7 @@ public class ItemAddListener
       itemauthor.setItemId(item.getItemId().toString());
       return true;
     }
-    catch (Exception e) {
+    catch (RuntimeException e) {
       e.printStackTrace();
       return false;
     }
@@ -1295,16 +1303,42 @@ Object[] fibanswers = getFIBanswers(entiretext).toArray();
 	  } 
   */
 
-   public Set  prepareItemAttachmentSet(List attachmentList, ItemDataIfc item){
-     Set set = new HashSet();
-     if (attachmentList!=null){
-       for (int i=0; i<attachmentList.size(); i++){
-         ItemAttachmentIfc attach = (ItemAttachmentIfc) attachmentList.get(i);
-         attach.setItem(item);
-         set.add(attach);
-       }
-     }
-    return set;
+  private void updateAttachment(List oldList, List newList, ItemDataIfc item){
+    if (newList == null || newList.size()==0) return;
+    List list = new ArrayList();
+    HashMap map = getAttachmentIdHash(oldList);
+    for (int i=0; i<newList.size(); i++){
+      ItemAttachmentIfc a = (ItemAttachmentIfc)newList.get(i);
+      if (map.get(a.getAttachmentId())!=null){
+        // exist already, remove it from map
+        map.remove(a.getAttachmentId());
+      }
+      else{
+        // new attachments
+        a.setItem(item);
+        list.add(a);
+      }
+    }      
+    // save new ones
+    AssessmentService service = new AssessmentService();
+    service.saveOrUpdateAttachments(list);
+
+    // remove old ones
+    Set set = map.keySet();
+    Iterator iter = set.iterator();
+    while (iter.hasNext()){
+      Long attachmentId = (Long)iter.next();
+      service.removeItemAttachment(attachmentId.toString());
+    }
+  }
+
+  private HashMap getAttachmentIdHash(List list){
+    HashMap map = new HashMap();
+    for (int i=0; i<list.size(); i++){
+      ItemAttachmentIfc a = (ItemAttachmentIfc)list.get(i);
+      map.put(a.getAttachmentId(), a);
+    }
+    return map;
   }
 
 }

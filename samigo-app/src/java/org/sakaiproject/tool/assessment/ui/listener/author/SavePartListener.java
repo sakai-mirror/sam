@@ -24,10 +24,12 @@
 package org.sakaiproject.tool.assessment.ui.listener.author;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashSet;
 import java.util.Set;
 
 import java.util.ResourceBundle;
@@ -93,17 +95,15 @@ public class SavePartListener
     String sectionId = sectionBean.getSectionId();
     AssessmentService assessmentService = new AssessmentService();
     SectionFacade section;
+    /*
     if (sectionId.equals("")){
       section = addPart(assessmentId);
-      log.debug("**** section="+section);
-      sectionBean.setSection(section);
       sectionId = section.getSectionId().toString();
     }
     else {
-
       section = assessmentService.getSection(sectionId);
     }
-
+    */
     //Long assessmentId = section.getAssessmentId();
 
     boolean addItemsFromPool = false;
@@ -120,13 +120,12 @@ public class SavePartListener
     }
 
     if (!("".equals(sectionBean.getType()))  && ((SectionDataIfc.RANDOM_DRAW_FROM_QUESTIONPOOL.toString()).equals(sectionBean.getType()))) {
-
       addItemsFromPool = true;
 
       if (validateItemsDrawn(sectionBean)) {
-      // if the author type was random draw type,  and the new type is random draw , then we need to disassociate sectionid with each items. Cannot delete items, 'cuz these items are linked in the pool
-
-        if( (section !=null) && (section.getSectionMetaDataByLabel(SectionDataIfc.AUTHOR_TYPE)!=null) && (section.getSectionMetaDataByLabel(SectionDataIfc.AUTHOR_TYPE).equals(SectionDataIfc.RANDOM_DRAW_FROM_QUESTIONPOOL.toString()))) {
+        // if the author type was random draw type,  and the new type is random draw , then we need to disassociate sectionid with each items. Cannot delete items, 'cuz these items are linked in the pool
+    	  section = getOrAddSection(assessmentService, assessmentId, sectionId);
+    	  if( (section !=null) && (section.getSectionMetaDataByLabel(SectionDataIfc.AUTHOR_TYPE)!=null) && (section.getSectionMetaDataByLabel(SectionDataIfc.AUTHOR_TYPE).equals(SectionDataIfc.RANDOM_DRAW_FROM_QUESTIONPOOL.toString()))) {
 
           assessmentService.removeAllItems(sectionId);
         // need to reload
@@ -137,7 +136,9 @@ public class SavePartListener
         sectionBean.setOutcome("editPart");
         return;
       }
-
+    }
+    else {
+    	section = getOrAddSection(assessmentService, assessmentId, sectionId);
     }
 
     log.debug("**** section title ="+section.getTitle());
@@ -183,15 +184,6 @@ public class SavePartListener
           section.addSectionMetaData(SectionDataIfc.POOLNAME_FOR_RANDOM_DRAW, poolname);
         }
       }
-      // attach item attachemnt to sectionBean
-      List attachmentList = section.getSectionAttachmentList();
-      sectionBean.setAttachmentList(attachmentList);
-      if (attachmentList != null && attachmentList.size() >0){
-        sectionBean.setHasAttachment(true);
-      }
-      else{
-        sectionBean.setHasAttachment(false);
-      }
     }
 
 
@@ -217,10 +209,10 @@ public class SavePartListener
     }
     }
 
-
-
-
     assessmentService.saveOrUpdateSection(section);
+
+    // added by daisyf, 10/10/06
+    updateAttachment(section.getSectionAttachmentList(), sectionBean.getAttachmentList(), section.getData());
 
     // #2 - goto editAssessment.jsp, so reset assessmentBean
     AssessmentFacade assessment = assessmentService.getAssessment(
@@ -236,7 +228,17 @@ public class SavePartListener
     return section;
   }
 
-
+  private SectionFacade getOrAddSection(AssessmentService assessmentService, String assessmentId, String sectionId) {
+	  SectionFacade section;
+	  if (sectionId.equals("")){
+		  section = assessmentService.addSection(assessmentId);
+		  sectionId = section.getSectionId().toString();
+	  }
+	  else {
+		  section = assessmentService.getSection(sectionId);
+	  }
+	  return section;
+  }
 
   public boolean validateItemsDrawn(SectionBean sectionBean){
      FacesContext context = FacesContext.getCurrentInstance();
@@ -268,44 +270,44 @@ public class SavePartListener
            
   }
 
-    /*
-  private ArrayList prepareSectionAttachment(SectionDataIfc section){
-    Set attachmentSet = section.getSectionAttachmentSet();
-    if (attachmentSet == null){
-	attachmentSet = new HashSet();
-    }
-    log.debug("*** attachment size="+attachmentSet.size());
-    AssessmentService assessmentService = new AssessmentService();
-    String protocol = ContextUtil.getProtocol();
-    ToolSession session = SessionManager.getCurrentToolSession();
-    if (session.getAttribute(FilePickerHelper.FILE_PICKER_CANCEL) == null &&
-        session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
-      List refs = (List)session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
-      if (refs!=null && refs.size() > 0){
-        Reference ref = (Reference)refs.get(0);
 
-        for(int i=0; i<refs.size(); i++) {
-          ref = (Reference) refs.get(i);
-          log.debug("**** ref.Id="+ref.getId());
-          log.debug("**** ref.name="+ref.getProperties().getProperty(									    ref.getProperties().getNamePropDisplayName()));
-          SectionAttachmentIfc newAttach = assessmentService.createSectionAttachment(
-                                        section,
-                                        ref.getId(), ref.getProperties().getProperty(
-                                                     ref.getProperties().getNamePropDisplayName()),
-                                        protocol);
-          attachmentSet.add(newAttach);
-        }
+    private void updateAttachment(List oldList, List newList, SectionDataIfc section){
+    if (newList == null || newList.size()==0) return;
+    List list = new ArrayList();
+    HashMap map = getAttachmentIdHash(oldList);
+    for (int i=0; i<newList.size(); i++){
+      SectionAttachmentIfc a = (SectionAttachmentIfc)newList.get(i);
+      if (map.get(a.getAttachmentId())!=null){
+        // exist already, remove it from map
+        map.remove(a.getAttachmentId());
       }
-    }
-    session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
-    session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
-    ArrayList list = new ArrayList();
-    Iterator iter = attachmentSet.iterator();
+      else{
+        // new attachments
+        a.setSection(section);
+        list.add(a);
+      }
+    }      
+    // save new ones
+    AssessmentService assessmentService = new AssessmentService();
+    assessmentService.saveOrUpdateAttachments(list);
+
+    // remove old ones
+    Set set = map.keySet();
+    Iterator iter = set.iterator();
     while (iter.hasNext()){
-      SectionAttachmentIfc a = (SectionAttachmentIfc)iter.next();
-      list.add(a);
+      Long attachmentId = (Long)iter.next();
+      assessmentService.removeSectionAttachment(attachmentId.toString());
     }
-    return list;
   }
-    */
+
+  private HashMap getAttachmentIdHash(List list){
+    HashMap map = new HashMap();
+    for (int i=0; i<list.size(); i++){
+      SectionAttachmentIfc a = (SectionAttachmentIfc)list.get(i);
+      map.put(a.getAttachmentId(), a);
+    }
+    return map;
+  }
+
+
 }

@@ -291,12 +291,12 @@ public class GradingService
   /**
    * Get the last submission for a student per assessment
    */
-  public HashMap getSubmitData(String publishedId, String agentId)
+  public HashMap getSubmitData(String publishedId, String agentId, Integer scoringoption)
   {
     try {
       return (HashMap) PersistenceService.getInstance().
         getAssessmentGradingFacadeQueries()
-          .getSubmitData(new Long(publishedId), agentId);
+          .getSubmitData(new Long(publishedId), agentId, scoringoption);
     } catch (Exception e) {
       e.printStackTrace();
       return new HashMap();
@@ -403,7 +403,7 @@ public class GradingService
     }
   }
 
-  public AssessmentGradingData getLastAssessmentGradingByAgentId(String publishedAssessmentId, String agentIdString) {
+  public AssessmentGradingIfc getLastAssessmentGradingByAgentId(String publishedAssessmentId, String agentIdString) {
     try{
       return PersistenceService.getInstance().getAssessmentGradingFacadeQueries().
           getLastAssessmentGradingByAgentId(new Long(publishedAssessmentId), agentIdString);
@@ -567,7 +567,18 @@ public class GradingService
                           HashMap publishedAnswerHash) 
   {
 	  log.debug("storeGrades: data.getSubmittedDate()" + data.getSubmittedDate());
-    storeGrades(data, false, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash);
+	  storeGrades(data, false, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash, true);
+  }
+  
+  /**
+   * Assume this is a new item.
+   */
+  public void storeGrades(AssessmentGradingIfc data, PublishedAssessmentIfc pub,
+                          HashMap publishedItemHash, HashMap publishedItemTextHash,
+                          HashMap publishedAnswerHash, boolean persistToDB) 
+  {
+	  log.debug("storeGrades (not persistToDB) : data.getSubmittedDate()" + data.getSubmittedDate());
+	  storeGrades(data, false, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash, false);
   }
 
   /**
@@ -580,12 +591,16 @@ public class GradingService
    */
   public void storeGrades(AssessmentGradingIfc data, boolean regrade, PublishedAssessmentIfc pub,
                           HashMap publishedItemHash, HashMap publishedItemTextHash,
-                          HashMap publishedAnswerHash) 
+                          HashMap publishedAnswerHash, boolean persistToDB) 
          throws GradebookServiceException {
     log.debug("****x1. regrade ="+regrade+" "+(new Date()).getTime());
     try {
       String agent = data.getAgentId();
-      if (!regrade)
+      
+      // Added persistToDB because if we don't save data to DB later, we shouldn't update the assessment
+      // submittedDate either. The date should be sync in delivery bean and DB
+      // This is for DeliveryBean.checkDataIntegrity()
+      if (!regrade && persistToDB)
       {
 	data.setSubmittedDate(new Date());
         setIsLate(data, pub);
@@ -675,7 +690,9 @@ public class GradingService
       // ones). we need to be cheap, we don't want to update record that hasn't been
       // changed. Yes, assessmentGrading's total score will be out of sync at this point, I am afraid. It
       // would be in sync again once the whole method is completed sucessfully. 
-      saveOrUpdateAll(itemGradingSet);
+      if (persistToDB) {
+    	  saveOrUpdateAll(itemGradingSet);
+      }
       log.debug("****x5. "+(new Date()).getTime());
 
       // save#2: now, we need to get the full set so we can calculate the total score accumulate for the
@@ -696,8 +713,13 @@ public class GradingService
 
     // save#3: itemGradingSet has been saved above so just need to update assessmentGrading
     // therefore setItemGradingSet as empty first - daisyf
-    data.setItemGradingSet(new HashSet());
-    saveOrUpdateAssessmentGrading(data);
+    // however, if we do not persit to DB, we want to keep itemGradingSet with data for later use
+    // Because if itemGradingSet is not saved to DB, we cannot go to DB to get it. We have to 
+    // get it through data.
+    if (persistToDB) {
+        data.setItemGradingSet(new HashSet());
+    	saveOrUpdateAssessmentGrading(data);
+    }
     log.debug("****x7. "+(new Date()).getTime());
 
     notifyGradebookByScoringType(data, pub);
@@ -905,7 +927,7 @@ public class GradingService
           retryCount--;
           try {
             int deadlockInterval = PersistenceService.getInstance().getDeadlockInterval().intValue();
-            Thread.currentThread().sleep(deadlockInterval);
+            Thread.sleep(deadlockInterval);
           }
           catch(InterruptedException ex){
             log.warn(ex.getMessage());
@@ -989,9 +1011,6 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
   public float getFIBScore(ItemGradingIfc data, HashMap fibmap,  ItemDataIfc itemdata, HashMap publishedAnswerHash)
   {
     String studentanswer = "";
-    String REGEX;
-    Pattern p;
-    Matcher m;
     boolean matchresult = false;
 
     if (data.getPublishedAnswerId() == null) {

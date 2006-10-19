@@ -73,6 +73,7 @@ import org.sakaiproject.tool.api.Placement;
 
 import java.text.SimpleDateFormat;
 import org.sakaiproject.tool.assessment.ui.listener.util.TimeUtil;
+import org.sakaiproject.component.cover.ServerConfigurationService;
 
 /**
  *
@@ -1488,6 +1489,13 @@ public class DeliveryBean
 
   public String validate()
   {
+    // check before proceed
+    String nextAction = checkBeforeProceed();
+    log.debug("***** next Action="+nextAction);
+    if (!("safeToProceed").equals(nextAction)){
+      return nextAction;
+    }
+
     try
     {
       String results = "";
@@ -1618,6 +1626,16 @@ public class DeliveryBean
     		  log.warn(ex1.getMessage());
     	  }
       }
+    }
+    if (mediaStream2 != null) {
+  	  try
+  	  {
+  		  mediaStream2.close();
+  	  }
+  	  catch (IOException ex1)
+  	  {
+  		  log.warn(ex1.getMessage());
+  	  }
     }
     return mediaByte;
   }
@@ -2411,6 +2429,10 @@ public class DeliveryBean
     if (adata!=null){
       assessmentGrading = service.load(adata.getAssessmentGradingId().toString());
     }
+    PublishedAssessmentService pubService = new PublishedAssessmentService();
+    int totalSubmitted = (pubService.getTotalSubmission(AgentFacade.getAgentString(), 
+                          getPublishedAssessment().getPublishedAssessmentId().toString())).intValue();
+    log.debug("***totalSubmitted="+totalSubmitted);
 
     log.debug("check 1");
     // check 1: check for multiple window & browser trick 
@@ -2428,7 +2450,7 @@ public class DeliveryBean
 
     log.debug("check 3");
     // check 3: any submission attempt left?
-    if (!getHasSubmissionLeft()){
+    if (!getHasSubmissionLeft(totalSubmitted)){
       return "noSubmissionLeft";
     }
 
@@ -2439,8 +2461,11 @@ public class DeliveryBean
 
     log.debug("check 5");
     // check 5: has dueDate arrived? if so, does it allow late submission?
-    if (pastDueDate() && !acceptLateSubmission){
-     return "noLateSubmission";
+    if (pastDueDate()){
+      if (totalSubmitted == 0 && acceptLateSubmission){
+        // one last chance to submit
+      }
+      else return "noLateSubmission";
     }
 
     log.debug("check 6");
@@ -2457,22 +2482,14 @@ public class DeliveryBean
     else return "safeToProceed";
   }
 
-  private boolean getHasSubmissionLeft(){
+  private boolean getHasSubmissionLeft(int totalSubmitted){
     boolean hasSubmissionLeft = false;
     int maxSubmissionsAllowed = 9999;
     PersonBean personBean = (PersonBean) ContextUtil.lookupBean("person");
-    HashMap h = personBean.getTotalSubmissionPerAssessmentHash();
     if ( (Boolean.FALSE).equals(publishedAssessment.getAssessmentAccessControl().getUnlimitedSubmissions())){
       maxSubmissionsAllowed = publishedAssessment.getAssessmentAccessControl().getSubmissionsAllowed().intValue();
     }
-    boolean notSubmitted = false;
-    int totalSubmitted = 0;
-    if (h.get(publishedAssessment.getPublishedAssessmentId()) == null){
-      notSubmitted = true;
-    }
-    else{
-      totalSubmitted = ( (Integer) h.get(publishedAssessment.getPublishedAssessmentId())).intValue();
-    }
+
     if (totalSubmitted < maxSubmissionsAllowed){
       hasSubmissionLeft = true;
     } 
@@ -2537,4 +2554,9 @@ public class DeliveryBean
     }
     else return false;
   }
+
+  public String getPortal(){
+   return ServerConfigurationService.getString("portalPath");
+  }
+
 }

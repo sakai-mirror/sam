@@ -67,8 +67,8 @@ public class SavePartAttachmentListener
   public void processAction(ActionEvent ae) throws AbortProcessingException {
     SectionBean sectionBean = (SectionBean) ContextUtil.lookupBean("sectionBean");
 
-    // attach item attachemnt to sectionBean
-    List attachmentList = prepareSectionAttachment(sectionBean.getSection().getData());
+    // attach section attachemnt to sectionBean
+    List attachmentList = prepareSectionAttachment(sectionBean);
     sectionBean.setAttachmentList(attachmentList);
     if (attachmentList != null && attachmentList.size() >0){
       sectionBean.setHasAttachment(true);
@@ -90,15 +90,22 @@ public class SavePartAttachmentListener
     return map;
   }
 
-  private List prepareSectionAttachment(SectionDataIfc section){
+  private List prepareSectionAttachment(SectionBean sectionBean){
+    SectionDataIfc section = null;
+    // section == null => section does not exist yet
+    if (sectionBean.getSection() != null){
+      section = sectionBean.getSection().getData();
+    }
+
     ToolSession session = SessionManager.getCurrentToolSession();
-    if (session.getAttribute(FilePickerHelper.FILE_PICKER_CANCEL) == null  &&
-        session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
+    if (session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
       
-      Set attachmentSet = section.getSectionAttachmentSet();
+      Set attachmentSet = new HashSet();
+      if (section!=null){
+        attachmentSet = section.getSectionAttachmentSet();
+      } 
       HashMap map = getResourceIdHash(attachmentSet);
       ArrayList newAttachmentList = new ArrayList();
-      HashSet newAttachmentSet = new HashSet();
 
       AssessmentService assessmentService = new AssessmentService();
       String protocol = ContextUtil.getProtocol();
@@ -106,7 +113,6 @@ public class SavePartAttachmentListener
       List refs = (List)session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
       if (refs!=null && refs.size() > 0){
         Reference ref;
-
         for(int i=0; i<refs.size(); i++) {
           ref = (Reference) refs.get(i);
           String resourceId = ref.getId();
@@ -121,33 +127,21 @@ public class SavePartAttachmentListener
                                                        ref.getProperties().getNamePropDisplayName()),
                                         protocol);
             newAttachmentList.add(newAttach);
-            newAttachmentSet.add(newAttach);
 	  }
           else{ 
             // attachment already exist, let's add it to new list and
 	    // check it off from map
             newAttachmentList.add((SectionAttachmentIfc)map.get(resourceId));
-            newAttachmentSet.add((SectionAttachmentIfc)map.get(resourceId));
             map.remove(resourceId);
 	  }
         }
       }
 
-      // the resulting map should now contain attachment that has been removed
-      // inside filepicker, we will now get rid of its association with the section
-      Collection oldAttachs = map.values();
-      Iterator iter1 = oldAttachs.iterator();
-      while (iter1.hasNext()){
-        SectionAttachmentIfc oldAttach = (SectionAttachmentIfc)iter1.next();
-        assessmentService.removeSectionAttachment(oldAttach.getAttachmentId().toString());
-      }
-
       session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
       session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
-      section.setSectionAttachmentSet(newAttachmentSet);
       return newAttachmentList;
     }
-    else return section.getSectionAttachmentList();
+    return new ArrayList(); 
   }
 
 

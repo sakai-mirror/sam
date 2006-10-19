@@ -26,7 +26,7 @@ package org.sakaiproject.tool.assessment.shared.api.grading;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+//import java.util.HashMap;
 
 import org.sakaiproject.tool.assessment.data.ifc.assessment.PublishedAssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.grading.AssessmentGradingIfc;
@@ -79,7 +79,7 @@ public interface GradingServiceAPI
   /**
    * Get the last submission for a student per assessment
    */
-  public Map getSubmitData(String publishedId, String agentId);
+  public Map getSubmitData(String publishedId, String agentId, Integer scoringoption);
 
   /**
    * Get the text for the type.

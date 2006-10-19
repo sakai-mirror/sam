@@ -23,6 +23,7 @@
 
 package org.sakaiproject.tool.assessment.ui.listener.evaluation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -223,7 +224,8 @@ public class SubmissionStatusListener
           results.setLastInitial(results.getFirstName().substring(0,1));
         else
           results.setLastInitial("A");
-        results.setIdString(agent.getEidString());
+        results.setIdString(agent.getIdString());
+        results.setAgentEid(agent.getEidString());
         results.setRole((String)userRoles.get(agentid));
         if (useridMap.containsKey(agentid) ) {
           agents.add(results);
@@ -263,11 +265,17 @@ public class SubmissionStatusListener
       bean.setTotalPeople(Integer.toString(bean.getAgents().size()));
     }
 
-    catch (Exception e)
+    catch (RuntimeException e)
     {
       e.printStackTrace();
       return false;
-    }
+    } catch (IllegalAccessException e) {
+		e.printStackTrace();
+		return false;
+	} catch (InvocationTargetException e) {
+		e.printStackTrace();
+		return false;
+	}
 
     return true;
   }
@@ -297,7 +305,8 @@ public class SubmissionStatusListener
       {
         results.setLastInitial("Anonymous");
       }
-      results.setIdString(agent.getEidString());
+      results.setIdString(agent.getIdString());
+      results.setAgentEid(agent.getEidString());
       results.setRole((String)userRoles.get(studentid));
       agents.add(results);
     }

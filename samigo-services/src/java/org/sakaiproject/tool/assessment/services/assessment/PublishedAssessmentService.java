@@ -65,14 +65,14 @@ public class PublishedAssessmentService {
    * Marc said some of teh assessment do not have any due date, e.g. survey
    */
   public ArrayList getBasicInfoOfAllPublishedAssessments(String agentId, String orderBy,
-                                             boolean ascending) {
+							 boolean ascending, String siteId) {
 
     // 2. get all takeable assessment available
     return PersistenceService.getInstance().
         getPublishedAssessmentFacadeQueries().
         getBasicInfoOfAllPublishedAssessments(orderBy, ascending,
                                              PublishedAssessmentFacade.
-                                             ACTIVE_STATUS);
+					      ACTIVE_STATUS, siteId);
   }
 
 /**
@@ -296,6 +296,12 @@ public class PublishedAssessmentService {
         getTotalSubmissionPerAssessment(agentId);
   }
 
+    public HashMap getTotalSubmissionPerAssessment(String agentId, String siteId) {
+    return PersistenceService.getInstance().
+        getPublishedAssessmentFacadeQueries().
+        getTotalSubmissionPerAssessment(agentId, siteId);
+  }
+
   public Integer getTotalSubmission(String agentId, String publishedAssessmentId) {
     return PersistenceService.getInstance().
         getPublishedAssessmentFacadeQueries().
@@ -461,6 +467,21 @@ public class PublishedAssessmentService {
   public boolean isRandomDrawPart(Long publishedAssessmentId, Long publishedSectionId){
 	    return PersistenceService.getInstance().getPublishedAssessmentFacadeQueries().
 	    isRandomDrawPart(publishedAssessmentId, publishedSectionId);
+  }
+
+  /**
+   * return an array list of the AssessmentGradingFacade that
+* a user has submitted for grade. one per published assessment. 
+* If an assessment allows multiple submissions and its grading option
+*  is to send highest, then return only the highest submission.  If an assessment allows multiple submissions and its grading option
+*  is to send last, then return only the last submission.
+* @param agentId 
+* @return
+*/
+    public ArrayList getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(String agentId, String siteId){
+    return PersistenceService.getInstance().
+        getPublishedAssessmentFacadeQueries().
+        getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(agentId, siteId);
   }
 
 }

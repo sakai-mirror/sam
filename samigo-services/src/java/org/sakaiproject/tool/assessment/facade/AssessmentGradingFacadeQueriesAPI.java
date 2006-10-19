@@ -58,7 +58,7 @@ public interface AssessmentGradingFacadeQueriesAPI
    */
   public HashMap getStudentGradingData(String assessmentGradingId);
 
-  public HashMap getSubmitData(Long publishedId, String agentId);
+  public HashMap getSubmitData(Long publishedId, String agentId, Integer scoringoption);
 
   // public void saveTotalScores(ArrayList data);
 
@@ -118,7 +118,7 @@ public interface AssessmentGradingFacadeQueriesAPI
 
   public ItemGradingData getItemGrading(Long id);
 
-  public AssessmentGradingData getLastAssessmentGradingByAgentId(
+  public AssessmentGradingIfc getLastAssessmentGradingByAgentId(
       Long publishedAssessmentId, String agentIdString);
 
   public AssessmentGradingData getLastSavedAssessmentGradingByAgentId(

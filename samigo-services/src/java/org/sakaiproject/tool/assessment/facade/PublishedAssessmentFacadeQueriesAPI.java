@@ -237,7 +237,7 @@ public interface PublishedAssessmentFacadeQueriesAPI
 
   // added by daisy - please check the logic - I based this on the getBasicInfoOfAllActiveAssessment
   public ArrayList getBasicInfoOfAllPublishedAssessments(String orderBy,
-      boolean ascending, Integer status);
+							 boolean ascending, Integer status, String siteId);
 
   /**
    * return an array list of the last AssessmentGradingFacade per assessment that
@@ -254,6 +254,8 @@ public interface PublishedAssessmentFacadeQueriesAPI
    * returns HashMap (Long publishedAssessmentId, Integer totalSubmittedForGrade);
    */
   public HashMap getTotalSubmissionPerAssessment(String agentId);
+
+    public HashMap getTotalSubmissionPerAssessment(String agentId, String siteId);
 
   public Integer getTotalSubmission(String agentId, Long publishedAssessmentId);
 
@@ -290,4 +292,15 @@ public interface PublishedAssessmentFacadeQueriesAPI
 
   public boolean isRandomDrawPart(Long publishedAssessmentId, Long sectionId);
 
+  /**
+   * return an array list of the AssessmentGradingFacade that
+* a user has submitted for grade. one per published assessment. 
+* If an assessment allows multiple submissions and its grading option
+*  is to send highest, then return only the highest submission.  If an assessment allows multiple submissions and its grading option
+*  is to send last, then return only the last submission.
+* @param agentId 
+* @return
+*/
+    public ArrayList getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(String agentId, String siteId);
+ 
 }

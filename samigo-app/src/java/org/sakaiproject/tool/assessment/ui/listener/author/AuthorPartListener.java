@@ -63,13 +63,16 @@ public class AuthorPartListener implements ActionListener
     sectionBean.setAssessmentTitle(assessmentBean.getTitle());
     sectionBean.setSectionDescription("");
     sectionBean.setSectionId("");
+    sectionBean.setSection(null);
 
     // #1b. goto editPart.jsp
     //sectionBean.setPoolsAvailable(itemauthorbean.getPoolSelectList());
     sectionBean.setHideRandom(false);
     sectionBean.setNumberSelected("");
     sectionBean.setSelectedPool("");
-    // new part has no attachment 
+    // new part has no attachment, VERY IMPORTANT to clean up any leftover
+    // before modifying a new part
+    sectionBean.setResourceHash(null);
     sectionBean.setAttachmentList(null);
     sectionBean.setHasAttachment(false);
     // set default

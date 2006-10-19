@@ -56,6 +56,10 @@
   <!-- HEADINGS -->
   <%@ include file="/jsf/author/allHeadings.jsp" %>
 
+<p>
+  <h:messages styleClass="validation"/>
+</p>
+
     <h3>
      <h:outputText id="x1" value="#{msg.settings} #{msg.dash} #{publishedSettings.title}" />
     </h3>
@@ -140,15 +144,11 @@
   <!-- *** HIGH SECURITY *** -->
   <samigo:hideDivision title="#{msg.t_highSecurity}" id="div4">
 <div class="tier2">
-    <h:panelGrid border="0" columns="3" columnClasses="longtext"
+    <h:panelGrid border="0" columns="2" columnClasses="longtext"
         summary="#{summary_msg.high_security_sec}">
-      <h:selectBooleanCheckbox value="#{assessmentSettings.valueMap.hasSpecificIP}"
-         disabled="true"/>
       <h:outputText value="#{msg.high_security_allow_only_specified_ip}" />
       <h:inputTextarea value="#{publishedSettings.ipAddresses}" cols="40" rows="5"
         disabled="true"/>
-      <h:selectBooleanCheckbox  disabled="true"
-         value="#{publishedSettings.valueMap.hasUsernamePassword}"/>
       <h:outputText value="#{msg.high_security_secondary_id_pw}"/>
       <h:panelGrid border="0" columns="2"  >
         <h:outputLabel value="#{msg.high_security_username}"/>
@@ -499,7 +499,7 @@
 </div>
 
 <p class="act">
-  <h:commandButton accesskey="#{msg.a_saveSettings}" type="submit" value="#{msg.button_save_settings}" action="saveSettings"  styleClass="active">
+  <h:commandButton accesskey="#{msg.a_saveSettings}" type="submit" value="#{msg.button_save_settings}" action="#{publishedSettings.getOutcome}"  styleClass="active">
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SavePublishedSettingsListener" />
   </h:commandButton>
   <h:commandButton accesskey="#{msg.a_cancel}" value="#{msg.button_cancel}" type="submit" action="author"  />
