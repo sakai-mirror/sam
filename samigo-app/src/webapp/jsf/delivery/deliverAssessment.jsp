@@ -88,9 +88,9 @@ function saveTime()
 
 </script>
 
-<h:inputHidden id="lastSubmittedDate" value="#{delivery.assessmentGrading.submittedDate.time}"
+<h:inputHidden id="lastSubmittedDate1" value="#{delivery.assessmentGrading.submittedDate.time}"
    rendered ="#{delivery.assessmentGrading.submittedDate!=null}"/>
-<h:inputHidden id="lastSubmittedDate" value="0"
+<h:inputHidden id="lastSubmittedDate2" value="0"
    rendered ="#{delivery.assessmentGrading.submittedDate==null}"/>
 
 <h:panelGroup rendered="#{delivery.actionString=='previewAssessment'}">
