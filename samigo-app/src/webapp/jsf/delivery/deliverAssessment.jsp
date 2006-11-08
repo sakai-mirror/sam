@@ -90,6 +90,8 @@ function saveTime()
 
 <h:inputHidden id="lastSubmittedDate" value="#{delivery.assessmentGrading.submittedDate.time}"
    rendered ="#{delivery.assessmentGrading.submittedDate!=null}"/>
+<h:inputHidden id="lastSubmittedDate" value="0"
+   rendered ="#{delivery.assessmentGrading.submittedDate==null}"/>
 
 <h:panelGroup rendered="#{delivery.actionString=='previewAssessment'}">
  <f:verbatim><div class="validation"></f:verbatim>
