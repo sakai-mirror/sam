@@ -13,7 +13,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/OKI/jars/OkiOSID-2.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/OKI/jars/OkiSID-rc6.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/aopalliance/jars/aopalliance-1.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/activation/jars/activation-1.0.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-ant-1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-full-2.0.2.jar"/>
@@ -53,7 +52,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/taglibs/jars/standard-1.0.4.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/wsdl4j/jars/wsdl4j-1.4.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-jaxrpc-1.2-RC1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/activation/jars/activation-1.0.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/javamail/jars/mail-1.3.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/component-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/gradebook"/>
