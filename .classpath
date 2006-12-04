@@ -70,5 +70,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/content-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/entity-impl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/entity-api"/>
+	<classpathentry kind="var" path="MAVEN_REPO/activation/jars/activation-1.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
