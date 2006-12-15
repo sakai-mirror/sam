@@ -480,15 +480,21 @@ log.debug("item==null ");
           String answerText = noAnswer;
           String rationale = "";
           String fullAnswerText = noAnswer;
+
+          // if question type = MC, MR, Survey, TF, Matching, if user has not submit an answer
+          // answerText = noAnswer. These question type do not use the itemGrading.answerText field for
+          // storing answers, thye use temGrading.publishedAnswerId to make their selection
           if (bean.getTypeId().equals("1") || bean.getTypeId().equals("2") ||
               bean.getTypeId().equals("3") || bean.getTypeId().equals("4") ||
-              bean.getTypeId().equals("9"))
-          {
+              bean.getTypeId().equals("9")){
             if (gdataAnswer != null)
               answerText = gdataAnswer.getText();
           }
-          else
-          {
+          else { 
+            // this handles the other question types: SAQ, File upload, Audio, FIB, Fill in Numeric
+            // These question type use itemGrading.answetText to store information about their answer
+            // truely, I am not sure the "noAnswer" is being using in the UI. Also, further down the code
+            // answerText is being checked for null, so the null ptr check here may not be necessary - daisyf
             // SAK-7400 - 1st null pointer check 
             if(gdata.getAnswerText() != null)
               answerText = gdata.getAnswerText();
