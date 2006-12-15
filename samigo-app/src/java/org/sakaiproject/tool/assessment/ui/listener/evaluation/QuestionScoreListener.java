@@ -489,7 +489,9 @@ log.debug("item==null ");
           }
           else
           {
-            answerText = gdata.getAnswerText();
+            // SAK-7400 - 1st null pointer check 
+            if(gdata.getAnswerText() != null)
+              answerText = gdata.getAnswerText();
           }
 
           if (bean.getTypeId().equals("9")) {
@@ -504,10 +506,12 @@ log.debug("item==null ");
             
 
 
-          if (bean.getTypeId().equals("11"))
-              answerText = gdataAnswer.getSequence() + ":" +
-                answerText;
-
+          if (bean.getTypeId().equals("11")){
+	      //SAK-7400 - 2nd null pointer check
+	      if (gdataAnswer != null && gdataAnswer.getSequence() != null){
+                answerText = gdataAnswer.getSequence() + ":" + answerText;
+	      }
+	  }
           
 
           // file upload 
