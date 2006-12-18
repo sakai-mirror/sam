@@ -1853,7 +1853,7 @@ public class PublishedAssessmentFacadeQueries
 	    final HibernateCallback hcb = new HibernateCallback(){
 		    public Object doInHibernate(Session session) throws HibernateException, SQLException {
 			Query q = session.createQuery(hql);
-			q.setLong(0, publishedId);
+			q.setLong(0, publishedId.longValue());
 			return q.list();
 		    };
 		};
