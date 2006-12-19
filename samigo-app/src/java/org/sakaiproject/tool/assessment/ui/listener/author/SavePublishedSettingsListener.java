@@ -26,6 +26,7 @@ package org.sakaiproject.tool.assessment.ui.listener.author;
 import java.awt.geom.Arc2D.Float;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -157,23 +158,27 @@ public class SavePublishedSettingsListener
           // any score to copy over? get all the assessmentGradingData and copy over
           GradingService gradingService = new GradingService();
           
-           // need to decide what to tell gradebook
-          ArrayList list = null;
+	  // need to decide what to tell gradebook
+          List list = null;
           
           if ((scoringType).equals(EvaluationModelIfc.HIGHEST_SCORE)){
-        	  list = gradingService.getHighestAssessmentGradingList(assessment.getPublishedAssessmentId());
+	      list = gradingService.getHighestSubmittedAssessmentGradingList(assessment.getPublishedAssessmentId());
           }
           else {
-           list = gradingService.getLastAssessmentGradingList(assessment.getPublishedAssessmentId());
+	      list = gradingService.getLastSubmittedAssessmentGradingList(assessment.getPublishedAssessmentId());
           }
           
           //ArrayList list = gradingService.getAllSubmissions(assessment.getPublishedAssessmentId().toString());
-          log.debug("list size =" + list.size()	);
+          log.debug("list size =" + list.size());
           for (int i=0; i<list.size();i++){
-         	   
-            AssessmentGradingData ag = (AssessmentGradingData)list.get(i);
-            log.debug("ag.scores " + ag.getTotalAutoScore());
-            gbsHelper.updateExternalAssessmentScore(ag, g);
+	      try {
+		  AssessmentGradingData ag = (AssessmentGradingData)list.get(i);
+		  log.debug("ag.scores " + ag.getTotalAutoScore());
+		  gbsHelper.updateExternalAssessmentScore(ag, g);
+	      }
+	      catch (Exception e) {
+		  log.warn("Exception occues in " + i + "th record. Message:" + e.getMessage());
+	      }
           }
         }
         catch(Exception e){

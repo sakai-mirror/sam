@@ -145,6 +145,8 @@ public interface AssessmentGradingFacadeQueriesAPI
 
   public List getHighestAssessmentGradingList(Long publishedAssessmentId);
 
+  public List getHighestSubmittedAssessmentGradingList(Long publishedAssessmentId);
+
   public Set getItemGradingSet(Long assessmentGradingId);
 
   public HashMap getAssessmentGradingByItemGradingId(Long publishedAssessmentId);
