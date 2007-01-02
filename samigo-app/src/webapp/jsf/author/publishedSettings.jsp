@@ -432,16 +432,19 @@
       </h:panelGrid>
 </div>
     <!-- GRADEBOOK OPTIONS -->
-    <div class="longtext"><h:outputLabel value="#{msg.gradebook_options}" /></div><div class="tier3">
-      <h:panelGrid columns="2"  >
+    <h:panelGroup rendered="#{publishedSettings.valueMap.toGradebook_isInstructorEditable==true && publishedSettings.gradebookExists==true}">
+	  <f:verbatim><div class="longtext"></f:verbatim> <h:outputLabel value="#{msg.gradebook_options}" /><f:verbatim></div><div class="tier3"></f:verbatim>      
+	  <h:panelGrid columns="2"  >
         <h:selectOneRadio id="toDefaultGradebook"
             value="#{publishedSettings.toDefaultGradebook}"  layout="pageDirection">
           <f:selectItem itemValue="2" itemLabel="#{msg.to_no_gradebook}"/>
           <f:selectItem itemValue="1" itemLabel="#{msg.to_default_gradebook}"/>
         </h:selectOneRadio>
       </h:panelGrid>
-</div>
-    <!-- RECORDED SCORE AND MULTIPLES -->
+	  <f:verbatim></div></f:verbatim>
+	</h:panelGroup>    
+	
+	<!-- RECORDED SCORE AND MULTIPLES -->
     <div class="longtext"><h:outputLabel value="#{msg.recorded_score}" /></div><div class="tier3">
       <h:panelGrid columns="2"  >
         <h:selectOneRadio id="scoringType"  disabled="true"
