@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="samigo-services/src/java"/>
+	<classpathentry kind="src" path="samigo-cp/src/java"/>
 	<classpathentry kind="src" path="samigo-audio/src/java"/>
 	<classpathentry kind="src" path="samigo-app/src/java"/>
 	<classpathentry kind="src" path="samigo-hibernate/src/java"/>
