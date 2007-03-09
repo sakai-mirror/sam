@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="samigo-services/src/java"/>
+	<classpathentry kind="src" path="samlite-impl/src/java"/>
 	<classpathentry kind="src" path="samigo-cp/src/java"/>
 	<classpathentry kind="src" path="samigo-audio/src/java"/>
 	<classpathentry kind="src" path="samigo-app/src/java"/>
 	<classpathentry kind="src" path="samigo-hibernate/src/java"/>
 	<classpathentry kind="src" path="samigo-api/src/java"/>
 	<classpathentry kind="src" path="samigo-qti/src/java"/>
+	<classpathentry kind="src" path="samigo-pack/src/webapp"/>
+	<classpathentry excluding="org/sakaiproject/tool/assessment/test/integration/context/|org/sakaiproject/tool/assessment/test/integration/helper/ifc/" kind="src" path="tests/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.8.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/navigo/jars/OKI-SPRING-HIBERNATE-0.jar"/>
@@ -70,5 +73,11 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/entity-impl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/entity-api"/>
 	<classpathentry kind="var" path="MAVEN_REPO/activation/jars/activation-1.0.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/commons-xmlbeans/jars/jsr173_1.0_api.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/commons-xmlbeans/jars/xbean-2.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/ims/jars/imsqti-1.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-mock-1.2.6.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/junit/jars/junit-3.8.1.jar"/>
+
 	<classpathentry kind="output" path="bin"/>
 </classpath>
