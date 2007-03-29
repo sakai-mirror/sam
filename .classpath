@@ -78,6 +78,11 @@
 	<classpathentry kind="var" path="MAVEN_REPO/ims/jars/imsqti-1.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-mock-1.2.6.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/junit/jars/junit-3.8.1.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/myfaces/myfaces-all/1.1.1/myfaces-all-1.1.1.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/ims/imsqti/1.2/imsqti-1.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/xmlbeans/jsr173/1.0_api/jsr173-1.0_api.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/xmlbeans/xbean/2.2.0/xbean-2.2.0.jar"/>
 
 	<classpathentry kind="output" path="bin"/>
 </classpath>
