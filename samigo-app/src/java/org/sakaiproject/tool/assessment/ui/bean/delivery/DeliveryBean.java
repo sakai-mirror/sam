@@ -2288,30 +2288,7 @@ public class DeliveryBean
     }
   }
 
-
   public void syncTimeElapsedWithServer(){
-    if (("takeAssessment").equals(actionString) || ("takeAssessmentViaUrl").equals(actionString)){
-      TimedAssessmentQueue queue = TimedAssessmentQueue.getInstance();
-      TimedAssessmentGradingModel timedAG = queue.get(adata.getAssessmentGradingId());
-      if (timedAG != null){
-        int timeElapsed  = Math.round(((new Date()).getTime() - timedAG.getBeginDate().getTime())/1000); //in sec
-        // this is to cover the scenerio when user took an assessment, Save & Exit, Then returned at a
-        // later time, we need to account for the time taht he used before
-        int timeTakenBefore = Math.round(timedAG.getTimeLimit() - timedAG.getTimeLeft()); // in sec
-        //log.debug("***time passed afer saving answer to DB="+timeElapsed+timeTakenBefore);
-        adata.setTimeElapsed(new Integer(timeElapsed+timeTakenBefore));
-        GradingService gradingService = new GradingService();
-        gradingService.saveOrUpdateAssessmentGrading(adata);
-        setTimeElapse(adata.getTimeElapsed().toString());
-      }
-    }
-    else{ 
-      // if we are in other mode, timer need not be accurate
-      // Anyway, we don't have adata, so we haven't been using the TimerTask to keep track of it.
-    }
-  } 
-  
-  public void syncTimeElapsedWithServerLinear(){
 	    if (("takeAssessment").equals(actionString) || ("takeAssessmentViaUrl").equals(actionString)){
 	      TimedAssessmentQueue queue = TimedAssessmentQueue.getInstance();
 	      TimedAssessmentGradingModel timedAG = queue.get(adata.getAssessmentGradingId());
@@ -2323,7 +2300,7 @@ public class DeliveryBean
 	        //log.debug("***time passed afer saving answer to DB="+timeElapsed+timeTakenBefore);
 	        adata.setTimeElapsed(new Integer(timeElapsed+timeTakenBefore));
 	        GradingService gradingService = new GradingService();
-	        gradingService.saveOrUpdateAssessmentGradingOnly(adata);
+	        gradingService.saveOrUpdateAssessmentGrading(adata);
 	        setTimeElapse(adata.getTimeElapsed().toString());
 	      }
 	    }
@@ -2331,7 +2308,29 @@ public class DeliveryBean
 	      // if we are in other mode, timer need not be accurate
 	      // Anyway, we don't have adata, so we haven't been using the TimerTask to keep track of it.
 	    }
-  }
+	  } 
+	  
+	  public void syncTimeElapsedWithServerLinear(){
+		    if (("takeAssessment").equals(actionString) || ("takeAssessmentViaUrl").equals(actionString)){
+		      TimedAssessmentQueue queue = TimedAssessmentQueue.getInstance();
+		      TimedAssessmentGradingModel timedAG = queue.get(adata.getAssessmentGradingId());
+		      if (timedAG != null){
+		        int timeElapsed  = Math.round(((new Date()).getTime() - timedAG.getBeginDate().getTime())/1000); //in sec
+		        // this is to cover the scenerio when user took an assessment, Save & Exit, Then returned at a
+		        // later time, we need to account for the time taht he used before
+		        int timeTakenBefore = Math.round(timedAG.getTimeLimit() - timedAG.getTimeLeft()); // in sec
+		        //log.debug("***time passed afer saving answer to DB="+timeElapsed+timeTakenBefore);
+		        adata.setTimeElapsed(new Integer(timeElapsed+timeTakenBefore));
+		        GradingService gradingService = new GradingService();
+		        gradingService.saveOrUpdateAssessmentGradingOnly(adata);
+		        setTimeElapse(adata.getTimeElapsed().toString());
+		      }
+		    }
+		    else{ 
+		      // if we are in other mode, timer need not be accurate
+		      // Anyway, we don't have adata, so we haven't been using the TimerTask to keep track of it.
+		    }
+	  }
 
   private String timeElapseAfterFileUpload;
   public String getTimeElapseAfterFileUpload()
@@ -2519,10 +2518,10 @@ public class DeliveryBean
 
     log.debug("check 5");
     // check 5: has dueDate arrived? if so, does it allow late submission?
-    // If it is a timed assessment, always go through. Because a timed assessment will be auto-submitted anyway - when time is up or
-    // when current date reaches due date if the time limited is longer than due date, for either case, we 
+    // If it is a timed assessment and "No Late Submission", always go through. Because in this case the 
+    // assessment will be auto-submitted anyway - when time is up or
+    // when current date reaches due date (if the time limited is longer than due date,) for either case, we 
     // want to redirect to the normal "submision successful page" after submitting.
-    if (!this.isTimedAssessment()) {
     if (pastDueDate()){
     	if (acceptLateSubmission) {
     		if (totalSubmitted != 0) {
@@ -2533,9 +2532,13 @@ public class DeliveryBean
     			}
     		}
     	}
-    	else return "noLateSubmission";
+    	else {
+    		if (!this.isTimedAssessment()) {
+    			return "noLateSubmission";
+    		}
+    	}
     }
-    }
+
     log.debug("check 6");
     // check 6: is it still available?
     if (isRetracted()){
@@ -2713,7 +2716,9 @@ public class DeliveryBean
 	  // We reset the time limit to the smaller one of
 	  // 1. assessment "time limit" and 2. the difference of due date and current. 
 	  public String updateTimeLimit(String timeLimit) {
-		if (this.dueDate != null) {  
+  	    boolean acceptLateSubmission = AssessmentAccessControlIfc.
+	        ACCEPT_LATE_SUBMISSION.equals(publishedAssessment.getAssessmentAccessControl().getLateHandling());
+		if (this.dueDate != null && !acceptLateSubmission) {
 			int timeBeforeDue  = Math.round((this.dueDate.getTime() - (new Date()).getTime())/1000); //in sec
 			if (timeBeforeDue < Integer.parseInt(timeLimit)) {
 				return String.valueOf(timeBeforeDue);
@@ -2722,8 +2727,8 @@ public class DeliveryBean
 		return timeLimit;
 	  }
 	  
-	  public boolean isTimedAssessment() {
-		  if (this.getPublishedAssessment().getAssessmentAccessControl().getTimeLimit().equals("0")) {
+	  private boolean isTimedAssessment() {
+		  if (this.getPublishedAssessment().getAssessmentAccessControl().getTimeLimit().equals(Integer.valueOf(0))) {
 			  return false;
 		  }
 		  return true;
