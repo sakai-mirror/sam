@@ -224,9 +224,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
         }
           criteria.addOrder(Order.asc("agentId"));
           criteria.addOrder(Order.desc("submittedDate"));
-          //return criteria.list();
+          return criteria.list();
           //large list cause out of memory error (java heap space)
-          return criteria.setMaxResults(10000).list();
+          //return criteria.setMaxResults(10000).list();
         }
       };
       List temp = (List) getHibernateTemplate().execute(hcb);
@@ -592,7 +592,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     				}
     			}
     			criteria.add(disjunction);
-    			return criteria.setMaxResults(10000).list();
+          return criteria.list();
+          //large list cause out of memory error (java heap space)
+          //return criteria.setMaxResults(10000).list();
     		}
     	};
     	return (List) getHibernateTemplate().execute(hcb);
