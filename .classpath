@@ -61,7 +61,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/gradebook"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsf"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/tool-api"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-1.2.8.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-2.0.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/util-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/util-util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/authz-api"/>
@@ -76,7 +76,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/commons-xmlbeans/jars/jsr173_1.0_api.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-xmlbeans/jars/xbean-2.2.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/ims/jars/imsqti-1.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-mock-1.2.6.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-mock-2.0.6.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/junit/jars/junit-3.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
