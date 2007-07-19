@@ -1,82 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="samigo-services/src/java"/>
-	<classpathentry kind="src" path="samlite-impl/src/java"/>
-	<classpathentry kind="src" path="samigo-cp/src/java"/>
-	<classpathentry kind="src" path="samigo-audio/src/java"/>
-	<classpathentry kind="src" path="samigo-app/src/java"/>
-	<classpathentry kind="src" path="samigo-hibernate/src/java"/>
-	<classpathentry kind="src" path="samigo-api/src/java"/>
-	<classpathentry kind="src" path="samigo-qti/src/java"/>
-	<classpathentry kind="src" path="samigo-pack/src/webapp"/>
-	<classpathentry excluding="org/sakaiproject/tool/assessment/test/integration/context/|org/sakaiproject/tool/assessment/test/integration/helper/ifc/" kind="src" path="tests/src/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.8.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/navigo/jars/OKI-SPRING-HIBERNATE-0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/navigo/jars/SakaiBaseFramework-1.0.a1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/OKI/jars/OkiOSID-2.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/OKI/jars/OkiSID-rc6.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/aopalliance/jars/aopalliance-1.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-1.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-ant-1.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-full-2.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-codec/jars/commons-codec-1.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.7.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-collections/jars/commons-collections-3.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-dbcp/jars/commons-dbcp-1.2.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-digester/jars/commons-digester-1.6.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-discovery/jars/commons-discovery-0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-fileupload/jars/commons-fileupload-1.1.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-id/jars/commons-id-0.1-dev.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-jxpath/jars/commons-jxpath-1.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-lang/jars/commons-lang-2.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.4.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-pool/jars/commons-pool-1.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-resources/jars/commons-resources-0.1-dev.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-validator/jars/commons-validator-1.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/dom4j/jars/dom4j-1.4.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/net.sf.ehcache/jars/ehcache-1.2.4.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/fop/jars/fop-0.20.5.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.hibernate/jars/hibernate-3.1.3.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jaxen/jars/jaxen-1.0-FCS-full.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jdbc/jars/jdbc2_0-stdext-h2.1.8.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jdom/jars/jdom-1.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jsf/jars/jsf-impl-1.1.01.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jsf/jars/jsf-api-1.1.01.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jstl/jars/jstl-1.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jta/jars/jta-h2.1.8.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/ojb/jars/db-ojb-1.0.rc6.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/odmg/jars/odmg-3.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/oro/jars/oro-2.0.7.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/saxpath/jars/saxpath-1.0-FCS.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/servletapi/jars/servletapi-2.4.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/jspapi/jars/jsp-api-2.0.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-saaj-1.2-RC1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/struts/jars/struts-1.1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/taglibs/jars/standard-1.0.4.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/wsdl4j/jars/wsdl4j-1.4.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-jaxrpc-1.2-RC1.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/javamail/jars/mail-1.3.1.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/component-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/gradebook"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsf"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/tool-api"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-2.0.6.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/util-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/util-util"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/authz-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/user-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sections-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/site-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/db-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/content-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/entity-impl"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/entity-api"/>
-	<classpathentry kind="var" path="MAVEN_REPO/activation/jars/activation-1.0.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-xmlbeans/jars/jsr173_1.0_api.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/commons-xmlbeans/jars/xbean-2.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/ims/jars/imsqti-1.2.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/org.springframework/jars/spring-mock-2.0.6.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/junit/jars/junit-3.8.1.jar"/>
-	<classpathentry kind="output" path="bin"/>
+  <classpathentry kind="src" path="samigo-services/src/java"/>
+  <classpathentry kind="src" path="samlite-impl/src/java"/>
+  <classpathentry kind="src" path="samigo-cp/src/java"/>
+  <classpathentry kind="src" path="samigo-audio/src/java"/>
+  <classpathentry kind="src" path="samigo-app/src/java"/>
+  <classpathentry kind="src" path="samigo-hibernate/src/java"/>
+  <classpathentry kind="src" path="samigo-api/src/java"/>
+  <classpathentry kind="src" path="samigo-qti/src/java"/>
+  <classpathentry kind="src" path="samigo-pack/src/webapp"/>
+  <classpathentry excluding="org/sakaiproject/tool/assessment/test/integration/context/|org/sakaiproject/tool/assessment/test/integration/helper/ifc/" kind="src" path="tests/src/java"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.8/log4j-1.2.8.jar"/>
+  <classpathentry kind="var" path="M2_REPO/navigo/OKI-SPRING-HIBERNATE/0/OKI-SPRING-HIBERNATE-0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/navigo/SakaiBaseFramework/1.0.a1/SakaiBaseFramework-1.0.a1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/OKI/OkiOSID/2.0/OkiOSID-2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/OKI/OkiSID/rc6.1/OkiSID-rc6.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/axis/axis/1.1/axis-1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/axis/axis-ant/1.1/axis-ant-1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/cglib/cglib-full/2.0.2/cglib-full-2.0.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.2/commons-codec-1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.1/commons-collections-3.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-dbcp/commons-dbcp/1.2.1/commons-dbcp-1.2.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-digester/commons-digester/1.6/commons-digester-1.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-discovery/commons-discovery/0.2/commons-discovery-0.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-fileupload/commons-fileupload/1.1.1/commons-fileupload-1.1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-id/commons-id/0.1-dev/commons-id-0.1-dev.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-jxpath/commons-jxpath/1.1/commons-jxpath-1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.1/commons-lang-2.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-pool/commons-pool/1.2/commons-pool-1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-resources/commons-resources/0.1-dev/commons-resources-0.1-dev.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-validator/commons-validator/1.0.2/commons-validator-1.0.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/dom4j/dom4j/1.4/dom4j-1.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/sf/ehcache/ehcache/1.2.4/ehcache-1.2.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/batik/batik/1.5-fop-0.20-5/batik-1.5-fop-0.20-5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/hibernate/hibernate/3.1.3/hibernate-3.1.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jaxen/jaxen/1.0-FCS-full/jaxen-1.0-FCS-full.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jdbc/jdbc2_0/stdext-h2.1.8/jdbc2_0-stdext-h2.1.8.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jdom/jdom/1.0/jdom-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jsf/jsf-impl/1.1.01/jsf-impl-1.1.01.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jsf/jsf-api/1.1.01/jsf-api-1.1.01.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/servlet/jstl/1.0.2/jstl-1.0.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jta/jta/h2.1.8/jta-h2.1.8.jar"/>
+  <classpathentry kind="var" path="M2_REPO/ojb/db-ojb/1.0.rc6/db-ojb-1.0.rc6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/odmg/odmg/3.0/odmg-3.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/oro/oro/2.0.7/oro-2.0.7.jar"/>
+  <classpathentry kind="var" path="M2_REPO/saxpath/saxpath/1.0-FCS/saxpath-1.0-FCS.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/servlet/jsp-api/2.0/jsp-api-2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/axis/axis-saaj/1.2-RC1/axis-saaj-1.2-RC1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/struts/struts/1.1/struts-1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/taglibs/standard/1.0.4/standard-1.0.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/wsdl4j/wsdl4j/1.4/wsdl4j-1.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/axis/axis-jaxrpc/1.2-RC1/axis-jaxrpc-1.2-RC1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.3.1/mail-1.3.1.jar"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/component-api"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/gradebook"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/jsf"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/tool-api"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring/2.0.6/spring-2.0.6.jar"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/util-api"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/util-util"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/authz-api"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/user-api"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/sections-api"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/site-api"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/db-api"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/content-api"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/entity-impl"/>
+  <classpathentry combineaccessrules="false" kind="src" path="/entity-api"/>
+  <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.0.2/activation-1.0.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/xmlbeans/jsr173/1.0_api/jsr173-1.0_api.jar"/>
+  <classpathentry kind="var" path="M2_REPO/xmlbeans/xbean/2.2.0/xbean-2.2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/ims/imsqti/1.2/imsqti-1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring-mock/2.0.6/spring-mock-2.0.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
+  <classpathentry kind="output" path="bin"/>
 </classpath>
