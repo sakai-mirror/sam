@@ -12,7 +12,7 @@
     </id>
     <many-to-one name="itemGradingData"
       class="org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData"
-      column="ITEMGRADINGID" index="SAM_MEDIA_ITEMGRADING_I" />
+      column="ITEMGRADINGID"/>
     <property name="media">
       <column name="MEDIA" not-null="false" length="1000000000"/>
     </property>
@@ -34,4 +34,17 @@
     <property name="duration" type="string" length="36" column="DURATION" not-null="false" />
   </class>
 
+	<database-object>
+	<create>create index SAM_MEDIA_ITEMGRADING_I on SAM_MEDIA_T (ITEMGRADINGID)</create>
+	<drop></drop>
+	<!-- For MySQL and hsqldb, the index will be created automatically to enforce a constraint. -->
+	<dialect-scope name="org.hibernate.dialect.Oracle9Dialect"/>
+	<dialect-scope name="org.hibernate.dialect.OracleDialect"/>
+  </database-object>
+  
+  <database-object>
+		<create>create index GB_GRADABLE_OBJ_ASN_IDX_2 on GB_GRADABLE_OBJECT_T (OBJECT_TYPE_ID, GRADEBOOK_ID, NAME, REMOVED)</create>
+		<!-- <drop>drop index GB_GRADABLE_OBJECT_T.GB_GRADABLE_OBJ_ASN_IDX</drop> -->
+		<drop></drop>
+	</database-object>
 </hibernate-mapping>

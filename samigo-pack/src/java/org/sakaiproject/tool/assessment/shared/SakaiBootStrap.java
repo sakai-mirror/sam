@@ -36,6 +36,7 @@ import org.sakaiproject.db.api.SqlService;
 public class SakaiBootStrap
 {
   private static final String SAKAI_SAMIGO_DDL_NAME = "sakai_samigo";
+  private static final String SQL_UPDATE_SCRIPT_NAME = "sakai_samigo_post_schema_update";
   
   private static final String SAKAI_AUTO_DDL_PROPERTY = "auto.ddl";
 
@@ -71,6 +72,7 @@ public class SakaiBootStrap
     if (autoDdl)
     {
       LOG.info("SakaiBootStrap.init(): autoDdl enabled; running DDL...");
+      sqlService.ddl(this.getClass().getClassLoader(), SQL_UPDATE_SCRIPT_NAME);
       sqlService.ddl(this.getClass().getClassLoader(), SAKAI_SAMIGO_DDL_NAME);
     } else {
       LOG.debug("****autoDdl disabled.");
