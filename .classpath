@@ -27,7 +27,6 @@
 	<classpathentry kind="var" path="M2_REPO/commons-digester/commons-digester/1.6/commons-digester-1.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-discovery/commons-discovery/0.2/commons-discovery-0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-fileupload/commons-fileupload/1.1.1/commons-fileupload-1.1.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-id/commons-id/0.1-dev/commons-id-0.1-dev.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-jxpath/commons-jxpath/1.1/commons-jxpath-1.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.1/commons-lang-2.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar"/>
