@@ -35,7 +35,7 @@
 	<classpathentry kind="var" path="M2_REPO/commons-validator/commons-validator/1.0.2/commons-validator-1.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/dom4j/dom4j/1.4/dom4j-1.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/net/sf/ehcache/ehcache/1.3.0/ehcache-1.3.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/batik/batik/1.5-fop-0.20-5/batik-1.5-fop-0.20-5.jar"/>
+	<classpathentry kind="var" path="M2_REPO/batik/batik-1.5-fop/0.20-5/batik-1.5-fop-0.20-5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hibernate/hibernate/3.2.5.ga/hibernate-3.2.5.ga.jar"/>
 	<classpathentry kind="var" path="M2_REPO/jaxen/jaxen/1.0-FCS-full/jaxen-1.0-FCS-full.jar"/>
 	<classpathentry kind="var" path="M2_REPO/jdbc/jdbc2_0/stdext-h2.1.8/jdbc2_0-stdext-h2.1.8.jar"/>

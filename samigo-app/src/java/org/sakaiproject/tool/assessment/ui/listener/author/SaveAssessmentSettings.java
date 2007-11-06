@@ -40,6 +40,7 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentMetaDataIfc;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
+import org.sakaiproject.tool.assessment.facade.authz.integrated.AuthzQueriesFacade;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.ItemAuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentSettingsBean;
@@ -248,6 +249,19 @@ public class SaveAssessmentSettings
     // added by daisyf, 10/10/06
     updateAttachment(assessment.getAssessmentAttachmentList(), assessmentSettings.getAttachmentList(),(AssessmentIfc)assessment.getData());
     EventTrackingService.post(EventTrackingService.newEvent("sam.setting.edit", "assessmentId=" + assessmentSettings.getAssessmentId(), true));
+    
+    //added by gopalrc, 6 Nov 2007
+    if (assessmentSettings.getReleaseTo() == "SELECTED_GROUPS") {
+    	//TODO: perhaps the first two lines below should be above the "if" block
+        AuthzQueriesFacade authz = new AuthzQueriesFacade();
+        authz.removeAuthorizationByQualifier(assessmentId.toString(), true);
+    	String[] groupsAuthorized = assessmentSettings.getGroupsAuthorized();
+    	if (groupsAuthorized != null && groupsAuthorized.length != 0) {
+    		for (int i=0; i<groupsAuthorized.length; i++){
+    			authz.createAuthorization(groupsAuthorized[i], "TAKE_PUBLISHED_ASSESSMENT", assessmentId.toString());
+    		}
+    	}
+    }
     
     assessment = assessmentService.getAssessment(assessmentId.toString());
     return assessment;

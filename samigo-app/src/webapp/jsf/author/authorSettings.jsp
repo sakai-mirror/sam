@@ -195,8 +195,45 @@ function uncheckOther(field){
     if((inputList[i].name.indexOf("background")>=0)&&(inputList[i].name != fieldname))
          inputList[i].checked=false;
       
+ }
 }
+
+
+
+function checkUncheckAllReleaseGroups(){
+  var checkboxState = document.getElementById("assessmentSettingsAction:checkUncheckAllReleaseGroups").checked;
+  var inputList= document.getElementsByTagName("INPUT");
+  for (i = 0; i <inputList.length; i++) 
+  {
+    if(inputList[i].type=='checkbox')
+    {
+      if(inputList[i].name.indexOf("groupsForSite")>=0)
+        inputList[i].checked=checkboxState;
+    }
+  }
+}
+
  
+function showHideReleaseGroups(){
+  var showGroups;
+  var inputList= document.getElementsByTagName("INPUT");
+  for (i = 0; i <inputList.length; i++) 
+  {
+    if(inputList[i].type=='radio')
+    {
+      if(inputList[i].value.indexOf("Selected Groups")>=0) {
+        showGroups=inputList[i].checked;
+        break;
+      }  
+    }
+  }
+  if(showGroups) {
+	document.getElementById("groupDiv").style.display = "block";
+	document.getElementById("groupDiv").style.width = "80%";
+  }
+  else {
+	document.getElementById("groupDiv").style.display = "none";
+  }
 }
 
 
@@ -325,12 +362,26 @@ function uncheckOther(field){
     <f:verbatim><div class="tier2"></f:verbatim>
     <h:panelGrid summary="#{templateMessages.released_to_info_sec}">
       <h:selectOneRadio layout="pagedirection" value="#{assessmentSettings.firstTargetSelected}"
-        required="true" >
+        required="true" onclick="showHideReleaseGroups();" >
         <f:selectItems value="#{assessmentSettings.publishingTargets}" />
       </h:selectOneRadio>
     </h:panelGrid>
+
+  <f:verbatim><div id="groupDiv"></f:verbatim>
+  <f:verbatim><table bgcolor="#CCCCCC"><tr><td></f:verbatim>  
+    <h:selectBooleanCheckbox id="checkUncheckAllReleaseGroups" title="Group(s)" onclick="checkUncheckAllReleaseGroups();"/>  
+  <f:verbatim></td><td>Group(s)</td></tr></table></f:verbatim>
+  <h:selectManyCheckbox id="groupsForSite" layout="pagedirection" value="#{assessmentSettings.groupsAuthorized}">
+     <f:selectItems value="#{assessmentSettings.groupsForSite}" />
+  </h:selectManyCheckbox>
+  <f:verbatim></div></f:verbatim>
+
+  
  <f:verbatim></div></f:verbatim>
+ 
   </samigo:hideDivision>
+
+
 </h:panelGroup>
 
   <!-- *** HIGH SECURITY *** -->
@@ -789,7 +840,7 @@ function uncheckOther(field){
 </h:form>
 <!-- end content -->
 </div>
-         <script language="javascript" style="text/JavaScript">hideUnhideAllDivsExceptOne('none');</script>
+         <script language="javascript" style="text/JavaScript">hideUnhideAllDivsExceptOne('none');showHideReleaseGroups();</script>
       </body>
     </html>
   </f:view>

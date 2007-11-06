@@ -174,7 +174,9 @@ function disableAllFeedbackCheck(feedbackType)
         <h:outputText value="#{publishedSettings.publishedUrl}" />
       </h:panelGroup>
     </h:panelGrid>
-</div>
+ <f:verbatim>XXXXXXX - publishedSettings.jsp</f:verbatim>
+    
+p</div>
 <%-- dublicate information
 
     <h:panelGrid columns="2">

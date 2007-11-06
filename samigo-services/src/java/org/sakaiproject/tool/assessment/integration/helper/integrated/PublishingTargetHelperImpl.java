@@ -65,10 +65,10 @@ public class PublishingTargetHelperImpl implements PublishingTargetHelper
    */
   public HashMap getTargets()
   {
-
      HashMap map = new HashMap();
      map.put("Anonymous Users", "ANONYMOUS_USERS");
      map.put(AgentFacade.getCurrentSiteName(), AgentFacade.getCurrentSiteId());
+     map.put("Selected Groups", "SELECTED_GROUPS");
      return map;
   }
 }

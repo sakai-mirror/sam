@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,6 +50,9 @@ import org.sakaiproject.entity.cover.EntityManager;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.site.api.Group;
+import org.sakaiproject.site.api.Site;
+import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentFeedbackIfc;
@@ -67,6 +71,7 @@ import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.listener.author.SaveAssessmentAttachmentListener;
 import org.sakaiproject.tool.assessment.ui.listener.util.TimeUtil;
 import org.sakaiproject.tool.cover.SessionManager;
+import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.ResourceLoader;
 
 /**
@@ -1291,6 +1296,10 @@ public class AssessmentSettingsBean
     	  ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages");
     	  target[i] = new SelectItem(titles[i], rb.getString("anonymous_users"));
       }
+      if (titles[i].equals("Selected Groups")) {
+    	  ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages");
+    	  target[i] = new SelectItem(titles[i], rb.getString("selected_groups"));
+      }
       else {
     	  target[i] = new SelectItem(titles[i], titles[i]);
       }
@@ -1504,4 +1513,45 @@ public class AssessmentSettingsBean
 	  this.originalRetractDateString = "";
 	  this.originalFeedbackDateString = "";
   }
+  
+  
+  public SelectItem[] getGroupsForSite(){
+      SelectItem[] groupSelectItems = new SelectItem[0];
+	  Site site = null;
+	  try {
+		  
+		 site = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
+		 
+		 Collection groups = site.getGroups();
+	     if (groups != null && groups.size() > 0) {
+	    	 groupSelectItems = new SelectItem[groups.size()];
+	    	 Iterator groupIter = groups.iterator();
+	    	 int i=0;
+	    	 while (groupIter.hasNext()) {
+	    		 Group group = (Group) groupIter.next();
+	    		 groupSelectItems[i++] = new SelectItem(group.getId(), group.getTitle());
+	    	 }
+	     }
+	  }
+	  catch (IdUnusedException ex) {
+		  // No site available
+	  }
+	  return groupSelectItems;
+  }
+  
+  private String[] groupsAuthorized;
+  
+  public String[] getGroupsAuthorized() {
+	 if (groupsAuthorized == null) {
+		 return new String[0];
+	 }
+	 else {
+		 return groupsAuthorized;
+	 }
+  }
+  
+  public void setGroupsAuthorized(String[] groupsAuthorized){
+	  this.groupsAuthorized = groupsAuthorized;
+  }
+  
 }
