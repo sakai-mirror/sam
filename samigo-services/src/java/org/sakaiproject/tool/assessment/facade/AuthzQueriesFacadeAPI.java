@@ -38,6 +38,14 @@ public interface AuthzQueriesFacadeAPI
 
   public void removeAuthorizationByQualifier(String qualifierId, boolean isPublishedAssessment);
 
+  /**
+   * Removes an authorization for a specified qualifier and function
+   * added by gopalrc - Nov 2007 
+   * @param qualifierId
+   * @param functionId
+   */
+  public void removeAuthorizationByQualifierAndFunction(String qualifierId, String functionId);
+  
   /** This returns a HashMap containing (String a.qualiferId, AuthorizationData a)
    * agentId is a site for now but can be a user
    */

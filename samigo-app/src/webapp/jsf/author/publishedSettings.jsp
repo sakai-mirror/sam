@@ -169,14 +169,24 @@ function disableAllFeedbackCheck(feedbackType)
       <h:selectOneRadio disabled="true" layout="pagedirection" value="#{publishedSettings.firstTargetSelected}">
         <f:selectItems value="#{assessmentSettings.publishingTargets}" />
       </h:selectOneRadio>
+      
+  <f:verbatim><div id="groupDiv"></f:verbatim>
+  <f:verbatim><table bgcolor="#CCCCCC"><tr><td></f:verbatim>  
+    <h:selectBooleanCheckbox id="checkUncheckAllReleaseGroups"  title="Group(s)" onclick="checkUncheckAllReleaseGroups();"/>  
+  <f:verbatim></td><td>Group(s)</td></tr></table></f:verbatim>
+  <h:selectManyCheckbox id="groupsForSite" layout="pagedirection" value="#{publishedSettings.groupsAuthorized}">
+     <f:selectItems value="#{publishedSettings.groupsForSite}" />
+  </h:selectManyCheckbox>
+  <f:verbatim></div></f:verbatim>
+
+      
       <h:panelGroup styleClass="longtext">
     <h:outputLabel value="#{assessmentSettingsMessages.published_assessment_url}: " />
         <h:outputText value="#{publishedSettings.publishedUrl}" />
       </h:panelGroup>
     </h:panelGrid>
- <f:verbatim>XXXXXXX - publishedSettings.jsp</f:verbatim>
     
-p</div>
+</div>
 <%-- dublicate information
 
     <h:panelGrid columns="2">

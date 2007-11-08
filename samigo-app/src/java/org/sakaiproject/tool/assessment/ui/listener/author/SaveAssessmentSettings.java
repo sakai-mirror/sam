@@ -40,7 +40,9 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentMetaDataIfc;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
+import org.sakaiproject.tool.assessment.facade.AuthzQueriesFacadeAPI;
 import org.sakaiproject.tool.assessment.facade.authz.integrated.AuthzQueriesFacade;
+import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.ItemAuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentSettingsBean;
@@ -251,14 +253,13 @@ public class SaveAssessmentSettings
     EventTrackingService.post(EventTrackingService.newEvent("sam.setting.edit", "assessmentId=" + assessmentSettings.getAssessmentId(), true));
     
     //added by gopalrc, 6 Nov 2007
-    if (assessmentSettings.getReleaseTo() == "SELECTED_GROUPS") {
-    	//TODO: perhaps the first two lines below should be above the "if" block
-        AuthzQueriesFacade authz = new AuthzQueriesFacade();
-        authz.removeAuthorizationByQualifier(assessmentId.toString(), true);
+    AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
+    authz.removeAuthorizationByQualifierAndFunction(assessmentId.toString(), "TAKE_ASSESSMENT");
+    if (assessmentSettings.getReleaseTo().equals("Selected Groups")) {
     	String[] groupsAuthorized = assessmentSettings.getGroupsAuthorized();
-    	if (groupsAuthorized != null && groupsAuthorized.length != 0) {
+    	if (groupsAuthorized != null && groupsAuthorized.length > 0) {
     		for (int i=0; i<groupsAuthorized.length; i++){
-    			authz.createAuthorization(groupsAuthorized[i], "TAKE_PUBLISHED_ASSESSMENT", assessmentId.toString());
+    			authz.createAuthorization(groupsAuthorized[i], "TAKE_ASSESSMENT", assessmentId.toString());
     		}
     	}
     }

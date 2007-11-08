@@ -28,11 +28,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
+
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -40,21 +43,29 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.service.gradebook.shared.GradebookService;
+import org.sakaiproject.site.api.Group;
+import org.sakaiproject.site.api.Site;
+import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.spring.SpringBeanLocator;
+import org.sakaiproject.tool.assessment.data.dao.authz.AuthorizationData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentFeedbackIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SecuredIPAddressIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
+import org.sakaiproject.tool.assessment.facade.AuthzQueriesFacadeAPI;
 import org.sakaiproject.tool.assessment.facade.GradebookFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
 import org.sakaiproject.tool.assessment.integration.context.IntegrationContextFactory;
 import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceHelper;
 import org.sakaiproject.tool.assessment.integration.helper.ifc.PublishingTargetHelper;
+import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.ui.listener.util.TimeUtil;
+import org.sakaiproject.tool.cover.ToolManager;
 
 
 public class PublishedAssessmentSettingsBean
@@ -1247,6 +1258,102 @@ public class PublishedAssessmentSettingsBean
 		this.originalRetractDateString = "";
 		this.originalFeedbackDateString = "";
 	 }
+	
+	  
+	  /**
+	   * gopalrc Nov 2007
+	   * Returns all groups for site
+	   * @return
+	   */
+	  public SelectItem[] getGroupsForSite(){
+	      SelectItem[] groupSelectItems = new SelectItem[0];
+	      TreeMap sortedSelectItems = new TreeMap();
+		  Site site = null;
+		  try {
+			 site = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
+			 Collection groups = site.getGroups();
+		     if (groups != null && groups.size() > 0) {
+		    	 groupSelectItems = new SelectItem[groups.size()];
+		    	 Iterator groupIter = groups.iterator();
+		    	 while (groupIter.hasNext()) {
+		    		 Group group = (Group) groupIter.next();
+		    		 String groupDescription = group.getDescription() == null ? "" : group.getDescription();
+		    		 sortedSelectItems.put(group.getTitle(), new SelectItem(group.getId(), group.getTitle() + ": " + groupDescription, "Test Description"));
+		    	 }
+		    	 Set keySet = sortedSelectItems.keySet();
+		    	 groupIter = keySet.iterator();
+		    	 int i=0;
+		    	 while (groupIter.hasNext()) {
+		    		 groupSelectItems[i++] = (SelectItem) sortedSelectItems.get(groupIter.next());
+		    	 }
+		     }
+		  }
+		  catch (IdUnusedException ex) {
+			  // No site available
+		  }
+		  return groupSelectItems;
+	  }
+	  
+	  
+	  /**
+	   * gopalrc Nov 2007
+	   * Returns the total number of groups for this site
+	   * @return
+	   */
+	  public int getNumberOfGroupsForSite(){
+		  int numGroups = 0;
+		  try {
+			 Site site = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
+			 Collection groups = site.getGroups();
+		     if (groups != null) {
+		    	 numGroups = groups.size();
+		     }
+		  }
+		  catch (IdUnusedException ex) {
+			  // No site available
+		  }
+		  return numGroups;
+	  }
+
+	  /**
+	   * gopalrc Nov 2007
+	   * The authorized groups
+	   */
+	  private String[] groupsAuthorized;
+	  
+	  /**
+	   * gopalrc Nov 2007
+	   * Returns the groups to which this assessment is released
+	   * @return
+	   */
+	  public String[] getGroupsAuthorized() {
+		  // Test only
+		  groupsAuthorized = new String[0];
+			 
+			 
+		  if (groupsAuthorized == null) {
+	         AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
+			 List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_ASSESSMENT", getAssessmentId().toString());
+			 if (authorizations != null && authorizations.size()>0) {
+				 groupsAuthorized = new String[authorizations.size()];
+				 Iterator authsIter = authorizations.iterator();
+				 int i = 0;
+				 while (authsIter.hasNext()) {
+					 AuthorizationData ad = (AuthorizationData) authsIter.next();
+					 groupsAuthorized[i++] = ad.getAgentIdString();
+				 }
+			 }
+			 else {
+				 groupsAuthorized = new String[0];
+			 }
+		 }
+		 return groupsAuthorized;
+	  }
+	  
+	  public void setGroupsAuthorized(String[] groupsAuthorized){
+		  this.groupsAuthorized = groupsAuthorized;
+	  }
+	
 }
 
 

@@ -688,7 +688,16 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			log.warn(e.getMessage());
 		}
 		// write authorization
-		createAuthorization(publishedAssessment);
+		// conditional processing added by gopalrc Nov 2007
+		AssessmentAccessControlIfc control = publishedAssessment.getAssessmentAccessControl();
+		String releaseTo = control.getReleaseTo();
+		if (releaseTo.equals("Selected Groups")) {
+			createAuthorizationForSelectedGroups(publishedAssessment);
+		}
+		else {
+			createAuthorization(publishedAssessment);
+		}
+		
 		return new PublishedAssessmentFacade(publishedAssessment);
 	}
 
@@ -749,7 +758,26 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 					.createAuthorization(agentId, "VIEW_PUBLISHED_ASSESSMENT",
 							qualifierIdString);
 		}
+		
 	}
+	
+	/**
+	 * added by gopalrc Nov 2007
+	 * Creates Authorizations for Selected Groups
+	 * @param p
+	 */
+	public void createAuthorizationForSelectedGroups(PublishedAssessmentData publishedAssessment) {
+	    AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
+	    List authorizationsToCopy = authz.getAuthorizationByFunctionAndQualifier("TAKE_ASSESSMENT", publishedAssessment.getAssessmentId().toString());
+		 if (authorizationsToCopy != null && authorizationsToCopy.size()>0) {
+			 Iterator authsIter = authorizationsToCopy.iterator();
+			 while (authsIter.hasNext()) {
+				 AuthorizationData adToCopy = (AuthorizationData) authsIter.next();
+     			 authz.createAuthorization(adToCopy.getAgentIdString(), "TAKE_PUBLISHED_ASSESSMENT", publishedAssessment.getPublishedAssessmentId().toString());
+			 }
+		 }
+	}
+	
 
 	public AssessmentData loadAssessment(Long assessmentId) {
 		return (AssessmentData) getHibernateTemplate().load(
