@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -45,6 +46,7 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentBaseData;
 import org.sakaiproject.tool.assessment.data.dao.authz.AuthorizationData;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AuthzQueriesFacadeAPI;
+import org.sakaiproject.tool.assessment.services.PersistenceService;
 
 /**
  * <p>Description: Facade for AuthZ queries, standalone version.
@@ -286,6 +288,20 @@ public class AuthzQueriesFacade
 	    getHibernateTemplate().deleteAll(l);
   }
   
+  /**
+   * Removes an authorization for a specified agent, qualifier and function
+   * TODO: This should be optimized into a single SQL call for a set of agents (groups)
+   * added by gopalrc - Nov 2007 
+   * @param agentId
+   * @param qualifierId
+   */
+  public void removeAuthorizationByAgentAndQualifier(String agentId, String qualifierId) {
+	    String query="select a from AuthorizationData a where a.qualifierId="+qualifierId;
+	    String clause=" and a.agentId='" + agentId + "'";
+	    List l = getHibernateTemplate().find(query+clause);
+	    getHibernateTemplate().deleteAll(l);
+  }
+  
   
   /** This returns a HashMap containing (String a.qualiferId, AuthorizationData a)
     * agentId is a site for now but can be a user
@@ -328,4 +344,31 @@ public class AuthzQueriesFacade
     return isMember;
   }
 
+  
+  /**
+   * added by gopalrc Nov 2007
+   * Checks is the user is authorized for taking an assessment released to groups
+   * @return
+   */
+  public boolean isUserAuthorizedToTakeAssessmentReleasedToGroups(String assessmentId) {
+	  boolean auth = false;
+	  String currentUserId = UserDirectoryService.getCurrentUser().getId();
+	  
+      AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
+		 List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_ASSESSMENT", assessmentId.toString());
+		 if (authorizations != null && authorizations.size()>0) {
+			 Iterator authsIter = authorizations.iterator();
+			 int i = 0;
+			 while (authsIter.hasNext()) {
+				 AuthorizationData ad = (AuthorizationData) authsIter.next();
+				 ad.getAgentIdString();
+				 auth = AuthzGroupService.getInstance().isAllowed(currentUserId, "TAKE_PUBLISHED_ASSESSMENT", ad.getAgentIdString());
+				 if (auth) break;
+			 }
+		 }
+	  
+	  return auth;
+  }
+
+  
 }

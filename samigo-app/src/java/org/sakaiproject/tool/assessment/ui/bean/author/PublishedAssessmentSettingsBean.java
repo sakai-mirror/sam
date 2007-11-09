@@ -1327,13 +1327,9 @@ public class PublishedAssessmentSettingsBean
 	   * @return
 	   */
 	  public String[] getGroupsAuthorized() {
-		  // Test only
-		  groupsAuthorized = new String[0];
-			 
-			 
-		  if (groupsAuthorized == null) {
+		  //if (groupsAuthorized == null) {
 	         AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
-			 List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_ASSESSMENT", getAssessmentId().toString());
+			 List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_PUBLISHED_ASSESSMENT", getAssessmentId().toString());
 			 if (authorizations != null && authorizations.size()>0) {
 				 groupsAuthorized = new String[authorizations.size()];
 				 Iterator authsIter = authorizations.iterator();
@@ -1346,7 +1342,7 @@ public class PublishedAssessmentSettingsBean
 			 else {
 				 groupsAuthorized = new String[0];
 			 }
-		 }
+		 //}
 		 return groupsAuthorized;
 	  }
 	  

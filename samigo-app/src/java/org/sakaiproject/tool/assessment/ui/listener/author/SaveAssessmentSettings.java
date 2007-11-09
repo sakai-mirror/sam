@@ -254,12 +254,19 @@ public class SaveAssessmentSettings
     
     //added by gopalrc, 6 Nov 2007
     AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
-    authz.removeAuthorizationByQualifierAndFunction(assessmentId.toString(), "TAKE_ASSESSMENT");
+	String[] groupsAuthorized = assessmentSettings.getGroupsAuthorized();
     if (assessmentSettings.getReleaseTo().equals("Selected Groups")) {
-    	String[] groupsAuthorized = assessmentSettings.getGroupsAuthorized();
+        authz.removeAuthorizationByQualifierAndFunction(assessmentId.toString(), "TAKE_ASSESSMENT");
     	if (groupsAuthorized != null && groupsAuthorized.length > 0) {
     		for (int i=0; i<groupsAuthorized.length; i++){
     			authz.createAuthorization(groupsAuthorized[i], "TAKE_ASSESSMENT", assessmentId.toString());
+    		}
+    	}
+    }
+    else {
+    	if (groupsAuthorized != null && groupsAuthorized.length > 0) {
+    		for (int i=0; i<groupsAuthorized.length; i++){
+    	        authz.removeAuthorizationByAgentAndQualifier(groupsAuthorized[i], assessmentId.toString());
     		}
     	}
     }

@@ -46,6 +46,15 @@ public interface AuthzQueriesFacadeAPI
    */
   public void removeAuthorizationByQualifierAndFunction(String qualifierId, String functionId);
   
+  /**
+   * Removes an authorization for a specified agent, qualifier and function
+   * TODO: This should be optimized into a single SQL call for a set of agents (groups)
+   * added by gopalrc - Nov 2007 
+   * @param agentId
+   * @param qualifierId
+   */
+  public void removeAuthorizationByAgentAndQualifier(String agentId, String qualifierId);
+  
   /** This returns a HashMap containing (String a.qualiferId, AuthorizationData a)
    * agentId is a site for now but can be a user
    */

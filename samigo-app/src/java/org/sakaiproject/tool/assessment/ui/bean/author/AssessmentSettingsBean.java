@@ -1571,6 +1571,9 @@ public class AssessmentSettingsBean
    * @return
    */
   public String[] getGroupsAuthorized() {
+	  if (!getReleaseTo().equals("Selected Groups")) {
+		  return new String[0];
+	  }
 	  if (groupsAuthorized == null) {
          AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
 		 List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_ASSESSMENT", getAssessmentId().toString());

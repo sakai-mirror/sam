@@ -688,20 +688,17 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			log.warn(e.getMessage());
 		}
 		// write authorization
-		// conditional processing added by gopalrc Nov 2007
-		AssessmentAccessControlIfc control = publishedAssessment.getAssessmentAccessControl();
-		String releaseTo = control.getReleaseTo();
-		if (releaseTo.equals("Selected Groups")) {
-			createAuthorizationForSelectedGroups(publishedAssessment);
-		}
-		else {
-			createAuthorization(publishedAssessment);
-		}
+		createAuthorization(publishedAssessment);
 		
 		return new PublishedAssessmentFacade(publishedAssessment);
 	}
 
 	public void createAuthorization(PublishedAssessmentData p) {
+		// conditional processing added by gopalrc Nov 2007
+		if (p.getAssessmentAccessControl().getReleaseTo().equals("Selected Groups")) {
+			createAuthorizationForSelectedGroups(p);
+		}
+		
 		String qualifierIdString = p.getPublishedAssessmentId().toString();
 		Vector v = new Vector();
 
