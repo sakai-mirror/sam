@@ -83,7 +83,8 @@ public class AuthzQueriesFacade
   public boolean hasPrivilege(String functionName)
   {
       String context = ToolManager.getCurrentPlacement().getContext();
-      return SecurityService.unlock(functionName, "/site/"+context);
+      boolean privilege = SecurityService.unlock(functionName, "/site/"+context);
+      return privilege;
   }
 
     // this method is added by daisyf on 02/22/05
@@ -295,9 +296,10 @@ public class AuthzQueriesFacade
    * @param agentId
    * @param qualifierId
    */
-  public void removeAuthorizationByAgentAndQualifier(String agentId, String qualifierId) {
+  public void removeAuthorizationByAgentQualifierAndFunction(String agentId, String qualifierId, String functionId) {
 	    String query="select a from AuthorizationData a where a.qualifierId="+qualifierId;
 	    String clause=" and a.agentId='" + agentId + "'";
+	    clause+=" and a.functionId='" + functionId + "'";
 	    List l = getHibernateTemplate().find(query+clause);
 	    getHibernateTemplate().deleteAll(l);
   }
@@ -347,25 +349,28 @@ public class AuthzQueriesFacade
   
   /**
    * added by gopalrc Nov 2007
-   * Checks is the user is authorized for taking an assessment released to groups
+   * Checks if the user is authorized for taking an assessment released to groups
    * @return
    */
-  public boolean isUserAuthorizedToTakeAssessmentReleasedToGroups(String assessmentId) {
+  private boolean isUserAuthorizedToTakeAssessmentReleasedToGroups(String publishedAssessmentId) {
 	  boolean auth = false;
 	  String currentUserId = UserDirectoryService.getCurrentUser().getId();
 	  
-      AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
-		 List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_ASSESSMENT", assessmentId.toString());
-		 if (authorizations != null && authorizations.size()>0) {
-			 Iterator authsIter = authorizations.iterator();
-			 int i = 0;
-			 while (authsIter.hasNext()) {
-				 AuthorizationData ad = (AuthorizationData) authsIter.next();
-				 ad.getAgentIdString();
-				 auth = AuthzGroupService.getInstance().isAllowed(currentUserId, "TAKE_PUBLISHED_ASSESSMENT", ad.getAgentIdString());
-				 if (auth) break;
-			 }
-		 }
+      AuthzQueriesFacadeAPI authz = this;//PersistenceService.getInstance().getAuthzQueriesFacade();
+      
+      // The groups authorized for release for the site
+      List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_PUBLISHED_ASSESSMENT", publishedAssessmentId.toString());
+      if (authorizations != null && authorizations.size()>0) {
+    	  Iterator authsIter = authorizations.iterator();
+    	  int i = 0;
+    	  while (authsIter.hasNext()) {
+    		  AuthorizationData ad = (AuthorizationData) authsIter.next();
+    		  ad.getAgentIdString();
+    		  // Does this user have TAKE_ASSESSMENT within this group
+    		  auth = AuthzGroupService.getInstance().isAllowed(currentUserId, "TAKE_ASSESSMENT", ad.getAgentIdString());
+    		  if (auth) break;
+    	  }
+      }
 	  
 	  return auth;
   }

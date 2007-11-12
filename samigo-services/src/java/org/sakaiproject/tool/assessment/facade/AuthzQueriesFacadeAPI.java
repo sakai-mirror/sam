@@ -53,7 +53,7 @@ public interface AuthzQueriesFacadeAPI
    * @param agentId
    * @param qualifierId
    */
-  public void removeAuthorizationByAgentAndQualifier(String agentId, String qualifierId);
+  public void removeAuthorizationByAgentQualifierAndFunction(String agentId, String qualifierId, String functionId);
   
   /** This returns a HashMap containing (String a.qualiferId, AuthorizationData a)
    * agentId is a site for now but can be a user

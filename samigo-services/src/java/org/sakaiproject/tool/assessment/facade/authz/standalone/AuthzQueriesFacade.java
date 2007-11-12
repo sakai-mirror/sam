@@ -133,7 +133,7 @@ public class AuthzQueriesFacade
    * @param agentId
    * @param qualifierId
    */
-  public void removeAuthorizationByAgentAndQualifier(String agentId, String qualifierId) {
+  public void removeAuthorizationByAgentQualifierAndFunction(String agentId, String qualifierId, String functionId) {
 	    String query="select a from AuthorizationData a where a.qualifierId="+qualifierId;
 	    String clause=" and a.agentId='" + agentId + "'";
 	    List l = getHibernateTemplate().find(query+clause);

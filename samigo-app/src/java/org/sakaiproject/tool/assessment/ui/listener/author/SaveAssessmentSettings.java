@@ -24,6 +24,7 @@
 package org.sakaiproject.tool.assessment.ui.listener.author;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,6 +32,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.sakaiproject.event.cover.EventTrackingService;
+import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.site.api.Group;
+import org.sakaiproject.site.api.Site;
+import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.EvaluationModel;
@@ -46,6 +51,7 @@ import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.ItemAuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentSettingsBean;
+import org.sakaiproject.tool.cover.ToolManager;
 
 /**
  * <p>Title: Samigo</p>2
@@ -254,22 +260,39 @@ public class SaveAssessmentSettings
     
     //added by gopalrc, 6 Nov 2007
     AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
-	String[] groupsAuthorized = assessmentSettings.getGroupsAuthorized();
     if (assessmentSettings.getReleaseTo().equals("Selected Groups")) {
         authz.removeAuthorizationByQualifierAndFunction(assessmentId.toString(), "TAKE_ASSESSMENT");
+    	String[] groupsAuthorized = assessmentSettings.getGroupsAuthorizedToSave();//getGroupsAuthorized();
     	if (groupsAuthorized != null && groupsAuthorized.length > 0) {
     		for (int i=0; i<groupsAuthorized.length; i++){
     			authz.createAuthorization(groupsAuthorized[i], "TAKE_ASSESSMENT", assessmentId.toString());
     		}
     	}
     }
-    else {
-    	if (groupsAuthorized != null && groupsAuthorized.length > 0) {
-    		for (int i=0; i<groupsAuthorized.length; i++){
-    	        authz.removeAuthorizationByAgentAndQualifier(groupsAuthorized[i], assessmentId.toString());
+/*    
+    else { // releaseTo is not "Selected Groups" - clean up old/orphaned group permissions if necessary
+    	Collection groups = null;
+    	try {
+    		Site site = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
+    		groups = site.getGroups();
+    	}
+		catch (IdUnusedException ex) {
+			// No site available
+		}
+		if (groups != null && groups.size() > 0) {
+			Iterator groupIter = groups.iterator();
+			while (groupIter.hasNext()) {
+				Group group = (Group) groupIter.next();
+				try {
+					authz.removeAuthorizationByAgentQualifierAndFunction(group.getId(), assessmentId.toString(), "TAKE_ASSESSMENT");
+				}
+				catch (Exception ex) {
+					// No authz for the group
+				}
     		}
     	}
     }
+*/
     
     assessment = assessmentService.getAssessment(assessmentId.toString());
     return assessment;

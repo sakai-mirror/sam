@@ -1571,11 +1571,8 @@ public class AssessmentSettingsBean
    * @return
    */
   public String[] getGroupsAuthorized() {
-	  if (!getReleaseTo().equals("Selected Groups")) {
-		  return new String[0];
-	  }
-	  if (groupsAuthorized == null) {
-         AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
+	 //if (groupsAuthorized == null) { 
+	     AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
 		 List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_ASSESSMENT", getAssessmentId().toString());
 		 if (authorizations != null && authorizations.size()>0) {
 			 groupsAuthorized = new String[authorizations.size()];
@@ -1586,15 +1583,23 @@ public class AssessmentSettingsBean
 				 groupsAuthorized[i++] = ad.getAgentIdString();
 			 }
 		 }
-		 else {
-			 groupsAuthorized = new String[0];
-		 }
-	 }
+	 //}
 	 return groupsAuthorized;
   }
   
   public void setGroupsAuthorized(String[] groupsAuthorized){
 	  this.groupsAuthorized = groupsAuthorized;
   }
+  
+  /** 
+   * To compensate for strange stateful behaviour of this bean
+   * TODO: troubleshoot stateful behaviour if time allows 
+   * added by gopalrc Nov 2007
+   * 
+   * @return
+   */
+  public String[] getGroupsAuthorizedToSave() {
+	 return groupsAuthorized;
+  }  
   
 }
