@@ -697,6 +697,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		// conditional processing added by gopalrc Nov 2007
 		if (p.getAssessmentAccessControl().getReleaseTo().equals("Selected Groups")) {
 			createAuthorizationForSelectedGroups(p);
+			return;
 		}
 		
 		String qualifierIdString = p.getPublishedAssessmentId().toString();
@@ -764,15 +765,20 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	 * @param p
 	 */
 	public void createAuthorizationForSelectedGroups(PublishedAssessmentData publishedAssessment) {
+		String qualifierIdString = publishedAssessment.getPublishedAssessmentId().toString();
+		PersistenceService.getInstance().getAuthzQueriesFacade()
+				.createAuthorization(AgentFacade.getCurrentSiteId(),
+						"OWN_PUBLISHED_ASSESSMENT", qualifierIdString);
+
 	    AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
 	    List authorizationsToCopy = authz.getAuthorizationByFunctionAndQualifier("TAKE_ASSESSMENT", publishedAssessment.getAssessmentId().toString());
-		 if (authorizationsToCopy != null && authorizationsToCopy.size()>0) {
+	    if (authorizationsToCopy != null && authorizationsToCopy.size()>0) {
 			 Iterator authsIter = authorizationsToCopy.iterator();
 			 while (authsIter.hasNext()) {
 				 AuthorizationData adToCopy = (AuthorizationData) authsIter.next();
      			 authz.createAuthorization(adToCopy.getAgentIdString(), "TAKE_PUBLISHED_ASSESSMENT", publishedAssessment.getPublishedAssessmentId().toString());
 			 }
-		 }
+	    }
 	}
 	
 
@@ -2084,4 +2090,74 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		} else
 			return null;
 	}
+	
+
+	/**
+	 * added by gopalrc - Nov 2007
+	 * @param orderBy
+	 * @param ascending
+	 * @param status
+	 * @param siteId
+	 * @return
+	 */
+	public ArrayList getBasicInfoOfPublishedAssessmentsReleasedToGroups(String orderBy,
+			boolean ascending, final Integer status, final String siteId) {
+
+		String query = "select new PublishedAssessmentData(p.publishedAssessmentId, p.title, "
+				+ " c.releaseTo, c.startDate, c.dueDate, c.retractDate, "
+				+ " c.feedbackDate, f.feedbackDelivery,  f.feedbackAuthoring, c.lateHandling, "
+				+ " c.unlimitedSubmissions, c.submissionsAllowed, em.scoringType) "
+				+ " from PublishedAssessmentData as p, PublishedAccessControl as c,"
+				+ " PublishedFeedback as f, AuthorizationData as az, PublishedEvaluationModel as em"
+				+ " where c.assessment.publishedAssessmentId=p.publishedAssessmentId "
+				+ " and p.publishedAssessmentId = f.assessment.publishedAssessmentId "
+				+ " and p.publishedAssessmentId = em.assessment.publishedAssessmentId "
+				+ " and p.status=? and az.agentIdString=? "
+				+ " and az.functionId=? and az.qualifierId=p.publishedAssessmentId"
+				+ " order by ";
+
+		if (ascending == false) {
+
+			if (orderBy.equals(DUE)) {
+				query += " c." + orderBy + " desc";
+			} else {
+				query += " p." + orderBy + " desc";
+			}
+		} else {
+			if (orderBy.equals(DUE)) {
+				query += " c." + orderBy + " asc";
+			} else {
+				query += " p." + orderBy + " asc";
+			}
+		}
+
+		final String hql = query;
+		final HibernateCallback hcb = new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				Query q = session.createQuery(hql);
+				q.setInteger(0, status.intValue());
+				q.setString(1, siteId);
+				q.setString(2, "TAKE_PUBLISHED_ASSESSMENT");
+				return q.list();
+			};
+		};
+		List list = getHibernateTemplate().executeFind(hcb);
+		ArrayList pubList = new ArrayList();
+		for (int i = 0; i < list.size(); i++) {
+			PublishedAssessmentData p = (PublishedAssessmentData) list.get(i);
+			PublishedAssessmentFacade f = new PublishedAssessmentFacade(p
+					.getPublishedAssessmentId(), p.getTitle(),
+					p.getReleaseTo(), p.getStartDate(), p.getDueDate(), p
+							.getRetractDate(), p.getFeedbackDate(), p
+							.getFeedbackDelivery(), p.getFeedbackAuthoring(), p
+							.getLateHandling(), p.getUnlimitedSubmissions(), p
+							.getSubmissionsAllowed(), p.getScoringType());
+			pubList.add(f);
+		}
+		return pubList;
+	}
+	
+	
+	
 }

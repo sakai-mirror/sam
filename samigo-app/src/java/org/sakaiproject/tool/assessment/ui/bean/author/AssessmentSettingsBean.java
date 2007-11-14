@@ -1593,8 +1593,11 @@ public class AssessmentSettingsBean
   
   /** 
    * To compensate for strange stateful behaviour of this bean
-   * TODO: troubleshoot stateful behaviour if time allows 
    * added by gopalrc Nov 2007
+   * 
+   * TODO: troubleshoot stateful behaviour if time allows
+   * - found that it's due to the bean having "session" scope
+   * - but changing it to "request" scope causes other issues 
    * 
    * @return
    */

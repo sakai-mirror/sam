@@ -172,9 +172,8 @@ function disableAllFeedbackCheck(feedbackType)
       
   <f:verbatim><div id="groupDiv"></f:verbatim>
   <f:verbatim><table bgcolor="#CCCCCC"><tr><td></f:verbatim>  
-    <h:selectBooleanCheckbox id="checkUncheckAllReleaseGroups"  title="Group(s)" onclick="checkUncheckAllReleaseGroups();"/>  
   <f:verbatim></td><td>Group(s)</td></tr></table></f:verbatim>
-  <h:selectManyCheckbox id="groupsForSite" layout="pagedirection" value="#{publishedSettings.groupsAuthorized}">
+  <h:selectManyCheckbox disabled="true" id="groupsForSite" layout="pagedirection" value="#{publishedSettings.groupsAuthorized}">
      <f:selectItems value="#{publishedSettings.groupsForSite}" />
   </h:selectManyCheckbox>
   <f:verbatim></div></f:verbatim>

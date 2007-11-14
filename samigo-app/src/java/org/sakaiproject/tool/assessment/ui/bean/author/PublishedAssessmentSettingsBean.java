@@ -1346,9 +1346,9 @@ public class PublishedAssessmentSettingsBean
 		 return groupsAuthorized;
 	  }
 	  
-	  public void setGroupsAuthorized(String[] groupsAuthorized){
-		  this.groupsAuthorized = groupsAuthorized;
-	  }
+//	  public void setGroupsAuthorized(String[] groupsAuthorized){
+//		  this.groupsAuthorized = groupsAuthorized;
+//	  }
 	
 }
 

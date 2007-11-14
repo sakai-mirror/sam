@@ -362,7 +362,6 @@ public class AuthzQueriesFacade
       List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_PUBLISHED_ASSESSMENT", publishedAssessmentId.toString());
       if (authorizations != null && authorizations.size()>0) {
     	  Iterator authsIter = authorizations.iterator();
-    	  int i = 0;
     	  while (authsIter.hasNext()) {
     		  AuthorizationData ad = (AuthorizationData) authsIter.next();
     		  ad.getAgentIdString();
