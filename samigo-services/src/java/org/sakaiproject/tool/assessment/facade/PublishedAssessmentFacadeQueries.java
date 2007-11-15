@@ -23,6 +23,7 @@ package org.sakaiproject.tool.assessment.facade;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -38,9 +39,13 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentResource;
+import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.service.gradebook.shared.GradebookService;
+import org.sakaiproject.site.api.Group;
+import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.spring.SpringBeanLocator;
 import org.sakaiproject.tool.assessment.data.dao.assessment.Answer;
 import org.sakaiproject.tool.assessment.data.dao.assessment.AnswerFeedback;
@@ -92,6 +97,7 @@ import org.sakaiproject.tool.assessment.osid.shared.impl.IdImpl;
 import org.sakaiproject.tool.assessment.qti.constants.AuthoringConstantStrings;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
+import org.sakaiproject.user.cover.UserDirectoryService;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -2092,17 +2098,44 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	}
 	
 
+	private SecurityService securityService;
+	private SiteService siteService;
+	
+	
+	
 	/**
 	 * added by gopalrc - Nov 2007
+	 * adapted from getBasicInfoOfAllPublishedAssessments() 
+	 * to include release to selected groups
+	 * 
 	 * @param orderBy
 	 * @param ascending
 	 * @param status
 	 * @param siteId
 	 * @return
 	 */
-	public ArrayList getBasicInfoOfPublishedAssessmentsReleasedToGroups(String orderBy,
+	public ArrayList getBasicInfoOfTakeablePublishedAssessments(String orderBy,
 			boolean ascending, final Integer status, final String siteId) {
 
+		String currentUserId = UserDirectoryService.getCurrentUser().getId();
+		String functionName="assessment.takeAssessment";
+		Collection siteGroups = null;
+		try {
+			siteGroups = siteService.getSite(siteId).getGroupsWithMember(currentUserId);
+		}
+		catch (IdUnusedException ex) {
+			// no site found
+		}
+		Iterator groupsIter = siteGroups.iterator();
+		final ArrayList groupIds = new ArrayList();
+		while (groupsIter.hasNext()) {
+			Group group = (Group) groupsIter.next(); 
+			//if (securityService.unlock(functionName, group.getReference())) {
+				groupIds.add(group.getId());
+			//}
+		}
+		
+		
 		String query = "select new PublishedAssessmentData(p.publishedAssessmentId, p.title, "
 				+ " c.releaseTo, c.startDate, c.dueDate, c.retractDate, "
 				+ " c.feedbackDate, f.feedbackDelivery,  f.feedbackAuthoring, c.lateHandling, "
@@ -2112,8 +2145,8 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				+ " where c.assessment.publishedAssessmentId=p.publishedAssessmentId "
 				+ " and p.publishedAssessmentId = f.assessment.publishedAssessmentId "
 				+ " and p.publishedAssessmentId = em.assessment.publishedAssessmentId "
-				+ " and p.status=? and az.agentIdString=? "
-				+ " and az.functionId=? and az.qualifierId=p.publishedAssessmentId"
+				+ " and p.status=:status and (az.agentIdString=:siteId or az.agentIdString in (:groupIds)) "
+				+ " and az.functionId=:functionId and az.qualifierId=p.publishedAssessmentId"
 				+ " order by ";
 
 		if (ascending == false) {
@@ -2136,9 +2169,10 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			public Object doInHibernate(Session session)
 					throws HibernateException, SQLException {
 				Query q = session.createQuery(hql);
-				q.setInteger(0, status.intValue());
-				q.setString(1, siteId);
-				q.setString(2, "TAKE_PUBLISHED_ASSESSMENT");
+				q.setInteger("status", status.intValue());
+				q.setParameterList("groupIds", groupIds);
+				q.setString("siteId", siteId);
+				q.setString("functionId", "TAKE_PUBLISHED_ASSESSMENT");
 				return q.list();
 			};
 		};
@@ -2156,6 +2190,14 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			pubList.add(f);
 		}
 		return pubList;
+	}
+
+	public void setSecurityService(SecurityService securityService) {
+		this.securityService = securityService;
+	}
+
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
 	}
 	
 	

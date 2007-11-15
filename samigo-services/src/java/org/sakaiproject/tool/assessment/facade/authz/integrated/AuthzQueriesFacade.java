@@ -347,32 +347,4 @@ public class AuthzQueriesFacade
   }
 
   
-  /**
-   * added by gopalrc Nov 2007
-   * Checks if the user is authorized for taking an assessment released to groups
-   * @return
-   */
-  private boolean isUserAuthorizedToTakeAssessmentReleasedToGroups(String publishedAssessmentId) {
-	  boolean auth = false;
-	  String currentUserId = UserDirectoryService.getCurrentUser().getId();
-	  
-      AuthzQueriesFacadeAPI authz = this;//PersistenceService.getInstance().getAuthzQueriesFacade();
-      
-      // The groups authorized for release for the site
-      List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_PUBLISHED_ASSESSMENT", publishedAssessmentId.toString());
-      if (authorizations != null && authorizations.size()>0) {
-    	  Iterator authsIter = authorizations.iterator();
-    	  while (authsIter.hasNext()) {
-    		  AuthorizationData ad = (AuthorizationData) authsIter.next();
-    		  ad.getAgentIdString();
-    		  // Does this user have TAKE_ASSESSMENT within this group
-    		  auth = AuthzGroupService.getInstance().isAllowed(currentUserId, "TAKE_ASSESSMENT", ad.getAgentIdString());
-    		  if (auth) break;
-    	  }
-      }
-	  
-	  return auth;
-  }
-
-  
 }
