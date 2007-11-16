@@ -2128,8 +2128,13 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		}
 		Iterator groupsIter = siteGroups.iterator();
 		final ArrayList groupIds = new ArrayList();
+		// To accomodate the problem with Hibernate and empty array parameters 
+		// TODO: this should probably be handled in a more efficient way
+		groupIds.add("none");  
 		while (groupsIter.hasNext()) {
 			Group group = (Group) groupsIter.next(); 
+			// TODO: Does this conditional check need to be done,
+			// or is it sufficient thet the individual is in the group
 			//if (securityService.unlock(functionName, group.getReference())) {
 				groupIds.add(group.getId());
 			//}

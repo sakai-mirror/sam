@@ -269,7 +269,6 @@ public class SaveAssessmentSettings
     		}
     	}
     }
-/*    
     else { // releaseTo is not "Selected Groups" - clean up old/orphaned group permissions if necessary
     	Collection groups = null;
     	try {
@@ -283,16 +282,15 @@ public class SaveAssessmentSettings
 			Iterator groupIter = groups.iterator();
 			while (groupIter.hasNext()) {
 				Group group = (Group) groupIter.next();
-				try {
+				//try {
 					authz.removeAuthorizationByAgentQualifierAndFunction(group.getId(), assessmentId.toString(), "TAKE_ASSESSMENT");
-				}
-				catch (Exception ex) {
-					// No authz for the group
-				}
+				//}
+				//catch (Exception ex) {
+					// No authz permission data for the group
+				//}
     		}
     	}
     }
-*/
     
     assessment = assessmentService.getAssessment(assessmentId.toString());
     return assessment;

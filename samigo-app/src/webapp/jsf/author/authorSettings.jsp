@@ -230,6 +230,7 @@ function showHideReleaseGroups(){
   if(showGroups) {
 	document.getElementById("groupDiv").style.display = "block";
 	document.getElementById("groupDiv").style.width = "80%";
+	document.getElementById("groupDiv").style.left = "100px";
   }
   else {
 	document.getElementById("groupDiv").style.display = "none";
