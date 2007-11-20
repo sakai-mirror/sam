@@ -1522,7 +1522,7 @@ public class AssessmentSettingsBean
 	    	 while (groupIter.hasNext()) {
 	    		 Group group = (Group) groupIter.next();
 	    		 String groupDescription = group.getDescription() == null ? "" : group.getDescription();
-	    		 sortedSelectItems.put(group.getTitle(), new SelectItem(group.getId(), group.getTitle() + ": " + groupDescription, "Test Description"));
+	    		 sortedSelectItems.put(group.getTitle(), new SelectItem(group.getId(), group.getTitle() + ": " + groupDescription));
 	    	 }
 	    	 Set keySet = sortedSelectItems.keySet();
 	    	 groupIter = keySet.iterator();

@@ -23,6 +23,7 @@ package org.sakaiproject.tool.assessment.facade;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,7 +33,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
+
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +49,7 @@ import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.service.gradebook.shared.GradebookService;
 import org.sakaiproject.site.api.Group;
+import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.spring.SpringBeanLocator;
 import org.sakaiproject.tool.assessment.data.dao.assessment.Answer;
@@ -97,6 +102,7 @@ import org.sakaiproject.tool.assessment.osid.shared.impl.IdImpl;
 import org.sakaiproject.tool.assessment.qti.constants.AuthoringConstantStrings;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
+import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.user.cover.UserDirectoryService;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -1098,8 +1104,19 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		}
 
 		ArrayList pubList = new ArrayList();
+		TreeMap groupsForSite = null;
+		String releaseToGroups;
 		for (int i = 0; i < list.size(); i++) {
 			PublishedAssessmentData p = (PublishedAssessmentData) list.get(i);
+			releaseToGroups = null;
+			if (p.getReleaseTo().equals("Selected Groups")) {
+				if (groupsForSite == null) {
+					groupsForSite = getGroupsForSite();
+				}
+				Long assessmentId = p.getPublishedAssessmentId();
+				releaseToGroups = this.getReleaseToGroupsAsString(groupsForSite, assessmentId);
+			}
+			
 			PublishedAssessmentFacade f = new PublishedAssessmentFacade(p
 					.getPublishedAssessmentId(), p.getTitle(),
 					p.getReleaseTo(), p.getStartDate(), p.getDueDate());
@@ -2205,6 +2222,64 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		this.siteService = siteService;
 	}
 	
+
 	
+	
+	/**
+	 * added by gopalrc November 2007
+	 * 
+	 * @param assessmentId
+	 * @return
+	 */
+	private String getReleaseToGroupsAsString(TreeMap groupsForSite, Long assessmentId) {
+	
+		 String[] releaseToGroups = null;
+		 String releaseToGroupsAsString = null;
+	     AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
+		 List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_PUBLISHED_ASSESSMENT", assessmentId.toString());
+		 if (authorizations != null && authorizations.size()>0) {
+			 releaseToGroupsAsString = "";
+			 releaseToGroups = new String[authorizations.size()];
+			 Iterator authsIter = authorizations.iterator();
+			 int i = 0;
+			 while (authsIter.hasNext()) {
+				 AuthorizationData ad = (AuthorizationData) authsIter.next();
+				 releaseToGroups[i++] = (String) groupsForSite.get(ad.getAgentIdString());
+			 }
+			 Arrays.sort(releaseToGroups);
+			 for (i=0; i<releaseToGroups.length-1; i++) {
+				 releaseToGroupsAsString += releaseToGroups[i] + ", ";
+			 }
+			 releaseToGroupsAsString += releaseToGroups[releaseToGroups.length-1];
+		 }
+		 return releaseToGroupsAsString;
+	}
+	
+
+	  /**
+	   * added by gopalrc Nov 2007
+	   * Returns all groups for site
+	   * @return
+	   */
+	  private TreeMap getGroupsForSite(){
+	      TreeMap sortedGroups = new TreeMap();
+		  Site site = null;
+		  try {
+			 site = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
+			 Collection groups = site.getGroups();
+		     if (groups != null && groups.size() > 0) {
+		    	 Iterator groupIter = groups.iterator();
+		    	 while (groupIter.hasNext()) {
+		    		 Group group = (Group) groupIter.next();
+		    		 sortedGroups.put(group.getId(), group.getTitle());
+		    	 }
+		     }
+		  }
+		  catch (IdUnusedException ex) {
+			  // No site available
+		  }
+		  return sortedGroups;
+	  }
+
 	
 }
