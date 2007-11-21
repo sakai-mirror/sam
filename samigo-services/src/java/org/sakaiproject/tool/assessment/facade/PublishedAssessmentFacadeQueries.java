@@ -1114,12 +1114,12 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 					groupsForSite = getGroupsForSite();
 				}
 				Long assessmentId = p.getPublishedAssessmentId();
-				releaseToGroups = this.getReleaseToGroupsAsString(groupsForSite, assessmentId);
+				releaseToGroups = getReleaseToGroupsAsString(groupsForSite, assessmentId);
 			}
 			
 			PublishedAssessmentFacade f = new PublishedAssessmentFacade(p
 					.getPublishedAssessmentId(), p.getTitle(),
-					p.getReleaseTo(), p.getStartDate(), p.getDueDate());
+					p.getReleaseTo(), p.getStartDate(), p.getDueDate(), releaseToGroups);
 			pubList.add(f);
 		}
 		return pubList;
@@ -1169,11 +1169,24 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		// Hibernate.STRING});
 
 		ArrayList pubList = new ArrayList();
+		TreeMap groupsForSite = null;
+		String releaseToGroups;
+		
 		for (int i = 0; i < list.size(); i++) {
 			PublishedAssessmentData p = (PublishedAssessmentData) list.get(i);
+			releaseToGroups = null;
+			
+			if (p.getReleaseTo().equals("Selected Groups")) {
+				if (groupsForSite == null) {
+					groupsForSite = getGroupsForSite();
+				}
+				Long assessmentId = p.getPublishedAssessmentId();
+				releaseToGroups = getReleaseToGroupsAsString(groupsForSite, assessmentId);
+			}
+
 			PublishedAssessmentFacade f = new PublishedAssessmentFacade(p
 					.getPublishedAssessmentId(), p.getTitle(),
-					p.getReleaseTo(), p.getStartDate(), p.getDueDate());
+					p.getReleaseTo(), p.getStartDate(), p.getDueDate(), releaseToGroups);
 			pubList.add(f);
 		}
 		return pubList;
