@@ -173,6 +173,8 @@ $Id$
 </h:panelGrid>
 </p>
 
+
+
   <h:dataTable value="#{histogramScores.info}" var="item">
 
 <!-- need to add a randomtype property for histogramQuestionScoreBean (item) and if it's true, hide histogram  -->
@@ -246,6 +248,153 @@ $Id$
 <f:verbatim></div></div></f:verbatim> 
     </h:column>
   </h:dataTable>
+
+
+
+
+
+<!-- 
+***************************************************
+***************************************************
+***************************************************
+Below added by gopalrc Nov 2007 
+***************************************************
+***************************************************
+***************************************************
+-->
+
+<br/>
+<br/>
+<br/>
+
+
+  <h:dataTable value="#{histogramScores.info}" var="item">
+
+<!-- need to add a randomtype property for histogramQuestionScoreBean (item) and if it's true, hide histogram  -->
+<%--
+    <h:column rendered="#{histogramScores.randomType =='true'}">
+      <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
+    </h:column>
+--%>
+
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>Question</U>" /> 
+        </f:facet>
+        <h:outputText value="#{item.questionLabel}" escape="false" />
+    </h:column>
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>Resp</U>" /> 
+        </f:facet>
+        <h:outputText value="#{item.numResponses}" escape="false" />
+    </h:column>
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>% Correct<br/>Whole Group</U>" /> 
+        </f:facet>
+        <h:outputText value="#{item.percentCorrect}" escape="false" />
+    </h:column>
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U><br/>Upper 25%</U>" /> 
+        </f:facet>
+        <h:outputText value="U-25" escape="false" />
+    </h:column>
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U><br/>Lower 25%</U>" /> 
+        </f:facet>
+        <h:outputText value="L-25" escape="false" />
+    </h:column>
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>Discrim</U>" /> 
+        </f:facet>
+        <h:outputText value="Discrim" escape="false" />
+    </h:column>
+
+
+
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>- &nbsp;&nbsp;&nbsp;</U>" /> 
+        </f:facet>
+        <h:outputText value="1" escape="false" />
+    </h:column>
+
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>a &nbsp;&nbsp;&nbsp;</U>" /> 
+        </f:facet>
+        <h:outputText value="#{item.numStudentsTextA}" escape="false" />
+    </h:column>
+
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>b &nbsp;&nbsp;&nbsp;</U>" /> 
+        </f:facet>
+        <h:outputText value="#{item.numStudentsTextB}" escape="false" />
+    </h:column>
+
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>c &nbsp;&nbsp;&nbsp;</U>" /> 
+        </f:facet>
+        <h:outputText value="#{item.numStudentsTextC}" escape="false" />
+    </h:column>
+
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>d &nbsp;&nbsp;&nbsp;</U>" /> 
+        </f:facet>
+        <h:outputText value="#{item.numStudentsTextD}" escape="false" />
+    </h:column>
+
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>e &nbsp;&nbsp;&nbsp;</U>" /> 
+        </f:facet>
+        <h:outputText value="#{item.numStudentsTextE}" escape="false" />
+    </h:column>
+
+
+    <h:column rendered="#{histogramScores.randomType =='false'}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="<U>f &nbsp;&nbsp;&nbsp;</U>" /> 
+        </f:facet>
+        <h:outputText value="#{item.numStudentsTextF}" escape="false" />
+    </h:column>
+
+
+
+  </h:dataTable>
+
+
+<!-- 
+***************************************************
+***************************************************
+***************************************************
+Above added by gopalrc Nov 2007 
+***************************************************
+***************************************************
+***************************************************
+-->
+
+
+
 
 
 <h:commandButton accesskey="#{evaluationMessages.a_return}"value="#{evaluationMessages.return}" action="select" type="submit" rendered="#{histogramScores.hasNav=='false'}"/>
