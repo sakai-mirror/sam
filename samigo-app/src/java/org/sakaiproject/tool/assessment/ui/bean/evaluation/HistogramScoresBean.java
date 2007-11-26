@@ -26,6 +26,8 @@ import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.text.NumberFormat;
 
 import org.apache.commons.logging.Log;
@@ -825,4 +827,63 @@ publishedId = ppublishedId;
     histogramBars = bars;
   }
 
+  
+  // Below Added by gopalrc - Nov 2007
+  /**
+   * added by gopalrc Nov 2007
+   * Students in the upper 25%
+   */
+  private Map upperQuartileStudents;
+  
+  /**
+   * added by gopalrc Nov 2007
+   * Students in the lower 25%
+   */
+  private Map lowerQuartileStudents;
+  
+  public void addToUpperQuartileStudents(String agentId) {
+	  if (upperQuartileStudents == null) {
+		  upperQuartileStudents = new HashMap();
+	  }
+	  upperQuartileStudents.put(agentId, agentId);
+  }
+  
+  public boolean isUpperQuartileStudent(String agentId) {
+	  if (upperQuartileStudents == null) {
+		  return false;
+	  }
+	  else {
+		  if (upperQuartileStudents.get(agentId) == null) {
+			  return false;
+		  }
+		  else {
+			  return true;
+		  }
+	  }
+  }
+  
+  public void addToLowerQuartileStudents(String agentId) {
+	  if (lowerQuartileStudents == null) {
+		  lowerQuartileStudents = new HashMap();
+	  }
+	  lowerQuartileStudents.put(agentId, agentId);
+  }
+  
+  
+  public boolean isLowerQuartileStudent(String agentId) {
+	  if (lowerQuartileStudents == null) {
+		  return false;
+	  }
+	  else {
+		  if (lowerQuartileStudents.get(agentId) == null) {
+			  return false;
+		  }
+		  else {
+			  return true;
+		  }
+	  }
+  }
+  
+  
+  
 }

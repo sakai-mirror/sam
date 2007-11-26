@@ -939,4 +939,59 @@ public class HistogramQuestionScoresBean
 	  }
   }
 
+  
+  /**
+   * added by gopalrc Nov 2007
+   * 
+   * Percentage of students in the overall upper 25%
+   * who got this question right
+   */
+  private String percentCorrectFromUpperQuartileStudents;
+  
+  /**
+   * added by gopalrc Nov 2007
+   * 
+   * Percentage of students in the overall lower 25%
+   * who got this question right
+   */
+  private String percentCorrectFromLowerQuartileStudents;
+
+  /**
+   * added by gopalrc Nov 2007
+   * 
+   * Discrimination value of this question
+   */
+  private String discrimination;
+  
+  
+
+  public String getDiscrimination() {
+	  return discrimination;
+  }
+
+  public void setDiscrimination(String discrimination) {
+	  this.discrimination = discrimination;
+  }
+
+  public String getPercentCorrectFromUpperQuartileStudents() {
+	  return percentCorrectFromUpperQuartileStudents;
+  }
+
+  public void setPercentCorrectFromUpperQuartileStudents(
+		  String percentCorrectFromUpperQuartileStudents) {
+	  this.percentCorrectFromUpperQuartileStudents = percentCorrectFromUpperQuartileStudents;
+  }
+
+  public String getPercentCorrectFromLowerQuartileStudents() {
+	  return percentCorrectFromLowerQuartileStudents;
+  }
+
+  public void setPercentCorrectFromLowerQuartileStudents(
+		  String percentCorrectFromLowerQuartileStudents) {
+	  this.percentCorrectFromLowerQuartileStudents = percentCorrectFromLowerQuartileStudents;
+  }
+
+  
+  
+  
 }

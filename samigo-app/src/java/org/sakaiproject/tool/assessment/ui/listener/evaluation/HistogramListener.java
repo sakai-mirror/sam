@@ -379,13 +379,13 @@ public class HistogramListener
       answers = firstText.getAnswerArraySorted();
     }
    
-    if (qbean.getQuestionType().equals("1")) 
+    if (qbean.getQuestionType().equals("1")) // mcsc
       getTFMCScores(publishedAnswerHash, scores, qbean, answers);
-    else if (qbean.getQuestionType().equals("2"))
+    else if (qbean.getQuestionType().equals("2")) // mcmc
       getFIBMCMCScores(publishedItemHash, publishedAnswerHash, scores, qbean, answers);
-    else if (qbean.getQuestionType().equals("3"))
+    else if (qbean.getQuestionType().equals("3")) // mc survey
       getTFMCScores(publishedAnswerHash, scores, qbean, answers);
-    else if (qbean.getQuestionType().equals("4"))
+    else if (qbean.getQuestionType().equals("4")) // tf
       getTFMCScores(publishedAnswerHash, scores, qbean, answers);
     else if ((qbean.getQuestionType().equals("8"))||(qbean.getQuestionType().equals("11")) )
       getFIBMCMCScores(publishedItemHash, publishedAnswerHash, scores, qbean, answers);
@@ -808,6 +808,7 @@ public class HistogramListener
     int i = 0;
     int responses = 0;
     int correctresponses = 0;
+    
     while (iter.hasNext())
     {
       Long sequenceId = (Long) iter.next();
@@ -819,7 +820,7 @@ public class HistogramListener
 
       numarray[i] = num;
       bars[i] = new HistogramBarBean();
-      if (qbean.getQuestionType().equals("4")) {
+      if (qbean.getQuestionType().equals("4")) { //true-false
     	  String origText = answer.getText();
     	  String text = "";
     	  if ("true".equals(origText)) {
@@ -1667,7 +1668,7 @@ if (answer != null)
 
   /**
    * Adapted from histogramScores()
-   * by gopalrc Nov 2007
+   * modified by gopalrc Nov 2007
    * 
    * Calculate the detailed statistics as per WebCT
    * 
@@ -1681,7 +1682,7 @@ if (answer != null)
    */
   public boolean histogramScores(String publishedId,
 			HistogramScoresBean histogramScores, TotalScoresBean totalScores) {
-
+	  
 		try {
 			ResourceLoader rb = new ResourceLoader(
 					"org.sakaiproject.tool.assessment.bundle.AuthorMessages");
@@ -1715,6 +1716,7 @@ if (answer != null)
 				return false;
 			Object next = iter.next();
 			AssessmentGradingData data = (AssessmentGradingData) next;
+			
 			PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService
 					.getPublishedAssessment(data.getPublishedAssessmentId()
 							.toString());
@@ -1789,7 +1791,7 @@ if (answer != null)
 
 				// here scores contain AssessmentGradingData 
 				Map assessmentMap = getAssessmentStatisticsMap(scores);
-
+				
 				// test to see if it gets back empty map
 				if (assessmentMap.isEmpty()) {
 					histogramScores.setNumResponses(0);
@@ -1823,6 +1825,22 @@ if (answer != null)
 					}
 					histogramScores.setHistogramBars(bars);
 
+
+					// gopalrc Nov 2007
+					double q1 = Double.valueOf(histogramScores.getQ1()).doubleValue();
+					double q3 = Double.valueOf(histogramScores.getQ3()).doubleValue();
+					Iterator totalScoresIter = scores.iterator();
+					while (totalScoresIter.hasNext()) {
+						AssessmentGradingData assessmentGradingData = (AssessmentGradingData) totalScoresIter.next();
+						if (assessmentGradingData.getTotalAutoScore().doubleValue() <= q1) {
+							histogramScores.addToLowerQuartileStudents(assessmentGradingData.getAgentId());
+						}
+						if (assessmentGradingData.getTotalAutoScore().doubleValue() >= q3) {
+							histogramScores.addToUpperQuartileStudents(assessmentGradingData.getAgentId());
+						}
+					}
+					
+					
 					///////////////////////////////////////////////////////////
 					// START DEBUGGING
 					/*
@@ -1873,17 +1891,7 @@ if (answer != null)
 
 	}
   
-/*
- * gopalrc
- * 
   
-  select eid,  publisheditemid, publishedanswerid, autoscore 
-  from  sam_itemgrading_t as grad, sakai_user_id_map as usr 
-  where agentid = user_id and submitteddate > '2007-11-22'  
-  order by eid;
-   
- * 
- */
   
   
   
