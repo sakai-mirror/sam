@@ -26,6 +26,8 @@ package org.sakaiproject.tool.assessment.ui.bean.evaluation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -940,6 +942,31 @@ public class HistogramQuestionScoresBean
   }
 
   
+  
+  // Below Added by gopalrc - Nov 2007
+  /**
+   * added by gopalrc Nov 2007
+   * Students in the upper 25%
+   */
+  private Set studentsWithAllCorrect;
+  private Set studentsResponded;
+  
+  public void addStudentWithAllCorrect(String agentId) {
+	  if (studentsWithAllCorrect == null) {
+		  studentsWithAllCorrect = new TreeSet();
+	  }
+	  studentsWithAllCorrect.add(agentId);
+  }
+  
+  public void addStudentResponded(String agentId) {
+	  if (studentsResponded == null) {
+		  studentsResponded = new TreeSet();
+	  }
+	  studentsResponded.add(agentId);
+  }
+  
+  
+  
   /**
    * added by gopalrc Nov 2007
    * 
@@ -963,7 +990,15 @@ public class HistogramQuestionScoresBean
    */
   private String discrimination;
   
-  
+	
+	public Set getStudentsWithAllCorrect() {
+		return studentsWithAllCorrect;
+	}
+	
+	public Set getStudentsResponded() {
+		return studentsResponded;
+	}
+
 
   public String getDiscrimination() {
 	  return discrimination;

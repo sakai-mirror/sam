@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
@@ -373,7 +374,7 @@ public class HistogramListener
     ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(((ItemGradingData) scores.toArray()[0]).getPublishedItemId());
     ArrayList text = item.getItemTextArraySorted();
     ArrayList answers = null;
-    if (!qbean.getQuestionType().equals("9"))
+    if (!qbean.getQuestionType().equals("9")) // matching
     {
       ItemTextIfc firstText = (ItemTextIfc) publishedItemTextHash.get(((ItemTextIfc) text.toArray()[0]).getId());
       answers = firstText.getAnswerArraySorted();
@@ -396,470 +397,450 @@ public class HistogramListener
   }
 
 
-  private void getFIBMCMCScores(HashMap publishedItemHash, HashMap publishedAnswerHash, 
-    ArrayList scores, HistogramQuestionScoresBean qbean, ArrayList answers)
-  {
-	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
-    HashMap texts = new HashMap();
-    Iterator iter = answers.iterator();
-    HashMap results = new HashMap();
-    HashMap numStudentRespondedMap= new HashMap(); 
-    HashMap sequenceMap = new HashMap();
-    while (iter.hasNext())
-    {
-      AnswerIfc answer = (AnswerIfc) iter.next();
-      texts.put(answer.getId(), answer);
-      results.put(answer.getId(), new Integer(0));
-      sequenceMap.put(answer.getSequence(), answer.getId());
-    }
-    iter = scores.iterator();
-    while (iter.hasNext())
-    {
-      ItemGradingData data = (ItemGradingData) iter.next();
-      AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
-      if (answer != null)
-      {
-        //log.info("Rachel: looking for " + answer.getId());
-        // found a response
-        Integer num = null;
-        // num is a counter
-        try {
-        // we found a response, now get existing count from the hashmap
-          num = (Integer) results.get(answer.getId());
+  private void getFIBMCMCScores(HashMap publishedItemHash,
+			HashMap publishedAnswerHash, ArrayList scores,
+			HistogramQuestionScoresBean qbean, ArrayList answers) {
+		ResourceLoader rb = new ResourceLoader(
+				"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
+		HashMap texts = new HashMap();
+		Iterator iter = answers.iterator();
+		HashMap results = new HashMap();
+		HashMap numStudentRespondedMap = new HashMap();
+		HashMap sequenceMap = new HashMap();
+		while (iter.hasNext()) {
+			AnswerIfc answer = (AnswerIfc) iter.next();
+			texts.put(answer.getId(), answer);
+			results.put(answer.getId(), new Integer(0));
+			sequenceMap.put(answer.getSequence(), answer.getId());
+		}
+		iter = scores.iterator();
+		while (iter.hasNext()) {
+			ItemGradingData data = (ItemGradingData) iter.next();
+			AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data
+					.getPublishedAnswerId());
+			if (answer != null) {
+				// log.info("Rachel: looking for " + answer.getId());
+				// found a response
+				Integer num = null;
+				// num is a counter
+				try {
+					// we found a response, now get existing count from the
+					// hashmap
+					num = (Integer) results.get(answer.getId());
 
+				} catch (Exception e) {
+					log.warn("No results for " + answer.getId());
+				}
+				if (num == null)
+					num = new Integer(0);
 
-        } catch (Exception e) {
-          log.warn("No results for " + answer.getId());
-        }
-        if (num == null)
-          num = new Integer(0);
+				ArrayList studentResponseList = (ArrayList) numStudentRespondedMap
+						.get(data.getAssessmentGradingId());
+				if (studentResponseList == null) {
+					studentResponseList = new ArrayList();
+				}
+				studentResponseList.add(data);
+				numStudentRespondedMap.put(data.getAssessmentGradingId(),
+						studentResponseList);
+				// we found a response, and got the existing num , now update
+				// one
+				if ((qbean.getQuestionType().equals("8"))
+						|| (qbean.getQuestionType().equals("11"))) {
+					// for fib we only count the number of correct responses
+					Float autoscore = data.getAutoScore();
+					if (!(new Float(0)).equals(autoscore)) {
+						results.put(answer.getId(), new Integer(
+								num.intValue() + 1));
+						
+						// gopalrc - Nov 2007
+						qbean.addStudentResponded(data.getAgentId()); 
+					}
+				} else {
+					// for mc, we count the number of all responses
+					results
+							.put(answer.getId(),
+									new Integer(num.intValue() + 1));
 
-    	  ArrayList studentResponseList = (ArrayList)numStudentRespondedMap.get(data.getAssessmentGradingId());
-          if (studentResponseList==null) {
-    	    studentResponseList = new ArrayList();
-          }
-          studentResponseList.add(data);
-          numStudentRespondedMap.put(data.getAssessmentGradingId(), studentResponseList);
-        // we found a response, and got the  existing num , now update one
-        if ((qbean.getQuestionType().equals("8"))|| (qbean.getQuestionType().equals("11")))
-        {
-          // for fib we only count the number of correct responses 
-          Float autoscore = data.getAutoScore();
-          if (!(new Float(0)).equals(autoscore)) {
-            results.put(answer.getId(), new Integer(num.intValue() + 1));
-          }
-        }
-        else {  
-          // for mc, we count the number of all responses 
-          results.put(answer.getId(), new Integer(num.intValue() + 1));
-        }
-      }
-    }
-    HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
-    int[] numarray = new int[results.keySet().size()];
-    ArrayList sequenceList = new ArrayList();
-    iter = answers.iterator();
-    while (iter.hasNext())
-    {
-      AnswerIfc answer = (AnswerIfc) iter.next();
-      sequenceList.add(answer.getSequence());
-    }
-     
-    Collections.sort(sequenceList);
-    //iter = results.keySet().iterator();
-    iter = sequenceList.iterator();
-    int i = 0;
-    int responses = 0;
-    int correctresponses = 0;
-    while (iter.hasNext())
-    {
-      Long sequenceId = (Long) iter.next();
-      Long answerId = (Long) sequenceMap.get(sequenceId);
-      AnswerIfc answer = (AnswerIfc) texts.get(answerId);
-      int num = ((Integer) results.get(answerId)).intValue();
-      numarray[i] = num;
-      bars[i] = new HistogramBarBean();
-      if(answer != null)
-      	bars[i].setLabel(answer.getText());
+					// gopalrc - Nov 2007
+					qbean.addStudentResponded(data.getAgentId());
+				}
+			}
+		}
+		HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
+		int[] numarray = new int[results.keySet().size()];
+		ArrayList sequenceList = new ArrayList();
+		iter = answers.iterator();
+		while (iter.hasNext()) {
+			AnswerIfc answer = (AnswerIfc) iter.next();
+			sequenceList.add(answer.getSequence());
+		}
 
-      // this doens't not apply to fib , do not show checkmarks for FIB
-    	if (!(qbean.getQuestionType().equals("8")) && !(qbean.getQuestionType().equals("11"))&& answer != null)
-      	{
-	  bars[i].setIsCorrect(answer.getIsCorrect());
-        }
+		Collections.sort(sequenceList);
+		// iter = results.keySet().iterator();
+		iter = sequenceList.iterator();
+		int i = 0;
+		int responses = 0;
+		int correctresponses = 0;
+		while (iter.hasNext()) {
+			Long sequenceId = (Long) iter.next();
+			Long answerId = (Long) sequenceMap.get(sequenceId);
+			AnswerIfc answer = (AnswerIfc) texts.get(answerId);
+			int num = ((Integer) results.get(answerId)).intValue();
+			numarray[i] = num;
+			bars[i] = new HistogramBarBean();
+			if (answer != null)
+				bars[i].setLabel(answer.getText());
 
+			// this doens't not apply to fib , do not show checkmarks for FIB
+			if (!(qbean.getQuestionType().equals("8"))
+					&& !(qbean.getQuestionType().equals("11"))
+					&& answer != null) {
+				bars[i].setIsCorrect(answer.getIsCorrect());
+			}
 
-	if ((num>1)||(num==0))
-          {
-              bars[i].setNumStudentsText(num + " " +rb.getString("responses"));
-          }
-      else
-          {
-    	      bars[i].setNumStudentsText(num + " " +rb.getString("response"));
+			if ((num > 1) || (num == 0)) {
+				bars[i].setNumStudentsText(num + " "
+						+ rb.getString("responses"));
+			} else {
+				bars[i]
+						.setNumStudentsText(num + " "
+								+ rb.getString("response"));
 
-      }
-      bars[i].setNumStudents(num);
-      i++;
-    }
+			}
+			bars[i].setNumStudents(num);
+			i++;
+		}
 
+		responses = numStudentRespondedMap.size();
+		Iterator mapiter = numStudentRespondedMap.keySet().iterator();
 
-    responses = numStudentRespondedMap.size();
-    Iterator mapiter = numStudentRespondedMap.keySet().iterator();
-    while (mapiter.hasNext())
-    {
-      Long assessmentGradingId= (Long)mapiter.next();
-      ArrayList resultsForOneStudent = (ArrayList)numStudentRespondedMap.get(assessmentGradingId);
-      boolean hasIncorrect = false;
-      Iterator listiter = resultsForOneStudent.iterator();
-      while (listiter.hasNext())
-      {
-        ItemGradingData item = (ItemGradingData)listiter.next();
- 		if ((qbean.getQuestionType().equals("8"))|| (qbean.getQuestionType().equals("11")))
-	{
-		// TODO: we are checking to see if the score is > 0,  this will not work if the question is worth 0 points. 
-		// will need to verify each answer individually. 
-          Float autoscore = item.getAutoScore();
-          if ((new Float(0)).equals(autoscore)) {
-            hasIncorrect = true;
-            break;
-          }
-        }
-	else if (qbean.getQuestionType().equals("2"))
-      	{
+		
+		while (mapiter.hasNext()) {
+			Long assessmentGradingId = (Long) mapiter.next();
+			ArrayList resultsForOneStudent = (ArrayList) numStudentRespondedMap
+					.get(assessmentGradingId);
+			boolean hasIncorrect = false;
+			Iterator listiter = resultsForOneStudent.iterator();
+			
+			// added by gopalrc - Nov 2007
+			String agentId = null;
+			
+			while (listiter.hasNext()) {
+				ItemGradingData item = (ItemGradingData) listiter.next();
+				
+				// gopalrc - Nov 2007
+				agentId = item.getAgentId();
+				
+				if ((qbean.getQuestionType().equals("8"))
+						|| (qbean.getQuestionType().equals("11"))) {
+					// TODO: we are checking to see if the score is > 0, this
+					// will not work if the question is worth 0 points.
+					// will need to verify each answer individually.
+					Float autoscore = item.getAutoScore();
+					if ((new Float(0)).equals(autoscore)) {
+						hasIncorrect = true;
+						break;
+					}
+				} else if (qbean.getQuestionType().equals("2")) { // mcmc
 
-	  // only answered choices are created in the ItemGradingData_T, so we need to check
-	  // if # of checkboxes the student checked is == the number of correct answers
-	  // otherwise if a student only checked one of the multiple correct answers,
-	  // it would count as a correct response
+					// only answered choices are created in the
+					// ItemGradingData_T, so we need to check
+					// if # of checkboxes the student checked is == the number
+					// of correct answers
+					// otherwise if a student only checked one of the multiple
+					// correct answers,
+					// it would count as a correct response
 
-          try {
-	    ArrayList itemTextArray = ((ItemDataIfc)publishedItemHash.get(item.getPublishedItemId())).getItemTextArraySorted();
-    	    ArrayList answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();
+					try {
+						ArrayList itemTextArray = ((ItemDataIfc) publishedItemHash
+								.get(item.getPublishedItemId()))
+								.getItemTextArraySorted();
+						ArrayList answerArray = ((ItemTextIfc) itemTextArray
+								.get(0)).getAnswerArraySorted();
 
-            int corranswers = 0;
-            Iterator answeriter = answerArray.iterator();
-            while (answeriter.hasNext()){
-	      AnswerIfc answerchoice = (AnswerIfc) answeriter.next();
-              if (answerchoice.getIsCorrect().booleanValue()){
-		corranswers++;
-	      }
-            }
-            if (resultsForOneStudent.size() !=  corranswers){
-              hasIncorrect = true;
-              break;
-            }
-          }
-          catch (Exception e) {
-	    e.printStackTrace();
-            throw new RuntimeException("error calculating mcmc question.");
-	  }
+						int corranswers = 0;
+						Iterator answeriter = answerArray.iterator();
+						while (answeriter.hasNext()) {
+							AnswerIfc answerchoice = (AnswerIfc) answeriter
+									.next();
+							if (answerchoice.getIsCorrect().booleanValue()) {
+								corranswers++;
+							}
+						}
+						if (resultsForOneStudent.size() != corranswers) {
+							hasIncorrect = true;
+							break;
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new RuntimeException(
+								"error calculating mcmc question.");
+					}
 
-          // now check each answer in MCMC 
+					// now check each answer in MCMC
 
-          AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(item.getPublishedAnswerId());
-      	  if ( answer != null && (answer.getIsCorrect() == null || (!answer.getIsCorrect().booleanValue())))
-  	  {
-            hasIncorrect = true;
-            break;
- 	  }
-        }
-      }
-      if (!hasIncorrect) {
-        correctresponses = correctresponses + 1;
-      }
-    }
-    //NEW
-    int[] heights = calColumnHeight(numarray,responses);
-    // int[] heights = calColumnHeight(numarray);
-    for (i=0; i<bars.length; i++)
-      bars[i].setColumnHeight(Integer.toString(heights[i]));
-    qbean.setHistogramBars(bars);
-    qbean.setNumResponses(responses);
-    if (responses > 0)
-      qbean.setPercentCorrect(Integer.toString((int)(((float) correctresponses/(float) responses) * 100)));
-  }
+					AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(item
+							.getPublishedAnswerId());
+					if (answer != null
+							&& (answer.getIsCorrect() == null || (!answer
+									.getIsCorrect().booleanValue()))) {
+						hasIncorrect = true;
+						break;
+					}
+				}
+			}
+			if (!hasIncorrect) {
+				correctresponses = correctresponses + 1;
+				
+				// gopalrc - Nov 2007
+				qbean.addStudentWithAllCorrect(agentId); 
+			}
+		}
+		// NEW
+		int[] heights = calColumnHeight(numarray, responses);
+		// int[] heights = calColumnHeight(numarray);
+		for (i = 0; i < bars.length; i++)
+			bars[i].setColumnHeight(Integer.toString(heights[i]));
+		qbean.setHistogramBars(bars);
+		qbean.setNumResponses(responses);
+		if (responses > 0)
+			qbean
+					.setPercentCorrect(Integer
+							.toString((int) (((float) correctresponses / (float) responses) * 100)));
+	}
 
   /*
-  private void getFINMCMCScores(HashMap publishedItemHash, HashMap publishedAnswerHash, 
-		    ArrayList scores, HistogramQuestionScoresBean qbean, ArrayList answers)
-		  {
-		    HashMap texts = new HashMap();
-		    Iterator iter = answers.iterator();
-		    HashMap results = new HashMap();
-		    HashMap numStudentRespondedMap= new HashMap();   
-		    while (iter.hasNext())
-		    {
-		      AnswerIfc answer = (AnswerIfc) iter.next();
-		      texts.put(answer.getId(), answer);
-		      results.put(answer.getId(), new Integer(0));
-		    }
-		    iter = scores.iterator();
-		    while (iter.hasNext())
-		    {
-		      ItemGradingData data = (ItemGradingData) iter.next();
-		      AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
-		      if (answer != null)
-		      {
-		        //log.info("Rachel: looking for " + answer.getId());
-		        // found a response
-		        Integer num = null;
-		        // num is a counter
-		        try {
-		        // we found a response, now get existing count from the hashmap
-		          num = (Integer) results.get(answer.getId());
-
-
-		        } catch (Exception e) {
-		          log.warn("No results for " + answer.getId());
-		        }
-		        if (num == null)
-		          num = new Integer(0);
-
-		    	  ArrayList studentResponseList = (ArrayList)numStudentRespondedMap.get(data.getAssessmentGradingId());
-		          if (studentResponseList==null) {
-		    	    studentResponseList = new ArrayList();
-		          }
-		          studentResponseList.add(data);
-		          numStudentRespondedMap.put(data.getAssessmentGradingId(), studentResponseList);
-		        // we found a response, and got the  existing num , now update one
-		        if (qbean.getQuestionType().equals("11"))
-		        {
-		          // for fib we only count the number of correct responses 
-		          Float autoscore = data.getAutoScore();
-		          if (!(new Float(0)).equals(autoscore)) {
-		            results.put(answer.getId(), new Integer(num.intValue() + 1));
-		          }
-		        }
-		        else {  
-		          // for mc, we count the number of all responses 
-		          results.put(answer.getId(), new Integer(num.intValue() + 1));
-		        }
-		      }
-		    }
-		    HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
-		    int[] numarray = new int[results.keySet().size()];
-		    iter = results.keySet().iterator();
-		    int i = 0;
-		    int responses = 0;
-		    int correctresponses = 0;
-		    while (iter.hasNext())
-		    {
-		      Long answerId = (Long) iter.next();
-		      AnswerIfc answer = (AnswerIfc) texts.get(answerId);
-		      int num = ((Integer) results.get(answerId)).intValue();
-		      numarray[i] = num;
-		      bars[i] = new HistogramBarBean();
-		      if(answer != null)
-		      	bars[i].setLabel(answer.getText());
-
-		      // this doens't not apply to fib , do not show checkmarks for FIB
-		    	if (!qbean.getQuestionType().equals("11") && answer != null)
-		      	{
-			  bars[i].setIsCorrect(answer.getIsCorrect());
-		        }
-
-
-			if ((num>1)||(num==0))
-		          {
-		              bars[i].setNumStudentsText(num + " Responses");
-		          }
-		      else
-		          {
-		              bars[i].setNumStudentsText(num + " Response");
-
-		      }
-		      bars[i].setNumStudents(num);
-		      i++;
-		    }
-
-
-		    responses = numStudentRespondedMap.size();
-		    Iterator mapiter = numStudentRespondedMap.keySet().iterator();
-		    while (mapiter.hasNext())
-		    {
-		      Long assessmentGradingId= (Long)mapiter.next();
-		      ArrayList resultsForOneStudent = (ArrayList)numStudentRespondedMap.get(assessmentGradingId);
-		      boolean hasIncorrect = false;
-		      Iterator listiter = resultsForOneStudent.iterator();
-		      while (listiter.hasNext())
-		      {
-		        ItemGradingData item = (ItemGradingData)listiter.next();
-			if (qbean.getQuestionType().equals("11"))
-			{
-		          Float autoscore = item.getAutoScore();
-		          if (!(new Float(0)).equals(autoscore)) {
-		            hasIncorrect = true;
-		            break;
-		          }
-		        }
-			else if (qbean.getQuestionType().equals("2"))
-		      	{
-
-			  // only answered choices are created in the ItemGradingData_T, so we need to check
-			  // if # of checkboxes the student checked is == the number of correct answers
-			  // otherwise if a student only checked one of the multiple correct answers,
-			  // it would count as a correct response
-
-		          try {
-			    ArrayList itemTextArray = ((ItemDataIfc)publishedItemHash.get(item.getPublishedItemId())).getItemTextArraySorted();
-		    	    ArrayList answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();
-
-		            int corranswers = 0;
-		            Iterator answeriter = answerArray.iterator();
-		            while (answeriter.hasNext()){
-			      AnswerIfc answerchoice = (AnswerIfc) answeriter.next();
-		              if (answerchoice.getIsCorrect().booleanValue()){
-				corranswers++;
-			      }
-		            }
-		            if (resultsForOneStudent.size() !=  corranswers){
-		              hasIncorrect = true;
-		              break;
-		            }
-		          }
-		          catch (Exception e) {
-			    e.printStackTrace();
-		            throw new RuntimeException("error calculating mcmc question.");
-			  }
-
-		          // now check each answer in MCMC 
-
-		          AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(item.getPublishedAnswerId());
-		      	  if ( answer != null && (answer.getIsCorrect() == null || (!answer.getIsCorrect().booleanValue())))
-		  	  {
-		            hasIncorrect = true;
-		            break;
-		 	  }
-		        }
-		      }
-		      if (!hasIncorrect) {
-		        correctresponses = correctresponses + 1;
-		      }
-		    }
-		    //NEW
-		    int[] heights = calColumnHeight(numarray,responses);
-		    // int[] heights = calColumnHeight(numarray);
-		    for (i=0; i<bars.length; i++)
-		      bars[i].setColumnHeight(Integer.toString(heights[i]));
-		    qbean.setHistogramBars(bars);
-		    qbean.setNumResponses(responses);
-		    if (responses > 0)
-		      qbean.setPercentCorrect(Integer.toString((int)(((float) correctresponses/(float) responses) * 100)));
-		  }
-  */
+	 * private void getFINMCMCScores(HashMap publishedItemHash, HashMap
+	 * publishedAnswerHash, ArrayList scores, HistogramQuestionScoresBean qbean,
+	 * ArrayList answers) { HashMap texts = new HashMap(); Iterator iter =
+	 * answers.iterator(); HashMap results = new HashMap(); HashMap
+	 * numStudentRespondedMap= new HashMap(); while (iter.hasNext()) { AnswerIfc
+	 * answer = (AnswerIfc) iter.next(); texts.put(answer.getId(), answer);
+	 * results.put(answer.getId(), new Integer(0)); } iter = scores.iterator();
+	 * while (iter.hasNext()) { ItemGradingData data = (ItemGradingData)
+	 * iter.next(); AnswerIfc answer = (AnswerIfc)
+	 * publishedAnswerHash.get(data.getPublishedAnswerId()); if (answer != null) {
+	 * //log.info("Rachel: looking for " + answer.getId()); // found a response
+	 * Integer num = null; // num is a counter try { // we found a response, now
+	 * get existing count from the hashmap num = (Integer)
+	 * results.get(answer.getId());
+	 * 
+	 *  } catch (Exception e) { log.warn("No results for " + answer.getId()); }
+	 * if (num == null) num = new Integer(0);
+	 * 
+	 * ArrayList studentResponseList =
+	 * (ArrayList)numStudentRespondedMap.get(data.getAssessmentGradingId()); if
+	 * (studentResponseList==null) { studentResponseList = new ArrayList(); }
+	 * studentResponseList.add(data);
+	 * numStudentRespondedMap.put(data.getAssessmentGradingId(),
+	 * studentResponseList); // we found a response, and got the existing num ,
+	 * now update one if (qbean.getQuestionType().equals("11")) { // for fib we
+	 * only count the number of correct responses Float autoscore =
+	 * data.getAutoScore(); if (!(new Float(0)).equals(autoscore)) {
+	 * results.put(answer.getId(), new Integer(num.intValue() + 1)); } } else { //
+	 * for mc, we count the number of all responses results.put(answer.getId(),
+	 * new Integer(num.intValue() + 1)); } } } HistogramBarBean[] bars = new
+	 * HistogramBarBean[results.keySet().size()]; int[] numarray = new
+	 * int[results.keySet().size()]; iter = results.keySet().iterator(); int i =
+	 * 0; int responses = 0; int correctresponses = 0; while (iter.hasNext()) {
+	 * Long answerId = (Long) iter.next(); AnswerIfc answer = (AnswerIfc)
+	 * texts.get(answerId); int num = ((Integer)
+	 * results.get(answerId)).intValue(); numarray[i] = num; bars[i] = new
+	 * HistogramBarBean(); if(answer != null)
+	 * bars[i].setLabel(answer.getText());
+	 *  // this doens't not apply to fib , do not show checkmarks for FIB if
+	 * (!qbean.getQuestionType().equals("11") && answer != null) {
+	 * bars[i].setIsCorrect(answer.getIsCorrect()); }
+	 * 
+	 * 
+	 * if ((num>1)||(num==0)) { bars[i].setNumStudentsText(num + " Responses"); }
+	 * else { bars[i].setNumStudentsText(num + " Response");
+	 *  } bars[i].setNumStudents(num); i++; }
+	 * 
+	 * 
+	 * responses = numStudentRespondedMap.size(); Iterator mapiter =
+	 * numStudentRespondedMap.keySet().iterator(); while (mapiter.hasNext()) {
+	 * Long assessmentGradingId= (Long)mapiter.next(); ArrayList
+	 * resultsForOneStudent =
+	 * (ArrayList)numStudentRespondedMap.get(assessmentGradingId); boolean
+	 * hasIncorrect = false; Iterator listiter =
+	 * resultsForOneStudent.iterator(); while (listiter.hasNext()) {
+	 * ItemGradingData item = (ItemGradingData)listiter.next(); if
+	 * (qbean.getQuestionType().equals("11")) { Float autoscore =
+	 * item.getAutoScore(); if (!(new Float(0)).equals(autoscore)) {
+	 * hasIncorrect = true; break; } } else if
+	 * (qbean.getQuestionType().equals("2")) {
+	 *  // only answered choices are created in the ItemGradingData_T, so we
+	 * need to check // if # of checkboxes the student checked is == the number
+	 * of correct answers // otherwise if a student only checked one of the
+	 * multiple correct answers, // it would count as a correct response
+	 * 
+	 * try { ArrayList itemTextArray =
+	 * ((ItemDataIfc)publishedItemHash.get(item.getPublishedItemId())).getItemTextArraySorted();
+	 * ArrayList answerArray =
+	 * ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();
+	 * 
+	 * int corranswers = 0; Iterator answeriter = answerArray.iterator(); while
+	 * (answeriter.hasNext()){ AnswerIfc answerchoice = (AnswerIfc)
+	 * answeriter.next(); if (answerchoice.getIsCorrect().booleanValue()){
+	 * corranswers++; } } if (resultsForOneStudent.size() != corranswers){
+	 * hasIncorrect = true; break; } } catch (Exception e) {
+	 * e.printStackTrace(); throw new RuntimeException("error calculating mcmc
+	 * question."); }
+	 *  // now check each answer in MCMC
+	 * 
+	 * AnswerIfc answer = (AnswerIfc)
+	 * publishedAnswerHash.get(item.getPublishedAnswerId()); if ( answer != null &&
+	 * (answer.getIsCorrect() == null ||
+	 * (!answer.getIsCorrect().booleanValue()))) { hasIncorrect = true; break; } } }
+	 * if (!hasIncorrect) { correctresponses = correctresponses + 1; } } //NEW
+	 * int[] heights = calColumnHeight(numarray,responses); // int[] heights =
+	 * calColumnHeight(numarray); for (i=0; i<bars.length; i++)
+	 * bars[i].setColumnHeight(Integer.toString(heights[i]));
+	 * qbean.setHistogramBars(bars); qbean.setNumResponses(responses); if
+	 * (responses > 0) qbean.setPercentCorrect(Integer.toString((int)(((float)
+	 * correctresponses/(float) responses) * 100))); }
+	 */
 
   private void getTFMCScores(HashMap publishedAnswerHash, ArrayList scores,
-    HistogramQuestionScoresBean qbean, ArrayList answers)
-  {
-	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
-    HashMap texts = new HashMap();
-    Iterator iter = answers.iterator();
-    HashMap results = new HashMap();
-    HashMap sequenceMap = new HashMap();
-    while (iter.hasNext())
-    {
-      AnswerIfc answer = (AnswerIfc) iter.next();
-      texts.put(answer.getId(), answer);
-      results.put(answer.getId(), new Integer(0));
-      sequenceMap.put(answer.getSequence(), answer.getId());
-    }
-    iter = scores.iterator();
-    while (iter.hasNext())
-    {
-      ItemGradingData data = (ItemGradingData) iter.next();
-      AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
+			HistogramQuestionScoresBean qbean, ArrayList answers) {
+		ResourceLoader rb = new ResourceLoader(
+				"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
+		HashMap texts = new HashMap();
+		Iterator iter = answers.iterator();
+		HashMap results = new HashMap();
+		HashMap sequenceMap = new HashMap();
+		
+		// create the lookup maps
+		while (iter.hasNext()) {
+			AnswerIfc answer = (AnswerIfc) iter.next();
+			texts.put(answer.getId(), answer);
+			results.put(answer.getId(), new Integer(0));
+			sequenceMap.put(answer.getSequence(), answer.getId());
+		}
 
-      if (answer != null)
-      {
-        //log.info("Rachel: looking for " + answer.getId());
-        // found a response
-        Integer num = null;
-	// num is a counter
-	try {
-        // we found a response, now get existing count from the hashmap
-          num = (Integer) results.get(answer.getId());
+		// find the number of responses (ItemGradingData) for each answer
+		iter = scores.iterator();
+		while (iter.hasNext()) {
+			ItemGradingData data = (ItemGradingData) iter.next();
+			
+			AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data
+					.getPublishedAnswerId());
 
+			if (answer != null) {
+				
+				// added by gopalrc - Nov 2007
+				if (answer.getIsCorrect() != null
+						&& answer.getIsCorrect().booleanValue()) {
 
-        } catch (Exception e) {
-          log.warn("No results for " + answer.getId());
-	e.printStackTrace();
-        }
-        if (num == null)
-          num = new Integer(0);
+					String agentId = null;
+					agentId = data.getAgentId();
+					qbean.addStudentWithAllCorrect(agentId); 
+				}
+				
+				
+				// log.info("Rachel: looking for " + answer.getId());
+				// found a response
+				Integer num = null;
+				// num is a counter
+				try {
+					// we found a response, now get existing count from the
+					// hashmap
+					num = (Integer) results.get(answer.getId());
 
-        // we found a response, and got the  existing num , now update one   
-        // check here for the other bug about non-autograded items having 1 even with no responses
-        results.put(answer.getId(), new Integer(num.intValue() + 1));
-      }
-    }
-    HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
-    int[] numarray = new int[results.keySet().size()];
-    ArrayList sequenceList = new ArrayList();
-    iter = answers.iterator();
-    while (iter.hasNext())
-    {
-      AnswerIfc answer = (AnswerIfc) iter.next();
-      sequenceList.add(answer.getSequence());
-    }
-     
-    Collections.sort(sequenceList);
-    iter = sequenceList.iterator();
-    //iter = results.keySet().iterator();
-    int i = 0;
-    int responses = 0;
-    int correctresponses = 0;
-    
-    while (iter.hasNext())
-    {
-      Long sequenceId = (Long) iter.next();
-      Long answerId = (Long) sequenceMap.get(sequenceId);
-      AnswerIfc answer = (AnswerIfc) texts.get(answerId);
-      int num =	((Integer) results.get(answerId)).intValue();
-      // set i to be the sequence, so that the answer choices will be in the right order on Statistics page , see Bug SAM-440
-      i=answer.getSequence().intValue()-1;
+				} catch (Exception e) {
+					log.warn("No results for " + answer.getId());
+					e.printStackTrace();
+				}
+				if (num == null)
+					num = new Integer(0);
 
-      numarray[i] = num;
-      bars[i] = new HistogramBarBean();
-      if (qbean.getQuestionType().equals("4")) { //true-false
-    	  String origText = answer.getText();
-    	  String text = "";
-    	  if ("true".equals(origText)) {
-    		  text = rb.getString("true_msg");
-    	  }
-    	  else {
-    		  text = rb.getString("false_msg");
-    	  }
-    	  bars[i].setLabel(text);
-      }
-      else {
-    	  bars[i].setLabel(answer.getText());
-      }
-      bars[i].setIsCorrect(answer.getIsCorrect());
-      if ((num>1)||(num==0))
-	  {
-    	  bars[i].setNumStudentsText(num +" " +rb.getString("responses"));
-	  }
-      else
-	  {
-    	  bars[i].setNumStudentsText(num + " " +rb.getString("response"));
+				// we found a response, and got the existing num , now update
+				// one
+				// check here for the other bug about non-autograded items
+				// having 1 even with no responses
+				results.put(answer.getId(), new Integer(num.intValue() + 1));
+				
+				// gopalrc - Nov 2007
+				qbean.addStudentResponded(data.getAgentId()); 
 
-      }
-      bars[i].setNumStudents(num);
-      responses += num;
-      if (answer.getIsCorrect() != null && answer.getIsCorrect().booleanValue())
-        correctresponses += num;
-      //i++;
-    }
-    //NEW 
-    int[] heights = calColumnHeight(numarray,responses);
-    // int[] heights = calColumnHeight(numarray);
-    for (i=0; i<bars.length; i++)
-      bars[i].setColumnHeight(Integer.toString(heights[i]));
-    qbean.setHistogramBars(bars);
-    qbean.setNumResponses(responses);
-    if (responses > 0)
-      qbean.setPercentCorrect(Integer.toString((int)(((float) correctresponses/(float) responses) * 100)));
-  }
+			}
+		}
+		
+		HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
+		int[] numarray = new int[results.keySet().size()];
+		ArrayList sequenceList = new ArrayList();
+		
+		// get an arraylist of answer sequences
+		iter = answers.iterator();
+		while (iter.hasNext()) {
+			AnswerIfc answer = (AnswerIfc) iter.next();
+			sequenceList.add(answer.getSequence());
+		}
+
+		// sort the sequences
+		Collections.sort(sequenceList);
+		iter = sequenceList.iterator();
+		// iter = results.keySet().iterator();
+		int i = 0;
+		int responses = 0;
+		int correctresponses = 0;
+
+		// find answers sorted by sequence
+		while (iter.hasNext()) {
+			Long sequenceId = (Long) iter.next();
+			Long answerId = (Long) sequenceMap.get(sequenceId);
+			AnswerIfc answer = (AnswerIfc) texts.get(answerId);
+			
+			int num = ((Integer) results.get(answerId)).intValue();
+			// set i to be the sequence, so that the answer choices will be in
+			// the right order on Statistics page , see Bug SAM-440
+			i = answer.getSequence().intValue() - 1;
+
+			numarray[i] = num;
+			bars[i] = new HistogramBarBean();
+			if (qbean.getQuestionType().equals("4")) { // true-false
+				String origText = answer.getText();
+				String text = "";
+				if ("true".equals(origText)) {
+					text = rb.getString("true_msg");
+				} else {
+					text = rb.getString("false_msg");
+				}
+				bars[i].setLabel(text);
+			} else {
+				bars[i].setLabel(answer.getText());
+			}
+			bars[i].setIsCorrect(answer.getIsCorrect());
+			if ((num > 1) || (num == 0)) {
+				bars[i].setNumStudentsText(num + " "
+						+ rb.getString("responses"));
+			} else {
+				bars[i]
+						.setNumStudentsText(num + " "
+								+ rb.getString("response"));
+
+			}
+			bars[i].setNumStudents(num);
+			responses += num;
+			if (answer.getIsCorrect() != null
+					&& answer.getIsCorrect().booleanValue()) {
+				correctresponses += num;
+			}
+			// i++;
+		}
+		// NEW
+		int[] heights = calColumnHeight(numarray, responses);
+		// int[] heights = calColumnHeight(numarray);
+		for (i = 0; i < bars.length; i++)
+			bars[i].setColumnHeight(Integer.toString(heights[i]));
+		qbean.setHistogramBars(bars);
+		qbean.setNumResponses(responses);
+		if (responses > 0)
+			qbean
+					.setPercentCorrect(Integer
+							.toString((int) (((float) correctresponses / (float) responses) * 100)));
+	}
 
 
 
@@ -1717,6 +1698,32 @@ if (answer != null)
 			Object next = iter.next();
 			AssessmentGradingData data = (AssessmentGradingData) next;
 			
+			/*
+			 * gopalrc - moved up from (1)
+			 */
+			// here scores contain AssessmentGradingData 
+			Map assessmentMap = getAssessmentStatisticsMap(scores);
+
+			/*
+			 * gopalrc Nov 2007
+			 * find students in upper and lower quartiles 
+			 * of assessment scores
+			 */ 
+			double q1 = Double.valueOf((String) assessmentMap.get("q1")).doubleValue();
+			double q3 = Double.valueOf((String) assessmentMap.get("q3")).doubleValue();
+			Iterator totalScoresIter = scores.iterator();
+			while (totalScoresIter.hasNext()) {
+				AssessmentGradingData assessmentGradingData = (AssessmentGradingData) totalScoresIter.next();
+				if (assessmentGradingData.getTotalAutoScore().doubleValue() <= q1) {
+					histogramScores.addToLowerQuartileStudents(assessmentGradingData.getAgentId());
+				}
+				if (assessmentGradingData.getTotalAutoScore().doubleValue() >= q3) {
+					histogramScores.addToUpperQuartileStudents(assessmentGradingData.getAgentId());
+				}
+			}
+			
+			
+			
 			PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService
 					.getPublishedAssessment(data.getPublishedAssessmentId()
 							.toString());
@@ -1764,6 +1771,7 @@ if (answer != null)
 						//if this part is a randompart , then set randompart = true
 						questionScores.setRandomType(isRandompart);
 						ItemDataIfc item = (ItemDataIfc) itemsIter.next();
+						
 						//String type = delegate.getTextForId(item.getTypeId());
 						String type = getType(item.getTypeId().intValue());
 						if (item.getSequence() == null)
@@ -1780,6 +1788,72 @@ if (answer != null)
 						determineResults(pub, questionScores, (ArrayList) itemScores
 								.get(item.getItemId()));
 						questionScores.setTotalScore(item.getScore().toString());
+						
+						
+						// gopalrc Nov 2007
+						Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
+						Set studentsResponded = questionScores.getStudentsResponded();
+						if (studentsWithAllCorrect == null || studentsResponded == null || 
+								studentsWithAllCorrect.isEmpty() || studentsResponded.isEmpty()) {
+							questionScores.setPercentCorrectFromUpperQuartileStudents("0");
+							questionScores.setPercentCorrectFromLowerQuartileStudents("0");
+						}
+						else {
+							int numStudentsWithAllCorrectFromUpperQuartile = 0;
+							Iterator studentsIter = studentsWithAllCorrect.iterator();
+							while (studentsIter.hasNext()) {
+								String agentId = (String) studentsIter.next();
+								if (histogramScores.isUpperQuartileStudent(agentId)) {
+									numStudentsWithAllCorrectFromUpperQuartile++;
+								}
+							}
+							int numStudentsRespondedFromUpperQuartile = 0;
+							studentsIter = studentsResponded.iterator();
+							while (studentsIter.hasNext()) {
+								String agentId = (String) studentsIter.next();
+								if (histogramScores.isUpperQuartileStudent(agentId)) {
+									numStudentsRespondedFromUpperQuartile++;
+								}
+							}
+							int numStudentsWithAllCorrectFromLowerQuartile = 0;
+							studentsIter = studentsWithAllCorrect.iterator();
+							while (studentsIter.hasNext()) {
+								String agentId = (String) studentsIter.next();
+								if (histogramScores.isLowerQuartileStudent(agentId)) {
+									numStudentsWithAllCorrectFromLowerQuartile++;
+								}
+							}
+							int numStudentsRespondedFromLowerQuartile = 0;
+							studentsIter = studentsResponded.iterator();
+							while (studentsIter.hasNext()) {
+								String agentId = (String) studentsIter.next();
+								if (histogramScores.isLowerQuartileStudent(agentId)) {
+									numStudentsRespondedFromLowerQuartile++;
+								}
+							}
+							
+							float percentCorrectFromUpperQuartileStudents = 
+								(float) numStudentsWithAllCorrectFromUpperQuartile / 
+									(float) numStudentsRespondedFromUpperQuartile * 100;
+
+							float percentCorrectFromLowerQuartileStudents = 
+								(float) numStudentsWithAllCorrectFromLowerQuartile / 
+									(float) numStudentsRespondedFromLowerQuartile * 100;
+									
+									
+									
+							questionScores.setPercentCorrectFromLowerQuartileStudents(
+									Integer.toString((int) percentCorrectFromUpperQuartileStudents));
+							questionScores.setPercentCorrectFromLowerQuartileStudents(
+									Integer.toString((int) percentCorrectFromLowerQuartileStudents));
+							
+							float numResponses = (float)histogramScores.getNumResponses();
+							questionScores.setDiscrimination(Float.toString(
+									2.00F * (percentCorrectFromUpperQuartileStudents - percentCorrectFromLowerQuartileStudents )/numResponses ));
+							
+						}
+						
+						
 						info.add(questionScores);
 					}
 					
@@ -1789,8 +1863,11 @@ if (answer != null)
 				histogramScores.setInfo(info);
 				histogramScores.setRandomType(hasRandompart);
 
+				/*
+				 * gopalrc - moved up (1)
 				// here scores contain AssessmentGradingData 
 				Map assessmentMap = getAssessmentStatisticsMap(scores);
+				 */
 				
 				// test to see if it gets back empty map
 				if (assessmentMap.isEmpty()) {
@@ -1826,9 +1903,13 @@ if (answer != null)
 					histogramScores.setHistogramBars(bars);
 
 
-					// gopalrc Nov 2007
-					double q1 = Double.valueOf(histogramScores.getQ1()).doubleValue();
-					double q3 = Double.valueOf(histogramScores.getQ3()).doubleValue();
+					/*
+					 * gopalrc Nov 2007
+					 * find students in upper and lower quartiles 
+					 * of assessment scores
+					 */ 
+			/*	      double q1 = Double.valueOf(histogramScores.getQ1()).doubleValue();
+					  double q3 = Double.valueOf(histogramScores.getQ3()).doubleValue();
 					Iterator totalScoresIter = scores.iterator();
 					while (totalScoresIter.hasNext()) {
 						AssessmentGradingData assessmentGradingData = (AssessmentGradingData) totalScoresIter.next();
@@ -1839,7 +1920,7 @@ if (answer != null)
 							histogramScores.addToUpperQuartileStudents(assessmentGradingData.getAgentId());
 						}
 					}
-					
+			*/		
 					
 					///////////////////////////////////////////////////////////
 					// START DEBUGGING

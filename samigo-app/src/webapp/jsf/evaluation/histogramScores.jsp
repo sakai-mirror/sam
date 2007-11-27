@@ -303,21 +303,21 @@ Below added by gopalrc Nov 2007
         <f:facet name="header">
             <h:outputText escape="false" value="<U><br/>Upper 25%</U>" /> 
         </f:facet>
-        <h:outputText value="U-25" escape="false" />
+        <h:outputText value="#{item.percentCorrectFromUpperQuartileStudents}" escape="false" />
     </h:column>
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U><br/>Lower 25%</U>" /> 
         </f:facet>
-        <h:outputText value="L-25" escape="false" />
+        <h:outputText value="#{item.percentCorrectFromLowerQuartileStudents}" escape="false" />
     </h:column>
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>Discrim</U>" /> 
         </f:facet>
-        <h:outputText value="Discrim" escape="false" />
+        <h:outputText value="#{item.discrimination}" escape="false" />
     </h:column>
 
 
