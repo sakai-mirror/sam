@@ -885,5 +885,16 @@ publishedId = ppublishedId;
   }
   
   
+  	int maxNumberOfAnswers = 0;
+  
+	public int getMaxNumberOfAnswers() {
+		return maxNumberOfAnswers;  
+	}
+
+	public void setMaxNumberOfAnswers(int maxNumberOfAnswers) {
+		this.maxNumberOfAnswers = maxNumberOfAnswers;
+	}
+
+  
   
 }

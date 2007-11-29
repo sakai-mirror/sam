@@ -876,69 +876,8 @@ public class HistogramQuestionScoresBean
   
   
   // Below added by gopalrc Nov 2007
-  // TODO: Find a neater way to display the answer frequencies if possible
   public String getQuestionLabel() {
 	  return "p" + partNumber + "-q" + questionNumber; 
-  }
-
-  
-  public String getNumStudentsTextA() {
-	  if (histogramBars==null || histogramBars.length < 1) {
-		  return "";
-	  }
-	  else {
-		  return "" + histogramBars[0].getNumStudents();
-	  }
-  }
-  
-  
-  public String getNumStudentsTextB() {
-	  if (histogramBars==null || histogramBars.length < 2) {
-		  return "";
-	  }
-	  else {
-		  return "" + histogramBars[1].getNumStudents();
-	  }
-  }
-  
-  
-  public String getNumStudentsTextC() {
-	  if (histogramBars==null || histogramBars.length < 3) {
-		  return "";
-	  }
-	  else {
-		  return "" + histogramBars[2].getNumStudents();
-	  }
-  }
-  
-  
-  public String getNumStudentsTextD() {
-	  if (histogramBars==null || histogramBars.length < 4) {
-		  return "";
-	  }
-	  else {
-		  return "" + histogramBars[3].getNumStudents();
-	  }
-  }
-
-  
-  public String getNumStudentsTextE() {
-	  if (histogramBars==null || histogramBars.length < 5) {
-		  return "";
-	  }
-	  else {
-		  return "" + histogramBars[4].getNumStudents();
-	  }
-  }
-  
-  
-  public String getNumStudentsTextF() {
-	  if (histogramBars==null || histogramBars.length < 6) {
-		  return "";
-	  }
-	  else {
-		  return "" + histogramBars[5].getNumStudents();
-	  }
   }
 
   

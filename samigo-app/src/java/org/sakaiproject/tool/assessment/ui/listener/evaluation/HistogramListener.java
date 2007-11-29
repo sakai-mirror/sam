@@ -1743,6 +1743,9 @@ if (answer != null)
 				double totalpossible = 0;
 				boolean hasRandompart = false;
 				boolean isRandompart = false;
+
+				// gopalrc Nov 2007
+				int maxNumOfAnswers = 0;
 				
 				// Iterate through the assessment parts
 				while (partsIter.hasNext()) {
@@ -1765,6 +1768,7 @@ if (answer != null)
 					int seq = 1;
 					Iterator itemsIter = itemset.iterator();
 
+					
 					// Iterate through the assessment questions (items)
 					while (itemsIter.hasNext()) {
 						HistogramQuestionScoresBean questionScores = new HistogramQuestionScoresBean();
@@ -1790,13 +1794,17 @@ if (answer != null)
 						questionScores.setTotalScore(item.getScore().toString());
 						
 						
-						// gopalrc Nov 2007
+						// below - gopalrc Nov 2007
+						if (questionScores.getHistogramBars() != null) {
+							maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
+						}
 						Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
 						Set studentsResponded = questionScores.getStudentsResponded();
 						if (studentsWithAllCorrect == null || studentsResponded == null || 
 								studentsWithAllCorrect.isEmpty() || studentsResponded.isEmpty()) {
 							questionScores.setPercentCorrectFromUpperQuartileStudents("0");
 							questionScores.setPercentCorrectFromLowerQuartileStudents("0");
+							questionScores.setDiscrimination("0.0");
 						}
 						else {
 							int numStudentsWithAllCorrectFromUpperQuartile = 0;
@@ -1833,29 +1841,29 @@ if (answer != null)
 							}
 							
 							float percentCorrectFromUpperQuartileStudents = 
-								(float) numStudentsWithAllCorrectFromUpperQuartile / 
-									(float) numStudentsRespondedFromUpperQuartile * 100;
+								((float) numStudentsWithAllCorrectFromUpperQuartile / 
+									(float) numStudentsRespondedFromUpperQuartile) * 100f;
 
 							float percentCorrectFromLowerQuartileStudents = 
-								(float) numStudentsWithAllCorrectFromLowerQuartile / 
-									(float) numStudentsRespondedFromLowerQuartile * 100;
+								((float) numStudentsWithAllCorrectFromLowerQuartile / 
+									(float) numStudentsRespondedFromLowerQuartile) * 100f;
 									
-									
-									
-							questionScores.setPercentCorrectFromLowerQuartileStudents(
+							questionScores.setPercentCorrectFromUpperQuartileStudents(
 									Integer.toString((int) percentCorrectFromUpperQuartileStudents));
 							questionScores.setPercentCorrectFromLowerQuartileStudents(
 									Integer.toString((int) percentCorrectFromLowerQuartileStudents));
 							
-							float numResponses = (float)histogramScores.getNumResponses();
+							float numResponses = (float)questionScores.getNumResponses();
 							questionScores.setDiscrimination(Float.toString(
-									2.00F * (percentCorrectFromUpperQuartileStudents - percentCorrectFromLowerQuartileStudents )/numResponses ));
+									2.00f*(numStudentsWithAllCorrectFromUpperQuartile-numStudentsWithAllCorrectFromLowerQuartile )/numResponses ));
 							
 						}
+						// above - gopalrc Nov 2007
 						
 						
 						info.add(questionScores);
 					}
+					
 					
 					totalpossible = pub.getTotalScore().doubleValue();
 
@@ -1863,6 +1871,9 @@ if (answer != null)
 				histogramScores.setInfo(info);
 				histogramScores.setRandomType(hasRandompart);
 
+				// gopalrc Nov 2007
+				histogramScores.setMaxNumberOfAnswers(maxNumOfAnswers);
+				
 				/*
 				 * gopalrc - moved up (1)
 				// here scores contain AssessmentGradingData 

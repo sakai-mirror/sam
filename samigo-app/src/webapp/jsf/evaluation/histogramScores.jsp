@@ -323,7 +323,7 @@ Below added by gopalrc Nov 2007
 
 
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>0}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>- &nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
@@ -331,51 +331,57 @@ Below added by gopalrc Nov 2007
     </h:column>
 
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>0}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>a &nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
-        <h:outputText value="#{item.numStudentsTextA}" escape="false" />
+        <h:outputText value="#{item.histogramBars[0].numStudents}" escape="false" rendered="#{!item.histogramBars[0].isCorrect}"/>
+        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[0].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[0].isCorrect}"/>
     </h:column>
 
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>1}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>b &nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
-        <h:outputText value="#{item.numStudentsTextB}" escape="false" />
+        <h:outputText value="#{item.histogramBars[1].numStudents}" escape="false" rendered="#{!item.histogramBars[1].isCorrect}"/>
+        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[1].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[1].isCorrect}"/>
     </h:column>
 
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>2}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>c &nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
-        <h:outputText value="#{item.numStudentsTextC}" escape="false" />
+        <h:outputText value="#{item.histogramBars[2].numStudents}" escape="false" rendered="#{!item.histogramBars[2].isCorrect}"/>
+        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[2].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[2].isCorrect}"/>
     </h:column>
 
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>3}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>d &nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
-        <h:outputText value="#{item.numStudentsTextD}" escape="false" />
+        <h:outputText value="#{item.histogramBars[3].numStudents}" escape="false" rendered="#{!item.histogramBars[3].isCorrect}"/>
+        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[3].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[3].isCorrect}"/>
     </h:column>
 
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>4}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>e &nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
-        <h:outputText value="#{item.numStudentsTextE}" escape="false" />
+        <h:outputText value="#{item.histogramBars[4].numStudents}" escape="false" rendered="#{!item.histogramBars[4].isCorrect}"/>
+        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[4].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[4].isCorrect}"/>
     </h:column>
 
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>5}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>f &nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
-        <h:outputText value="#{item.numStudentsTextF}" escape="false" />
+        <h:outputText value="#{item.histogramBars[5].numStudents}" escape="false" rendered="#{!item.histogramBars[5].isCorrect}"/>
+        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[5].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[5].isCorrect}"/>
     </h:column>
 
 
