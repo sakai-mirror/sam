@@ -37,9 +37,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -54,9 +51,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
+import org.sakaiproject.tool.assessment.ui.bean.evaluation.AgentResults;
+import org.sakaiproject.tool.assessment.ui.bean.evaluation.QuestionScoresBean;
+import org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreListener;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAssessmentData;
-import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemData;
+import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.MediaData;
@@ -1560,9 +1560,20 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
       };
       return getHibernateTemplate().executeFind(hcb);
   }
+  
+  
   public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage) {
 	  ArrayList finalList = new ArrayList();
 	  PublishedAssessmentService pubService = new PublishedAssessmentService();
+	  
+	  
+	  // gopalrc - Nov 2007
+	  HashSet publishedAssessmentSections = pubService.getSectionSetForAssessment(Long.valueOf(publishedAssessmentId));
+	  //QuestionScoreListener questionScoreListener = new QuestionScoreListener();
+	  //QuestionScoresBean questionScoresBean = new QuestionScoresBean();
+	  //questionScoreListener.questionScores(publishedAssessmentId, questionScoresBean, false);
+
+	  
 	  HashMap publishedAnswerHash = pubService.preparePublishedAnswerHash(pubService.getPublishedAssessment(publishedAssessmentId.toString()));
 	  HashMap publishedItemTextHash = pubService.preparePublishedItemTextHash(pubService.getPublishedAssessment(publishedAssessmentId.toString()));
 	  HashMap publishedItemHash = pubService.preparePublishedItemHash(pubService.getPublishedAssessment(publishedAssessmentId.toString()));
@@ -1600,13 +1611,38 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 			  }
 			  responseList.add(Integer.valueOf(numSubmission));
 		  }
-		  
+
+
 		  Float finalScore = assessmentGradingData.getFinalScore();
 		  responseList.add(finalScore);
 		  Long assessmentGradingId = assessmentGradingData.getAssessmentGradingId();
+
 		  HashMap studentGradingMap = getStudentGradingData(assessmentGradingData.getAssessmentGradingId().toString());
 		  ArrayList grades = new ArrayList();
           grades.addAll(studentGradingMap.values());
+          
+		  
+		  
+		  // gopalrc Nov 2007
+		  Iterator sectionsIter = publishedAssessmentSections.iterator();
+		  while (sectionsIter.hasNext()) {
+			  PublishedSectionData publishedSection = (PublishedSectionData) sectionsIter.next();
+			  ArrayList itemsArray = publishedSection.getItemArraySortedForGrading();
+			  Iterator itemsIter = itemsArray.iterator();
+			  int sectionScore = 0;
+			  // Iterate through the assessment questions (items)
+			  HashMap sectionItemIds = new HashMap();
+			  while (itemsIter.hasNext()) {
+				ItemDataIfc item = (ItemDataIfc) itemsIter.next();
+				// sectionScore += item.getScore();
+				sectionItemIds.put(item.getItemId(), item.getItemId());
+			  }
+			  getScoreBySectionAndSubmission(grades, sectionItemIds);
+			  responseList.add(sectionScore);
+		  }
+          
+          
+          
 	      Collections.sort(grades, new QuestionComparator(publishedItemHash));
 	      
 	       for (Object oo: grades) {	   
@@ -1627,6 +1663,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    	   boolean isFinFib = false;
 	    	   for (Object ooo: l) {
 	    		   grade = (ItemGradingIfc)ooo;
+	    		   
+// XXXX
+	    		   
 	    		   // now print answer data
 	    		   log.debug("<br> "+ grade.getPublishedItemId() + " " + grade.getRationale() + " " + grade.getAnswerText() + " " + grade.getComments() + " " + grade.getReview());
 	    		   Long publishedItemId = grade.getPublishedItemId();
@@ -1736,6 +1775,38 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	  Collections.sort(finalList, new ResponsesComparator(anonymous));
 	  return finalList;
   }
+  
+  
+  /**
+   * added by gopalrc - Nov 2007
+   * @param questionScoresBean
+   * @param sectionId
+   * @param submissionId
+   */
+  private double getScoreBySectionAndSubmission(ArrayList grades, HashMap sectionItemIds) {
+	 double sectionScore = 0.0; 
+	 if (grades!=null) {
+		 Iterator gradesIter = grades.iterator();
+		 while (gradesIter.hasNext()) {
+			AgentResults agentResults = (AgentResults) gradesIter.next();
+			
+			
+			Long submisId = agentResults.getAssessmentGradingId();
+				Iterator items = agentResults.getItemGradingArrayList().iterator();
+				while (items.hasNext()) {
+					ItemGradingData itemGradingData = (ItemGradingData) items.next(); 
+					if (sectionItemIds.get(itemGradingData.getItemGradingId())!=null) {
+						sectionScore += itemGradingData.getAutoScore().doubleValue();
+					}
+					itemGradingData.getPublishedItemId();
+				}
+			
+			
+		 }
+	 }
+	 return sectionScore;
+  }
+  
   
     /*
 	 sort answers by sequence number within question if one is defined

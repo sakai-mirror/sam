@@ -150,8 +150,19 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
   		  headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","user_name"));
   		  headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","num_submission"));
   	  	}
+
+        PublishedAssessmentService pubService = new PublishedAssessmentService();
+  	  	
+  	  	// gopalrc - Nov 2007
+  	  	int numberOfSections = pubService.getPublishedSectionCount(Long.valueOf(assessmentId)).intValue();
+  	  	for (int i = 1; i <= numberOfSections; i++) {
+    		  headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","part") 
+    				  + " " + i + ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","score"));
+    	}
+        
         headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","tot"));
-  	  	PublishedAssessmentService pubService = new PublishedAssessmentService();
+
+  	  	
   	  	int numberOfQuestions = pubService.getPublishedItemCount(Long.valueOf(assessmentId)).intValue();
   	  	log.debug("numberOfQuestions=" + numberOfQuestions);
   	  	for (int i = 1; i <= numberOfQuestions; i++) {

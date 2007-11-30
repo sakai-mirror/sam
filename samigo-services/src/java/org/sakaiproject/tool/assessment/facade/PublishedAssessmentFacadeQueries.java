@@ -2116,6 +2116,27 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		List list = getHibernateTemplate().executeFind(hcb);
 		return (Integer) list.get(0);
 	}
+	
+	/**
+	 * added by gopalrc - Nov 2007
+	 * @param publishedAssessmentId
+	 * @return
+	 */
+	public Integer getPublishedSectionCount(final Long publishedAssessmentId) {
+		final HibernateCallback hcb = new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				Query q = session
+						.createQuery("select count(s) from PublishedSectionData s, "
+								+ " PublishedAssessmentData p where p.publishedAssessmentId=? and "
+								+ " p = s.assessment");
+				q.setLong(0, publishedAssessmentId.longValue());
+				return q.list();
+			};
+		};
+		List list = getHibernateTemplate().executeFind(hcb);
+		return (Integer) list.get(0);
+	}
 		
 	public PublishedAttachmentData getPublishedAttachmentData(Long attachmentId) {
 		String query = "select a from PublishedAttachmentData a where a.attachmentId = ?";

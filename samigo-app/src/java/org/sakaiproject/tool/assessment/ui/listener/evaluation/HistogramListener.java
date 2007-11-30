@@ -115,10 +115,6 @@ public class HistogramListener
         questionBean.setAllSubmissions(selectedvalue); // changed for Question score bean
     }
 
-
-
-
-
     //log.info("Calling histogramScores.");
     if (!histogramScores(publishedId, bean, totalBean))
     {
@@ -1914,24 +1910,6 @@ if (answer != null)
 					histogramScores.setHistogramBars(bars);
 
 
-					/*
-					 * gopalrc Nov 2007
-					 * find students in upper and lower quartiles 
-					 * of assessment scores
-					 */ 
-			/*	      double q1 = Double.valueOf(histogramScores.getQ1()).doubleValue();
-					  double q3 = Double.valueOf(histogramScores.getQ3()).doubleValue();
-					Iterator totalScoresIter = scores.iterator();
-					while (totalScoresIter.hasNext()) {
-						AssessmentGradingData assessmentGradingData = (AssessmentGradingData) totalScoresIter.next();
-						if (assessmentGradingData.getTotalAutoScore().doubleValue() <= q1) {
-							histogramScores.addToLowerQuartileStudents(assessmentGradingData.getAgentId());
-						}
-						if (assessmentGradingData.getTotalAutoScore().doubleValue() >= q3) {
-							histogramScores.addToUpperQuartileStudents(assessmentGradingData.getAgentId());
-						}
-					}
-			*/		
 					
 					///////////////////////////////////////////////////////////
 					// START DEBUGGING

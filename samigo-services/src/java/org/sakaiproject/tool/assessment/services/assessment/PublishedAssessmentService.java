@@ -526,7 +526,14 @@ public class PublishedAssessmentService {
 	    return PersistenceService.getInstance().
       getPublishedAssessmentFacadeQueries().
       getPublishedItemCount(publishedAssessmentId);
- }
+   }
+   
+	public Integer getPublishedSectionCount(final Long publishedAssessmentId) {
+	    return PersistenceService.getInstance().
+	      getPublishedAssessmentFacadeQueries().
+	      getPublishedSectionCount(publishedAssessmentId);
+	}
+   
    
    public PublishedAttachmentData getPublishedAttachmentData(Long attachmentId) {
 	    return PersistenceService.getInstance().

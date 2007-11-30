@@ -314,6 +314,14 @@ public interface PublishedAssessmentFacadeQueriesAPI
  
   public Integer getPublishedItemCount(Long publishedAssessmentId);
   
+  /**
+   * added by gopalrc - Nov 2007
+   * @param publishedAssessmentId
+   * @return
+   */
+  public Integer getPublishedSectionCount(final Long publishedAssessmentId);
+  
+  
   public PublishedAttachmentData getPublishedAttachmentData(Long attachmentId);
   
 	/**
