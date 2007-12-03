@@ -1790,7 +1790,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	   	   // gopalrc - Dec 2007
 	   	   Iterator keys = sectionScores.keySet().iterator();
 	   	   while (keys.hasNext()) {
-	   		   responseList.add(sectionScoreColumnStart++, sectionScores.get(keys.next()).toString());
+	   		   responseList.add(sectionScoreColumnStart++, sectionScores.get(keys.next()));
 	   	   }
 	      
 	       finalList.add(responseList);

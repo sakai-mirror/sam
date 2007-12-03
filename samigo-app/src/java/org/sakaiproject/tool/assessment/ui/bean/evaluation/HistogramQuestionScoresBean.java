@@ -906,6 +906,7 @@ public class HistogramQuestionScoresBean
   
   
   
+  
   /**
    * added by gopalrc Nov 2007
    * 
@@ -928,6 +929,11 @@ public class HistogramQuestionScoresBean
    * Discrimination value of this question
    */
   private String discrimination;
+  
+  /**
+   * added by gopalrc Dec 2007
+   */
+  private String n;
   
 	
 	public Set getStudentsWithAllCorrect() {
@@ -965,7 +971,14 @@ public class HistogramQuestionScoresBean
 	  this.percentCorrectFromLowerQuartileStudents = percentCorrectFromLowerQuartileStudents;
   }
 
-  
-  
+	public String getN() {
+		if (histogramBars == null) return "0";
+		int numberOfStudents = 0;
+		for (int i=0; i<histogramBars.length; i++) {
+			numberOfStudents += histogramBars[i].getNumStudents();
+		}
+		return "" + numberOfStudents;
+	}
+	
   
 }

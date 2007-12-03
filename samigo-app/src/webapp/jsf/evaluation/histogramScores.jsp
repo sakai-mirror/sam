@@ -267,6 +267,11 @@ Below added by gopalrc Nov 2007
 <br/>
 <br/>
 
+  <h3>
+    <h:outputText value="#{evaluationMessages.detailed} "/>
+    <h:outputText value="#{evaluationMessages.stat_view}"/>
+  </h3>
+
 
   <h:dataTable value="#{histogramScores.info}" var="item">
 
@@ -287,9 +292,9 @@ Below added by gopalrc Nov 2007
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="<U>Resp</U>" /> 
+            <h:outputText escape="false" value="<U>N&nbsp;&nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
-        <h:outputText value="#{item.numResponses}" escape="false" />
+        <h:outputText value="#{item.n}" escape="false" />
     </h:column>
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
