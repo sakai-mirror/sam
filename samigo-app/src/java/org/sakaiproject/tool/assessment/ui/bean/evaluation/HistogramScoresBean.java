@@ -895,6 +895,21 @@ publishedId = ppublishedId;
 		this.maxNumberOfAnswers = maxNumberOfAnswers;
 	}
 
-  
+	
+	/**
+	 * gopalrc Dec 2007
+	 * The HistogramQuestionScores for detailed Statistics for 
+	 */
+	Collection detailedStatistics;
+
+
+	public Collection getDetailedStatistics() {
+		return detailedStatistics;
+	}
+
+	public void setDetailedStatistics(Collection detailedStatistics) {
+		this.detailedStatistics = detailedStatistics;
+	}
+	
   
 }

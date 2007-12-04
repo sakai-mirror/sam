@@ -1671,7 +1671,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    		   grade = (ItemGradingIfc)ooo;
 	    		   
 	    		   // gopalrc - Dec 2007
-	    		   itemScore += grade.getAutoScore().floatValue();
+	    		   if (grade!=null && grade.getAutoScore()!=null) {
+	    			   itemScore += grade.getAutoScore().floatValue();
+	    		   }
 	    		   
 	    		   // now print answer data
 	    		   log.debug("<br> "+ grade.getPublishedItemId() + " " + grade.getRationale() + " " + grade.getAnswerText() + " " + grade.getComments() + " " + grade.getReview());

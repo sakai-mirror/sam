@@ -40,6 +40,7 @@ import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
 import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
+import org.sakaiproject.tool.assessment.ui.listener.evaluation.HistogramListener;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 
 /**
@@ -171,6 +172,15 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
   				  + ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","text"));
   	  	}
   	  	list.add(0,headerList);
+  	  	
+  	  	
+  	  	// gopalrc Dec 2007
+        HistogramListener histogramListener = new HistogramListener();
+  	  	Iterator detailedStats = histogramListener.getDetailedStatisticsSpreadsheetData(assessmentId).iterator(); 
+  	  	while (detailedStats.hasNext()) {
+  	  		list.add((List)detailedStats.next());
+  	  	}
+        
         return list;
     }
     

@@ -5,10 +5,12 @@ package org.sakaiproject.tool.assessment.ui.listener.evaluation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -447,18 +449,12 @@ public class HistogramListener
 					if (!(new Float(0)).equals(autoscore)) {
 						results.put(answer.getId(), new Integer(
 								num.intValue() + 1));
-						
-						// gopalrc - Nov 2007
-						qbean.addStudentResponded(data.getAgentId()); 
 					}
 				} else {
 					// for mc, we count the number of all responses
 					results
 							.put(answer.getId(),
 									new Integer(num.intValue() + 1));
-
-					// gopalrc - Nov 2007
-					qbean.addStudentResponded(data.getAgentId());
 				}
 			}
 		}
@@ -518,14 +514,10 @@ public class HistogramListener
 			boolean hasIncorrect = false;
 			Iterator listiter = resultsForOneStudent.iterator();
 			
-			// added by gopalrc - Nov 2007
-			String agentId = null;
-			
+			// iterate through the results for one student
+			// for this question (qbean)
 			while (listiter.hasNext()) {
 				ItemGradingData item = (ItemGradingData) listiter.next();
-				
-				// gopalrc - Nov 2007
-				agentId = item.getAgentId();
 				
 				if ((qbean.getQuestionType().equals("8"))
 						|| (qbean.getQuestionType().equals("11"))) {
@@ -585,12 +577,16 @@ public class HistogramListener
 					}
 				}
 			}
+
+			
 			if (!hasIncorrect) {
 				correctresponses = correctresponses + 1;
 				
 				// gopalrc - Nov 2007
-				qbean.addStudentWithAllCorrect(agentId); 
+				qbean.addStudentWithAllCorrect(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
 			}
+			// gopalrc - Dec 2007
+			qbean.addStudentResponded(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
 		}
 		// NEW
 		int[] heights = calColumnHeight(numarray, responses);
@@ -724,17 +720,6 @@ public class HistogramListener
 					.getPublishedAnswerId());
 
 			if (answer != null) {
-				
-				// added by gopalrc - Nov 2007
-				if (answer.getIsCorrect() != null
-						&& answer.getIsCorrect().booleanValue()) {
-
-					String agentId = null;
-					agentId = data.getAgentId();
-					qbean.addStudentWithAllCorrect(agentId); 
-				}
-				
-				
 				// log.info("Rachel: looking for " + answer.getId());
 				// found a response
 				Integer num = null;
@@ -757,6 +742,15 @@ public class HistogramListener
 				// having 1 even with no responses
 				results.put(answer.getId(), new Integer(num.intValue() + 1));
 				
+				
+				// gopalrc - Nov 2007
+				// this should work because for tf/mc(single)
+				// questions, there should be at most 
+				// one submitted answer per student/assessment
+				if (answer.getIsCorrect() != null
+						&& answer.getIsCorrect().booleanValue()) {
+					qbean.addStudentWithAllCorrect(data.getAgentId()); 
+				}
 				// gopalrc - Nov 2007
 				qbean.addStudentResponded(data.getAgentId()); 
 
@@ -864,8 +858,8 @@ public class HistogramListener
       ItemGradingData data = (ItemGradingData) iter.next();
       ItemTextIfc text = (ItemTextIfc) publishedItemTextHash.get(data.getPublishedItemTextId());
       AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
-//    if (answer.getIsCorrect() != null && answer.getIsCorrect().booleanValue())
-if (answer != null)
+      //    if (answer.getIsCorrect() != null && answer.getIsCorrect().booleanValue())
+      if (answer != null)
       {
         Integer num = (Integer) results.get(text.getId());
         if (num == null)
@@ -961,7 +955,12 @@ if (answer != null)
       }
       if (!hasIncorrect) {
         correctresponses = correctresponses + 1;
-      }
+
+        // gopalrc - Nov 2007
+		qbean.addStudentWithAllCorrect(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
+	  }
+	  // gopalrc - Dec 2007
+	  qbean.addStudentResponded(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
 
 
     }
@@ -1740,9 +1739,6 @@ if (answer != null)
 				boolean hasRandompart = false;
 				boolean isRandompart = false;
 
-				// gopalrc Nov 2007
-				int maxNumOfAnswers = 0;
-				
 				// Iterate through the assessment parts
 				while (partsIter.hasNext()) {
 					SectionDataIfc section = (SectionDataIfc) partsIter.next();
@@ -1791,9 +1787,6 @@ if (answer != null)
 						
 						
 						// below - gopalrc Nov 2007
-						if (questionScores.getHistogramBars() != null) {
-							maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
-						}
 						Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
 						Set studentsResponded = questionScores.getStudentsResponded();
 						if (studentsWithAllCorrect == null || studentsResponded == null || 
@@ -1867,8 +1860,26 @@ if (answer != null)
 				histogramScores.setInfo(info);
 				histogramScores.setRandomType(hasRandompart);
 
+				
 				// gopalrc Nov 2007
+				int maxNumOfAnswers = 0;
+				ArrayList detailedStatistics = new ArrayList();
+				Iterator infoIter = info.iterator();
+				while (infoIter.hasNext()) {
+					HistogramQuestionScoresBean questionScores = (HistogramQuestionScoresBean)infoIter.next();
+					if (questionScores.getQuestionType().equals("1") 
+							|| questionScores.getQuestionType().equals("2")
+							|| questionScores.getQuestionType().equals("3")
+							|| questionScores.getQuestionType().equals("4")) {
+						detailedStatistics.add(questionScores);
+						if (questionScores.getHistogramBars() != null) {
+							maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
+						}
+					}
+				}
+				histogramScores.setDetailedStatistics(detailedStatistics);
 				histogramScores.setMaxNumberOfAnswers(maxNumOfAnswers);
+				
 				
 				/*
 				 * gopalrc - moved up (1)
@@ -1962,6 +1973,100 @@ if (answer != null)
 	}
   
   
+  /**
+   * added by gopalrc - Dec 2007
+   * 
+   * Standard process action method.
+   * @param ae ActionEvent
+   * @throws AbortProcessingException
+   */
+  public List getDetailedStatisticsSpreadsheetData(String publishedId) throws
+    AbortProcessingException
+  {
+    log.debug("HistogramAggregate Statistics LISTENER.");
+
+    TotalScoresBean totalBean = (TotalScoresBean) ContextUtil.lookupBean(
+                                "totalScores");
+    HistogramScoresBean bean = (HistogramScoresBean) ContextUtil.lookupBean(
+                               "histogramScores");
+    
+    totalBean.setPublishedId(publishedId);
+    //String publishedId = totalBean.getPublishedId();
+
+    if (publishedId.equals("0"))
+    {
+    	publishedId = (String) ContextUtil.lookupParam("publishedId");
+    }
+
+    if (!histogramScores(publishedId, bean, totalBean))
+    {
+      throw new RuntimeException("failed to call histogramScores.");
+    }
+    
+    ArrayList blankList = new ArrayList();
+    Collection detailedStatistics = bean.getDetailedStatistics();
+    if (detailedStatistics==null || detailedStatistics.size()==0) {
+    	return blankList;
+    }
+    
+    
+    ArrayList spreadsheetRows = new ArrayList();
+    
+    // add a few blank lines
+    for (int i=0; i<5; i++) {
+    	spreadsheetRows.add(blankList);
+    }
+
+    ArrayList<Object> headerList = new ArrayList<Object>();
+    //headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","sub_id"));
+    headerList.add("Question");
+    headerList.add("N");
+    headerList.add("Whole Group");
+    headerList.add("Upper 25%");
+    headerList.add("Lower 25%");
+    headerList.add("Discrim");
+    if (bean.getMaxNumberOfAnswers()>0) {
+        headerList.add("a");
+    }
+    if (bean.getMaxNumberOfAnswers()>1) {
+        headerList.add("b");
+    }
+    if (bean.getMaxNumberOfAnswers()>2) {
+        headerList.add("c");
+    }
+    if (bean.getMaxNumberOfAnswers()>3) {
+        headerList.add("d");
+    }
+    if (bean.getMaxNumberOfAnswers()>4) {
+        headerList.add("e");
+    }
+    if (bean.getMaxNumberOfAnswers()>5) {
+        headerList.add("f");
+    }
+
+    spreadsheetRows.add(headerList);
+    
+    
+    Iterator detailedStatsIter = detailedStatistics.iterator();
+    ArrayList statsLine = null;
+    while (detailedStatsIter.hasNext()) {
+    	HistogramQuestionScoresBean questionBean = (HistogramQuestionScoresBean)detailedStatsIter.next();
+    	statsLine = new ArrayList();
+    	statsLine.add(questionBean.getQuestionLabel());
+    	statsLine.add(questionBean.getN());
+    	statsLine.add(questionBean.getPercentCorrect());
+    	statsLine.add(questionBean.getPercentCorrectFromUpperQuartileStudents());
+    	statsLine.add(questionBean.getPercentCorrectFromLowerQuartileStudents());
+    	statsLine.add(questionBean.getDiscrimination());
+    	for (int i=0; i<questionBean.getHistogramBars().length; i++) {
+        	statsLine.add(questionBean.getHistogramBars()[i].getNumStudents());
+    	}
+    	spreadsheetRows.add(statsLine);
+    }
+    
+    return spreadsheetRows;
+    
+  }
   
   
   

@@ -273,7 +273,7 @@ Below added by gopalrc Nov 2007
   </h3>
 
 
-  <h:dataTable value="#{histogramScores.info}" var="item">
+  <h:dataTable value="#{histogramScores.detailedStatistics}" var="item">
 
 <!-- need to add a randomtype property for histogramQuestionScoreBean (item) and if it's true, hide histogram  -->
 <%--
@@ -327,14 +327,14 @@ Below added by gopalrc Nov 2007
 
 
 
-
+<!--  
     <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>0}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>- &nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
         <h:outputText value="1" escape="false" />
     </h:column>
-
+-->
 
     <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>0}">
         <f:facet name="header">
