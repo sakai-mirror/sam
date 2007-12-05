@@ -935,7 +935,17 @@ public class HistogramQuestionScoresBean
    */
   private String n;
   
-	
+  /**
+   * added by gopalrc Dec 2007
+   */
+  private int numberOfStudentsWithZeroAnswers = 0;
+  
+  /**
+   * added by gopalrc Dec 2007
+   */
+  private Long itemId;
+
+  
 	public Set getStudentsWithAllCorrect() {
 		return studentsWithAllCorrect;
 	}
@@ -978,6 +988,23 @@ public class HistogramQuestionScoresBean
 			numberOfStudents += histogramBars[i].getNumStudents();
 		}
 		return "" + numberOfStudents;
+	}
+
+	public int getNumberOfStudentsWithZeroAnswers() {
+		return numberOfStudentsWithZeroAnswers;
+	}
+
+	public void setNumberOfStudentsWithZeroAnswers(
+			int numberOfStudentsWithZeroAnswers) {
+		this.numberOfStudentsWithZeroAnswers = numberOfStudentsWithZeroAnswers;
+	}
+
+	public Long getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(Long itemId) {
+		this.itemId = itemId;
 	}
 	
   

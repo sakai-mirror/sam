@@ -325,16 +325,12 @@ Below added by gopalrc Nov 2007
         <h:outputText value="#{item.discrimination}" escape="false" />
     </h:column>
 
-
-
-<!--  
     <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>0}">
         <f:facet name="header">
             <h:outputText escape="false" value="<U>- &nbsp;&nbsp;&nbsp;</U>" /> 
         </f:facet>
-        <h:outputText value="1" escape="false" />
+        <h:outputText value="#{item.numberOfStudentsWithZeroAnswers}" escape="false" />
     </h:column>
--->
 
     <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>0}">
         <f:facet name="header">

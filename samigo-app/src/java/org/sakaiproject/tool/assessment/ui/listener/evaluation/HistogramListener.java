@@ -1716,8 +1716,7 @@ public class HistogramListener
 					histogramScores.addToUpperQuartileStudents(assessmentGradingData.getAgentId());
 				}
 			}
-			
-			
+
 			
 			PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService
 					.getPublishedAssessment(data.getPublishedAssessmentId()
@@ -1787,6 +1786,7 @@ public class HistogramListener
 						
 						
 						// below - gopalrc Nov 2007
+						questionScores.setItemId(item.getItemId());
 						Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
 						Set studentsResponded = questionScores.getStudentsResponded();
 						if (studentsWithAllCorrect == null || studentsResponded == null || 
@@ -1851,17 +1851,51 @@ public class HistogramListener
 						
 						
 						info.add(questionScores);
-					}
+					} // end-while - items
 					
 					
 					totalpossible = pub.getTotalScore().doubleValue();
 
-				}
+				} // end-while - parts
 				histogramScores.setInfo(info);
 				histogramScores.setRandomType(hasRandompart);
 
 				
-				// gopalrc Nov 2007
+				/*
+				 * gopalrc Nov 2007
+				 * Create a HashMap of number of students 
+				 * with zero answers for any given question
+				 */ 
+				Iterator itemScoreKeys = itemScores.keySet().iterator();
+				HashMap numberOfStudentsWithZeroAnswersForQuestion = new HashMap();
+				while (itemScoreKeys.hasNext()) {
+					Long itemId = (Long) itemScoreKeys.next();
+					ArrayList scoresPerItem = (ArrayList) itemScores.get(itemId);
+					if (scoresPerItem.size() == 0) {
+						numberOfStudentsWithZeroAnswersForQuestion.put(itemId, scores.size());
+						continue;
+					}
+					else {
+						int numStudentsWithZeroAnswers = 0;
+						Iterator assessmentGradingIter = scores.iterator();
+						while (assessmentGradingIter.hasNext()) {
+							AssessmentGradingData assessmentGradingData = (AssessmentGradingData) assessmentGradingIter.next();
+							Iterator scoresPerItemIter = scoresPerItem.iterator();
+							boolean hasAnswer = false;
+							while (scoresPerItemIter.hasNext()) {
+								ItemGradingData itemGradingData = (ItemGradingData) scoresPerItemIter.next();
+								if (itemGradingData.getAssessmentGradingId().equals(assessmentGradingData.getAssessmentGradingId())) {
+									hasAnswer = true;
+									break;
+								}
+							}
+							if (!hasAnswer) {
+								numStudentsWithZeroAnswers++;
+							}
+						}
+						numberOfStudentsWithZeroAnswersForQuestion.put(itemId, numStudentsWithZeroAnswers);
+					}
+				}
 				int maxNumOfAnswers = 0;
 				ArrayList detailedStatistics = new ArrayList();
 				Iterator infoIter = info.iterator();
@@ -1875,6 +1909,7 @@ public class HistogramListener
 						if (questionScores.getHistogramBars() != null) {
 							maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
 						}
+						questionScores.setNumberOfStudentsWithZeroAnswers( ((Integer) numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId())).intValue() );
 					}
 				}
 				histogramScores.setDetailedStatistics(detailedStatistics);
@@ -1973,6 +2008,7 @@ public class HistogramListener
 	}
   
   
+  
   /**
    * added by gopalrc - Dec 2007
    * 
@@ -2025,6 +2061,8 @@ public class HistogramListener
     headerList.add("Upper 25%");
     headerList.add("Lower 25%");
     headerList.add("Discrim");
+    headerList.add("-");
+    
     if (bean.getMaxNumberOfAnswers()>0) {
         headerList.add("a");
     }
@@ -2058,6 +2096,8 @@ public class HistogramListener
     	statsLine.add(questionBean.getPercentCorrectFromUpperQuartileStudents());
     	statsLine.add(questionBean.getPercentCorrectFromLowerQuartileStudents());
     	statsLine.add(questionBean.getDiscrimination());
+    	statsLine.add(questionBean.getNumberOfStudentsWithZeroAnswers());
+    	
     	for (int i=0; i<questionBean.getHistogramBars().length; i++) {
         	statsLine.add(questionBean.getHistogramBars()[i].getNumStudents());
     	}
