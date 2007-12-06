@@ -285,7 +285,7 @@ Below added by gopalrc Nov 2007
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="<U>Question</U>" /> 
+            <h:outputText escape="false" value="<U>#{evaluationMessages.question}</U>" /> 
         </f:facet>
         <h:outputText value="#{item.questionLabel}" escape="false" />
     </h:column>
@@ -299,28 +299,28 @@ Below added by gopalrc Nov 2007
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="<U>% Correct<br/>Whole Group</U>" /> 
+            <h:outputText escape="false" value="<U>#{evaluationMessages.pct_correct_of}<br/>#{evaluationMessages.whole_group}</U>" /> 
         </f:facet>
         <h:outputText value="#{item.percentCorrect}" escape="false" />
     </h:column>
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="<U><br/>Upper 25%</U>" /> 
+            <h:outputText escape="false" value="<U><br/>#{evaluationMessages.upper_25_pct}</U>" /> 
         </f:facet>
         <h:outputText value="#{item.percentCorrectFromUpperQuartileStudents}" escape="false" />
     </h:column>
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="<U><br/>Lower 25%</U>" /> 
+            <h:outputText escape="false" value="<U><br/>#{evaluationMessages.lower_25_pct}</U>" /> 
         </f:facet>
         <h:outputText value="#{item.percentCorrectFromLowerQuartileStudents}" escape="false" />
     </h:column>
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="<U>Discrim</U>" /> 
+            <h:outputText escape="false" value="<U>#{evaluationMessages.discrim_abbrev}</U>" /> 
         </f:facet>
         <h:outputText value="#{item.discrimination}" escape="false" />
     </h:column>

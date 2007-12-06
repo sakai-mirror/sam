@@ -904,8 +904,14 @@ public class HistogramQuestionScoresBean
 	  studentsResponded.add(agentId);
   }
   
+  public void clearStudentsWithAllCorrect() {
+	  studentsWithAllCorrect = null;
+  }
   
-  
+  public void clearStudentsResponded() {
+	  studentsResponded = null;
+  }
+
   
   /**
    * added by gopalrc Nov 2007
@@ -987,7 +993,8 @@ public class HistogramQuestionScoresBean
 		for (int i=0; i<histogramBars.length; i++) {
 			numberOfStudents += histogramBars[i].getNumStudents();
 		}
-		return "" + numberOfStudents;
+		int n = numberOfStudents + getNumberOfStudentsWithZeroAnswers();
+		return "" + n;
 	}
 
 	public int getNumberOfStudentsWithZeroAnswers() {
@@ -999,6 +1006,7 @@ public class HistogramQuestionScoresBean
 		this.numberOfStudentsWithZeroAnswers = numberOfStudentsWithZeroAnswers;
 	}
 
+	
 	public Long getItemId() {
 		return itemId;
 	}
@@ -1006,6 +1014,7 @@ public class HistogramQuestionScoresBean
 	public void setItemId(Long itemId) {
 		this.itemId = itemId;
 	}
+
 	
   
 }

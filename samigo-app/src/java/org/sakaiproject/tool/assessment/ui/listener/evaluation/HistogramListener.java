@@ -1660,6 +1660,11 @@ public class HistogramListener
 			HistogramScoresBean histogramScores, TotalScoresBean totalScores) {
 	  
 		try {
+			
+			// gopalrc Dec 2007
+			histogramScores.clearLowerQuartileStudents();
+			histogramScores.clearUpperQuartileStudents();
+			
 			ResourceLoader rb = new ResourceLoader(
 					"org.sakaiproject.tool.assessment.bundle.AuthorMessages");
 			String assessmentName = "";
@@ -1717,6 +1722,7 @@ public class HistogramListener
 				}
 			}
 
+			
 			
 			PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService
 					.getPublishedAssessment(data.getPublishedAssessmentId()
@@ -1797,38 +1803,29 @@ public class HistogramListener
 						}
 						else {
 							int numStudentsWithAllCorrectFromUpperQuartile = 0;
+							int numStudentsWithAllCorrectFromLowerQuartile = 0;
 							Iterator studentsIter = studentsWithAllCorrect.iterator();
 							while (studentsIter.hasNext()) {
 								String agentId = (String) studentsIter.next();
 								if (histogramScores.isUpperQuartileStudent(agentId)) {
 									numStudentsWithAllCorrectFromUpperQuartile++;
 								}
+								if (histogramScores.isLowerQuartileStudent(agentId)) {
+									numStudentsWithAllCorrectFromLowerQuartile++;
+								}
 							}
 							int numStudentsRespondedFromUpperQuartile = 0;
+							int numStudentsRespondedFromLowerQuartile = 0;
 							studentsIter = studentsResponded.iterator();
 							while (studentsIter.hasNext()) {
 								String agentId = (String) studentsIter.next();
 								if (histogramScores.isUpperQuartileStudent(agentId)) {
 									numStudentsRespondedFromUpperQuartile++;
 								}
-							}
-							int numStudentsWithAllCorrectFromLowerQuartile = 0;
-							studentsIter = studentsWithAllCorrect.iterator();
-							while (studentsIter.hasNext()) {
-								String agentId = (String) studentsIter.next();
-								if (histogramScores.isLowerQuartileStudent(agentId)) {
-									numStudentsWithAllCorrectFromLowerQuartile++;
-								}
-							}
-							int numStudentsRespondedFromLowerQuartile = 0;
-							studentsIter = studentsResponded.iterator();
-							while (studentsIter.hasNext()) {
-								String agentId = (String) studentsIter.next();
 								if (histogramScores.isLowerQuartileStudent(agentId)) {
 									numStudentsRespondedFromLowerQuartile++;
 								}
 							}
-							
 							float percentCorrectFromUpperQuartileStudents = 
 								((float) numStudentsWithAllCorrectFromUpperQuartile / 
 									(float) numStudentsRespondedFromUpperQuartile) * 100f;
@@ -1843,8 +1840,11 @@ public class HistogramListener
 									Integer.toString((int) percentCorrectFromLowerQuartileStudents));
 							
 							float numResponses = (float)questionScores.getNumResponses();
-							questionScores.setDiscrimination(Float.toString(
-									2.00f*(numStudentsWithAllCorrectFromUpperQuartile-numStudentsWithAllCorrectFromLowerQuartile )/numResponses ));
+							
+							float discrimination = 2.00f*(numStudentsWithAllCorrectFromUpperQuartile-
+									numStudentsWithAllCorrectFromLowerQuartile )/numResponses ; 
+							
+							questionScores.setDiscrimination(Float.toString(discrimination));
 							
 						}
 						// above - gopalrc Nov 2007
@@ -1861,40 +1861,21 @@ public class HistogramListener
 				histogramScores.setRandomType(hasRandompart);
 
 				
-				/*
-				 * gopalrc Nov 2007
-				 * Create a HashMap of number of students 
-				 * with zero answers for any given question
-				 */ 
-				Iterator itemScoreKeys = itemScores.keySet().iterator();
+				// below - gopalrc Dec 2007
 				HashMap numberOfStudentsWithZeroAnswersForQuestion = new HashMap();
+				Iterator itemScoreKeys = itemScores.keySet().iterator();
 				while (itemScoreKeys.hasNext()) {
 					Long itemId = (Long) itemScoreKeys.next();
 					ArrayList scoresPerItem = (ArrayList) itemScores.get(itemId);
-					if (scoresPerItem.size() == 0) {
-						numberOfStudentsWithZeroAnswersForQuestion.put(itemId, scores.size());
-						continue;
-					}
-					else {
-						int numStudentsWithZeroAnswers = 0;
-						Iterator assessmentGradingIter = scores.iterator();
-						while (assessmentGradingIter.hasNext()) {
-							AssessmentGradingData assessmentGradingData = (AssessmentGradingData) assessmentGradingIter.next();
-							Iterator scoresPerItemIter = scoresPerItem.iterator();
-							boolean hasAnswer = false;
-							while (scoresPerItemIter.hasNext()) {
-								ItemGradingData itemGradingData = (ItemGradingData) scoresPerItemIter.next();
-								if (itemGradingData.getAssessmentGradingId().equals(assessmentGradingData.getAssessmentGradingId())) {
-									hasAnswer = true;
-									break;
-								}
-							}
-							if (!hasAnswer) {
-								numStudentsWithZeroAnswers++;
-							}
+					int numStudentsWithZeroAnswers = 0;
+					Iterator scoresPerItemIter = scoresPerItem.iterator();
+					while (scoresPerItemIter.hasNext()) {
+						ItemGradingData itemGradingData = (ItemGradingData) scoresPerItemIter.next();
+						if (itemGradingData.getSubmittedDate() == null) {
+							numStudentsWithZeroAnswers++;
 						}
-						numberOfStudentsWithZeroAnswersForQuestion.put(itemId, numStudentsWithZeroAnswers);
 					}
+					numberOfStudentsWithZeroAnswersForQuestion.put(itemId, new Integer(numStudentsWithZeroAnswers));
 				}
 				int maxNumOfAnswers = 0;
 				ArrayList detailedStatistics = new ArrayList();
@@ -1914,6 +1895,7 @@ public class HistogramListener
 				}
 				histogramScores.setDetailedStatistics(detailedStatistics);
 				histogramScores.setMaxNumberOfAnswers(maxNumOfAnswers);
+				// above - gopalrc Dec 2007
 				
 				
 				/*
@@ -2053,14 +2035,28 @@ public class HistogramListener
     	spreadsheetRows.add(blankList);
     }
 
+	ResourceLoader rb = new ResourceLoader(
+			"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
+    
+	
     ArrayList<Object> headerList = new ArrayList<Object>();
-    //headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","sub_id"));
-    headerList.add("Question");
+    headerList.add(rb.getString("question")); 
     headerList.add("N");
-    headerList.add("Whole Group");
-    headerList.add("Upper 25%");
-    headerList.add("Lower 25%");
-    headerList.add("Discrim");
+    headerList.add(rb.getString("pct_correct_of")); 
+    headerList.add(""); 
+    headerList.add(""); 
+    headerList.add(rb.getString("discrim_abbrev")); 
+    headerList.add(rb.getString("frequency")); 
+    spreadsheetRows.add(headerList);
+
+    
+    headerList = new ArrayList<Object>();
+    headerList.add(""); 
+    headerList.add("");
+    headerList.add(rb.getString("whole_group")); 
+    headerList.add(rb.getString("upper_25_pct")); 
+    headerList.add(rb.getString("lower_25_pct")); 
+    headerList.add(""); 
     headerList.add("-");
     
     if (bean.getMaxNumberOfAnswers()>0) {

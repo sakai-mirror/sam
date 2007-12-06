@@ -884,6 +884,13 @@ publishedId = ppublishedId;
 	  }
   }
   
+  public void clearUpperQuartileStudents() {
+	  upperQuartileStudents = null;
+  }
+  
+  public void clearLowerQuartileStudents() {
+	  lowerQuartileStudents = null;
+  }
   
   	int maxNumberOfAnswers = 0;
   
