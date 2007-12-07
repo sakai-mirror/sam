@@ -874,44 +874,21 @@ public class HistogramQuestionScoresBean
 
   
   
-  
   // Below added by gopalrc Nov 2007
-  public String getQuestionLabel() {
-	  return "p" + partNumber + "-q" + questionNumber; 
-  }
 
-  
-  
-  // Below Added by gopalrc - Nov 2007
   /**
    * added by gopalrc Nov 2007
-   * Students in the upper 25%
+   * 
+   * The set of students with all answers correct for this question
    */
   private Set studentsWithAllCorrect;
-  private Set studentsResponded;
-  
-  public void addStudentWithAllCorrect(String agentId) {
-	  if (studentsWithAllCorrect == null) {
-		  studentsWithAllCorrect = new TreeSet();
-	  }
-	  studentsWithAllCorrect.add(agentId);
-  }
-  
-  public void addStudentResponded(String agentId) {
-	  if (studentsResponded == null) {
-		  studentsResponded = new TreeSet();
-	  }
-	  studentsResponded.add(agentId);
-  }
-  
-  public void clearStudentsWithAllCorrect() {
-	  studentsWithAllCorrect = null;
-  }
-  
-  public void clearStudentsResponded() {
-	  studentsResponded = null;
-  }
 
+  /**
+   * added by gopalrc Nov 2007
+   * 
+   * The set of students who responded to this question
+   */
+  private Set studentsResponded;
   
   /**
    * added by gopalrc Nov 2007
@@ -938,31 +915,66 @@ public class HistogramQuestionScoresBean
   
   /**
    * added by gopalrc Dec 2007
+   * 
+   * Count of selected answer frequencies 
+   * plus numberOfStudentsWithZeroAnswers
    */
   private String n;
   
   /**
    * added by gopalrc Dec 2007
+   * 
+   * Number of students who selected no answer 
    */
   private int numberOfStudentsWithZeroAnswers = 0;
   
   /**
    * added by gopalrc Dec 2007
+   * 
+   * The published item (question) id
    */
   private Long itemId;
 
   
-	public Set getStudentsWithAllCorrect() {
-		return studentsWithAllCorrect;
-	}
+  
+  public String getQuestionLabel() {
+	  return "p" + partNumber + "-q" + questionNumber; 
+  }
+  
+  public void addStudentWithAllCorrect(String agentId) {
+	  if (studentsWithAllCorrect == null) {
+		  studentsWithAllCorrect = new TreeSet();
+	  }
+	  studentsWithAllCorrect.add(agentId);
+  }
+  
+  public void addStudentResponded(String agentId) {
+	  if (studentsResponded == null) {
+		  studentsResponded = new TreeSet();
+	  }
+	  studentsResponded.add(agentId);
+  }
+  
+  public void clearStudentsWithAllCorrect() {
+	  studentsWithAllCorrect = null;
+  }
+  
+  public void clearStudentsResponded() {
+	  studentsResponded = null;
+  }
+
+  
+  public Set getStudentsWithAllCorrect() {
+	return studentsWithAllCorrect;
+  }
 	
-	public Set getStudentsResponded() {
-		return studentsResponded;
-	}
+  public Set getStudentsResponded() {
+	return studentsResponded;
+  }
 
 
   public String getDiscrimination() {
-	  return discrimination;
+	return discrimination;
   }
 
   public void setDiscrimination(String discrimination) {
@@ -987,34 +999,31 @@ public class HistogramQuestionScoresBean
 	  this.percentCorrectFromLowerQuartileStudents = percentCorrectFromLowerQuartileStudents;
   }
 
-	public String getN() {
-		if (histogramBars == null) return "0";
-		int numberOfStudents = 0;
-		for (int i=0; i<histogramBars.length; i++) {
-			numberOfStudents += histogramBars[i].getNumStudents();
-		}
-		int n = numberOfStudents + getNumberOfStudentsWithZeroAnswers();
-		return "" + n;
+  public String getN() {
+	if (histogramBars == null) return "0";
+	int numberOfStudents = 0;
+	for (int i=0; i<histogramBars.length; i++) {
+		numberOfStudents += histogramBars[i].getNumStudents();
 	}
+	int n = numberOfStudents + getNumberOfStudentsWithZeroAnswers();
+	return "" + n;
+  }
 
-	public int getNumberOfStudentsWithZeroAnswers() {
-		return numberOfStudentsWithZeroAnswers;
-	}
+  public int getNumberOfStudentsWithZeroAnswers() {
+	  return numberOfStudentsWithZeroAnswers;
+  }
 
-	public void setNumberOfStudentsWithZeroAnswers(
-			int numberOfStudentsWithZeroAnswers) {
-		this.numberOfStudentsWithZeroAnswers = numberOfStudentsWithZeroAnswers;
-	}
+  public void setNumberOfStudentsWithZeroAnswers(
+		  int numberOfStudentsWithZeroAnswers) {
+	  this.numberOfStudentsWithZeroAnswers = numberOfStudentsWithZeroAnswers;
+  }
 
-	
-	public Long getItemId() {
-		return itemId;
-	}
+  public Long getItemId() {
+	  return itemId;
+  }
 
-	public void setItemId(Long itemId) {
-		this.itemId = itemId;
-	}
-
-	
+  public void setItemId(Long itemId) {
+	  this.itemId = itemId;
+  }
   
 }

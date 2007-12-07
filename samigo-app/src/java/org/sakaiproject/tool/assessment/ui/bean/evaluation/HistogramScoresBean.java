@@ -840,6 +840,22 @@ publishedId = ppublishedId;
    * Students in the lower 25%
    */
   private Map lowerQuartileStudents;
+
+  /**
+   * gopalrc - Nov 2007
+   * The maximum number of answers per question
+   * for this assessment (for detailed stats layout)
+   */
+  private int maxNumberOfAnswers = 0;
+
+  
+  /**
+   * gopalrc Dec 2007
+   * The HistogramQuestionScores for detailed Statistics for 
+   */
+  private Collection detailedStatistics;
+
+  
   
   public void addToUpperQuartileStudents(String agentId) {
 	  if (upperQuartileStudents == null) {
@@ -892,31 +908,22 @@ publishedId = ppublishedId;
 	  lowerQuartileStudents = null;
   }
   
-  	int maxNumberOfAnswers = 0;
   
-	public int getMaxNumberOfAnswers() {
-		return maxNumberOfAnswers;  
-	}
+  public int getMaxNumberOfAnswers() {
+	  return maxNumberOfAnswers;  
+  }
 
-	public void setMaxNumberOfAnswers(int maxNumberOfAnswers) {
-		this.maxNumberOfAnswers = maxNumberOfAnswers;
-	}
+  public void setMaxNumberOfAnswers(int maxNumberOfAnswers) {
+	  this.maxNumberOfAnswers = maxNumberOfAnswers;
+  }
 
-	
-	/**
-	 * gopalrc Dec 2007
-	 * The HistogramQuestionScores for detailed Statistics for 
-	 */
-	Collection detailedStatistics;
+  public Collection getDetailedStatistics() {
+	return detailedStatistics;
+  }
 
-
-	public Collection getDetailedStatistics() {
-		return detailedStatistics;
-	}
-
-	public void setDetailedStatistics(Collection detailedStatistics) {
-		this.detailedStatistics = detailedStatistics;
-	}
+  public void setDetailedStatistics(Collection detailedStatistics) {
+	this.detailedStatistics = detailedStatistics;
+  }
 	
   
 }

@@ -125,210 +125,350 @@ public class HistogramListener
   }
 
   /**
+   * modified by gopalrc Nov 2007
+   * 
+   * Calculate the detailed statistics as per WebCT
+   * 
    * This will populate the HistogramScoresBean with the data associated with the
    * particular versioned assessment based on the publishedId.
    *
    * Some of this code will change when we move this to Hibernate persistence.
    * @param publishedId String
-   * @param bean TotalScoresBean
+   * @param histogramScores TotalScoresBean
    * @return boolean true if successful
    */
-//  public boolean histogramScores(
-//    String publishedId, HistogramScoresBean bean, TotalScoresBean totalBean)
-//  {
-//    try {
-//    	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
-//      String assessmentName = "";
-//
-//      // Get all submissions, or just the last?
-//      // String which = cu.lookupParam("allSubmissions");
-//      // bean.setAllSubmissions(which.equals("true")?true:false);
-//
-//
-//      String which = bean.getAllSubmissions();
-//      if (which == null && totalBean.getAllSubmissions() != null)
-//      {
-//        // use totalscore's selection
-//        which = totalBean.getAllSubmissions();
-//        bean.setAllSubmissions(which);    // changed submission pulldown
-//      }
-//
-//      bean.setItemId(ContextUtil.lookupParam("itemId"));
-//      bean.setHasNav(ContextUtil.lookupParam("hasNav"));
-//
-//      GradingService delegate = new GradingService();
-//      PublishedAssessmentService pubService = new PublishedAssessmentService();
-//      ArrayList scores = delegate.getTotalScores(publishedId, which);
-//      HashMap itemscores = delegate.getItemScores(new Long(publishedId),
-//        new Long(0), which);
-//      //log.info("ItemScores size = " + itemscores.keySet().size());
-//      bean.setPublishedId(publishedId);
-//
-//      Iterator iter = scores.iterator();
-//      //log.info("Has this many agents: " + scores.size());
-//      if (!iter.hasNext())
-//        return false;
-//      Object next = iter.next();
-//      AssessmentGradingData data = (AssessmentGradingData) next;
-//      PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService.getPublishedAssessment(data.getPublishedAssessmentId().toString());
-//      if (pub != null)
-//      {
-//        assessmentName = pub.getTitle();
-//        //log.info("ASSESSMENT NAME= " + assessmentName);
-//        // if section set is null, initialize it - daisyf , 01/31/05
-//        HashSet sectionSet = PersistenceService.getInstance().
-//            getPublishedAssessmentFacadeQueries().getSectionSetForAssessment(pub);
-//        pub.setSectionSet(sectionSet);
-//
-//        ArrayList parts = pub.getSectionArraySorted();
-//        ArrayList info = new ArrayList();
-//        Iterator piter = parts.iterator();
-//        int secseq = 1;
-//        double totalpossible = 0;
-//        boolean hasRandompart = false;
-//        boolean isRandompart = false;
-//        while (piter.hasNext()) {
-//
-//
-//          SectionDataIfc section = (SectionDataIfc) piter.next();
-//
-//
-// 	  String authortype = section.getSectionMetaDataByLabel(SectionDataIfc.AUTHOR_TYPE);
-//          if (SectionDataIfc.RANDOM_DRAW_FROM_QUESTIONPOOL.equals(new Integer(authortype))){
-//            hasRandompart = true;
-//            isRandompart = true;
-//          }
-//          else {
-//            isRandompart = false;
-//  	  }
-//
-//
-//          if (section.getSequence() == null)
-//            section.setSequence(new Integer(secseq++));
-//          String title = rb.getString("p")+" " + section.getSequence().toString();
-//          title += ", " + rb.getString("q") + " ";
-//
-//          ArrayList itemset = section.getItemArraySortedForGrading();
-//          int seq = 1;
-//          Iterator iter2 = itemset.iterator();
-//
-//          while (iter2.hasNext())
-//          {
-//            HistogramQuestionScoresBean qbean =
-//              new HistogramQuestionScoresBean();
-//
-//            // if this part is a randompart , then set randompart = true
-//	    qbean.setRandomType(isRandompart);
-//	    ItemDataIfc item = (ItemDataIfc) iter2.next();
-//            //String type = delegate.getTextForId(item.getTypeId());
-//	        String type = getType(item.getTypeId().intValue());
-//            if (item.getSequence() == null)
-//              item.setSequence(new Integer(seq++));
-//            qbean.setTitle(title + item.getSequence().toString() +
-//              " (" + type + ")");
-//            qbean.setQuestionText(item.getText());
-//            qbean.setQuestionType(item.getTypeId().toString());
-//            //totalpossible = totalpossible + item.getScore().doubleValue();
-//            //ArrayList responses = null;
-//            determineResults(pub, qbean, (ArrayList) itemscores.get
-//              (item.getItemId()));
-//            qbean.setTotalScore(item.getScore().toString());
-//            info.add(qbean);
-//          }
-//          totalpossible = pub.getTotalScore().doubleValue();
-//          
-//        }
-//        bean.setInfo(info);
-//        bean.setRandomType(hasRandompart);
-//
-//        // here scores contain AssessmentGradingData 
-//        Map assessmentMap = getAssessmentStatisticsMap(scores);
-//
-//        // test to see if it gets back empty map
-//        if (assessmentMap.isEmpty())
-//        {
-//          bean.setNumResponses(0);
-//        }
-//
-//        try
-//        {
-//          BeanUtils.populate(bean, assessmentMap);
-//
-//          // quartiles don't seem to be working, workaround
-//          bean.setQ1( (String) assessmentMap.get("q1"));
-//          bean.setQ2( (String) assessmentMap.get("q2"));
-//          bean.setQ3( (String) assessmentMap.get("q3"));
-//          bean.setQ4( (String) assessmentMap.get("q4"));
-//          bean.setTotalScore( (String) assessmentMap.get("totalScore"));
-//          bean.setTotalPossibleScore(Double.toString(totalpossible));
-//          HistogramBarBean[] bars =
-//            new HistogramBarBean[bean.getColumnHeight().length];
-//          for (int i=0; i<bean.getColumnHeight().length; i++)
-//          {
-//            bars[i] = new HistogramBarBean();
-//            bars[i].setColumnHeight
-//              (Integer.toString(bean.getColumnHeight()[i]));
-//            bars[i].setNumStudents(bean.getNumStudentCollection()[i]);
-//            bars[i].setRangeInfo(bean.getRangeCollection()[i]);
-//            //log.info("Set bar " + i + ": " + bean.getColumnHeight()[i] + ", " + bean.getNumStudentCollection()[i] + ", " + bean.getRangeCollection()[i]);
-//          }
-//          bean.setHistogramBars(bars);
-//
-//          ///////////////////////////////////////////////////////////
-//          // START DEBUGGING
-///*
-//          log.info("TESTING ASSESSMENT MAP");
-//          log.info("assessmentMap: =>");
-//          log.info(assessmentMap);
-//          log.info("--------------------------------------------");
-//          log.info("TESTING TOTALS HISTOGRAM FORM");
-//          log.info(
-//            "HistogramScoresForm Form: =>\n" + "bean.getMean()=" +
-//            bean.getMean() + "\n" +
-//            "bean.getColumnHeight()[0] (first elem)=" +
-//            bean.getColumnHeight()[0] + "\n" + "bean.getInterval()=" +
-//            bean.getInterval() + "\n" + "bean.getLowerQuartile()=" +
-//            bean.getLowerQuartile() + "\n" + "bean.getMaxScore()=" +
-//            bean.getMaxScore() + "\n" + "bean.getMean()=" + bean.getMean() +
-//            "\n" + "bean.getMedian()=" + bean.getMedian() + "\n" +
-//            "bean.getNumResponses()=" + bean.getNumResponses() + "\n" +
-//            "bean.getNumStudentCollection()=" +
-//            bean.getNumStudentCollection() +
-//            "\n" + "bean.getQ1()=" + bean.getQ1() + "\n" + "bean.getQ2()=" +
-//            bean.getQ2() + "\n" + "bean.getQ3()=" + bean.getQ3() + "\n" +
-//            "bean.getQ4()=" + bean.getQ4());
-//          log.info("--------------------------------------------");
-//
-//*/
-//          // END DEBUGGING CODE
-//          ///////////////////////////////////////////////////////////
-//        }
-//        catch (IllegalAccessException e) {
-//			e.printStackTrace();
-//			log.warn("unable to populate bean" + e);
-//		}
-//        catch (InvocationTargetException e) {
-//			e.printStackTrace();
-//			log.warn("unable to populate bean" + e);
-//		}
-//
-//        bean.setAssessmentName(assessmentName);
-//      }
-//      else
-//      {
-//        return false;
-//      }
-//
-//    }
-//    catch (RuntimeException e)
-//    {
-//      e.printStackTrace();
-//      return false;
-//    }
-//
-//    return true;
-//
-//  }
+  public boolean histogramScores(String publishedId,
+		  HistogramScoresBean histogramScores, TotalScoresBean totalScores) {
+
+	  try {
+
+		  // gopalrc Dec 2007
+		  histogramScores.clearLowerQuartileStudents();
+		  histogramScores.clearUpperQuartileStudents();
+
+		  ResourceLoader rb = new ResourceLoader(
+				  "org.sakaiproject.tool.assessment.bundle.AuthorMessages");
+		  String assessmentName = "";
+
+		  // Get all submissions, or just the last?
+		  // String which = cu.lookupParam("allSubmissions");
+		  // bean.setAllSubmissions(which.equals("true")?true:false);
+
+		  String which = histogramScores.getAllSubmissions();
+		  if (which == null && totalScores.getAllSubmissions() != null) {
+			  // use totalscore's selection
+			  which = totalScores.getAllSubmissions();
+			  histogramScores.setAllSubmissions(which); // changed submission pulldown
+		  }
+
+		  histogramScores.setItemId(ContextUtil.lookupParam("itemId"));
+		  histogramScores.setHasNav(ContextUtil.lookupParam("hasNav"));
+
+		  GradingService delegate = new GradingService();
+		  PublishedAssessmentService pubService = new PublishedAssessmentService();
+		  ArrayList scores = delegate.getTotalScores(publishedId, which);
+		  HashMap itemScores = delegate.getItemScores(new Long(publishedId),
+				  new Long(0), which);
+		  //log.info("ItemScores size = " + itemscores.keySet().size());
+		  histogramScores.setPublishedId(publishedId);
+
+		  Iterator iter = scores.iterator();
+		  //log.info("Has this many agents: " + scores.size());
+		  if (!iter.hasNext())
+			  return false;
+		  Object next = iter.next();
+		  AssessmentGradingData data = (AssessmentGradingData) next;
+
+		  /*
+		   * gopalrc - moved up from (1)
+		   */
+		  // here scores contain AssessmentGradingData 
+		  Map assessmentMap = getAssessmentStatisticsMap(scores);
+
+		  /*
+		   * gopalrc Nov 2007
+		   * find students in upper and lower quartiles 
+		   * of assessment scores
+		   */ 
+		  double q1 = Double.valueOf((String) assessmentMap.get("q1")).doubleValue();
+		  double q3 = Double.valueOf((String) assessmentMap.get("q3")).doubleValue();
+		  Iterator totalScoresIter = scores.iterator();
+		  while (totalScoresIter.hasNext()) {
+			  AssessmentGradingData assessmentGradingData = (AssessmentGradingData) totalScoresIter.next();
+			  if (assessmentGradingData.getTotalAutoScore().doubleValue() <= q1) {
+				  histogramScores.addToLowerQuartileStudents(assessmentGradingData.getAgentId());
+			  }
+			  if (assessmentGradingData.getTotalAutoScore().doubleValue() >= q3) {
+				  histogramScores.addToUpperQuartileStudents(assessmentGradingData.getAgentId());
+			  }
+		  }
+
+
+
+		  PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService
+		  .getPublishedAssessment(data.getPublishedAssessmentId()
+				  .toString());
+		  if (pub != null) {
+			  assessmentName = pub.getTitle();
+			  //log.info("ASSESSMENT NAME= " + assessmentName);
+			  // if section set is null, initialize it - daisyf , 01/31/05
+			  HashSet sectionSet = PersistenceService.getInstance()
+			  .getPublishedAssessmentFacadeQueries()
+			  .getSectionSetForAssessment(pub);
+			  pub.setSectionSet(sectionSet);
+
+			  ArrayList parts = pub.getSectionArraySorted();
+			  ArrayList info = new ArrayList();
+			  Iterator partsIter = parts.iterator();
+			  int secseq = 1;
+			  double totalpossible = 0;
+			  boolean hasRandompart = false;
+			  boolean isRandompart = false;
+
+			  // Iterate through the assessment parts
+			  while (partsIter.hasNext()) {
+				  SectionDataIfc section = (SectionDataIfc) partsIter.next();
+				  String authortype = section
+				  .getSectionMetaDataByLabel(SectionDataIfc.AUTHOR_TYPE);
+				  if (SectionDataIfc.RANDOM_DRAW_FROM_QUESTIONPOOL
+						  .equals(new Integer(authortype))) {
+					  hasRandompart = true;
+					  isRandompart = true;
+				  } else {
+					  isRandompart = false;
+				  }
+				  if (section.getSequence() == null)
+					  section.setSequence(new Integer(secseq++));
+				  String title = rb.getString("p") + " "
+				  + section.getSequence().toString();
+				  title += ", " + rb.getString("q") + " ";
+				  ArrayList itemset = section.getItemArraySortedForGrading();
+				  int seq = 1;
+				  Iterator itemsIter = itemset.iterator();
+
+
+				  // Iterate through the assessment questions (items)
+				  while (itemsIter.hasNext()) {
+					  HistogramQuestionScoresBean questionScores = new HistogramQuestionScoresBean();
+					  //if this part is a randompart , then set randompart = true
+					  questionScores.setRandomType(isRandompart);
+					  ItemDataIfc item = (ItemDataIfc) itemsIter.next();
+
+					  //String type = delegate.getTextForId(item.getTypeId());
+					  String type = getType(item.getTypeId().intValue());
+					  if (item.getSequence() == null)
+						  item.setSequence(new Integer(seq++));
+
+					  questionScores.setPartNumber( section.getSequence().toString());
+					  questionScores.setQuestionNumber( item.getSequence().toString());
+					  questionScores.setTitle(title + item.getSequence().toString()
+							  + " (" + type + ")");
+					  questionScores.setQuestionText(item.getText());
+					  questionScores.setQuestionType(item.getTypeId().toString());
+					  //totalpossible = totalpossible + item.getScore().doubleValue();
+					  //ArrayList responses = null;
+					  determineResults(pub, questionScores, (ArrayList) itemScores
+							  .get(item.getItemId()));
+					  questionScores.setTotalScore(item.getScore().toString());
+
+
+					  // below - gopalrc Nov 2007
+					  questionScores.setItemId(item.getItemId());
+					  Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
+					  Set studentsResponded = questionScores.getStudentsResponded();
+					  if (studentsWithAllCorrect == null || studentsResponded == null || 
+							  studentsWithAllCorrect.isEmpty() || studentsResponded.isEmpty()) {
+						  questionScores.setPercentCorrectFromUpperQuartileStudents("0");
+						  questionScores.setPercentCorrectFromLowerQuartileStudents("0");
+						  questionScores.setDiscrimination("0.0");
+					  }
+					  else {
+						  int numStudentsWithAllCorrectFromUpperQuartile = 0;
+						  int numStudentsWithAllCorrectFromLowerQuartile = 0;
+						  Iterator studentsIter = studentsWithAllCorrect.iterator();
+						  while (studentsIter.hasNext()) {
+							  String agentId = (String) studentsIter.next();
+							  if (histogramScores.isUpperQuartileStudent(agentId)) {
+								  numStudentsWithAllCorrectFromUpperQuartile++;
+							  }
+							  if (histogramScores.isLowerQuartileStudent(agentId)) {
+								  numStudentsWithAllCorrectFromLowerQuartile++;
+							  }
+						  }
+						  int numStudentsRespondedFromUpperQuartile = 0;
+						  int numStudentsRespondedFromLowerQuartile = 0;
+						  studentsIter = studentsResponded.iterator();
+						  while (studentsIter.hasNext()) {
+							  String agentId = (String) studentsIter.next();
+							  if (histogramScores.isUpperQuartileStudent(agentId)) {
+								  numStudentsRespondedFromUpperQuartile++;
+							  }
+							  if (histogramScores.isLowerQuartileStudent(agentId)) {
+								  numStudentsRespondedFromLowerQuartile++;
+							  }
+						  }
+						  float percentCorrectFromUpperQuartileStudents = 
+							  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
+									  (float) numStudentsRespondedFromUpperQuartile) * 100f;
+
+						  float percentCorrectFromLowerQuartileStudents = 
+							  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
+									  (float) numStudentsRespondedFromLowerQuartile) * 100f;
+
+						  questionScores.setPercentCorrectFromUpperQuartileStudents(
+								  Integer.toString((int) percentCorrectFromUpperQuartileStudents));
+						  questionScores.setPercentCorrectFromLowerQuartileStudents(
+								  Integer.toString((int) percentCorrectFromLowerQuartileStudents));
+
+						  float numResponses = (float)questionScores.getNumResponses();
+
+						  float discrimination = 2.00f*(numStudentsWithAllCorrectFromUpperQuartile-
+								  numStudentsWithAllCorrectFromLowerQuartile )/numResponses ; 
+
+						  questionScores.setDiscrimination(Float.toString(discrimination));
+
+					  }
+					  // above - gopalrc Nov 2007
+
+
+					  info.add(questionScores);
+				  } // end-while - items
+
+
+				  totalpossible = pub.getTotalScore().doubleValue();
+
+			  } // end-while - parts
+			  histogramScores.setInfo(info);
+			  histogramScores.setRandomType(hasRandompart);
+
+
+			  // below - gopalrc Dec 2007
+			  HashMap numberOfStudentsWithZeroAnswersForQuestion = new HashMap();
+			  Iterator itemScoreKeys = itemScores.keySet().iterator();
+			  while (itemScoreKeys.hasNext()) {
+				  Long itemId = (Long) itemScoreKeys.next();
+				  ArrayList scoresPerItem = (ArrayList) itemScores.get(itemId);
+				  int numStudentsWithZeroAnswers = 0;
+				  Iterator scoresPerItemIter = scoresPerItem.iterator();
+				  while (scoresPerItemIter.hasNext()) {
+					  ItemGradingData itemGradingData = (ItemGradingData) scoresPerItemIter.next();
+					  if (itemGradingData.getSubmittedDate() == null) {
+						  numStudentsWithZeroAnswers++;
+					  }
+				  }
+				  numberOfStudentsWithZeroAnswersForQuestion.put(itemId, new Integer(numStudentsWithZeroAnswers));
+			  }
+			  int maxNumOfAnswers = 0;
+			  ArrayList detailedStatistics = new ArrayList();
+			  Iterator infoIter = info.iterator();
+			  while (infoIter.hasNext()) {
+				  HistogramQuestionScoresBean questionScores = (HistogramQuestionScoresBean)infoIter.next();
+				  if (questionScores.getQuestionType().equals("1") 
+						  || questionScores.getQuestionType().equals("2")
+						  || questionScores.getQuestionType().equals("3")
+						  || questionScores.getQuestionType().equals("4")) {
+					  detailedStatistics.add(questionScores);
+					  if (questionScores.getHistogramBars() != null) {
+						  maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
+					  }
+					  questionScores.setNumberOfStudentsWithZeroAnswers( ((Integer) numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId())).intValue() );
+				  }
+			  }
+			  histogramScores.setDetailedStatistics(detailedStatistics);
+			  histogramScores.setMaxNumberOfAnswers(maxNumOfAnswers);
+			  // above - gopalrc Dec 2007
+
+
+			  /*
+			   * gopalrc - moved up (1)
+				// here scores contain AssessmentGradingData 
+				Map assessmentMap = getAssessmentStatisticsMap(scores);
+			   */
+
+			  // test to see if it gets back empty map
+			  if (assessmentMap.isEmpty()) {
+				  histogramScores.setNumResponses(0);
+			  }
+
+			  try {
+				  BeanUtils.populate(histogramScores, assessmentMap);
+
+				  // quartiles don't seem to be working, workaround
+				  histogramScores.setQ1((String) assessmentMap.get("q1"));
+				  histogramScores.setQ2((String) assessmentMap.get("q2"));
+				  histogramScores.setQ3((String) assessmentMap.get("q3"));
+				  histogramScores.setQ4((String) assessmentMap.get("q4"));
+				  histogramScores.setTotalScore((String) assessmentMap
+						  .get("totalScore"));
+				  histogramScores.setTotalPossibleScore(Double
+						  .toString(totalpossible));
+				  HistogramBarBean[] bars = new HistogramBarBean[histogramScores
+				                                                 .getColumnHeight().length];
+				  for (int i = 0; i < histogramScores.getColumnHeight().length; i++) {
+					  bars[i] = new HistogramBarBean();
+					  bars[i]
+					       .setColumnHeight(Integer
+					    		   .toString(histogramScores
+					    				   .getColumnHeight()[i]));
+					  bars[i].setNumStudents(histogramScores
+							  .getNumStudentCollection()[i]);
+					  bars[i].setRangeInfo(histogramScores
+							  .getRangeCollection()[i]);
+					  //log.info("Set bar " + i + ": " + bean.getColumnHeight()[i] + ", " + bean.getNumStudentCollection()[i] + ", " + bean.getRangeCollection()[i]);
+				  }
+				  histogramScores.setHistogramBars(bars);
+
+
+
+				  ///////////////////////////////////////////////////////////
+				  // START DEBUGGING
+				  /*
+					 log.info("TESTING ASSESSMENT MAP");
+					 log.info("assessmentMap: =>");
+					 log.info(assessmentMap);
+					 log.info("--------------------------------------------");
+					 log.info("TESTING TOTALS HISTOGRAM FORM");
+					 log.info(
+					 "HistogramScoresForm Form: =>\n" + "bean.getMean()=" +
+					 bean.getMean() + "\n" +
+					 "bean.getColumnHeight()[0] (first elem)=" +
+					 bean.getColumnHeight()[0] + "\n" + "bean.getInterval()=" +
+					 bean.getInterval() + "\n" + "bean.getLowerQuartile()=" +
+					 bean.getLowerQuartile() + "\n" + "bean.getMaxScore()=" +
+					 bean.getMaxScore() + "\n" + "bean.getMean()=" + bean.getMean() +
+					 "\n" + "bean.getMedian()=" + bean.getMedian() + "\n" +
+					 "bean.getNumResponses()=" + bean.getNumResponses() + "\n" +
+					 "bean.getNumStudentCollection()=" +
+					 bean.getNumStudentCollection() +
+					 "\n" + "bean.getQ1()=" + bean.getQ1() + "\n" + "bean.getQ2()=" +
+					 bean.getQ2() + "\n" + "bean.getQ3()=" + bean.getQ3() + "\n" +
+					 "bean.getQ4()=" + bean.getQ4());
+					 log.info("--------------------------------------------");
+
+				   */
+				  // END DEBUGGING CODE
+				  ///////////////////////////////////////////////////////////
+			  } catch (IllegalAccessException e) {
+				  e.printStackTrace();
+				  log.warn("unable to populate bean" + e);
+			  } catch (InvocationTargetException e) {
+				  e.printStackTrace();
+				  log.warn("unable to populate bean" + e);
+			  }
+
+			  histogramScores.setAssessmentName(assessmentName);
+		  } else {
+			  return false;
+		  }
+
+	  } catch (RuntimeException e) {
+		  e.printStackTrace();
+		  return false;
+	  }
+
+	  return true;
+
+  }
 
   private void determineResults(PublishedAssessmentIfc pub, HistogramQuestionScoresBean qbean,
     ArrayList itemScores)
@@ -1640,356 +1780,6 @@ public class HistogramListener
   }
   
   
-
-
-  /**
-   * Adapted from histogramScores()
-   * modified by gopalrc Nov 2007
-   * 
-   * Calculate the detailed statistics as per WebCT
-   * 
-   * This will populate the HistogramScoresBean with the data associated with the
-   * particular versioned assessment based on the publishedId.
-   *
-   * Some of this code will change when we move this to Hibernate persistence.
-   * @param publishedId String
-   * @param histogramScores TotalScoresBean
-   * @return boolean true if successful
-   */
-  public boolean histogramScores(String publishedId,
-			HistogramScoresBean histogramScores, TotalScoresBean totalScores) {
-	  
-		try {
-			
-			// gopalrc Dec 2007
-			histogramScores.clearLowerQuartileStudents();
-			histogramScores.clearUpperQuartileStudents();
-			
-			ResourceLoader rb = new ResourceLoader(
-					"org.sakaiproject.tool.assessment.bundle.AuthorMessages");
-			String assessmentName = "";
-
-			// Get all submissions, or just the last?
-			// String which = cu.lookupParam("allSubmissions");
-			// bean.setAllSubmissions(which.equals("true")?true:false);
-
-			String which = histogramScores.getAllSubmissions();
-			if (which == null && totalScores.getAllSubmissions() != null) {
-				// use totalscore's selection
-				which = totalScores.getAllSubmissions();
-				histogramScores.setAllSubmissions(which); // changed submission pulldown
-			}
-
-			histogramScores.setItemId(ContextUtil.lookupParam("itemId"));
-			histogramScores.setHasNav(ContextUtil.lookupParam("hasNav"));
-
-			GradingService delegate = new GradingService();
-			PublishedAssessmentService pubService = new PublishedAssessmentService();
-			ArrayList scores = delegate.getTotalScores(publishedId, which);
-			HashMap itemScores = delegate.getItemScores(new Long(publishedId),
-					new Long(0), which);
-			//log.info("ItemScores size = " + itemscores.keySet().size());
-			histogramScores.setPublishedId(publishedId);
-
-			Iterator iter = scores.iterator();
-			//log.info("Has this many agents: " + scores.size());
-			if (!iter.hasNext())
-				return false;
-			Object next = iter.next();
-			AssessmentGradingData data = (AssessmentGradingData) next;
-			
-			/*
-			 * gopalrc - moved up from (1)
-			 */
-			// here scores contain AssessmentGradingData 
-			Map assessmentMap = getAssessmentStatisticsMap(scores);
-
-			/*
-			 * gopalrc Nov 2007
-			 * find students in upper and lower quartiles 
-			 * of assessment scores
-			 */ 
-			double q1 = Double.valueOf((String) assessmentMap.get("q1")).doubleValue();
-			double q3 = Double.valueOf((String) assessmentMap.get("q3")).doubleValue();
-			Iterator totalScoresIter = scores.iterator();
-			while (totalScoresIter.hasNext()) {
-				AssessmentGradingData assessmentGradingData = (AssessmentGradingData) totalScoresIter.next();
-				if (assessmentGradingData.getTotalAutoScore().doubleValue() <= q1) {
-					histogramScores.addToLowerQuartileStudents(assessmentGradingData.getAgentId());
-				}
-				if (assessmentGradingData.getTotalAutoScore().doubleValue() >= q3) {
-					histogramScores.addToUpperQuartileStudents(assessmentGradingData.getAgentId());
-				}
-			}
-
-			
-			
-			PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService
-					.getPublishedAssessment(data.getPublishedAssessmentId()
-							.toString());
-			if (pub != null) {
-				assessmentName = pub.getTitle();
-				//log.info("ASSESSMENT NAME= " + assessmentName);
-				// if section set is null, initialize it - daisyf , 01/31/05
-				HashSet sectionSet = PersistenceService.getInstance()
-						.getPublishedAssessmentFacadeQueries()
-						.getSectionSetForAssessment(pub);
-				pub.setSectionSet(sectionSet);
-
-				ArrayList parts = pub.getSectionArraySorted();
-				ArrayList info = new ArrayList();
-				Iterator partsIter = parts.iterator();
-				int secseq = 1;
-				double totalpossible = 0;
-				boolean hasRandompart = false;
-				boolean isRandompart = false;
-
-				// Iterate through the assessment parts
-				while (partsIter.hasNext()) {
-					SectionDataIfc section = (SectionDataIfc) partsIter.next();
-					String authortype = section
-							.getSectionMetaDataByLabel(SectionDataIfc.AUTHOR_TYPE);
-					if (SectionDataIfc.RANDOM_DRAW_FROM_QUESTIONPOOL
-							.equals(new Integer(authortype))) {
-						hasRandompart = true;
-						isRandompart = true;
-					} else {
-						isRandompart = false;
-					}
-					if (section.getSequence() == null)
-						section.setSequence(new Integer(secseq++));
-					String title = rb.getString("p") + " "
-							+ section.getSequence().toString();
-					title += ", " + rb.getString("q") + " ";
-					ArrayList itemset = section.getItemArraySortedForGrading();
-					int seq = 1;
-					Iterator itemsIter = itemset.iterator();
-
-					
-					// Iterate through the assessment questions (items)
-					while (itemsIter.hasNext()) {
-						HistogramQuestionScoresBean questionScores = new HistogramQuestionScoresBean();
-						//if this part is a randompart , then set randompart = true
-						questionScores.setRandomType(isRandompart);
-						ItemDataIfc item = (ItemDataIfc) itemsIter.next();
-						
-						//String type = delegate.getTextForId(item.getTypeId());
-						String type = getType(item.getTypeId().intValue());
-						if (item.getSequence() == null)
-							item.setSequence(new Integer(seq++));
-						
-						questionScores.setPartNumber( section.getSequence().toString());
-						questionScores.setQuestionNumber( item.getSequence().toString());
-						questionScores.setTitle(title + item.getSequence().toString()
-								+ " (" + type + ")");
-						questionScores.setQuestionText(item.getText());
-						questionScores.setQuestionType(item.getTypeId().toString());
-						//totalpossible = totalpossible + item.getScore().doubleValue();
-						//ArrayList responses = null;
-						determineResults(pub, questionScores, (ArrayList) itemScores
-								.get(item.getItemId()));
-						questionScores.setTotalScore(item.getScore().toString());
-						
-						
-						// below - gopalrc Nov 2007
-						questionScores.setItemId(item.getItemId());
-						Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
-						Set studentsResponded = questionScores.getStudentsResponded();
-						if (studentsWithAllCorrect == null || studentsResponded == null || 
-								studentsWithAllCorrect.isEmpty() || studentsResponded.isEmpty()) {
-							questionScores.setPercentCorrectFromUpperQuartileStudents("0");
-							questionScores.setPercentCorrectFromLowerQuartileStudents("0");
-							questionScores.setDiscrimination("0.0");
-						}
-						else {
-							int numStudentsWithAllCorrectFromUpperQuartile = 0;
-							int numStudentsWithAllCorrectFromLowerQuartile = 0;
-							Iterator studentsIter = studentsWithAllCorrect.iterator();
-							while (studentsIter.hasNext()) {
-								String agentId = (String) studentsIter.next();
-								if (histogramScores.isUpperQuartileStudent(agentId)) {
-									numStudentsWithAllCorrectFromUpperQuartile++;
-								}
-								if (histogramScores.isLowerQuartileStudent(agentId)) {
-									numStudentsWithAllCorrectFromLowerQuartile++;
-								}
-							}
-							int numStudentsRespondedFromUpperQuartile = 0;
-							int numStudentsRespondedFromLowerQuartile = 0;
-							studentsIter = studentsResponded.iterator();
-							while (studentsIter.hasNext()) {
-								String agentId = (String) studentsIter.next();
-								if (histogramScores.isUpperQuartileStudent(agentId)) {
-									numStudentsRespondedFromUpperQuartile++;
-								}
-								if (histogramScores.isLowerQuartileStudent(agentId)) {
-									numStudentsRespondedFromLowerQuartile++;
-								}
-							}
-							float percentCorrectFromUpperQuartileStudents = 
-								((float) numStudentsWithAllCorrectFromUpperQuartile / 
-									(float) numStudentsRespondedFromUpperQuartile) * 100f;
-
-							float percentCorrectFromLowerQuartileStudents = 
-								((float) numStudentsWithAllCorrectFromLowerQuartile / 
-									(float) numStudentsRespondedFromLowerQuartile) * 100f;
-									
-							questionScores.setPercentCorrectFromUpperQuartileStudents(
-									Integer.toString((int) percentCorrectFromUpperQuartileStudents));
-							questionScores.setPercentCorrectFromLowerQuartileStudents(
-									Integer.toString((int) percentCorrectFromLowerQuartileStudents));
-							
-							float numResponses = (float)questionScores.getNumResponses();
-							
-							float discrimination = 2.00f*(numStudentsWithAllCorrectFromUpperQuartile-
-									numStudentsWithAllCorrectFromLowerQuartile )/numResponses ; 
-							
-							questionScores.setDiscrimination(Float.toString(discrimination));
-							
-						}
-						// above - gopalrc Nov 2007
-						
-						
-						info.add(questionScores);
-					} // end-while - items
-					
-					
-					totalpossible = pub.getTotalScore().doubleValue();
-
-				} // end-while - parts
-				histogramScores.setInfo(info);
-				histogramScores.setRandomType(hasRandompart);
-
-				
-				// below - gopalrc Dec 2007
-				HashMap numberOfStudentsWithZeroAnswersForQuestion = new HashMap();
-				Iterator itemScoreKeys = itemScores.keySet().iterator();
-				while (itemScoreKeys.hasNext()) {
-					Long itemId = (Long) itemScoreKeys.next();
-					ArrayList scoresPerItem = (ArrayList) itemScores.get(itemId);
-					int numStudentsWithZeroAnswers = 0;
-					Iterator scoresPerItemIter = scoresPerItem.iterator();
-					while (scoresPerItemIter.hasNext()) {
-						ItemGradingData itemGradingData = (ItemGradingData) scoresPerItemIter.next();
-						if (itemGradingData.getSubmittedDate() == null) {
-							numStudentsWithZeroAnswers++;
-						}
-					}
-					numberOfStudentsWithZeroAnswersForQuestion.put(itemId, new Integer(numStudentsWithZeroAnswers));
-				}
-				int maxNumOfAnswers = 0;
-				ArrayList detailedStatistics = new ArrayList();
-				Iterator infoIter = info.iterator();
-				while (infoIter.hasNext()) {
-					HistogramQuestionScoresBean questionScores = (HistogramQuestionScoresBean)infoIter.next();
-					if (questionScores.getQuestionType().equals("1") 
-							|| questionScores.getQuestionType().equals("2")
-							|| questionScores.getQuestionType().equals("3")
-							|| questionScores.getQuestionType().equals("4")) {
-						detailedStatistics.add(questionScores);
-						if (questionScores.getHistogramBars() != null) {
-							maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
-						}
-						questionScores.setNumberOfStudentsWithZeroAnswers( ((Integer) numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId())).intValue() );
-					}
-				}
-				histogramScores.setDetailedStatistics(detailedStatistics);
-				histogramScores.setMaxNumberOfAnswers(maxNumOfAnswers);
-				// above - gopalrc Dec 2007
-				
-				
-				/*
-				 * gopalrc - moved up (1)
-				// here scores contain AssessmentGradingData 
-				Map assessmentMap = getAssessmentStatisticsMap(scores);
-				 */
-				
-				// test to see if it gets back empty map
-				if (assessmentMap.isEmpty()) {
-					histogramScores.setNumResponses(0);
-				}
-
-				try {
-					BeanUtils.populate(histogramScores, assessmentMap);
-
-					// quartiles don't seem to be working, workaround
-					histogramScores.setQ1((String) assessmentMap.get("q1"));
-					histogramScores.setQ2((String) assessmentMap.get("q2"));
-					histogramScores.setQ3((String) assessmentMap.get("q3"));
-					histogramScores.setQ4((String) assessmentMap.get("q4"));
-					histogramScores.setTotalScore((String) assessmentMap
-							.get("totalScore"));
-					histogramScores.setTotalPossibleScore(Double
-							.toString(totalpossible));
-					HistogramBarBean[] bars = new HistogramBarBean[histogramScores
-							.getColumnHeight().length];
-					for (int i = 0; i < histogramScores.getColumnHeight().length; i++) {
-						bars[i] = new HistogramBarBean();
-						bars[i]
-								.setColumnHeight(Integer
-										.toString(histogramScores
-												.getColumnHeight()[i]));
-						bars[i].setNumStudents(histogramScores
-								.getNumStudentCollection()[i]);
-						bars[i].setRangeInfo(histogramScores
-								.getRangeCollection()[i]);
-						//log.info("Set bar " + i + ": " + bean.getColumnHeight()[i] + ", " + bean.getNumStudentCollection()[i] + ", " + bean.getRangeCollection()[i]);
-					}
-					histogramScores.setHistogramBars(bars);
-
-
-					
-					///////////////////////////////////////////////////////////
-					// START DEBUGGING
-					/*
-					 log.info("TESTING ASSESSMENT MAP");
-					 log.info("assessmentMap: =>");
-					 log.info(assessmentMap);
-					 log.info("--------------------------------------------");
-					 log.info("TESTING TOTALS HISTOGRAM FORM");
-					 log.info(
-					 "HistogramScoresForm Form: =>\n" + "bean.getMean()=" +
-					 bean.getMean() + "\n" +
-					 "bean.getColumnHeight()[0] (first elem)=" +
-					 bean.getColumnHeight()[0] + "\n" + "bean.getInterval()=" +
-					 bean.getInterval() + "\n" + "bean.getLowerQuartile()=" +
-					 bean.getLowerQuartile() + "\n" + "bean.getMaxScore()=" +
-					 bean.getMaxScore() + "\n" + "bean.getMean()=" + bean.getMean() +
-					 "\n" + "bean.getMedian()=" + bean.getMedian() + "\n" +
-					 "bean.getNumResponses()=" + bean.getNumResponses() + "\n" +
-					 "bean.getNumStudentCollection()=" +
-					 bean.getNumStudentCollection() +
-					 "\n" + "bean.getQ1()=" + bean.getQ1() + "\n" + "bean.getQ2()=" +
-					 bean.getQ2() + "\n" + "bean.getQ3()=" + bean.getQ3() + "\n" +
-					 "bean.getQ4()=" + bean.getQ4());
-					 log.info("--------------------------------------------");
-
-					 */
-					// END DEBUGGING CODE
-					///////////////////////////////////////////////////////////
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-					log.warn("unable to populate bean" + e);
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-					log.warn("unable to populate bean" + e);
-				}
-
-				histogramScores.setAssessmentName(assessmentName);
-			} else {
-				return false;
-			}
-
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			return false;
-		}
-
-		return true;
-
-	}
-  
-  
   
   /**
    * added by gopalrc - Dec 2007
@@ -2038,8 +1828,11 @@ public class HistogramListener
 	ResourceLoader rb = new ResourceLoader(
 			"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
     
-	
     ArrayList<Object> headerList = new ArrayList<Object>();
+    headerList.add(rb.getString("detailed") + " " + rb.getString("stat_view")); 
+    spreadsheetRows.add(headerList);
+    
+    headerList = new ArrayList<Object>();
     headerList.add(rb.getString("question")); 
     headerList.add("N");
     headerList.add(rb.getString("pct_correct_of")); 
@@ -2048,7 +1841,6 @@ public class HistogramListener
     headerList.add(rb.getString("discrim_abbrev")); 
     headerList.add(rb.getString("frequency")); 
     spreadsheetRows.add(headerList);
-
     
     headerList = new ArrayList<Object>();
     headerList.add(""); 
