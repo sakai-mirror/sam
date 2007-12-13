@@ -324,18 +324,4 @@ public interface PublishedAssessmentFacadeQueriesAPI
   
   public PublishedAttachmentData getPublishedAttachmentData(Long attachmentId);
   
-	/**
-	 * added by gopalrc - Nov 2007
-	 * adapted from getBasicInfoOfAllPublishedAssessments() 
-	 * to include release to selected groups
-	 * 
-	 * @param orderBy
-	 * @param ascending
-	 * @param status
-	 * @param siteId
-	 * @return
-	 */
-	public ArrayList getBasicInfoOfTakeablePublishedAssessments(String orderBy,
-			boolean ascending, final Integer status, final String siteId);
-  
 }

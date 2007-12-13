@@ -894,21 +894,27 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 
 	public List getNumberOfSubmissionsOfAllAssessmentsByAgent(
 			final String agentId, final String siteId) {
+		
+		// modified by gopalrc to take account of group release
+		final ArrayList groupIds = getSiteGroupIdsForSubmittingAgent(agentId, siteId);
+		
 		final String query = "select new AssessmentGradingData("
 				+ " a.publishedAssessmentId, count(a)) "
 				+ " from AssessmentGradingData as a, AuthorizationData as az "
-				+ " where a.agentId=? and a.forGrade=? and az.agentIdString=? "
-				+ " and az.functionId=? and az.qualifierId=a.publishedAssessmentId"
+				+ " where a.agentId=:agentId and a.forGrade=:forGrade "
+				+ " and (az.agentIdString=:siteId or az.agentIdString in (:groupIds)) "
+				+ " and az.functionId=:functionId and az.qualifierId=a.publishedAssessmentId"
 				+ " group by a.publishedAssessmentId";
 
 		final HibernateCallback hcb = new HibernateCallback() {
 			public Object doInHibernate(Session session)
 					throws HibernateException, SQLException {
 				Query q = session.createQuery(query);
-				q.setString(0, agentId);
-				q.setBoolean(1, true);
-				q.setString(2, siteId);
-				q.setString(3, "TAKE_PUBLISHED_ASSESSMENT");
+				q.setString("agentId", agentId);
+				q.setBoolean("forGrade", true);
+				q.setString("siteId", siteId);
+				q.setString("functionId", "TAKE_PUBLISHED_ASSESSMENT");
+				q.setParameterList("groupIds", groupIds);
 				return q.list();
 			};
 		};
@@ -1063,13 +1069,18 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			String sortString, final String siteAgentId, boolean ascending) {
 		Date currentDate = new Date();
 		String orderBy = getOrderBy(sortString);
+		
+		// modified by gopalrc to take account of group release
+		final ArrayList groupIds = getSiteGroupIds(siteAgentId);
+		
 
 		String query = "select new PublishedAssessmentData(p.publishedAssessmentId, p.title, "
 				+ " c.releaseTo, c.startDate, c.dueDate, c.retractDate) "
 				+ " from PublishedAssessmentData p, PublishedAccessControl c, AuthorizationData z  "
-				+ " where c.assessment.publishedAssessmentId = p.publishedAssessmentId and p.status=? and "
-				+ " p.publishedAssessmentId=z.qualifierId and z.functionId=? "
-				+ " and z.agentIdString= ? order by p." + orderBy;
+				+ " where c.assessment.publishedAssessmentId = p.publishedAssessmentId and p.status=:status and "
+				+ " p.publishedAssessmentId=z.qualifierId and z.functionId=:functionId "
+				+ " and (z.agentIdString=:siteId or z.agentIdString in (:groupIds)) "
+				+ " order by p." + orderBy;
 		if (ascending == true)
 			query += " asc";
 		else
@@ -1080,14 +1091,16 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			public Object doInHibernate(Session session)
 					throws HibernateException, SQLException {
 				Query q = session.createQuery(hql);
-				q.setInteger(0, 1);
-				q.setString(1, "OWN_PUBLISHED_ASSESSMENT");
-				q.setString(2, siteAgentId);
+				q.setInteger("status", 1);
+				q.setString("functionId", "OWN_PUBLISHED_ASSESSMENT");
+				q.setString("siteId", siteAgentId);
+				q.setParameterList("groupIds", groupIds);
 				return q.list();
 			};
 		};
 		List l = getHibernateTemplate().executeFind(hcb);
 
+		
 		// List l = getHibernateTemplate().find(query,
 		// new Object[] {siteAgentId},
 		// new org.hibernate.type.Type[] {Hibernate.STRING});
@@ -1134,13 +1147,19 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	 */
 	public ArrayList getBasicInfoOfAllInActivePublishedAssessments(
 			String sortString, final String siteAgentId, boolean ascending) {
+		
+		// modified by gopalrc to take account of group release
+		final ArrayList groupIds = getSiteGroupIds(siteAgentId);
+		
 		String orderBy = getOrderBy(sortString);
 		String query = "select new PublishedAssessmentData(p.publishedAssessmentId, p.title,"
 				+ " c.releaseTo, c.startDate, c.dueDate, c.retractDate) from PublishedAssessmentData p,"
 				+ " PublishedAccessControl c, AuthorizationData z  "
-				+ " where c.assessment.publishedAssessmentId=p.publishedAssessmentId and p.status=? and (c.dueDate<= ? or  c.retractDate<= ?)"
-				+ " and p.publishedAssessmentId=z.qualifierId and z.functionId=? "
-				+ " and z.agentIdString= ? order by p." + orderBy;
+				+ " where c.assessment.publishedAssessmentId=p.publishedAssessmentId and p.status=:status and (c.dueDate<=:today or c.retractDate<=:today)"
+				+ " and p.publishedAssessmentId=z.qualifierId and z.functionId=:functionId "
+				+ " and (z.agentIdString=:siteId or z.agentIdString in (:groupIds)) "
+				+ " order by p." + orderBy;
+		
 
 		if (ascending)
 			query += " asc";
@@ -1152,16 +1171,18 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			public Object doInHibernate(Session session)
 					throws HibernateException, SQLException {
 				Query q = session.createQuery(hql);
-				q.setInteger(0, 1);
-				q.setTimestamp(1, new Date());
-				q.setTimestamp(2, new Date());
-				q.setString(3, "OWN_PUBLISHED_ASSESSMENT");
-				q.setString(4, siteAgentId);
+				q.setInteger("status", 1);
+				q.setTimestamp("today", new Date());
+				q.setString("functionId", "OWN_PUBLISHED_ASSESSMENT");
+				q.setString("siteId", siteAgentId);
+				q.setParameterList("groupIds", groupIds);
 				return q.list();
 			};
 		};
 		List list = getHibernateTemplate().executeFind(hcb);
 
+		
+		
 		// List list = getHibernateTemplate().find(query,
 		// new Object[] {new Date(), new Date(),siteAgentId} ,
 		// new org.hibernate.type.Type[] {Hibernate.TIMESTAMP,
@@ -1236,11 +1257,24 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				PublishedItemText.class, itemTextId);
 	}
 
+	
 	// added by daisy - please check the logic - I based this on the
 	// getBasicInfoOfAllActiveAssessment
+	// modified by gopalrc - Nov 2007
+	// to include release to selected groups
+	/**
+	 * 
+	 * @param orderBy
+	 * @param ascending
+	 * @param status
+	 * @param siteId
+	 * @return
+	 */
 	public ArrayList getBasicInfoOfAllPublishedAssessments(String orderBy,
 			boolean ascending, final Integer status, final String siteId) {
 
+		final ArrayList groupIds = getSiteGroupIdsForCurrentUser(siteId);
+		
 		String query = "select new PublishedAssessmentData(p.publishedAssessmentId, p.title, "
 				+ " c.releaseTo, c.startDate, c.dueDate, c.retractDate, "
 				+ " c.feedbackDate, f.feedbackDelivery,  f.feedbackAuthoring, c.lateHandling, "
@@ -1250,8 +1284,8 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				+ " where c.assessment.publishedAssessmentId=p.publishedAssessmentId "
 				+ " and p.publishedAssessmentId = f.assessment.publishedAssessmentId "
 				+ " and p.publishedAssessmentId = em.assessment.publishedAssessmentId "
-				+ " and p.status=? and az.agentIdString=? "
-				+ " and az.functionId=? and az.qualifierId=p.publishedAssessmentId"
+				+ " and p.status=:status and (az.agentIdString=:siteId or az.agentIdString in (:groupIds)) "
+				+ " and az.functionId=:functionId and az.qualifierId=p.publishedAssessmentId"
 				+ " order by ";
 
 		if (ascending == false) {
@@ -1274,9 +1308,10 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			public Object doInHibernate(Session session)
 					throws HibernateException, SQLException {
 				Query q = session.createQuery(hql);
-				q.setInteger(0, status.intValue());
-				q.setString(1, siteId);
-				q.setString(2, "TAKE_PUBLISHED_ASSESSMENT");
+				q.setInteger("status", status.intValue());
+				q.setParameterList("groupIds", groupIds);
+				q.setString("siteId", siteId);
+				q.setString("functionId", "TAKE_PUBLISHED_ASSESSMENT");
 				return q.list();
 			};
 		};
@@ -1843,9 +1878,12 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	 */
 	public ArrayList getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(
 			final String agentId, final String siteId) {
+		
+		// modified by gopalrc to take account of group release
+		final ArrayList groupIds = getSiteGroupIdsForCurrentUser(siteId);
+		
 		// Get total no. of submission per assessment by the given agent
-		// sorted by submittedData DESC
-		final String last_query = "select new AssessmentGradingData("
+		final String hql = "select new AssessmentGradingData("
 				+ " a.assessmentGradingId, p.publishedAssessmentId, p.title, a.agentId,"
 				+ " a.submittedDate, a.isLate,"
 				+ " a.forGrade, a.totalAutoScore, a.totalOverrideScore,a.finalScore,"
@@ -1853,33 +1891,26 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				+ " a.timeElapsed) "
 				+ " from AssessmentGradingData a, PublishedAssessmentData p, AuthorizationData az"
 				+ " where a.publishedAssessmentId = p.publishedAssessmentId"
-				+ " and a.forGrade=? and a.agentId=? and az.agentIdString=? "
-				+ " and az.functionId=? and az.qualifierId=p.publishedAssessmentId"
+				+ " and a.forGrade=:forGrade and a.agentId=:agentId"
+				+ " and (az.agentIdString=:siteId or az.agentIdString in (:groupIds)) "
+				+ " and az.functionId=:functionId and az.qualifierId=p.publishedAssessmentId"
 				+ " order by p.publishedAssessmentId DESC, a.submittedDate DESC";
 
-		// Get total no. of submission per assessment by the given agent
+		
+		// sorted by submittedData DESC
+		final String order_last = " order by p.publishedAssessmentId DESC, a.submittedDate DESC";
 		// sorted by finalScore DESC
-
-		final String highest_query = "select new AssessmentGradingData("
-				+ " a.assessmentGradingId, p.publishedAssessmentId, p.title, a.agentId,"
-				+ " a.submittedDate, a.isLate,"
-				+ " a.forGrade, a.totalAutoScore, a.totalOverrideScore,a.finalScore,"
-				+ " a.comments, a.status, a.gradedBy, a.gradedDate, a.attemptDate,"
-				+ " a.timeElapsed) "
-				+ " from AssessmentGradingData a, PublishedAssessmentData p, AuthorizationData az"
-				+ " where a.publishedAssessmentId = p.publishedAssessmentId"
-				+ " and a.forGrade=? and a.agentId=? and az.agentIdString=? "
-				+ " and az.functionId=? and az.qualifierId=p.publishedAssessmentId"
-				+ " order by p.publishedAssessmentId DESC, a.finalScore DESC, a.submittedDate DESC";
-
+		final String order_highest = " order by p.publishedAssessmentId DESC, a.finalScore DESC, a.submittedDate DESC";
+		
 		final HibernateCallback hcb_last = new HibernateCallback() {
 			public Object doInHibernate(Session session)
 					throws HibernateException, SQLException {
-				Query q = session.createQuery(last_query);
-				q.setBoolean(0, true);
-				q.setString(1, agentId);
-				q.setString(2, siteId);
-				q.setString(3, "TAKE_PUBLISHED_ASSESSMENT");
+				Query q = session.createQuery(hql + order_last);
+				q.setBoolean("forGrade", true);
+				q.setString("agentId", agentId);
+				q.setString("siteId", siteId);
+				q.setParameterList("groupIds", groupIds);
+				q.setString("functionId", "TAKE_PUBLISHED_ASSESSMENT");
 				return q.list();
 			};
 		};
@@ -1890,11 +1921,12 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		final HibernateCallback hcb_highest = new HibernateCallback() {
 			public Object doInHibernate(Session session)
 					throws HibernateException, SQLException {
-				Query q = session.createQuery(highest_query);
-				q.setBoolean(0, true);
-				q.setString(1, agentId);
-				q.setString(2, siteId);
-				q.setString(3, "TAKE_PUBLISHED_ASSESSMENT");
+				Query q = session.createQuery(hql + order_highest);
+				q.setBoolean("forGrade", true);
+				q.setString("agentId", agentId);
+				q.setString("siteId", siteId);
+				q.setParameterList("groupIds", groupIds);
+				q.setString("functionId", "TAKE_PUBLISHED_ASSESSMENT");
 				return q.list();
 			};
 		};
@@ -2152,27 +2184,27 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	private SecurityService securityService;
 	private SiteService siteService;
 	
+
+	public void setSecurityService(SecurityService securityService) {
+		this.securityService = securityService;
+	}
+
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
+	}
 	
 	
 	/**
 	 * added by gopalrc - Nov 2007
-	 * adapted from getBasicInfoOfAllPublishedAssessments() 
-	 * to include release to selected groups
-	 * 
-	 * @param orderBy
-	 * @param ascending
-	 * @param status
+`	 * TODO: should perhaps bemoved to SiteService
 	 * @param siteId
 	 * @return
 	 */
-	public ArrayList getBasicInfoOfTakeablePublishedAssessments(String orderBy,
-			boolean ascending, final Integer status, final String siteId) {
-
-		String currentUserId = UserDirectoryService.getCurrentUser().getId();
-		String functionName="assessment.takeAssessment";
+	private ArrayList getSiteGroupIdsForSubmittingAgent(String agentId, String siteId) {
+		//String functionName="assessment.takeAssessment";
 		Collection siteGroups = null;
 		try {
-			siteGroups = siteService.getSite(siteId).getGroupsWithMember(currentUserId);
+			siteGroups = siteService.getSite(siteId).getGroupsWithMember(agentId);
 		}
 		catch (IdUnusedException ex) {
 			// no site found
@@ -2190,74 +2222,47 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				groupIds.add(group.getId());
 			//}
 		}
-		
-		
-		String query = "select new PublishedAssessmentData(p.publishedAssessmentId, p.title, "
-				+ " c.releaseTo, c.startDate, c.dueDate, c.retractDate, "
-				+ " c.feedbackDate, f.feedbackDelivery,  f.feedbackAuthoring, c.lateHandling, "
-				+ " c.unlimitedSubmissions, c.submissionsAllowed, em.scoringType) "
-				+ " from PublishedAssessmentData as p, PublishedAccessControl as c,"
-				+ " PublishedFeedback as f, AuthorizationData as az, PublishedEvaluationModel as em"
-				+ " where c.assessment.publishedAssessmentId=p.publishedAssessmentId "
-				+ " and p.publishedAssessmentId = f.assessment.publishedAssessmentId "
-				+ " and p.publishedAssessmentId = em.assessment.publishedAssessmentId "
-				+ " and p.status=:status and (az.agentIdString=:siteId or az.agentIdString in (:groupIds)) "
-				+ " and az.functionId=:functionId and az.qualifierId=p.publishedAssessmentId"
-				+ " order by ";
-
-		if (ascending == false) {
-
-			if (orderBy.equals(DUE)) {
-				query += " c." + orderBy + " desc";
-			} else {
-				query += " p." + orderBy + " desc";
-			}
-		} else {
-			if (orderBy.equals(DUE)) {
-				query += " c." + orderBy + " asc";
-			} else {
-				query += " p." + orderBy + " asc";
-			}
-		}
-
-		final String hql = query;
-		final HibernateCallback hcb = new HibernateCallback() {
-			public Object doInHibernate(Session session)
-					throws HibernateException, SQLException {
-				Query q = session.createQuery(hql);
-				q.setInteger("status", status.intValue());
-				q.setParameterList("groupIds", groupIds);
-				q.setString("siteId", siteId);
-				q.setString("functionId", "TAKE_PUBLISHED_ASSESSMENT");
-				return q.list();
-			};
-		};
-		List list = getHibernateTemplate().executeFind(hcb);
-		ArrayList pubList = new ArrayList();
-		for (int i = 0; i < list.size(); i++) {
-			PublishedAssessmentData p = (PublishedAssessmentData) list.get(i);
-			PublishedAssessmentFacade f = new PublishedAssessmentFacade(p
-					.getPublishedAssessmentId(), p.getTitle(),
-					p.getReleaseTo(), p.getStartDate(), p.getDueDate(), p
-							.getRetractDate(), p.getFeedbackDate(), p
-							.getFeedbackDelivery(), p.getFeedbackAuthoring(), p
-							.getLateHandling(), p.getUnlimitedSubmissions(), p
-							.getSubmissionsAllowed(), p.getScoringType());
-			pubList.add(f);
-		}
-		return pubList;
-	}
-
-	public void setSecurityService(SecurityService securityService) {
-		this.securityService = securityService;
-	}
-
-	public void setSiteService(SiteService siteService) {
-		this.siteService = siteService;
+		return groupIds;
 	}
 	
-
+	/**
+	 * added by gopalrc - Nov 2007
+`	 * TODO: should perhaps bemoved to SiteService
+	 * @param siteId
+	 * @return
+	 */
+	private ArrayList getSiteGroupIdsForCurrentUser(final String siteId) {
+		String currentUserId = UserDirectoryService.getCurrentUser().getId();
+		return getSiteGroupIdsForSubmittingAgent(currentUserId, siteId);
+	}
 	
+	
+	/**
+	 * added by gopalrc - Nov 2007
+`	 * TODO: should perhaps be moved to SiteService
+	 * @param siteId
+	 * @return
+	 */
+	private ArrayList getSiteGroupIds(final String siteId) {
+		Collection siteGroups = null;
+		try {
+			siteGroups = siteService.getSite(siteId).getGroups();
+		}
+		catch (IdUnusedException ex) {
+			// no site found
+		}
+		Iterator groupsIter = siteGroups.iterator();
+		final ArrayList groupIds = new ArrayList();
+		// To accomodate the problem with Hibernate and empty array parameters 
+		// TODO: this should probably be handled in a more efficient way
+		groupIds.add("none");  
+		while (groupsIter.hasNext()) {
+			Group group = (Group) groupsIter.next(); 
+			groupIds.add(group.getId());
+		}
+		return groupIds;
+	}
+
 	
 	/**
 	 * added by gopalrc November 2007

@@ -50,6 +50,9 @@ import org.hibernate.criterion.Order;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.site.api.Group;
+import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAssessmentData;
@@ -434,15 +437,25 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     }
   }
 
+  
   public HashMap getSubmissionSizeOfAllPublishedAssessments(){
-    HashMap h = new HashMap();
+
+	// modified by gopalrc to take account of group release
+	final ArrayList groupIds = getSiteGroupIds(AgentFacade.getCurrentSiteId());
+	String groupsIdStr = "(";
+	Iterator groupIdIter = groupIds.iterator();
+	while (groupIdIter.hasNext()) {
+		groupsIdStr += "'" + groupIdIter.next().toString() + "', ";
+	}
+	groupsIdStr += "'none')";
+    
+	HashMap h = new HashMap();
     Object [] values = {"VIEW_PUBLISHED_ASSESSMENT", AgentFacade.getCurrentSiteId(), Boolean.valueOf(true)};
     //List list = getHibernateTemplate().find("select new PublishedAssessmentData(a.publishedAssessmentId, count(a)) from AssessmentGradingData a where a.forGrade=? group by a.publishedAssessmentId", Boolean.valueOf(true));
-    
     List list = getHibernateTemplate().find(
     		"select new PublishedAssessmentData(ag.publishedAssessmentId, count(ag.publishedAssessmentId)) " +
             "from AssessmentGradingData ag, AuthorizationData au " +
-            "where au.functionId = ? and au.agentIdString = ? " +
+            "where au.functionId = ? and (au.agentIdString = ?  or au.agentIdString in " + groupsIdStr + ")" +
             "and ag.publishedAssessmentId = au.qualifierId and ag.forGrade=? " +
             "group by ag.publishedAssessmentId", values);
             
@@ -1968,4 +1981,35 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 			}
 		}
 	}
+	
+	
+	private SiteService siteService;
+	
+	/**
+	 * added by gopalrc - Nov 2007
+`	 * TODO: should perhaps be moved to SiteService
+	 * @param siteId
+	 * @return
+	 */
+	private ArrayList getSiteGroupIds(final String siteId) {
+		Collection siteGroups = null;
+		try {
+			siteGroups = siteService.getSite(siteId).getGroups();
+		}
+		catch (IdUnusedException ex) {
+			// no site found
+		}
+		Iterator groupsIter = siteGroups.iterator();
+		final ArrayList groupIds = new ArrayList();
+		// To accomodate the problem with Hibernate and empty array parameters 
+		// TODO: this should probably be handled in a more efficient way
+		groupIds.add("none");  
+		while (groupsIter.hasNext()) {
+			Group group = (Group) groupsIter.next(); 
+			groupIds.add(group.getId());
+		}
+		return groupIds;
+	}
+
+	
 }

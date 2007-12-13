@@ -938,7 +938,7 @@ public class HistogramQuestionScoresBean
   
   
   public String getQuestionLabel() {
-	  return "p" + partNumber + "-q" + questionNumber; 
+	  return "P" + partNumber + "-Q" + questionNumber; 
   }
   
   public void addStudentWithAllCorrect(String agentId) {

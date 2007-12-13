@@ -69,23 +69,11 @@ public class PublishedAssessmentService {
 							 boolean ascending, String siteId) {
 
     // 2. get all takeable assessment available
-/*	  
     return PersistenceService.getInstance().
         getPublishedAssessmentFacadeQueries().
         getBasicInfoOfAllPublishedAssessments(orderBy, ascending,
                                              PublishedAssessmentFacade.
 					      ACTIVE_STATUS, siteId);
-*/
-
-	  // gopalrc - Nov 2007
-	  // changed from above code to that below
-	    return PersistenceService.getInstance().
-        getPublishedAssessmentFacadeQueries().
-        getBasicInfoOfTakeablePublishedAssessments(orderBy, ascending,
-                                             PublishedAssessmentFacade.
-					      ACTIVE_STATUS, siteId);
-	  
-	  
   }
 
 /**

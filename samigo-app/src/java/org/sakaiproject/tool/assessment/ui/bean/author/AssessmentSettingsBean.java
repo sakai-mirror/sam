@@ -1281,6 +1281,7 @@ public class AssessmentSettingsBean
       return false;
   }
 
+  // modified gopalrc - Nov 2007
   public SelectItem[] getPublishingTargets(){
     HashMap targets = ptHelper.getTargets();
     Set e = targets.keySet();
@@ -1297,7 +1298,7 @@ public class AssessmentSettingsBean
 	  	  ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages");
 	  	  target[2] = new SelectItem(t, rb.getString("selected_groups"));
 	    }
-	    else {
+	    else if (t.equals(AgentFacade.getCurrentSiteName())) {
 	  	  target[1] = new SelectItem(t, t);
 	    }
     }
