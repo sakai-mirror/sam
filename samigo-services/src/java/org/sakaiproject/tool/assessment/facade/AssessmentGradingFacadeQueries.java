@@ -441,24 +441,34 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   public HashMap getSubmissionSizeOfAllPublishedAssessments(){
 
 	// modified by gopalrc to take account of group release
-	final ArrayList groupIds = getSiteGroupIds(AgentFacade.getCurrentSiteId());
+	//ArrayList groupIds = getSiteGroupIds(AgentFacade.getCurrentSiteId());
+	
+	/*
 	String groupsIdStr = "(";
 	Iterator groupIdIter = groupIds.iterator();
 	while (groupIdIter.hasNext()) {
 		groupsIdStr += "'" + groupIdIter.next().toString() + "', ";
 	}
 	groupsIdStr += "'none')";
-    
+    */
+	
+	
 	HashMap h = new HashMap();
+	
     Object [] values = {"VIEW_PUBLISHED_ASSESSMENT", AgentFacade.getCurrentSiteId(), Boolean.valueOf(true)};
+    
     //List list = getHibernateTemplate().find("select new PublishedAssessmentData(a.publishedAssessmentId, count(a)) from AssessmentGradingData a where a.forGrade=? group by a.publishedAssessmentId", Boolean.valueOf(true));
     List list = getHibernateTemplate().find(
     		"select new PublishedAssessmentData(ag.publishedAssessmentId, count(ag.publishedAssessmentId)) " +
             "from AssessmentGradingData ag, AuthorizationData au " +
-            "where au.functionId = ? and (au.agentIdString = ?  or au.agentIdString in " + groupsIdStr + ")" +
+            "where au.functionId = ? and au.agentIdString = ? " +
             "and ag.publishedAssessmentId = au.qualifierId and ag.forGrade=? " +
             "group by ag.publishedAssessmentId", values);
-            
+
+    
+    //"where au.functionId = ? and (au.agentIdString = ?  or au.agentIdString in (?)) " +
+
+    
     Iterator iter = list.iterator();
     while (iter.hasNext()){
       PublishedAssessmentData o = (PublishedAssessmentData)iter.next();

@@ -777,12 +777,11 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	 * @param p
 	 */
 	public void createAuthorizationForSelectedGroups(PublishedAssessmentData publishedAssessment) {
-		String qualifierIdString = publishedAssessment.getPublishedAssessmentId().toString();
-		PersistenceService.getInstance().getAuthzQueriesFacade()
-				.createAuthorization(AgentFacade.getCurrentSiteId(),
-						"OWN_PUBLISHED_ASSESSMENT", qualifierIdString);
-
 	    AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
+		String qualifierIdString = publishedAssessment.getPublishedAssessmentId().toString();
+		authz.createAuthorization(AgentFacade.getCurrentSiteId(), "OWN_PUBLISHED_ASSESSMENT", qualifierIdString);
+		authz.createAuthorization(AgentFacade.getCurrentSiteId(), "VIEW_PUBLISHED_ASSESSMENT", qualifierIdString);
+
 	    List authorizationsToCopy = authz.getAuthorizationByFunctionAndQualifier("TAKE_ASSESSMENT", publishedAssessment.getAssessmentId().toString());
 	    if (authorizationsToCopy != null && authorizationsToCopy.size()>0) {
 			 Iterator authsIter = authorizationsToCopy.iterator();
@@ -1071,7 +1070,8 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		String orderBy = getOrderBy(sortString);
 		
 		// modified by gopalrc to take account of group release
-		final ArrayList groupIds = getSiteGroupIds(siteAgentId);
+		// realised that this is not necessary for site agents
+		//final ArrayList groupIds = getSiteGroupIds(siteAgentId);
 		
 
 		String query = "select new PublishedAssessmentData(p.publishedAssessmentId, p.title, "
@@ -1079,7 +1079,8 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				+ " from PublishedAssessmentData p, PublishedAccessControl c, AuthorizationData z  "
 				+ " where c.assessment.publishedAssessmentId = p.publishedAssessmentId and p.status=:status and "
 				+ " p.publishedAssessmentId=z.qualifierId and z.functionId=:functionId "
-				+ " and (z.agentIdString=:siteId or z.agentIdString in (:groupIds)) "
+				//+ " and (z.agentIdString=:siteId or z.agentIdString in (:groupIds)) "
+				+ " and z.agentIdString=:siteId "
 				+ " order by p." + orderBy;
 		if (ascending == true)
 			query += " asc";
@@ -1094,7 +1095,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				q.setInteger("status", 1);
 				q.setString("functionId", "OWN_PUBLISHED_ASSESSMENT");
 				q.setString("siteId", siteAgentId);
-				q.setParameterList("groupIds", groupIds);
+				//q.setParameterList("groupIds", groupIds);
 				return q.list();
 			};
 		};
@@ -1149,7 +1150,8 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			String sortString, final String siteAgentId, boolean ascending) {
 		
 		// modified by gopalrc to take account of group release
-		final ArrayList groupIds = getSiteGroupIds(siteAgentId);
+		// realised that this is not necessary for site agents
+		//final ArrayList groupIds = getSiteGroupIds(siteAgentId);
 		
 		String orderBy = getOrderBy(sortString);
 		String query = "select new PublishedAssessmentData(p.publishedAssessmentId, p.title,"
@@ -1157,7 +1159,8 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				+ " PublishedAccessControl c, AuthorizationData z  "
 				+ " where c.assessment.publishedAssessmentId=p.publishedAssessmentId and p.status=:status and (c.dueDate<=:today or c.retractDate<=:today)"
 				+ " and p.publishedAssessmentId=z.qualifierId and z.functionId=:functionId "
-				+ " and (z.agentIdString=:siteId or z.agentIdString in (:groupIds)) "
+				//+ " and (z.agentIdString=:siteId or z.agentIdString in (:groupIds)) "
+				+ " and z.agentIdString=:siteId "
 				+ " order by p." + orderBy;
 		
 
@@ -1175,7 +1178,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				q.setTimestamp("today", new Date());
 				q.setString("functionId", "OWN_PUBLISHED_ASSESSMENT");
 				q.setString("siteId", siteAgentId);
-				q.setParameterList("groupIds", groupIds);
+				//q.setParameterList("groupIds", groupIds);
 				return q.list();
 			};
 		};
