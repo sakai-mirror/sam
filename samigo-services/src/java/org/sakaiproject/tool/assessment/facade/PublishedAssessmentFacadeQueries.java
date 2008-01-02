@@ -2274,25 +2274,33 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	 * @return
 	 */
 	private String getReleaseToGroupsAsString(TreeMap groupsForSite, Long assessmentId) {
-	
-		 String[] releaseToGroups = null;
+		 List releaseToGroups = new ArrayList();
 		 String releaseToGroupsAsString = null;
 	     AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
 		 List authorizations = authz.getAuthorizationByFunctionAndQualifier("TAKE_PUBLISHED_ASSESSMENT", assessmentId.toString());
 		 if (authorizations != null && authorizations.size()>0) {
-			 releaseToGroupsAsString = "";
-			 releaseToGroups = new String[authorizations.size()];
 			 Iterator authsIter = authorizations.iterator();
-			 int i = 0;
 			 while (authsIter.hasNext()) {
 				 AuthorizationData ad = (AuthorizationData) authsIter.next();
-				 releaseToGroups[i++] = (String) groupsForSite.get(ad.getAgentIdString());
+				 Object group = groupsForSite.get(ad.getAgentIdString());
+				 if (group != null) {
+					 releaseToGroups.add(group);
+				 }
+			 }			 
+			 Collections.sort(releaseToGroups);
+			 releaseToGroupsAsString = "";
+			 
+			 if (releaseToGroups != null && releaseToGroups.size()!=0 ) {
+				 String lastGroup = (String) releaseToGroups.get(releaseToGroups.size()-1);
+				 Iterator releaseToGroupsIter = releaseToGroups.iterator();
+				 while (releaseToGroupsIter.hasNext()) {
+					 String group = (String) releaseToGroupsIter.next();
+					 releaseToGroupsAsString += group;
+					 if (!group.equals(lastGroup) ) {
+						 releaseToGroupsAsString += ", ";
+					 }
+				 }
 			 }
-			 Arrays.sort(releaseToGroups);
-			 for (i=0; i<releaseToGroups.length-1; i++) {
-				 releaseToGroupsAsString += releaseToGroups[i] + ", ";
-			 }
-			 releaseToGroupsAsString += releaseToGroups[releaseToGroups.length-1];
 		 }
 		 return releaseToGroupsAsString;
 	}
