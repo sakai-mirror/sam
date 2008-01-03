@@ -2332,4 +2332,26 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	  }
 
 	
+	  /**
+	   * added by gopalrc - Jan 2008
+	   * @param publishedAssessmentId
+	   * @return
+	   */
+ 	  public List getReleaseToGroupsForPublishedAssessment(
+				final String publishedAssessmentId) {
+			
+ 			final String query = "select agentId from AuthorizationData az where az.functionId=:functionId and az.qualifierId=:publishedAssessmentId";
+			final HibernateCallback hcb = new HibernateCallback() {
+				public Object doInHibernate(Session session)
+						throws HibernateException, SQLException {
+					Query q = session.createQuery(query);
+					q.setString("publishedAssessmentId", publishedAssessmentId);
+					q.setString("functionId", "TAKE_PUBLISHED_ASSESSMENT");
+					return q.list();
+				};
+			};
+			return getHibernateTemplate().executeFind(hcb);
+	}
+
+	  
 }

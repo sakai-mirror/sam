@@ -45,8 +45,10 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAccessContr
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAssessmentData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedEvaluationModel;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.PublishedAssessmentIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
+import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacadeQueries;
 import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.shared.api.grading.GradingSectionAwareServiceAPI;
@@ -65,6 +67,8 @@ public class TotalScoresBean
   private String assessmentId;
   private String publishedId;
 
+  public static final String RELEASED_SECTIONS_GROUPS_SELECT_VALUE = "-2"; // added by gopalrc - Jan 2008
+  
   public static final String ALL_SECTIONS_SELECT_VALUE = "-1";
   public static final String ALL_SUBMISSIONS = "3";
   public static final String LAST_SUBMISSION = "2";
@@ -95,7 +99,11 @@ public class TotalScoresBean
   private boolean hasRandomDrawPart;
   private String scoringOption;
   
-  private String selectedSectionFilterValue = ALL_SECTIONS_SELECT_VALUE;
+  
+  // modified by gopalrc - Jan 2008
+  //private String selectedSectionFilterValue = TotalScoresBean.ALL_SECTIONS_SELECT_VALUE;
+  private String selectedSectionFilterValue = null;
+
   private List sectionFilterSelectItems;
   private List availableSections;
   private boolean releaseToAnonymous = false;
@@ -117,6 +125,8 @@ public class TotalScoresBean
   private boolean multipleSubmissionsAllowed = false;
   private boolean isTimedAssessment = false;
   private boolean acceptLateSubmission = false;
+
+  private boolean groupRelease = false; // added by gopalrc - Jan 2008
   
   private static Log log = LogFactory.getLog(TotalScoresBean.class);
 
@@ -131,6 +141,19 @@ public class TotalScoresBean
 
 	protected void init() {
         defaultSearchString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages", "search_default_student_search_string");
+        
+        // added by gopalrc - Jan 2008
+        if (selectedSectionFilterValue == null) {
+	    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+	        groupRelease = publishedAssessmentService.isReleasedToGroups(publishedId);
+	    	if (groupRelease) {
+	    		setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
+	    	}
+	    	else {
+	    		setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+	    	}
+        }
+        
 		if (searchString == null) {
 			searchString = defaultSearchString;
 		}
@@ -698,6 +721,12 @@ public class TotalScoresBean
     availableSections = getAllAvailableSections();
     List filterSelectItems = new ArrayList();
 
+    // added by gopalrc - Jan 2008
+	if (groupRelease) {
+		filterSelectItems.add(new SelectItem(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE, ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages", "released_sections_groups")));
+	}
+
+    
     // The first choice is always "All available enrollments"
     filterSelectItems.add(new SelectItem(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE, ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages", "all_sections")));
     // TODO If there are unassigned students and the current user is allowed to see them, add them next.
@@ -713,7 +742,13 @@ public class TotalScoresBean
     // being deleted, throw it back to the default value (meaning everyone).
     int selectedSectionVal = new Integer(selectedSectionFilterValue).intValue();
     if ((selectedSectionVal >= 0) && (selectedSectionVal >= availableSections.size())) {
-        setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+    	// condition added by gopalrc - Jan 2008
+    	if (groupRelease) {
+    		setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
+    	}
+    	else {
+    		setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+    	}
     }
     return filterSelectItems;
   }
@@ -725,31 +760,44 @@ public class TotalScoresBean
 
 
   private List getEnrollmentListForSelectedSections() {
-                List enrollments;
+    List enrollments;
 
-                if (this.getSelectedSectionFilterValue().trim().equals(this.ALL_SECTIONS_SELECT_VALUE)) {
-                        enrollments = getAvailableEnrollments();
-                } else {
-                        // The user has selected a particular section.
-                        enrollments = getSectionEnrollments(getSelectedSectionUid(this.getSelectedSectionFilterValue()));
-                }
-        return enrollments;
-        }
+    if (this.getSelectedSectionFilterValue().trim().equals(this.ALL_SECTIONS_SELECT_VALUE)) {
+        enrollments = getAvailableEnrollments();
+    }
+    // added by gopalrc - Jan 2008
+    else if (getSelectedSectionFilterValue().trim().equals(RELEASED_SECTIONS_GROUPS_SELECT_VALUE)) {
+    	enrollments = getReleaseGroupsEnrollments();
+    }
+    else {
+        // The user has selected a particular section.
+        enrollments = getSectionEnrollments(getSelectedSectionUid(this.getSelectedSectionFilterValue()));
+    }
+	return enrollments;
+  }
 
 
   private List getSectionEnrollments(String sectionid) {
     GradingSectionAwareServiceAPI service = new GradingSectionAwareServiceImpl();
     return service.getSectionEnrollments(AgentFacade.getCurrentSiteId(), sectionid , AgentFacade.getAgentString());
-}
+  }
 
 
   private List getAvailableEnrollments() {
     GradingSectionAwareServiceAPI service = new GradingSectionAwareServiceImpl();
     return service.getAvailableEnrollments(AgentFacade.getCurrentSiteId(), AgentFacade.getAgentString());
-}
+  }
+  
+
+  private List getReleaseGroupsEnrollments() {
+    GradingSectionAwareServiceAPI service = new GradingSectionAwareServiceImpl();
+    return service.getAvailableEnrollments(AgentFacade.getCurrentSiteId(), AgentFacade.getAgentString());
+  }
+  
 
   private String getSelectedSectionUid(String uid) {
-    if (uid.equals(this.ALL_SECTIONS_SELECT_VALUE)){
+    if (uid.equals(ALL_SECTIONS_SELECT_VALUE) 
+    		|| uid.equals(RELEASED_SECTIONS_GROUPS_SELECT_VALUE) ){ // gopalrc - Jan 2008
       return null;
     } else {
       CourseSection section = (CourseSection)(availableSections.get(new Integer(uid).intValue()));
@@ -778,7 +826,7 @@ public class TotalScoresBean
         }
 
         return enrollmentMap;
-        }
+  }
 
   public boolean getReleaseToAnonymous() {
     return releaseToAnonymous;

@@ -527,4 +527,28 @@ public class PublishedAssessmentService {
 	    return PersistenceService.getInstance().
      getPublishedAssessmentFacadeQueries().getPublishedAttachmentData(attachmentId);
    }
+   
+   
+   /**
+    * added by gopalrc - Jan 2008
+    * @param publishedAssessmentId
+    * @return
+    */
+   public boolean isReleasedToGroups(String publishedAssessmentId) {
+	   if (publishedAssessmentId == null) {
+		   return false;
+	   }
+	   // PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+	   PublishedAssessmentIfc pub = getPublishedAssessment(publishedAssessmentId);
+	   if (pub == null) {
+		   return false;
+	   }
+	   if (pub.getAssessmentAccessControl().getReleaseTo().equals("Selected Groups")) {
+		   return true;
+	   }
+	   else {
+		   return false;
+	   }
+   }
+   
 }

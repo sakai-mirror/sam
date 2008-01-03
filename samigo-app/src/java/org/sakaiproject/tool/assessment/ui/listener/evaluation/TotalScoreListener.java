@@ -303,7 +303,18 @@ public class TotalScoreListener
       // if for anonymous, reset totalscorebean.getselectedsectionfiltervalue = ALL_SECTIONS_SELECT_VALUE 
     if ("true".equalsIgnoreCase(bean.getAnonymous())){
       //reset sectionaware pulldown to -1 all sections
-      bean.setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+      //bean.setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+      
+      // changed from above by gopalrc - Jan 2008
+    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+	      boolean groupRelease = publishedAssessmentService.isReleasedToGroups(bean.getPublishedId());
+	  	if (groupRelease) {
+	  		bean.setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
+	  	}
+	  	else {
+	  		bean.setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+	  	}
+      
     }
 
       Map useridMap= bean.getUserIdMap(); 

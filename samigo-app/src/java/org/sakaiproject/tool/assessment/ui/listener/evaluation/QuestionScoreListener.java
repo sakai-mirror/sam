@@ -252,8 +252,18 @@ public class QuestionScoreListener implements ActionListener,
 
 			if ("true".equalsIgnoreCase(totalBean.getAnonymous())) {
 				// reset sectionaware pulldown to -1 all sections
-				totalBean
-						.setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+				//totalBean
+				//		.setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+				
+		        // changed from above by gopalrc - Jan 2008
+		    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+		        boolean groupRelease = publishedAssessmentService.isReleasedToGroups(publishedId);
+		    	if (groupRelease) {
+		    		totalBean.setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
+		    	}
+		    	else {
+		    		totalBean.setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+		    	}
 			}
 
 			bean.setPublishedId(publishedId);
