@@ -127,7 +127,7 @@ public class HistogramListener
   /**
    * modified by gopalrc Nov 2007
    * 
-   * Calculate the detailed statistics as per WebCT
+   * Calculate the detailed statistics
    * 
    * This will populate the HistogramScoresBean with the data associated with the
    * particular versioned assessment based on the publishedId.
@@ -307,6 +307,7 @@ public class HistogramListener
 								  numStudentsRespondedFromLowerQuartile++;
 							  }
 						  }
+						  
 						  float percentCorrectFromUpperQuartileStudents = 
 							  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
 									  (float) numStudentsRespondedFromUpperQuartile) * 100f;
@@ -315,6 +316,16 @@ public class HistogramListener
 							  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
 									  (float) numStudentsRespondedFromLowerQuartile) * 100f;
 
+						 /*
+						  float percentCorrectFromUpperQuartileStudents = 
+							  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
+									  (float) histogramScores.getNumberOfUpperQuartileStudents() ) * 100f;
+
+						  float percentCorrectFromLowerQuartileStudents = 
+							  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
+									  (float) histogramScores.getNumberOfLowerQuartileStudents() ) * 100f;
+						*/
+
 						  questionScores.setPercentCorrectFromUpperQuartileStudents(
 								  Integer.toString((int) percentCorrectFromUpperQuartileStudents));
 						  questionScores.setPercentCorrectFromLowerQuartileStudents(
@@ -322,8 +333,15 @@ public class HistogramListener
 
 						  float numResponses = (float)questionScores.getNumResponses();
 
-						  float discrimination = 2.00f*(numStudentsWithAllCorrectFromUpperQuartile-
-								  numStudentsWithAllCorrectFromLowerQuartile )/numResponses ; 
+						  
+						  //float discrimination = 2.00f*(numStudentsWithAllCorrectFromUpperQuartile-
+						  //		  numStudentsWithAllCorrectFromLowerQuartile )/numResponses ; 
+
+						  // new discrimination formula from Stephen
+						  float discrimination = ((float) numStudentsWithAllCorrectFromUpperQuartile / 
+								  (float) numStudentsRespondedFromUpperQuartile) -
+								  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
+										  (float) numStudentsRespondedFromLowerQuartile);
 
 						  questionScores.setDiscrimination(Float.toString(discrimination));
 

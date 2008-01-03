@@ -878,6 +878,15 @@ publishedId = ppublishedId;
 	  }
   }
   
+  public int getNumberOfUpperQuartileStudents() {
+	  if (upperQuartileStudents == null) {
+		  return 0;
+	  }
+	  else {
+		  return upperQuartileStudents.size();
+	  }
+  }
+  
   public void addToLowerQuartileStudents(String agentId) {
 	  if (lowerQuartileStudents == null) {
 		  lowerQuartileStudents = new HashMap();
@@ -897,6 +906,15 @@ publishedId = ppublishedId;
 		  else {
 			  return true;
 		  }
+	  }
+  }
+
+  public int getNumberOfLowerQuartileStudents() {
+	  if (lowerQuartileStudents == null) {
+		  return 0;
+	  }
+	  else {
+		  return lowerQuartileStudents.size();
 	  }
   }
   
