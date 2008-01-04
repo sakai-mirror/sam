@@ -323,5 +323,13 @@ public interface PublishedAssessmentFacadeQueriesAPI
   
   
   public PublishedAttachmentData getPublishedAttachmentData(Long attachmentId);
+
   
+  /**
+   * added by gopalrc - Jan 2008
+   * @param publishedAssessmentId
+   * @return
+   */
+  public List getReleaseToGroupIdsForPublishedAssessment(final String publishedAssessmentId);
+
 }

@@ -2337,10 +2337,10 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	   * @param publishedAssessmentId
 	   * @return
 	   */
- 	  public List getReleaseToGroupsForPublishedAssessment(
+ 	  public List getReleaseToGroupIdsForPublishedAssessment(
 				final String publishedAssessmentId) {
 			
- 			final String query = "select agentId from AuthorizationData az where az.functionId=:functionId and az.qualifierId=:publishedAssessmentId";
+ 			final String query = "select agentIdString from AuthorizationData az where az.functionId=:functionId and az.qualifierId=:publishedAssessmentId";
 			final HibernateCallback hcb = new HibernateCallback() {
 				public Object doInHibernate(Session session)
 						throws HibernateException, SQLException {

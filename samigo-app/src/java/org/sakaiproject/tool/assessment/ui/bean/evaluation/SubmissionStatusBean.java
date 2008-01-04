@@ -93,7 +93,7 @@ public class SubmissionStatusBean
   private String searchString;
   private String defaultSearchString;
   
-  private boolean groupRelease = false; // added by gopalrc - Jan 2008
+  private Boolean releasedToGroups = null; // added by gopalrc - Jan 2008
 
   /**
    * Creates a new SubmissionStatusBean object.
@@ -106,18 +106,6 @@ public class SubmissionStatusBean
 
 	protected void init() {
         defaultSearchString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages", "search_default_student_search_string");
-
-        // added by gopalrc - Jan 2008
-        if (selectedSectionFilterValue == null) {
-	    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
-	        groupRelease = publishedAssessmentService.isReleasedToGroups(publishedId);
-	    	if (groupRelease) {
-	    		setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
-	    	}
-	    	else {
-	    		setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
-	    	}
-        }
 
         if (searchString == null) {
 			searchString = defaultSearchString;
@@ -220,6 +208,15 @@ public class SubmissionStatusBean
   public void setPublishedId(String ppublishedId)
   {
     publishedId = ppublishedId;
+    
+    //added by gopalrc - Jan 2007
+	if (isReleasedToGroups()) {
+		setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
+	}
+	else {
+		setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+	}
+    
   }
 
   /**
@@ -608,7 +605,17 @@ public class SubmissionStatusBean
 
 
   public String getSelectedSectionFilterValue() {
-    return selectedSectionFilterValue;
+	  // lazy initialization added by gopalrc - Jan 2008  
+	  if (selectedSectionFilterValue == null) {
+		  if (isReleasedToGroups()) {
+			  setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
+		  }
+		  else {
+			  setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+		  }
+	  }
+
+	  return selectedSectionFilterValue;
   }
 
   public void setSelectedSectionFilterValue(String param) {
@@ -705,4 +712,17 @@ public class SubmissionStatusBean
 		}
 		return filteredList;
 	}
+	
+	/**
+	 * added by gopalrc - jan 2008
+	 * @return
+	 */
+	public boolean isReleasedToGroups() {
+		if (releasedToGroups == null) {
+	    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+	    	releasedToGroups = publishedAssessmentService.isReleasedToGroups(publishedId);
+		}
+		return releasedToGroups;
+	}
+	
 }

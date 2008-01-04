@@ -126,7 +126,7 @@ public class TotalScoresBean
   private boolean isTimedAssessment = false;
   private boolean acceptLateSubmission = false;
 
-  private boolean groupRelease = false; // added by gopalrc - Jan 2008
+  private Boolean releasedToGroups = null; // added by gopalrc - Jan 2008
   
   private static Log log = LogFactory.getLog(TotalScoresBean.class);
 
@@ -141,19 +141,7 @@ public class TotalScoresBean
 
 	protected void init() {
         defaultSearchString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages", "search_default_student_search_string");
-        
-        // added by gopalrc - Jan 2008
-        if (selectedSectionFilterValue == null) {
-	    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
-	        groupRelease = publishedAssessmentService.isReleasedToGroups(publishedId);
-	    	if (groupRelease) {
-	    		setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
-	    	}
-	    	else {
-	    		setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
-	    	}
-        }
-        
+
 		if (searchString == null) {
 			searchString = defaultSearchString;
 		}
@@ -268,6 +256,14 @@ public class TotalScoresBean
   public void setPublishedId(String ppublishedId)
   {
     publishedId = ppublishedId;
+
+    //added by gopalrc - Jan 2007
+	if (isReleasedToGroups()) {
+		setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
+	}
+	else {
+		setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+	}
   }
 
   /**
@@ -682,11 +678,22 @@ public class TotalScoresBean
 
 
   public String getSelectedSectionFilterValue() {
-    return selectedSectionFilterValue;
+	  // lazy initialization added by gopalrc - Jan 2008  
+	  if (selectedSectionFilterValue == null) {
+		  if (isReleasedToGroups()) {
+			  setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
+		  }
+		  else {
+			  setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
+		  }
+	  }
+	  return selectedSectionFilterValue;
   }
 
   public void setSelectedSectionFilterValue(String param ) {
-      if (!param.equals(this.selectedSectionFilterValue)) {
+	// gopalrc added null check  
+    if ( param!=null && (selectedSectionFilterValue==null ||  
+    	!param.equals(this.selectedSectionFilterValue))) {
 			this.selectedSectionFilterValue = param;
 			setFirstRow(0); // clear the paging when we update the search
     }
@@ -716,13 +723,11 @@ public class TotalScoresBean
   }
 
   public List getSectionFilterSelectItems() {
-
-
     availableSections = getAllAvailableSections();
     List filterSelectItems = new ArrayList();
 
     // added by gopalrc - Jan 2008
-	if (groupRelease) {
+	if (isReleasedToGroups()) {
 		filterSelectItems.add(new SelectItem(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE, ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages", "released_sections_groups")));
 	}
 
@@ -743,7 +748,7 @@ public class TotalScoresBean
     int selectedSectionVal = new Integer(selectedSectionFilterValue).intValue();
     if ((selectedSectionVal >= 0) && (selectedSectionVal >= availableSections.size())) {
     	// condition added by gopalrc - Jan 2008
-    	if (groupRelease) {
+    	if (isReleasedToGroups()) {
     		setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
     	}
     	else {
@@ -767,7 +772,7 @@ public class TotalScoresBean
     }
     // added by gopalrc - Jan 2008
     else if (getSelectedSectionFilterValue().trim().equals(RELEASED_SECTIONS_GROUPS_SELECT_VALUE)) {
-    	enrollments = getReleaseGroupsEnrollments();
+    	enrollments = getGroupReleaseEnrollments();
     }
     else {
         // The user has selected a particular section.
@@ -789,9 +794,9 @@ public class TotalScoresBean
   }
   
 
-  private List getReleaseGroupsEnrollments() {
+  private List getGroupReleaseEnrollments() {
     GradingSectionAwareServiceAPI service = new GradingSectionAwareServiceImpl();
-    return service.getAvailableEnrollments(AgentFacade.getCurrentSiteId(), AgentFacade.getAgentString());
+    return service.getGroupReleaseEnrollments(AgentFacade.getCurrentSiteId(), AgentFacade.getAgentString(), publishedId);
   }
   
 
@@ -1062,6 +1067,16 @@ public class TotalScoresBean
 	
 	public void setAcceptLateSubmission(boolean acceptLateSubmission) {
 		this.acceptLateSubmission = acceptLateSubmission;
+	}
+	
+	/**
+	 * added by gopalrc - jan 2008
+	 * @return
+	 */
+	public boolean isReleasedToGroups() {
+    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+    	releasedToGroups = publishedAssessmentService.isReleasedToGroups(publishedId);
+		return releasedToGroups;
 	}
 	
 }

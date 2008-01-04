@@ -38,6 +38,7 @@ import org.sakaiproject.site.cover.SiteService;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.integration.helper.ifc.SectionAwareServiceHelper;
 import org.sakaiproject.tool.assessment.integration.helper.integrated.FacadeUtils;
+import org.sakaiproject.tool.assessment.services.PersistenceService;
 
 
 /**
@@ -99,7 +100,7 @@ public class SectionAwareServiceHelperImpl extends AbstractSectionsImpl implemen
 	 * @param userUid
 	 * @return
 	 */
-	public List getReleaseGroupsEnrollments(String siteid, String userUid, String publishedAssessmentId) {
+	public List getGroupReleaseEnrollments(String siteid, String userUid, String publishedAssessmentId) {
 		List availEnrollments = getAvailableEnrollments(siteid, userUid);
 		List enrollments = new ArrayList();
 		for (Iterator eIter = availEnrollments.iterator(); eIter.hasNext(); ) {
@@ -136,16 +137,22 @@ public class SectionAwareServiceHelperImpl extends AbstractSectionsImpl implemen
 		catch (IdUnusedException ex) {
 			// no site found
 		}
+		List releaseGroupIds = PersistenceService.getInstance()
+		  .getPublishedAssessmentFacadeQueries()
+		  .getReleaseToGroupIdsForPublishedAssessment(publishedAssessmentId);
+
 		Iterator groupsIter = siteGroups.iterator();
-		final ArrayList groupIds = new ArrayList();
 		while (groupsIter.hasNext()) {
-			Group group = (Group) groupsIter.next(); 
-			//if this group is a release group
-				return true;
-			//}
+			Group group = (Group) groupsIter.next();
+			for (Iterator releaseGroupIdsIter = releaseGroupIds.iterator(); 
+				releaseGroupIdsIter.hasNext();) {
+				//if this group is a release group
+				if (group.getId().equals((String)releaseGroupIdsIter.next())) {
+					return true;
+				}
+			}
 		}
 		return false;
-		
 	}
 	
 	
