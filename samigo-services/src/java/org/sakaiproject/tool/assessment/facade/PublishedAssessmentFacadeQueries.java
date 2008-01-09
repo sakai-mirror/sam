@@ -2246,6 +2246,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	 * @param siteId
 	 * @return
 	 */
+/*	
 	private ArrayList getSiteGroupIds(final String siteId) {
 		Collection siteGroups = null;
 		try {
@@ -2265,7 +2266,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		}
 		return groupIds;
 	}
-
+*/
 	
 	/**
 	 * added by gopalrc November 2007

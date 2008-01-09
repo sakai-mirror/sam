@@ -1660,7 +1660,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		  int sectionScoreColumnStart = responseList.size();
 		  
 		  Float finalScore = assessmentGradingData.getFinalScore();
-		  responseList.add(finalScore);
+		  responseList.add((Double)finalScore.doubleValue()); // gopal - cast for spreadsheet numerics
 		  Long assessmentGradingId = assessmentGradingData.getAssessmentGradingId();
 
 		  HashMap studentGradingMap = getStudentGradingData(assessmentGradingData.getAssessmentGradingId().toString());
@@ -1813,10 +1813,13 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	       } // outer for - questions
 	      
 	   	   // gopalrc - Dec 2007
-	   	   Iterator keys = sectionScores.keySet().iterator();
-	   	   while (keys.hasNext()) {
-	   		   responseList.add(sectionScoreColumnStart++, sectionScores.get(keys.next()));
-	   	   }
+	       if (sectionScores.size() > 1) {
+		   	   Iterator keys = sectionScores.keySet().iterator();
+		   	   while (keys.hasNext()) {
+		   		   Double partScore = (Double) ((Float) sectionScores.get(keys.next())).doubleValue() ;
+		   		   responseList.add(sectionScoreColumnStart++, partScore);
+		   	   }
+	       }
 	      
 	       finalList.add(responseList);
 	  } // while
@@ -2001,6 +2004,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	 * @param siteId
 	 * @return
 	 */
+/*	
 	private ArrayList getSiteGroupIds(final String siteId) {
 		Collection siteGroups = null;
 		try {
@@ -2020,6 +2024,6 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		}
 		return groupIds;
 	}
-
+*/
 	
 }

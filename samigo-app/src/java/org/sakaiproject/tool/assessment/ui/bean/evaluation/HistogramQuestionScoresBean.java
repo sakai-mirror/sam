@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
+import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 
 /**
  * <p>
@@ -936,9 +937,21 @@ public class HistogramQuestionScoresBean
   private Long itemId;
 
   
+  /**
+   * added by gopalrc Dec 2007
+   * 
+   * The published item (question) id
+   */
+  private int numberOfParts;
+  
   
   public String getQuestionLabel() {
-	  return "P" + partNumber + "-Q" + questionNumber; 
+	  if (getNumberOfParts() > 1) {
+		  return "P" + partNumber + "-Q" + questionNumber; 
+	  }
+	  else {
+		  return "Q" + questionNumber; 
+	  }
   }
   
   public void addStudentWithAllCorrect(String agentId) {
@@ -974,7 +987,7 @@ public class HistogramQuestionScoresBean
 
 
   public String getDiscrimination() {
-	return discrimination;
+	  return discrimination;
   }
 
   public void setDiscrimination(String discrimination) {
@@ -1025,5 +1038,13 @@ public class HistogramQuestionScoresBean
   public void setItemId(Long itemId) {
 	  this.itemId = itemId;
   }
+
+public int getNumberOfParts() {
+	return numberOfParts;
+}
+
+public void setNumberOfParts(int numberOfParts) {
+	this.numberOfParts = numberOfParts;
+}
   
 }

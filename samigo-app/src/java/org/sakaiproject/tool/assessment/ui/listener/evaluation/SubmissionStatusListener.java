@@ -160,10 +160,6 @@ public class SubmissionStatusListener
       
       bean.setPublishedId(publishedId);
       
-      // gopalrc - moved from above to enable side effect of setPublishedId()
-      // TODO - see if this can be neatened
-      //totalScoresBean.setSelectedSectionFilterValue(bean.getSelectedSectionFilterValue());  
-      
       // we are only interested in showing last submissions
 
       List scores = delegate.getLastSubmittedAssessmentGradingList(new Long(publishedId));

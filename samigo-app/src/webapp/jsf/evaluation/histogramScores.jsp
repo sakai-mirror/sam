@@ -50,20 +50,26 @@ $Id$
     <h:outputText value="#{evaluationMessages.column} "/>
     <h:outputText value="#{histogramScores.assessmentName} "/>
   </h3>
+  
      <h:outputText value=" <p class=\"navViewAction\">" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}" escape="false"/>
-     <h:commandLink title="#{evaluationMessages.t_submissionStatus}" action="submissionStatus" immediate="true" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
+     
+    <h:commandLink title="#{evaluationMessages.t_submissionStatus}" action="submissionStatus" immediate="true" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
       <h:outputText value="#{evaluationMessages.sub_status}" />
       <f:param name="allSubmissions" value="true"/>
       <f:actionListener
         type="org.sakaiproject.tool.assessment.ui.listener.evaluation.SubmissionStatusListener" />
     </h:commandLink>
+
     <h:outputText value=" #{evaluationMessages.separator} " rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
+
     <h:commandLink title="#{evaluationMessages.t_totalScores}" action="totalScores" immediate="true" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
-    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ResetTotalScoreListener" />
-    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
+      <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ResetTotalScoreListener" />
+      <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
       <h:outputText value="#{evaluationMessages.title_total}" />
     </h:commandLink>
+
     <h:outputText value=" #{evaluationMessages.separator} " rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
+
     <h:commandLink title="#{evaluationMessages.t_questionScores}" action="questionScores" immediate="true" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
       <f:actionListener
         type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreListener" />
@@ -71,13 +77,27 @@ $Id$
     </h:commandLink>
 
     <h:outputText value=" #{evaluationMessages.separator} " rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
-      <h:outputText value="#{evaluationMessages.stat_view}" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
+
+    <h:outputText value="#{evaluationMessages.stat_view}" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
+
+
+    <h:outputText value=" #{evaluationMessages.separator} " rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
+
+    <h:commandLink title="#{evaluationMessages.t_histogram}" action="detailedStatistics" immediate="true"
+      rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}" >
+      <h:outputText value="#{evaluationMessages.detailed} #{evaluationMessages.stat_view}" />
+      <f:actionListener
+        type="org.sakaiproject.tool.assessment.ui.listener.evaluation.HistogramListener" />
+    </h:commandLink>
+
 
     <h:outputText value=" #{evaluationMessages.separator} "  rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
+
     <h:commandLink title="#{evaluationMessages.t_export}" action="exportResponses" immediate="true"  rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
       <h:outputText value="#{evaluationMessages.export}" />
   	  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ExportResponsesListener" />
     </h:commandLink>
+
     <h:outputText value=" </p>" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}" escape="false"/>
 
   <h:messages styleClass="validation" />
@@ -245,161 +265,9 @@ $Id$
 
 
       </h:panelGroup>
-<f:verbatim></div></div></f:verbatim> 
+<f:verbatim></div></f:verbatim> 
     </h:column>
   </h:dataTable>
-
-
-
-
-
-<!-- 
-***************************************************
-***************************************************
-***************************************************
-Below added by gopalrc Nov 2007 
-***************************************************
-***************************************************
-***************************************************
--->
-
-<br/>
-<br/>
-<br/>
-
-  <h3>
-    <h:outputText value="#{evaluationMessages.detailed} "/>
-    <h:outputText value="#{evaluationMessages.stat_view}"/>
-  </h3>
-
-
-  <h:dataTable value="#{histogramScores.detailedStatistics}" var="item">
-
-<!-- need to add a randomtype property for histogramQuestionScoreBean (item) and if it's true, hide histogram  -->
-<%--
-    <h:column rendered="#{histogramScores.randomType =='true'}">
-      <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
-    </h:column>
---%>
-
-
-    <h:column rendered="#{histogramScores.randomType =='false'}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>#{evaluationMessages.question}</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.questionLabel}" escape="false" />
-    </h:column>
-
-    <h:column rendered="#{histogramScores.randomType =='false'}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>N&nbsp;&nbsp;&nbsp;&nbsp;</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.n}" escape="false" />
-    </h:column>
-
-    <h:column rendered="#{histogramScores.randomType =='false'}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>#{evaluationMessages.pct_correct_of}<br/>#{evaluationMessages.whole_group}</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.percentCorrect}" escape="false" />
-    </h:column>
-
-    <h:column rendered="#{histogramScores.randomType =='false'}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U><br/>#{evaluationMessages.upper_25_pct}</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.percentCorrectFromUpperQuartileStudents}" escape="false" />
-    </h:column>
-
-    <h:column rendered="#{histogramScores.randomType =='false'}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U><br/>#{evaluationMessages.lower_25_pct}</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.percentCorrectFromLowerQuartileStudents}" escape="false" />
-    </h:column>
-
-    <h:column rendered="#{histogramScores.randomType =='false'}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>#{evaluationMessages.discrim_abbrev}</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.discrimination}" escape="false" />
-    </h:column>
-
-    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>0}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>- &nbsp;&nbsp;&nbsp;</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.numberOfStudentsWithZeroAnswers}" escape="false" />
-    </h:column>
-
-    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>0}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>a &nbsp;&nbsp;&nbsp;</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.histogramBars[0].numStudents}" escape="false" rendered="#{!item.histogramBars[0].isCorrect}"/>
-        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[0].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[0].isCorrect}"/>
-    </h:column>
-
-
-    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>1}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>b &nbsp;&nbsp;&nbsp;</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.histogramBars[1].numStudents}" escape="false" rendered="#{!item.histogramBars[1].isCorrect}"/>
-        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[1].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[1].isCorrect}"/>
-    </h:column>
-
-
-    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>2}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>c &nbsp;&nbsp;&nbsp;</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.histogramBars[2].numStudents}" escape="false" rendered="#{!item.histogramBars[2].isCorrect}"/>
-        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[2].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[2].isCorrect}"/>
-    </h:column>
-
-
-    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>3}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>d &nbsp;&nbsp;&nbsp;</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.histogramBars[3].numStudents}" escape="false" rendered="#{!item.histogramBars[3].isCorrect}"/>
-        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[3].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[3].isCorrect}"/>
-    </h:column>
-
-
-    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>4}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>e &nbsp;&nbsp;&nbsp;</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.histogramBars[4].numStudents}" escape="false" rendered="#{!item.histogramBars[4].isCorrect}"/>
-        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[4].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[4].isCorrect}"/>
-    </h:column>
-
-
-    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>5}">
-        <f:facet name="header">
-            <h:outputText escape="false" value="<U>f &nbsp;&nbsp;&nbsp;</U>" /> 
-        </f:facet>
-        <h:outputText value="#{item.histogramBars[5].numStudents}" escape="false" rendered="#{!item.histogramBars[5].isCorrect}"/>
-        <h:outputText value="<font color='#22FF33'><b><i>#{item.histogramBars[5].numStudents}</i></b></font>" escape="false" rendered="#{item.histogramBars[5].isCorrect}"/>
-    </h:column>
-
-
-
-  </h:dataTable>
-
-
-<!-- 
-***************************************************
-***************************************************
-***************************************************
-Above added by gopalrc Nov 2007 
-***************************************************
-***************************************************
-***************************************************
--->
-
 
 
 

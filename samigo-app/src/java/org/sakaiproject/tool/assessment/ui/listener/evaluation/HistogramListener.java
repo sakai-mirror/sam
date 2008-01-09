@@ -33,6 +33,7 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
+import org.sakaiproject.tool.assessment.ui.bean.evaluation.ExportResponsesBean;
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.HistogramBarBean;
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.HistogramQuestionScoresBean;
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.HistogramScoresBean;
@@ -120,7 +121,7 @@ public class HistogramListener
     //log.info("Calling histogramScores.");
     if (!histogramScores(publishedId, bean, totalBean))
     {
-      throw new RuntimeException("failed to call questionScores.");
+      throw new RuntimeException("failed to call histogramScores.");
     }
   }
 
@@ -250,6 +251,7 @@ public class HistogramListener
 				  // Iterate through the assessment questions (items)
 				  while (itemsIter.hasNext()) {
 					  HistogramQuestionScoresBean questionScores = new HistogramQuestionScoresBean();
+					  questionScores.setNumberOfParts(parts.size()); // gopalrc
 					  //if this part is a randompart , then set randompart = true
 					  questionScores.setRandomType(isRandompart);
 					  ItemDataIfc item = (ItemDataIfc) itemsIter.next();
@@ -343,7 +345,14 @@ public class HistogramListener
 								  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
 										  (float) numStudentsRespondedFromLowerQuartile);
 
-						  questionScores.setDiscrimination(Float.toString(discrimination));
+						  // round to 2 decimals
+						  if (discrimination > 999999 || discrimination < -999999) {
+							  questionScores.setDiscrimination("NaN");
+						  }
+						  else {
+							  discrimination = ((int) (discrimination*100.00f)) / 100.00f;
+							  questionScores.setDiscrimination(Float.toString(discrimination));
+						  }
 
 					  }
 					  // above - gopalrc Nov 2007
@@ -1839,18 +1848,19 @@ public class HistogramListener
     ArrayList spreadsheetRows = new ArrayList();
     
     // add a few blank lines
-    for (int i=0; i<5; i++) {
-    	spreadsheetRows.add(blankList);
-    }
+//    for (int i=0; i<5; i++) {
+//    	spreadsheetRows.add(blankList);
+//    }
 
 	ResourceLoader rb = new ResourceLoader(
 			"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
     
     ArrayList<Object> headerList = new ArrayList<Object>();
-    headerList.add(rb.getString("detailed") + " " + rb.getString("stat_view")); 
-    spreadsheetRows.add(headerList);
+    //headerList.add(rb.getString("detailed") + " " + rb.getString("stat_view")); 
+    //spreadsheetRows.add(headerList);
     
     headerList = new ArrayList<Object>();
+    headerList.add(ExportResponsesBean.HEADER_MARKER); 
     headerList.add(rb.getString("question")); 
     headerList.add("N");
     headerList.add(rb.getString("pct_correct_of")); 
@@ -1861,6 +1871,7 @@ public class HistogramListener
     spreadsheetRows.add(headerList);
     
     headerList = new ArrayList<Object>();
+    headerList.add(ExportResponsesBean.HEADER_MARKER); 
     headerList.add(""); 
     headerList.add("");
     headerList.add(rb.getString("whole_group")); 
@@ -1897,16 +1908,61 @@ public class HistogramListener
     	HistogramQuestionScoresBean questionBean = (HistogramQuestionScoresBean)detailedStatsIter.next();
     	statsLine = new ArrayList();
     	statsLine.add(questionBean.getQuestionLabel());
-    	statsLine.add(questionBean.getN());
-    	statsLine.add(questionBean.getPercentCorrect());
-    	statsLine.add(questionBean.getPercentCorrectFromUpperQuartileStudents());
-    	statsLine.add(questionBean.getPercentCorrectFromLowerQuartileStudents());
-    	statsLine.add(questionBean.getDiscrimination());
-    	statsLine.add(questionBean.getNumberOfStudentsWithZeroAnswers());
+    	Double dVal;
+    	
+    	try {
+    		dVal = Double.parseDouble(questionBean.getN());
+       		statsLine.add(dVal);
+    	}
+    	catch (NumberFormatException ex) {
+       		statsLine.add(questionBean.getN());
+    	}
+
+    	try {
+    		dVal = Double.parseDouble(questionBean.getPercentCorrect());
+       		statsLine.add(dVal);
+    	}
+    	catch (NumberFormatException ex) {
+       		statsLine.add(questionBean.getPercentCorrect());
+    	}
+    	
+    	try {
+    		dVal = Double.parseDouble(questionBean.getPercentCorrectFromUpperQuartileStudents());
+       		statsLine.add(dVal);
+    	}
+    	catch (NumberFormatException ex) {
+       		statsLine.add(questionBean.getPercentCorrectFromUpperQuartileStudents());
+    	}
+
+    	try {
+    		dVal = Double.parseDouble(questionBean.getPercentCorrectFromLowerQuartileStudents());
+       		statsLine.add(dVal);
+    	}
+    	catch (NumberFormatException ex) {
+       		statsLine.add(questionBean.getPercentCorrectFromLowerQuartileStudents());
+    	}
+
+    	try {
+    		dVal = Double.parseDouble(questionBean.getDiscrimination());
+       		statsLine.add(dVal);
+    	}
+    	catch (NumberFormatException ex) {
+       		statsLine.add(questionBean.getDiscrimination());
+    	}
+    	
+    	
+   		dVal = Double.parseDouble("" + questionBean.getNumberOfStudentsWithZeroAnswers());
+   		statsLine.add(dVal);
+    	
     	
     	for (int i=0; i<questionBean.getHistogramBars().length; i++) {
-        	statsLine.add(questionBean.getHistogramBars()[i].getNumStudents());
+    		if (questionBean.getHistogramBars()[i].getIsCorrect()) {
+           		statsLine.add(ExportResponsesBean.FORMAT_BOLD);
+    		}
+       		dVal = Double.parseDouble("" + questionBean.getHistogramBars()[i].getNumStudents() );
+       		statsLine.add(dVal);
     	}
+    	
     	spreadsheetRows.add(statsLine);
     }
     
