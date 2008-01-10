@@ -75,6 +75,12 @@ public class TotalScoresBean
   public static final String LAST_SUBMISSION = "2";
   public static final String HIGHEST_SUBMISSION = "1";
 
+  // gopalrc - indicates which listeber getUserIdMap() is called from
+  public static final int CALLED_FROM_SUBMISSION_STATUS_LISTENER = 1;  
+  public static final int CALLED_FROM_QUESTION_SCORE_LISTENER = 2;  
+  public static final int CALLED_FROM_TOTAL_SCORE_LISTENER = 3;  
+
+  
   /** Use serialVersionUID for interoperability. */
   private final static long serialVersionUID = 5517587781720762296L;
   private String assessmentName;
@@ -765,10 +771,25 @@ public class TotalScoresBean
   }
 
 
-  private List getEnrollmentListForSelectedSections() {
+  private List getEnrollmentListForSelectedSections(int calledFrom) {
     List enrollments;
-
-    if (this.getSelectedSectionFilterValue().trim().equals(this.ALL_SECTIONS_SELECT_VALUE)) {
+/*
+    if (this.getSelectedSectionFilterValue().trim().equals(this.ALL_SECTIONS_SELECT_VALUE)
+    		|| (getSelectedSectionFilterValue().trim().equals(RELEASED_SECTIONS_GROUPS_SELECT_VALUE) 
+    				&& calledFrom==CALLED_FROM_TOTAL_SCORE_LISTENER 
+    				&& "true".equalsIgnoreCase(anonymous)) 
+    				
+	    	|| (getSelectedSectionFilterValue().trim().equals(RELEASED_SECTIONS_GROUPS_SELECT_VALUE) 
+    	    		&& calledFrom==CALLED_FROM_QUESTION_SCORE_LISTENER 
+    	    		&& "true".equalsIgnoreCase(anonymous)) 
+    ) {
+*/    	
+    if (this.getSelectedSectionFilterValue().trim().equals(this.ALL_SECTIONS_SELECT_VALUE)
+    		|| (calledFrom==CALLED_FROM_TOTAL_SCORE_LISTENER 
+    				&& "true".equalsIgnoreCase(anonymous)) 
+	    	|| (calledFrom==CALLED_FROM_QUESTION_SCORE_LISTENER 
+    	    		&& "true".equalsIgnoreCase(anonymous)) 
+    ) {
         enrollments = getAvailableEnrollments();
     }
     // added by gopalrc - Jan 2008
@@ -811,9 +832,13 @@ public class TotalScoresBean
     }
   }
 
-
-  public Map getUserIdMap() {
-        List enrollments = getEnrollmentListForSelectedSections();
+  /**
+   * calledFrom param added by gopalrc 
+   * @param calledFrom - where this method is called from
+   * @return
+   */
+  public Map getUserIdMap(int calledFrom) {
+        List enrollments = getEnrollmentListForSelectedSections(calledFrom);
 
 // for debugging
 /*
