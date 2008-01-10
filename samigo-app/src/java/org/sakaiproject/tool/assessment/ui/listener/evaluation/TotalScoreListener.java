@@ -306,8 +306,9 @@ public class TotalScoreListener
       //bean.setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
       
       // changed from above by gopalrc - Jan 2008
-    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
-	      boolean groupRelease = publishedAssessmentService.isReleasedToGroups(bean.getPublishedId());
+    	//PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+	    //  boolean groupRelease = publishedAssessmentService.isReleasedToGroups(bean.getPublishedId());
+    	boolean groupRelease = p.getAssessmentAccessControl().getReleaseTo().equals(AssessmentAccessControlIfc.RELEASE_TO_SELECTED_GROUPS);
 	  	if (groupRelease) {
 	  		bean.setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
 	  	}

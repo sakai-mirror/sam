@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAssessmentData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAttachmentData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemData;
@@ -543,12 +544,13 @@ public class PublishedAssessmentService {
 	   if (pub == null) {
 		   return false;
 	   }
-	   if (pub.getAssessmentAccessControl().getReleaseTo().equals("Selected Groups")) {
+	   if (pub.getAssessmentAccessControl().getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
 		   return true;
 	   }
 	   else {
 		   return false;
 	   }
    }
+
    
 }

@@ -260,7 +260,7 @@ public class SaveAssessmentSettings
     
     //added by gopalrc, 6 Nov 2007
     AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();
-    if (assessmentSettings.getReleaseTo().equals("Selected Groups")) {
+    if (assessmentSettings.getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
         authz.removeAuthorizationByQualifierAndFunction(assessmentId.toString(), "TAKE_ASSESSMENT");
     	String[] groupsAuthorized = assessmentSettings.getGroupsAuthorizedToSave();//getGroupsAuthorized();
     	if (groupsAuthorized != null && groupsAuthorized.length > 0) {

@@ -707,7 +707,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 
 	public void createAuthorization(PublishedAssessmentData p) {
 		// conditional processing added by gopalrc Nov 2007
-		if (p.getAssessmentAccessControl().getReleaseTo().equals("Selected Groups")) {
+		if (p.getAssessmentAccessControl().getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
 			createAuthorizationForSelectedGroups(p);
 			return;
 		}
@@ -1123,7 +1123,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		for (int i = 0; i < list.size(); i++) {
 			PublishedAssessmentData p = (PublishedAssessmentData) list.get(i);
 			releaseToGroups = null;
-			if (p.getReleaseTo().equals("Selected Groups")) {
+			if (p.getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
 				if (groupsForSite == null) {
 					groupsForSite = getGroupsForSite();
 				}
@@ -1200,7 +1200,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			PublishedAssessmentData p = (PublishedAssessmentData) list.get(i);
 			releaseToGroups = null;
 			
-			if (p.getReleaseTo().equals("Selected Groups")) {
+			if (p.getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
 				if (groupsForSite == null) {
 					groupsForSite = getGroupsForSite();
 				}

@@ -256,8 +256,9 @@ public class QuestionScoreListener implements ActionListener,
 				//		.setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
 				
 		        // changed from above by gopalrc - Jan 2008
-		    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
-		        boolean groupRelease = publishedAssessmentService.isReleasedToGroups(publishedId);
+		    	//PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+		        //boolean groupRelease = publishedAssessmentService.isReleasedToGroups(publishedId);
+				boolean groupRelease = publishedAssessment.getAssessmentAccessControl().getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS);
 		    	if (groupRelease) {
 		    		totalBean.setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
 		    	}

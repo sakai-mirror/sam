@@ -42,6 +42,7 @@ import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.TotalScoresBean;
 import org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreListener;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentAccessControl;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.PublishedAssessmentIfc;
 import org.sakaiproject.util.ResourceLoader;
 
@@ -914,11 +915,14 @@ public void clear(ActionEvent event) {
 	 * @return
 	 */
 	public boolean isReleasedToGroups() {
+/*		
 		if (releasedToGroups == null) {
 	    	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
 	    	releasedToGroups = publishedAssessmentService.isReleasedToGroups(publishedId);
 		}
 		return releasedToGroups;
+*/
+		return this.getPublishedAssessment().getAssessmentAccessControl().getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS);
 	}
 	
 	

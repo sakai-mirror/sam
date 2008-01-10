@@ -41,6 +41,7 @@ import org.sakaiproject.authz.cover.AuthzGroupService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.cover.SiteService;
+import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.authz.AuthorizationData;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
@@ -145,7 +146,7 @@ public class LoginServlet
     	agentIdString = req.getRemoteUser();
         isAuthenticated = ( agentIdString!= null && !("").equals(agentIdString));
         if (isAuthenticated){
-          if (releaseTo.indexOf("Selected Groups")>-1) {
+          if (releaseTo.indexOf(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)>-1) {
         	  isAuthorized = checkMembershipForGroupRelease(pub, req, res);
           }
           else {

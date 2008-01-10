@@ -41,6 +41,7 @@ import org.sakaiproject.jsf.model.PhaseAware;
 import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.section.api.coursemanagement.EnrollmentRecord;
 import org.sakaiproject.tool.assessment.business.entity.RecordingData;
+import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAssessmentData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedEvaluationModel;
@@ -1074,9 +1075,12 @@ public class TotalScoresBean
 	 * @return
 	 */
 	public boolean isReleasedToGroups() {
+		/*
     	PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
     	releasedToGroups = publishedAssessmentService.isReleasedToGroups(publishedId);
 		return releasedToGroups;
+		*/
+		return this.getPublishedAssessment().getAssessmentAccessControl().getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS);
 	}
 	
 }
