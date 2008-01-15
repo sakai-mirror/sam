@@ -1583,7 +1583,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   }
   
   
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage) {
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, boolean showPartAndTotalScoreSpreadsheetColumns) {
 	  ArrayList finalList = new ArrayList();
 	  PublishedAssessmentService pubService = new PublishedAssessmentService();
 	  
@@ -1658,9 +1658,11 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
 		  //gopalrc - Dec 2007
 		  int sectionScoreColumnStart = responseList.size();
-		  
-		  Float finalScore = assessmentGradingData.getFinalScore();
-		  responseList.add((Double)finalScore.doubleValue()); // gopal - cast for spreadsheet numerics
+          if (showPartAndTotalScoreSpreadsheetColumns) {
+			  Float finalScore = assessmentGradingData.getFinalScore();
+			  responseList.add((Double)finalScore.doubleValue()); // gopal - cast for spreadsheet numerics
+          }
+          
 		  Long assessmentGradingId = assessmentGradingData.getAssessmentGradingId();
 
 		  HashMap studentGradingMap = getStudentGradingData(assessmentGradingData.getAssessmentGradingId().toString());
@@ -1813,14 +1815,16 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	       } // outer for - questions
 	      
 	   	   // gopalrc - Dec 2007
-	       if (sectionScores.size() > 1) {
-		   	   Iterator keys = sectionScores.keySet().iterator();
-		   	   while (keys.hasNext()) {
-		   		   Double partScore = (Double) ((Float) sectionScores.get(keys.next())).doubleValue() ;
-		   		   responseList.add(sectionScoreColumnStart++, partScore);
-		   	   }
-	       }
-	      
+           if (showPartAndTotalScoreSpreadsheetColumns) {
+		       if (sectionScores.size() > 1) {
+			   	   Iterator keys = sectionScores.keySet().iterator();
+			   	   while (keys.hasNext()) {
+			   		   Double partScore = (Double) ((Float) sectionScores.get(keys.next())).doubleValue() ;
+			   		   responseList.add(sectionScoreColumnStart++, partScore);
+			   	   }
+		       }
+           }
+	       
 	       finalList.add(responseList);
 	  } // while
 	  Collections.sort(finalList, new ResponsesComparator(anonymous));

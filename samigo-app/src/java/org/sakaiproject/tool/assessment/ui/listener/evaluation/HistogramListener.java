@@ -309,7 +309,9 @@ public class HistogramListener
 								  numStudentsRespondedFromLowerQuartile++;
 							  }
 						  }
+						 
 						  
+						 /*
 						  float percentCorrectFromUpperQuartileStudents = 
 							  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
 									  (float) numStudentsRespondedFromUpperQuartile) * 100f;
@@ -317,16 +319,16 @@ public class HistogramListener
 						  float percentCorrectFromLowerQuartileStudents = 
 							  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
 									  (float) numStudentsRespondedFromLowerQuartile) * 100f;
+ 						 */
 
-						 /*
 						  float percentCorrectFromUpperQuartileStudents = 
 							  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
-									  (float) histogramScores.getNumberOfUpperQuartileStudents() ) * 100f;
+									  (float) histogramScores.getNumberOfUpperQuartileStudents()) * 100f;
 
 						  float percentCorrectFromLowerQuartileStudents = 
 							  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
-									  (float) histogramScores.getNumberOfLowerQuartileStudents() ) * 100f;
-						*/
+									  (float) histogramScores.getNumberOfLowerQuartileStudents()) * 100f;
+
 
 						  questionScores.setPercentCorrectFromUpperQuartileStudents(
 								  Integer.toString((int) percentCorrectFromUpperQuartileStudents));
@@ -1838,26 +1840,24 @@ public class HistogramListener
       throw new RuntimeException("failed to call histogramScores.");
     }
     
-    ArrayList blankList = new ArrayList();
+    ArrayList spreadsheetRows = new ArrayList();
+//    ArrayList blankList = new ArrayList();
     Collection detailedStatistics = bean.getDetailedStatistics();
+    spreadsheetRows.add(bean.getShowPartAndTotalScoreSpreadsheetColumns());
+    spreadsheetRows.add(bean.getShowDiscriminationColumn());
+    
     if (detailedStatistics==null || detailedStatistics.size()==0) {
-    	return blankList;
+//    	return blankList;
+    	return spreadsheetRows;
     }
     
     
-    ArrayList spreadsheetRows = new ArrayList();
     
-    // add a few blank lines
-//    for (int i=0; i<5; i++) {
-//    	spreadsheetRows.add(blankList);
-//    }
-
+    
 	ResourceLoader rb = new ResourceLoader(
 			"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
     
     ArrayList<Object> headerList = new ArrayList<Object>();
-    //headerList.add(rb.getString("detailed") + " " + rb.getString("stat_view")); 
-    //spreadsheetRows.add(headerList);
     
     headerList = new ArrayList<Object>();
     headerList.add(ExportResponsesBean.HEADER_MARKER); 
@@ -1866,7 +1866,9 @@ public class HistogramListener
     headerList.add(rb.getString("pct_correct_of")); 
     headerList.add(""); 
     headerList.add(""); 
-    headerList.add(rb.getString("discrim_abbrev")); 
+    if (bean.getShowDiscriminationColumn()) {
+    	headerList.add(rb.getString("discrim_abbrev"));
+    }
     headerList.add(rb.getString("frequency")); 
     spreadsheetRows.add(headerList);
     
@@ -1880,25 +1882,9 @@ public class HistogramListener
     headerList.add(""); 
     headerList.add("-");
     
-    if (bean.getMaxNumberOfAnswers()>0) {
-        headerList.add("a");
+    for (char colHeader=33; colHeader < 33+bean.getMaxNumberOfAnswers(); colHeader++) {
+        headerList.add(String.valueOf(colHeader));
     }
-    if (bean.getMaxNumberOfAnswers()>1) {
-        headerList.add("b");
-    }
-    if (bean.getMaxNumberOfAnswers()>2) {
-        headerList.add("c");
-    }
-    if (bean.getMaxNumberOfAnswers()>3) {
-        headerList.add("d");
-    }
-    if (bean.getMaxNumberOfAnswers()>4) {
-        headerList.add("e");
-    }
-    if (bean.getMaxNumberOfAnswers()>5) {
-        headerList.add("f");
-    }
-
     spreadsheetRows.add(headerList);
     
     
@@ -1942,14 +1928,15 @@ public class HistogramListener
        		statsLine.add(questionBean.getPercentCorrectFromLowerQuartileStudents());
     	}
 
-    	try {
-    		dVal = Double.parseDouble(questionBean.getDiscrimination());
-       		statsLine.add(dVal);
+    	if (bean.getShowDiscriminationColumn()) {
+	    	try {
+	    		dVal = Double.parseDouble(questionBean.getDiscrimination());
+	       		statsLine.add(dVal);
+	    	}
+	    	catch (NumberFormatException ex) {
+	       		statsLine.add(questionBean.getDiscrimination());
+	    	}
     	}
-    	catch (NumberFormatException ex) {
-       		statsLine.add(questionBean.getDiscrimination());
-    	}
-    	
     	
    		dVal = Double.parseDouble("" + questionBean.getNumberOfStudentsWithZeroAnswers());
    		statsLine.add(dVal);

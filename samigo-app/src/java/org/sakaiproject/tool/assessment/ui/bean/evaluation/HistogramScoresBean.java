@@ -943,5 +943,23 @@ publishedId = ppublishedId;
 	this.detailedStatistics = detailedStatistics;
   }
 	
+  public boolean getShowDiscriminationColumn() {
+	  try {
+		  return getTotalScore() == null ? false : Float.parseFloat(getTotalScore())!=0.0f;
+	  }
+	  catch (NumberFormatException ex) {
+		  return false;
+	  }
+  }
+  
+  public boolean getShowPartAndTotalScoreSpreadsheetColumns() {
+	  try {
+		  return getTotalScore() == null ? false : Float.parseFloat(getTotalScore())!=0.0f;
+	  }
+	  catch (NumberFormatException ex) {
+		  return false;
+	  }
+  }
+  
   
 }

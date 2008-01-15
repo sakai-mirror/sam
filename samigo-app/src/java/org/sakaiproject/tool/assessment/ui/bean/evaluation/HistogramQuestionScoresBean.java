@@ -1013,12 +1013,15 @@ public class HistogramQuestionScoresBean
   }
 
   public String getN() {
-	if (histogramBars == null) return "0";
-	int numberOfStudents = 0;
-	for (int i=0; i<histogramBars.length; i++) {
-		numberOfStudents += histogramBars[i].getNumStudents();
-	}
-	int n = numberOfStudents + getNumberOfStudentsWithZeroAnswers();
+	/*
+		if (histogramBars == null) return "0";
+		int numberOfStudents = 0;
+		for (int i=0; i<histogramBars.length; i++) {
+			numberOfStudents += histogramBars[i].getNumStudents();
+		}
+		int n = numberOfStudents + getNumberOfStudentsWithZeroAnswers();
+	*/
+	int n = getNumResponses() + getNumberOfStudentsWithZeroAnswers();
 	return "" + n;
   }
 

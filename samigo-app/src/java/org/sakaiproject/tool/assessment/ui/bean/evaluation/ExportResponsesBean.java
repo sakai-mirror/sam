@@ -174,12 +174,17 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
     }
 	
     private List<List<Object>> getSpreadsheetData() {
-    	String audioMessage = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","audio_message");
+        // gopalrc Dec 2007
+        HistogramListener histogramListener = new HistogramListener();
+  	  	Iterator detailedStats = histogramListener.getDetailedStatisticsSpreadsheetData(assessmentId).iterator(); 
+  	  	boolean showPartAndTotalScoreSpreadsheetColumns = (Boolean) detailedStats.next();
+  	  	boolean showDiscriminationColumn = (Boolean) detailedStats.next();
+
+  	  	String audioMessage = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","audio_message");
     	String fileUploadMessage = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","file_upload_message");
         GradingService gradingService = new GradingService();
-        List<List<Object>> list = gradingService.getExportResponsesData(assessmentId, anonymous, audioMessage, fileUploadMessage);
+        List<List<Object>> list = gradingService.getExportResponsesData(assessmentId, anonymous, audioMessage, fileUploadMessage, showPartAndTotalScoreSpreadsheetColumns);
 
-        
         // Now insert the header line
         ArrayList<Object> headerList = new ArrayList<Object>();
         headerList.add(HEADER_MARKER);
@@ -196,15 +201,17 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
         PublishedAssessmentService pubService = new PublishedAssessmentService();
   	  	
   	  	// gopalrc - Nov 2007
-  	  	int numberOfSections = pubService.getPublishedSectionCount(Long.valueOf(assessmentId)).intValue();
-  	  	if (numberOfSections > 1) {
-	  	  	for (int i = 1; i <= numberOfSections; i++) {
-	    		  headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","part") 
-	    				  + " " + i + " " + ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","score"));
-	    	}
-  	  	}
-  	  	
-        headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","tot"));
+        if (showPartAndTotalScoreSpreadsheetColumns) {
+	  	  	int numberOfSections = pubService.getPublishedSectionCount(Long.valueOf(assessmentId)).intValue();
+	  	  	if (numberOfSections > 1) {
+		  	  	for (int i = 1; i <= numberOfSections; i++) {
+		    		  headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","part") 
+		    				  + " " + i + " " + ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","score"));
+		    	}
+	  	  	}
+	        
+	        headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","tot"));
+        }
 
   	  	
   	  	int numberOfQuestions = pubService.getPublishedItemCount(Long.valueOf(assessmentId)).intValue();
@@ -230,8 +237,6 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
         list.add(newSheetList);
 
         // gopalrc Dec 2007
-        HistogramListener histogramListener = new HistogramListener();
-  	  	Iterator detailedStats = histogramListener.getDetailedStatisticsSpreadsheetData(assessmentId).iterator(); 
   	  	while (detailedStats.hasNext()) {
   	  		list.add((List)detailedStats.next());
   	  	}
