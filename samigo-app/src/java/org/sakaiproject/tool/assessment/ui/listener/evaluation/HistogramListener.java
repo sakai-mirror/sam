@@ -1841,18 +1841,13 @@ public class HistogramListener
     }
     
     ArrayList spreadsheetRows = new ArrayList();
-//    ArrayList blankList = new ArrayList();
     Collection detailedStatistics = bean.getDetailedStatistics();
     spreadsheetRows.add(bean.getShowPartAndTotalScoreSpreadsheetColumns());
     spreadsheetRows.add(bean.getShowDiscriminationColumn());
     
     if (detailedStatistics==null || detailedStatistics.size()==0) {
-//    	return blankList;
     	return spreadsheetRows;
     }
-    
-    
-    
     
 	ResourceLoader rb = new ResourceLoader(
 			"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
@@ -1864,9 +1859,9 @@ public class HistogramListener
     headerList.add(rb.getString("question")); 
     headerList.add("N");
     headerList.add(rb.getString("pct_correct_of")); 
-    headerList.add(""); 
-    headerList.add(""); 
     if (bean.getShowDiscriminationColumn()) {
+    	headerList.add(""); 
+    	headerList.add(""); 
     	headerList.add(rb.getString("discrim_abbrev"));
     }
     headerList.add(rb.getString("frequency")); 
@@ -1877,12 +1872,15 @@ public class HistogramListener
     headerList.add(""); 
     headerList.add("");
     headerList.add(rb.getString("whole_group")); 
-    headerList.add(rb.getString("upper_25_pct")); 
-    headerList.add(rb.getString("lower_25_pct")); 
-    headerList.add(""); 
+    if (bean.getShowDiscriminationColumn()) {
+	    headerList.add(rb.getString("upper_25_pct")); 
+	    headerList.add(rb.getString("lower_25_pct")); 
+	    headerList.add(""); 
+    }
     headerList.add("-");
     
-    for (char colHeader=33; colHeader < 33+bean.getMaxNumberOfAnswers(); colHeader++) {
+    int aChar = 65;
+    for (char colHeader=65; colHeader < 65+bean.getMaxNumberOfAnswers(); colHeader++) {
         headerList.add(String.valueOf(colHeader));
     }
     spreadsheetRows.add(headerList);
@@ -1912,23 +1910,23 @@ public class HistogramListener
        		statsLine.add(questionBean.getPercentCorrect());
     	}
     	
-    	try {
-    		dVal = Double.parseDouble(questionBean.getPercentCorrectFromUpperQuartileStudents());
-       		statsLine.add(dVal);
-    	}
-    	catch (NumberFormatException ex) {
-       		statsLine.add(questionBean.getPercentCorrectFromUpperQuartileStudents());
-    	}
-
-    	try {
-    		dVal = Double.parseDouble(questionBean.getPercentCorrectFromLowerQuartileStudents());
-       		statsLine.add(dVal);
-    	}
-    	catch (NumberFormatException ex) {
-       		statsLine.add(questionBean.getPercentCorrectFromLowerQuartileStudents());
-    	}
-
     	if (bean.getShowDiscriminationColumn()) {
+	    	try {
+	    		dVal = Double.parseDouble(questionBean.getPercentCorrectFromUpperQuartileStudents());
+	       		statsLine.add(dVal);
+	    	}
+	    	catch (NumberFormatException ex) {
+	       		statsLine.add(questionBean.getPercentCorrectFromUpperQuartileStudents());
+	    	}
+	
+	    	try {
+	    		dVal = Double.parseDouble(questionBean.getPercentCorrectFromLowerQuartileStudents());
+	       		statsLine.add(dVal);
+	    	}
+	    	catch (NumberFormatException ex) {
+	       		statsLine.add(questionBean.getPercentCorrectFromLowerQuartileStudents());
+	    	}
+
 	    	try {
 	    		dVal = Double.parseDouble(questionBean.getDiscrimination());
 	       		statsLine.add(dVal);

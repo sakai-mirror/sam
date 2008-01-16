@@ -180,14 +180,14 @@ Below added by gopalrc Nov 2007
         <h:outputText value="#{item.percentCorrect}" escape="false" />
     </h:column>
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.showDiscriminationColumn=='true'}">
         <f:facet name="header">
             <h:outputText escape="false" value="<br/>#{evaluationMessages.upper_25_pct}" /> 
         </f:facet>
         <h:outputText value="#{item.percentCorrectFromUpperQuartileStudents}" escape="false" />
     </h:column>
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.showDiscriminationColumn=='true'}">
         <f:facet name="header">
             <h:outputText escape="false" value="<br/>#{evaluationMessages.lower_25_pct}" /> 
         </f:facet>

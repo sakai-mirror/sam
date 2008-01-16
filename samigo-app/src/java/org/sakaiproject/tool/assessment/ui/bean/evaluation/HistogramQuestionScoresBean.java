@@ -1042,12 +1042,12 @@ public class HistogramQuestionScoresBean
 	  this.itemId = itemId;
   }
 
-public int getNumberOfParts() {
-	return numberOfParts;
-}
+  public int getNumberOfParts() {
+	  return numberOfParts;
+  }
 
-public void setNumberOfParts(int numberOfParts) {
-	this.numberOfParts = numberOfParts;
-}
-  
+  public void setNumberOfParts(int numberOfParts) {
+	  this.numberOfParts = numberOfParts;
+  }
+
 }
