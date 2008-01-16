@@ -1049,5 +1049,9 @@ public class HistogramQuestionScoresBean
   public void setNumberOfParts(int numberOfParts) {
 	  this.numberOfParts = numberOfParts;
   }
+  
+  public boolean getShowPercentageCorrectAndDiscriminationFigures() {
+	  return !getQuestionType().equals("3");
+  }
 
 }

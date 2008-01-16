@@ -1903,37 +1903,57 @@ public class HistogramListener
     	}
 
     	try {
-    		dVal = Double.parseDouble(questionBean.getPercentCorrect());
-       		statsLine.add(dVal);
+    		if (questionBean.getShowPercentageCorrectAndDiscriminationFigures()) {
+    			dVal = Double.parseDouble(questionBean.getPercentCorrect());
+    			statsLine.add(dVal);
+    		}
+    		else {
+    			statsLine.add(" ");
+    		}
     	}
     	catch (NumberFormatException ex) {
-       		statsLine.add(questionBean.getPercentCorrect());
+    		statsLine.add(questionBean.getPercentCorrect());
     	}
-    	
+		
     	if (bean.getShowDiscriminationColumn()) {
-	    	try {
-	    		dVal = Double.parseDouble(questionBean.getPercentCorrectFromUpperQuartileStudents());
-	       		statsLine.add(dVal);
-	    	}
-	    	catch (NumberFormatException ex) {
-	       		statsLine.add(questionBean.getPercentCorrectFromUpperQuartileStudents());
-	    	}
-	
-	    	try {
-	    		dVal = Double.parseDouble(questionBean.getPercentCorrectFromLowerQuartileStudents());
-	       		statsLine.add(dVal);
-	    	}
-	    	catch (NumberFormatException ex) {
-	       		statsLine.add(questionBean.getPercentCorrectFromLowerQuartileStudents());
-	    	}
+    		try {
+    			if (questionBean.getShowPercentageCorrectAndDiscriminationFigures()) {
+    				dVal = Double.parseDouble(questionBean.getPercentCorrectFromUpperQuartileStudents());
+    				statsLine.add(dVal);
+    			}
+    			else {
+    				statsLine.add(" ");
+    			}
+    		}
+    		catch (NumberFormatException ex) {
+    			statsLine.add(questionBean.getPercentCorrectFromUpperQuartileStudents());
+    		}
 
-	    	try {
-	    		dVal = Double.parseDouble(questionBean.getDiscrimination());
-	       		statsLine.add(dVal);
-	    	}
-	    	catch (NumberFormatException ex) {
-	       		statsLine.add(questionBean.getDiscrimination());
-	    	}
+    		try {
+    			if (questionBean.getShowPercentageCorrectAndDiscriminationFigures()) {
+    				dVal = Double.parseDouble(questionBean.getPercentCorrectFromLowerQuartileStudents());
+    				statsLine.add(dVal);
+    			}
+    			else {
+    				statsLine.add(" ");
+    			}
+    		}
+    		catch (NumberFormatException ex) {
+    			statsLine.add(questionBean.getPercentCorrectFromLowerQuartileStudents());
+    		}
+
+    		try {
+    			if (questionBean.getShowPercentageCorrectAndDiscriminationFigures()) {
+    				dVal = Double.parseDouble(questionBean.getDiscrimination());
+    				statsLine.add(dVal);
+    			}
+    			else {
+    				statsLine.add(" ");
+    			}
+    		}
+    		catch (NumberFormatException ex) {
+    			statsLine.add(questionBean.getDiscrimination());
+    		}
     	}
     	
    		dVal = Double.parseDouble("" + questionBean.getNumberOfStudentsWithZeroAnswers());
