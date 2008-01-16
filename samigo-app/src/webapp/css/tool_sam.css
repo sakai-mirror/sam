@@ -73,11 +73,6 @@ font-size:1.2em
  font-weight: bold;
 }
 
-/* added by gopalrc - Jan 2008  */
-.boldtext {
- font-size: 0.8em;
- font-weight: bold;
-}
 
 .navList{
         text-align: right;
@@ -117,3 +112,11 @@ font-size:1.2em
 	vertical-align:bottom;
     text-align:right;
 }
+
+
+/* added gopalrc - Jan 2008  */
+.detailedStatsCorrectAnswerText {
+    font-weight: bold;
+}
+
+
