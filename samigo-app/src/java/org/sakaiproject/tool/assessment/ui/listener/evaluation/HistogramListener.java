@@ -1860,8 +1860,8 @@ public class HistogramListener
     headerList.add("N");
     headerList.add(rb.getString("pct_correct_of")); 
     if (bean.getShowDiscriminationColumn()) {
-    	headerList.add(""); 
-    	headerList.add(""); 
+        headerList.add(rb.getString("pct_correct_of")); 
+        headerList.add(rb.getString("pct_correct_of")); 
     	headerList.add(rb.getString("discrim_abbrev"));
     }
     headerList.add(rb.getString("frequency")); 

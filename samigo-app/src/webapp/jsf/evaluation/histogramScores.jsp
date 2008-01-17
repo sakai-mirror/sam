@@ -85,7 +85,7 @@ $Id$
 
     <h:commandLink title="#{evaluationMessages.t_histogram}" action="detailedStatistics" immediate="true"
       rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}" >
-      <h:outputText value="#{evaluationMessages.detailed} #{evaluationMessages.stat_view}" />
+      <h:outputText value="#{evaluationMessages.item_analysis}" />
       <f:actionListener
         type="org.sakaiproject.tool.assessment.ui.listener.evaluation.HistogramListener" />
     </h:commandLink>

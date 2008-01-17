@@ -962,4 +962,24 @@ publishedId = ppublishedId;
   }
   
   
+  public String getUndisplayedStudentResponseInItemAnalysisColumnHeader() {
+	  
+	  if (getMaxNumberOfAnswers()<13) {
+		  return "";
+	  }
+	  else {
+		  int first = 65+12;
+		  char firstUndisplayed = (char)first;
+		  int last = 65+getMaxNumberOfAnswers()-1;
+		  char lastUndisplayed = (char)last;
+		  if (first==last) {
+			  return String.valueOf(firstUndisplayed);
+		  }
+		  else {
+			  return String.valueOf(firstUndisplayed) + " - " + String.valueOf(lastUndisplayed);
+		  }
+	  }
+  }
+
+  
 }

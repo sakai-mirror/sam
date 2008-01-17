@@ -2131,10 +2131,19 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		    List l = getHibernateTemplate().find(query, values);
 		    if (l.size()>0){
 		    	AuthorizationData a = (AuthorizationData) l.get(0);
-		      return a.getAgentIdString();
+		    	// gopalrc - added first condition to take account of group releases
+		    	PublishedAssessmentData publishedAssessment = 
+		    		loadPublishedAssessment(Long.valueOf(publishedAssessmentId));
+		    	if (publishedAssessment.getAssessmentAccessControl().getReleaseTo()
+		    			.equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
+		    		return siteService.findGroup(a.getAgentIdString()).getContainingSite().getId();
+		    	}
+		    	else {
+		    		return a.getAgentIdString();
+		    	}
 		    }
 		    else return null;
-		  }
+	}
 	  
 	public Integer getPublishedItemCount(final Long publishedAssessmentId) {
 		final HibernateCallback hcb = new HibernateCallback() {

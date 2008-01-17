@@ -1054,4 +1054,37 @@ public class HistogramQuestionScoresBean
 	  return !getQuestionType().equals("3");
   }
 
+  public int getSumOfStudentResponsesInUndisplayedItemAnalysisColumns() {
+	  if (histogramBars==null || histogramBars.length<13) {
+		  return 0;
+	  }
+	  else {
+		  int sum = 0;
+		  for (int i=12; i<histogramBars.length; i++) {
+			  sum += histogramBars[i].getNumStudents();
+		  }
+		  return sum;
+	  }
+  }
+  
+  public String getStudentResponsesInUndisplayedItemAnalysisColumns() {
+	  if (histogramBars==null || histogramBars.length<13) {
+		  return "";
+	  }
+	  else {
+		  String sep = " | ";
+		  String responses = sep;
+		  for (int i=12; i<histogramBars.length; i++) {
+			  if (histogramBars[i].getIsCorrect()) {
+				  responses += "(" + histogramBars[i].getNumStudents() + ")" + sep;
+			  }
+			  else {
+				  responses += histogramBars[i].getNumStudents() + sep;
+			  }
+		  }
+		  return responses;
+	  }
+  }
+  
+  
 }

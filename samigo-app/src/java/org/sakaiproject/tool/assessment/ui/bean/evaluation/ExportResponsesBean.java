@@ -226,14 +226,14 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
         // gopalrc - Jan 2008 - New Sheet Marker
         ArrayList<Object> newSheetList = new ArrayList<Object>();
         newSheetList.add(NEW_SHEET_MARKER);
-        newSheetList.add("Responses");
+        newSheetList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","responses"));
         list.add(0, newSheetList);
   	  	
 
         // gopalrc - Jan 2008 - New Sheet Marker
         newSheetList = new ArrayList<Object>();
         newSheetList.add(NEW_SHEET_MARKER);
-        newSheetList.add("Statistics");
+        newSheetList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","item_analysis"));
         list.add(newSheetList);
 
         // gopalrc Dec 2007

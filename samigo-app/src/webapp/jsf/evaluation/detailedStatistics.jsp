@@ -46,7 +46,7 @@ $Id: histogramScores.jsp 38982 2007-12-06 13:05:38Z gopal.ramasammycook@gmail.co
   <%@ include file="/jsf/evaluation/evaluationHeadings.jsp" %>
 
   <h3>
-    <h:outputText value="#{evaluationMessages.detailed} #{evaluationMessages.stat_view}"/>
+    <h:outputText value="#{evaluationMessages.item_analysis}"/>
     <h:outputText value="#{evaluationMessages.column} "/>
     <h:outputText value="#{histogramScores.assessmentName} "/>
   </h3>
@@ -88,7 +88,7 @@ $Id: histogramScores.jsp 38982 2007-12-06 13:05:38Z gopal.ramasammycook@gmail.co
 
     <h:outputText value=" #{evaluationMessages.separator} " rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
     
-    <h:outputText value="#{evaluationMessages.detailed} #{evaluationMessages.stat_view}" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
+    <h:outputText value="#{evaluationMessages.item_analysis}" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
 
     <h:outputText value=" #{evaluationMessages.separator} "  rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
     
@@ -182,14 +182,14 @@ Below added by gopalrc Nov 2007
 
     <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.showDiscriminationColumn=='true'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="<br/>#{evaluationMessages.upper_25_pct}" /> 
+            <h:outputText escape="false" value="#{evaluationMessages.pct_correct_of}<br/>#{evaluationMessages.upper_25_pct}" /> 
         </f:facet>
         <h:outputText value="#{item.percentCorrectFromUpperQuartileStudents}" escape="false" rendered="#{item.showPercentageCorrectAndDiscriminationFigures}"/>
     </h:column>
 
     <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.showDiscriminationColumn=='true'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="<br/>#{evaluationMessages.lower_25_pct}" /> 
+            <h:outputText escape="false" value="#{evaluationMessages.pct_correct_of}<br/>#{evaluationMessages.lower_25_pct}" /> 
         </f:facet>
         <h:outputText value="#{item.percentCorrectFromLowerQuartileStudents}" escape="false"  rendered="#{item.showPercentageCorrectAndDiscriminationFigures}"/>
     </h:column>
@@ -309,6 +309,12 @@ Below added by gopalrc Nov 2007
         <h:outputText value="#{item.histogramBars[11].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>11 && item.histogramBars[11].isCorrect}" styleClass="detailedStatsCorrectAnswerText"/>
     </h:column>
 
+    <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.maxNumberOfAnswers>12}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="#{histogramScores.undisplayedStudentResponseInItemAnalysisColumnHeader}" /> 
+        </f:facet>
+        <h:outputText value="#{item.sumOfStudentResponsesInUndisplayedItemAnalysisColumns}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>12 && item.histogramBars[12]!=null}" title="#{item.studentResponsesInUndisplayedItemAnalysisColumns}"/>
+    </h:column>
 
   </h:dataTable>
 
