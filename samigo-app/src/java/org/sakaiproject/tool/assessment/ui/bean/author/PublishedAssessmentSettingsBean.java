@@ -1277,8 +1277,11 @@ public class PublishedAssessmentSettingsBean
 		    	 Iterator groupIter = groups.iterator();
 		    	 while (groupIter.hasNext()) {
 		    		 Group group = (Group) groupIter.next();
-		    		 String groupDescription = group.getDescription() == null ? "" : group.getDescription();
-		    		 sortedSelectItems.put(group.getTitle(), new SelectItem(group.getId(), group.getTitle() + ": " + groupDescription, "Test Description"));
+		    		 String groupType = group.getProperties().getProperty("sections_category");
+		    		 groupType = groupType == null ? "" : " (" + groupType + ")";
+		    		 String groupDescription = group.getDescription()==null ? "" : " : " + group.getDescription();
+		    		 String displayDescription = group.getTitle() + groupDescription + groupType;
+		    		 sortedSelectItems.put(group.getTitle(), new SelectItem(group.getId(), displayDescription));
 		    	 }
 		    	 Set keySet = sortedSelectItems.keySet();
 		    	 groupIter = keySet.iterator();

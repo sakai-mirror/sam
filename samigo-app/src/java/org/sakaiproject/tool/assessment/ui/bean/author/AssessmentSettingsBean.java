@@ -1525,8 +1525,9 @@ public class AssessmentSettingsBean
 	    		 Group group = (Group) groupIter.next();
 	    		 String groupType = group.getProperties().getProperty("sections_category");
 	    		 groupType = groupType == null ? "" : " (" + groupType + ")";
-	    		 String groupDescription = group.getTitle() + groupType;
-	    		 sortedSelectItems.put(group.getTitle(), new SelectItem(group.getId(), groupDescription));
+	    		 String groupDescription = group.getDescription()==null ? "" : " : " + group.getDescription();
+	    		 String displayDescription = group.getTitle() + groupDescription + groupType;
+	    		 sortedSelectItems.put(group.getTitle(), new SelectItem(group.getId(), displayDescription));
 	    	 }
 	    	 Set keySet = sortedSelectItems.keySet();
 	    	 groupIter = keySet.iterator();
