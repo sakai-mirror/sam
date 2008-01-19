@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -52,9 +51,19 @@ import uk.org.ponder.rsf.viewstate.ViewParameters;
 import uk.org.ponder.rsf.viewstate.ViewParamsReporter;
 
 /**
+ * Producer to show basic Assessment info and allow the user (student) to begin the assessment if
+ * they want. Also ensures that the user is logged in and has the proper authorization as well as
+ * that the assessment is currently available.
+ * 
+ * This code contains some parts I'd rather not have to do in order to pass control off from RSF to
+ * JSF... please don't judge, but feel free to propose better solutions or rewrite delivery in RSF
+ * completely ;-)
+ * 
  * @author Joshua Ryan  josh@asu.edu   alt^I
+ * 
  */
-public class BeginAssessmentProducer implements ViewComponentProducer, DynamicNavigationCaseReporter, DefaultView, ViewParamsReporter {
+public class BeginAssessmentProducer implements ViewComponentProducer,
+    DynamicNavigationCaseReporter, DefaultView, ViewParamsReporter {
 
   public HttpServletRequest httpServletRequest;
   public HttpServletResponse httpServletResponse;
@@ -68,17 +77,16 @@ public class BeginAssessmentProducer implements ViewComponentProducer, DynamicNa
 
 	public void fillComponents(UIContainer tofill, ViewParameters viewparams,
 			ComponentChecker checker) {
-    
     BeginAssessmentViewParameters params = null;
     if (viewparams != null)
       params = (BeginAssessmentViewParameters) viewparams;
     else
-      System.out.println("Something bad... we have no viewparams");
+      log.warn("Something bad... we have no viewparams");
     
     String alias = params.pubId;
     
-    //Begin cut and past (with small deviations) from existing LoginServlet that currently does the job of url aliased assessment delivery in Samigo.
-    //Much of this could/should be changed as there are easier/cleaner ways of doing some of this in RSF
+    //Begin cut and past (with small deviations) from existing LoginServlet that currently does
+    //the job of url aliased assessment delivery in Samigo.
     
     HttpSession httpSession = httpServletRequest.getSession(true);
     httpSession.setMaxInactiveInterval(3600); // one hour
@@ -247,9 +255,11 @@ public class BeginAssessmentProducer implements ViewComponentProducer, DynamicNa
     }
 
     public List reportNavigationCases() {
+      String url = "/samigo/servlet/Login?id=" + httpServletRequest.getParameter("pubId")
+                    + "&fromDirect=true";
       List togo = new ArrayList();
       togo.add(new NavigationCase(null, new SimpleViewParameters(VIEW_ID)));
-      togo.add(new NavigationCase("takeAssessment", new RawViewParameters("/samigo/jsf/delivery/deliverAssessment.faces")));
+      togo.add(new NavigationCase("takeAssessment", new RawViewParameters(url)));
       
       return togo;      
       

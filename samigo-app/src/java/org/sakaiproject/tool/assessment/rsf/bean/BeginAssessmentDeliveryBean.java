@@ -27,29 +27,5 @@ public class BeginAssessmentDeliveryBean {
     // can return a lot of things... but takeAssessment is the positive result
     return delivery.validate();
   }
-
-  /**
-   *  
-   *  <h:commandButton id="beginAssessment1" accesskey="#{deliveryMessages.a_next}" value="#{deliveryMessages.begin_assessment_}" 
-    action="#{delivery.validate}" type="submit" styleClass="active" 
-    rendered="#{(delivery.actionString=='takeAssessment'
-             || delivery.actionString=='takeAssessmentViaUrl')
-       && delivery.navigation != 1}">
-<%--    <f:param name="beginAssessment" value="true"/> --%>
-  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.delivery.DeliveryActionListener" />
-  </h:commandButton>
-
- <h:commandButton accesskey="#{deliveryMessages.a_next}" value="#{deliveryMessages.begin_assessment_}" 
-    action="#{delivery.validate}" type="submit" styleClass="active" 
-    rendered="#{(delivery.actionString=='takeAssessment'
-             || delivery.actionString=='takeAssessmentViaUrl')
-       && delivery.navigation == 1}">
-<%--    <f:param name="beginAssessment" value="true"/> --%>
-  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.delivery.LinearAccessDeliveryActionListener" />
-  </h:commandButton>
-  
-   */
-
-  
   
 }
