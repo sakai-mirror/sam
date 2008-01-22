@@ -1523,11 +1523,11 @@ public class AssessmentSettingsBean
 	    	 Iterator groupIter = groups.iterator();
 	    	 while (groupIter.hasNext()) {
 	    		 Group group = (Group) groupIter.next();
-	    		 String groupType = group.getProperties().getProperty("sections_category");
-	    		 groupType = groupType == null ? "" : " (" + groupType + ")";
-	    		 String groupDescription = group.getDescription()==null ? "" : " : " + group.getDescription();
-	    		 String displayDescription = group.getTitle() + groupDescription + groupType;
-	    		 sortedSelectItems.put(group.getTitle(), new SelectItem(group.getId(), displayDescription));
+	    		 //String groupType = group.getProperties().getProperty("sections_category");
+	    		 //groupType = groupType == null ? "" : " (" + groupType + ")";
+	    		 String groupDescription = group.getDescription()==null || group.getDescription().equals("") ? "" : " : " + group.getDescription();
+	    		 String displayDescription = group.getTitle() + groupDescription;
+	    		 sortedSelectItems.put(group.getTitle().toUpperCase(), new SelectItem(group.getId(), displayDescription));
 	    	 }
 	    	 Set keySet = sortedSelectItems.keySet();
 	    	 groupIter = keySet.iterator();

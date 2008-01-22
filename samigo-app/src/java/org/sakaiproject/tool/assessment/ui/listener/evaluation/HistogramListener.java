@@ -196,10 +196,12 @@ public class HistogramListener
 		  Iterator totalScoresIter = scores.iterator();
 		  while (totalScoresIter.hasNext()) {
 			  AssessmentGradingData assessmentGradingData = (AssessmentGradingData) totalScoresIter.next();
-			  if (assessmentGradingData.getTotalAutoScore().doubleValue() <= q1) {
+			  if (assessmentGradingData.getTotalAutoScore()==null 
+					  || assessmentGradingData.getTotalAutoScore().doubleValue() <= q1) {
 				  histogramScores.addToLowerQuartileStudents(assessmentGradingData.getAgentId());
 			  }
-			  if (assessmentGradingData.getTotalAutoScore().doubleValue() >= q3) {
+			  if (assessmentGradingData.getTotalAutoScore()!=null 
+					  && assessmentGradingData.getTotalAutoScore().doubleValue() >= q3) {
 				  histogramScores.addToUpperQuartileStudents(assessmentGradingData.getAgentId());
 			  }
 		  }

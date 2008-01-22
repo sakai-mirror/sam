@@ -369,8 +369,12 @@ function showHideReleaseGroups(){
 
   <f:verbatim><div id="groupDiv" class="tier3"></f:verbatim>
   <f:verbatim><table bgcolor="#CCCCCC"><tr><td></f:verbatim>  
-    <h:selectBooleanCheckbox id="checkUncheckAllReleaseGroups" title="Group(s)" onclick="checkUncheckAllReleaseGroups();"/>  
-  <f:verbatim></td><td>Group(s)</td></tr></table></f:verbatim>
+    <h:selectBooleanCheckbox id="checkUncheckAllReleaseGroups" onclick="checkUncheckAllReleaseGroups();"/>
+      
+  <f:verbatim></td><td></f:verbatim>
+  <h:outputText value="#{assessmentSettingsMessages.title_description}" />
+  <f:verbatim></td></tr></table></f:verbatim>
+  
     <h:selectManyCheckbox id="groupsForSite" layout="pagedirection" value="#{assessmentSettings.groupsAuthorized}">
      <f:selectItems value="#{assessmentSettings.groupsForSite}" />
     </h:selectManyCheckbox>
