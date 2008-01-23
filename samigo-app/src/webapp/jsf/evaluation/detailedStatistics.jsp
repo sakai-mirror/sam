@@ -182,14 +182,14 @@ Below added by gopalrc Nov 2007
 
     <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.showDiscriminationColumn=='true'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="#{evaluationMessages.pct_correct_of}<br/>#{evaluationMessages.upper_25_pct}" /> 
+            <h:outputText escape="false" value="#{evaluationMessages.pct_correct_of}<br/>#{evaluationMessages.upper_pct}" /> 
         </f:facet>
         <h:outputText value="#{item.percentCorrectFromUpperQuartileStudents}" escape="false" rendered="#{item.showPercentageCorrectAndDiscriminationFigures}"/>
     </h:column>
 
     <h:column rendered="#{histogramScores.randomType =='false' && histogramScores.showDiscriminationColumn=='true'}">
         <f:facet name="header">
-            <h:outputText escape="false" value="#{evaluationMessages.pct_correct_of}<br/>#{evaluationMessages.lower_25_pct}" /> 
+            <h:outputText escape="false" value="#{evaluationMessages.pct_correct_of}<br/>#{evaluationMessages.lower_pct}" /> 
         </f:facet>
         <h:outputText value="#{item.percentCorrectFromLowerQuartileStudents}" escape="false"  rendered="#{item.showPercentageCorrectAndDiscriminationFigures}"/>
     </h:column>

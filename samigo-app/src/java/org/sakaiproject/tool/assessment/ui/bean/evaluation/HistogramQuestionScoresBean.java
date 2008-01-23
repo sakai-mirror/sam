@@ -1021,8 +1021,15 @@ public class HistogramQuestionScoresBean
 		}
 		int n = numberOfStudents + getNumberOfStudentsWithZeroAnswers();
 	*/
-	int n = getNumResponses() + getNumberOfStudentsWithZeroAnswers();
-	return "" + n;
+	/*  
+		int n = getNumResponses() + getNumberOfStudentsWithZeroAnswers();
+		return "" + n;
+	*/
+	  return n;
+  }
+  
+  public void setN(String n) {
+	  this.n = n;
   }
 
   public int getNumberOfStudentsWithZeroAnswers() {

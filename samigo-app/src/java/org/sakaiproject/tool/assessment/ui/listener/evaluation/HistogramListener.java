@@ -24,6 +24,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
+import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingComparatorByScoreAndUniqueIdentifier;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
@@ -191,8 +192,23 @@ public class HistogramListener
 		   * find students in upper and lower quartiles 
 		   * of assessment scores
 		   */ 
-		  double q1 = Double.valueOf((String) assessmentMap.get("q1")).doubleValue();
-		  double q3 = Double.valueOf((String) assessmentMap.get("q3")).doubleValue();
+		  ArrayList submissionsSortedForDiscrim = new ArrayList(scores);
+		  boolean anonymous = Boolean.valueOf(totalScores.getAnonymous()).booleanValue();
+		  Collections.sort(submissionsSortedForDiscrim, new AssessmentGradingComparatorByScoreAndUniqueIdentifier(anonymous));
+		  int numSubmissions = scores.size();
+		  //int percent27 = ((numSubmissions*10*27/100)+5)/10; // rounded
+		  int percent27 = numSubmissions*27/100; // rounded down
+		  if (percent27 == 0) percent27 = 1; // gopalrc - check this - only relevant for very small samples
+		  //double q1 = Double.valueOf((String) assessmentMap.get("q1")).doubleValue();
+		  //double q3 = Double.valueOf((String) assessmentMap.get("q3")).doubleValue();
+		  for (int i=0; i<percent27; i++) {
+			  histogramScores.addToLowerQuartileStudents(((AssessmentGradingData)
+					  submissionsSortedForDiscrim.get(i)).getAgentId());
+			  histogramScores.addToUpperQuartileStudents(((AssessmentGradingData)
+					  submissionsSortedForDiscrim.get(numSubmissions-1-i)).getAgentId());
+		  }
+		  
+/*		  
 		  Iterator totalScoresIter = scores.iterator();
 		  while (totalScoresIter.hasNext()) {
 			  AssessmentGradingData assessmentGradingData = (AssessmentGradingData) totalScoresIter.next();
@@ -205,12 +221,13 @@ public class HistogramListener
 				  histogramScores.addToUpperQuartileStudents(assessmentGradingData.getAgentId());
 			  }
 		  }
-
+*/
 
 
 		  PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService
 		  .getPublishedAssessment(data.getPublishedAssessmentId()
 				  .toString());
+		  
 		  if (pub != null) {
 			  assessmentName = pub.getTitle();
 			  //log.info("ASSESSMENT NAME= " + assessmentName);
@@ -277,6 +294,7 @@ public class HistogramListener
 
 
 					  // below - gopalrc Nov 2007
+					  questionScores.setN(""+numSubmissions);
 					  questionScores.setItemId(item.getItemId());
 					  Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
 					  Set studentsResponded = questionScores.getStudentsResponded();
@@ -323,6 +341,7 @@ public class HistogramListener
 									  (float) numStudentsRespondedFromLowerQuartile) * 100f;
  						 */
 
+						  /*
 						  float percentCorrectFromUpperQuartileStudents = 
 							  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
 									  (float) histogramScores.getNumberOfUpperQuartileStudents()) * 100f;
@@ -330,7 +349,15 @@ public class HistogramListener
 						  float percentCorrectFromLowerQuartileStudents = 
 							  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
 									  (float) histogramScores.getNumberOfLowerQuartileStudents()) * 100f;
+						  */
+						  
+						  float percentCorrectFromUpperQuartileStudents = 
+							  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
+									  (float) percent27) * 100f;
 
+						  float percentCorrectFromLowerQuartileStudents = 
+							  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
+									  (float) percent27) * 100f;
 
 						  questionScores.setPercentCorrectFromUpperQuartileStudents(
 								  Integer.toString((int) percentCorrectFromUpperQuartileStudents));
@@ -344,10 +371,16 @@ public class HistogramListener
 						  //		  numStudentsWithAllCorrectFromLowerQuartile )/numResponses ; 
 
 						  // new discrimination formula from Stephen
+						  /*
 						  float discrimination = ((float) numStudentsWithAllCorrectFromUpperQuartile / 
 								  (float) numStudentsRespondedFromUpperQuartile) -
 								  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
 										  (float) numStudentsRespondedFromLowerQuartile);
+						  */
+						  float discrimination = ((float)numStudentsWithAllCorrectFromUpperQuartile -								  
+								  (float)numStudentsWithAllCorrectFromLowerQuartile)/(float)percent27 ;
+						  
+						  
 
 						  // round to 2 decimals
 						  if (discrimination > 999999 || discrimination < -999999) {
@@ -1875,8 +1908,8 @@ public class HistogramListener
     headerList.add("");
     headerList.add(rb.getString("whole_group")); 
     if (bean.getShowDiscriminationColumn()) {
-	    headerList.add(rb.getString("upper_25_pct")); 
-	    headerList.add(rb.getString("lower_25_pct")); 
+	    headerList.add(rb.getString("upper_pct")); 
+	    headerList.add(rb.getString("lower_pct")); 
 	    headerList.add(""); 
     }
     headerList.add("-");
