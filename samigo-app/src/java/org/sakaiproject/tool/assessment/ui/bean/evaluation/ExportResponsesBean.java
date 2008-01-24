@@ -178,8 +178,9 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
         HistogramListener histogramListener = new HistogramListener();
   	  	Iterator detailedStats = histogramListener.getDetailedStatisticsSpreadsheetData(assessmentId).iterator(); 
   	  	boolean showPartAndTotalScoreSpreadsheetColumns = (Boolean) detailedStats.next();
-  	  	boolean showDiscriminationColumn = (Boolean) detailedStats.next();
-
+  	  	//boolean showDiscriminationColumn = (Boolean) detailedStats.next();
+  		boolean showDetailedStatisticsSheet = (Boolean) detailedStats.next();
+  	  	
   	  	String audioMessage = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","audio_message");
     	String fileUploadMessage = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","file_upload_message");
         GradingService gradingService = new GradingService();
@@ -212,7 +213,6 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
 	        
 	        headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","tot"));
         }
-
   	  	
   	  	int numberOfQuestions = pubService.getPublishedItemCount(Long.valueOf(assessmentId)).intValue();
   	  	log.debug("numberOfQuestions=" + numberOfQuestions);
@@ -224,23 +224,25 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
   	  	list.add(0,headerList);
   	  	
         // gopalrc - Jan 2008 - New Sheet Marker
-        ArrayList<Object> newSheetList = new ArrayList<Object>();
-        newSheetList.add(NEW_SHEET_MARKER);
-        newSheetList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","responses"));
-        list.add(0, newSheetList);
-  	  	
+  		ArrayList<Object> newSheetList;
+  	  	newSheetList = new ArrayList<Object>();
+  	  	newSheetList.add(NEW_SHEET_MARKER);
+  	  	newSheetList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","responses"));
+  	  	list.add(0, newSheetList);
 
         // gopalrc - Jan 2008 - New Sheet Marker
-        newSheetList = new ArrayList<Object>();
-        newSheetList.add(NEW_SHEET_MARKER);
-        newSheetList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","item_analysis"));
-        list.add(newSheetList);
+  	  	if (showDetailedStatisticsSheet) {
+  	  		newSheetList = new ArrayList<Object>();
+  	  		newSheetList.add(NEW_SHEET_MARKER);
+  	  		newSheetList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","item_analysis"));
+  	  		list.add(newSheetList);
 
-        // gopalrc Dec 2007
-  	  	while (detailedStats.hasNext()) {
-  	  		list.add((List)detailedStats.next());
-  	  	}
-        
+  	  		// gopalrc Dec 2007
+        	while (detailedStats.hasNext()) {
+        		list.add((List)detailedStats.next());
+        	}
+        }
+  	  	
         return list;
     }
     

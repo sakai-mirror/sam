@@ -435,7 +435,14 @@ public class HistogramListener
 					  if (questionScores.getHistogramBars() != null) {
 						  maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
 					  }
-					  questionScores.setNumberOfStudentsWithZeroAnswers( ((Integer) numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId())).intValue() );
+					  
+					  Object numberOfStudentsWithZeroAnswers = numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId());
+					  if (numberOfStudentsWithZeroAnswers == null) {
+						  questionScores.setNumberOfStudentsWithZeroAnswers(0);
+					  }
+					  else {
+						  questionScores.setNumberOfStudentsWithZeroAnswers( ((Integer) numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId())).intValue() );
+					  }
 				  }
 			  }
 			  histogramScores.setDetailedStatistics(detailedStatistics);
@@ -1878,7 +1885,18 @@ public class HistogramListener
     ArrayList spreadsheetRows = new ArrayList();
     Collection detailedStatistics = bean.getDetailedStatistics();
     spreadsheetRows.add(bean.getShowPartAndTotalScoreSpreadsheetColumns());
-    spreadsheetRows.add(bean.getShowDiscriminationColumn());
+    //spreadsheetRows.add(bean.getShowDiscriminationColumn());
+    
+	boolean showDetailedStatisticsSheet;
+    if (totalBean.getFirstItem().equals("") || totalBean.getHasRandomDrawPart()) {
+    	showDetailedStatisticsSheet = false;
+        spreadsheetRows.add(showDetailedStatisticsSheet);
+    	return spreadsheetRows;
+    }
+    else {
+    	showDetailedStatisticsSheet = true;
+        spreadsheetRows.add(showDetailedStatisticsSheet);
+    }
     
     if (detailedStatistics==null || detailedStatistics.size()==0) {
     	return spreadsheetRows;
