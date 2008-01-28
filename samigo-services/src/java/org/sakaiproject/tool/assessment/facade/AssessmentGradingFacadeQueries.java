@@ -1653,7 +1653,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 				  numSubmission = 1;
 				  lastAgentId = agentId;
 			  }
-			  responseList.add(Integer.valueOf(numSubmission));
+			  responseList.add(Double.parseDouble(""+numSubmission));
 		  }
 
 		  //gopalrc - Dec 2007

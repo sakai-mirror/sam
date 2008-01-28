@@ -4,6 +4,7 @@ import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.user.cover.UserDirectoryService;
 
 /**
@@ -53,10 +54,24 @@ public class AssessmentGradingComparatorByScoreAndUniqueIdentifier implements
 				try {
 					agentEid0 = UserDirectoryService.getUser(assessmentGrading0.getAgentId()).getEid();
 					agentEid1 = UserDirectoryService.getUser(assessmentGrading1.getAgentId()).getEid();
-				} catch (Exception e) {
-					log.error("Cannot get user");
+					return agentEid0.compareTo(agentEid1);
+				} catch (UserNotDefinedException e) {
+					if (agentEid0==null && agentEid1==null) {
+						log.warn("Cannot get users: " + agentEid0 + " and " + agentEid1);
+						return 0;
+					}
+					else if (agentEid0==null) {
+						log.warn("Cannot get user: " + agentEid0);
+						return -1;
+					}
+					else if (agentEid1==null) {
+						log.warn("Cannot get user: " + agentEid1);
+						return 1;
+					}
+					else {
+						return agentEid0.compareTo(agentEid1);
+					}
 				}
-				return agentEid0.compareTo(agentEid1);
 			}
 		}
 	}

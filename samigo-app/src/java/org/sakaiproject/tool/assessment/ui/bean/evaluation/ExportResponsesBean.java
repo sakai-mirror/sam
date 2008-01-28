@@ -292,14 +292,13 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet();
 		Iterator<List<Object>> dataIter = spreadsheetData.iterator();
-		
+
 		// By convention, the first list in the list contains column headers.
 		HSSFRow headerRow = sheet.createRow((short)0);
 		List<Object> headerList = dataIter.next();
 		for (short i = 0; i < headerList.size(); i++) {
 			createCell(headerRow, i, null).setCellValue(headerList.get(i).toString());
 		}
-		
 		short rowPos = 1;
 		while (dataIter.hasNext()) {
 			List<Object> rowData = dataIter.next();
@@ -310,14 +309,13 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
 				if (data != null) {
 					if (data instanceof Double) {
 						cell.setCellValue(((Double)data).doubleValue());
-					} else {
+					} 
+					else {
 						cell.setCellValue(data.toString());
 					}
 				}
 			}
 		}
-		
-		
 		return wb;
 	}
 	

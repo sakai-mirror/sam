@@ -2145,7 +2145,15 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		    else return null;
 	}
 	  
+	/**
+	 * Modified by gopalrc - Jan 2008
+	 * to take account of difference in obtaining question count
+	 * between randomized and non-randomized questions
+	 */  
 	public Integer getPublishedItemCount(final Long publishedAssessmentId) {
+		return getPublishedItemCountForNonRandomSections(publishedAssessmentId) +
+			getPublishedItemCountForRandomSections(publishedAssessmentId);
+/*		
 		final HibernateCallback hcb = new HibernateCallback() {
 			public Object doInHibernate(Session session)
 					throws HibernateException, SQLException {
@@ -2159,7 +2167,66 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		};
 		List list = getHibernateTemplate().executeFind(hcb);
 		return (Integer) list.get(0);
+*/		
 	}
+
+	/**
+	 * gopalrc - Jan 2008
+	 * @param publishedAssessmentId
+	 * @return
+	 */
+	public Integer getPublishedItemCountForRandomSections(final Long publishedAssessmentId) {
+		final HibernateCallback hcb = new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				Query q = session
+						.createQuery("select m.entry from PublishedSectionData s, "
+								+ " PublishedAssessmentData p, PublishedSectionMetaData m " 
+								+ " where p.publishedAssessmentId=:publishedAssessmentId and m.label=:metaDataLabel and "
+								+ " p = s.assessment and m.section = s ");
+				q.setLong("publishedAssessmentId", publishedAssessmentId.longValue());
+				q.setString("metaDataLabel", SectionDataIfc.NUM_QUESTIONS_DRAWN);
+				//q.setString("metaDataEntry", SectionDataIfc.RANDOM_DRAW_FROM_QUESTIONPOOL.toString());
+				return q.list();
+			};
+		};
+		List list = getHibernateTemplate().executeFind(hcb);
+		
+		int sum = 0;
+		for (int i=0; i<list.size(); i++) {
+			if (list.get(i) != null) {
+				sum += Integer.valueOf((String)list.get(i));
+			}
+		}
+		return sum;
+	}
+
+	/**
+	 * gopalrc - Jan 2008
+	 * @param publishedAssessmentId
+	 * @return
+	 */
+	public Integer getPublishedItemCountForNonRandomSections(final Long publishedAssessmentId) {
+		final HibernateCallback hcb = new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				Query q = session
+						.createQuery("select count(i) from PublishedItemData i, PublishedSectionData s, "
+								+ " PublishedAssessmentData p, PublishedSectionMetaData m " 
+								+ " where p.publishedAssessmentId=:publishedAssessmentId and m.label=:metaDataLabel and "
+								+ " p = s.assessment and i.section = s and m.section = s and m.entry=:metaDataEntry ");
+
+				q.setLong("publishedAssessmentId", publishedAssessmentId.longValue());
+				q.setString("metaDataLabel", SectionDataIfc.AUTHOR_TYPE);
+				q.setString("metaDataEntry", SectionDataIfc.QUESTIONS_AUTHORED_ONE_BY_ONE.toString());
+				//q.setLong(0, publishedAssessmentId.longValue());
+				return q.list();
+			};
+		};
+		List list = getHibernateTemplate().executeFind(hcb);
+		return (Integer) list.get(0);
+	}
+	
 	
 	/**
 	 * added by gopalrc - Nov 2007
