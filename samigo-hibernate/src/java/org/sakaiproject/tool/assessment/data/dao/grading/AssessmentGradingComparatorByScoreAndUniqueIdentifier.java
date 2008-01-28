@@ -55,7 +55,7 @@ public class AssessmentGradingComparatorByScoreAndUniqueIdentifier implements
 					agentEid0 = UserDirectoryService.getUser(assessmentGrading0.getAgentId()).getEid();
 					agentEid1 = UserDirectoryService.getUser(assessmentGrading1.getAgentId()).getEid();
 					return agentEid0.compareTo(agentEid1);
-				} catch (UserNotDefinedException e) {
+				} catch (Exception e) {
 					if (agentEid0==null && agentEid1==null) {
 						log.warn("Cannot get users: " + agentEid0 + " and " + agentEid1);
 						return 0;
