@@ -707,7 +707,9 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 
 	public void createAuthorization(PublishedAssessmentData p) {
 		// conditional processing added by gopalrc Nov 2007
-		if (p.getAssessmentAccessControl().getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
+		if (p.getAssessmentAccessControl().getReleaseTo()!= null 
+				&& p.getAssessmentAccessControl().getReleaseTo()
+				.equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
 			createAuthorizationForSelectedGroups(p);
 			return;
 		}
