@@ -100,7 +100,7 @@ $Id$
 
     <h:outputText value=" </p>" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}" escape="false"/>
 
-  <h:messages styleClass="validation" />
+  <h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
 
 <div class="tier1">
 
