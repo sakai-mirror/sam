@@ -1326,7 +1326,7 @@ public class HistogramListener
     statMap.put("numStudentCollection", numStudents);
     statMap.put(
       "rangeCollection", calRange(scores, numStudents, min, max, interval));
-    statMap.put("standDev", castingNum(calStandDev(scores, mean, total),2));
+    statMap.put("standDev", castingNum(calStandDev(scores, mean),2));
     //NEW
     //statMap.put("columnHeight", calColumnHeight(numStudents));
     statMap.put("columnHeight", calColumnHeight(numStudents,scoreList.size()));
@@ -1445,14 +1445,17 @@ public class HistogramListener
    *
    * @return the standard deviation
    */
-  private static double calStandDev(double[] scores, double mean, double total)
+  private static double calStandDev(double[] scores, double mean)
   {
+    double total = 0;  
+  
     for(int i = 0; i < scores.length; i++)
     {
       total = total + ((scores[i] - mean) * (scores[i] - mean));
     }
 
-    return Math.sqrt(total / scores.length);
+    return Math.sqrt(total / (scores.length - 1));
+
   }
 
   /**
