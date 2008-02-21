@@ -1396,8 +1396,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    				"select count(*) from AssessmentGradingData a, StudentGradingSummaryData s " +
 	    				" where a.publishedAssessmentId=? and a.agentId=? and a.forGrade=? " +
 	    				" and a.publishedAssessmentId = s.publishedAssessmentId and a.agentId = s.agentId " +
-	    				" and a.submittedDate > s.createdDate" +
-	    				" order by a.submittedDate desc");
+	    				" and a.submittedDate > s.createdDate");
 	    		q.setLong(0, publishedAssessmentId.longValue());
 	    		q.setString(1, agentIdString);
 	    		q.setBoolean(2, true);
@@ -1413,6 +1412,30 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    else{
 	      return 0;
 	    }
+  }
+  
+  public HashMap getActualNumberRetakeHash(final String agentIdString) {
+		HashMap actualNumberRetakeHash = new HashMap();
+	    final HibernateCallback hcb = new HibernateCallback(){
+	    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
+	    		Query q = session.createQuery(
+	    				"select a.publishedAssessmentId, count(*) from AssessmentGradingData a, StudentGradingSummaryData s " +
+	    				" where a.agentId=? and a.forGrade=? " +
+	    				" and a.publishedAssessmentId = s.publishedAssessmentId and a.agentId = s.agentId " +
+	    				" and a.submittedDate > s.createdDate" +
+	    				" group by a.publishedAssessmentId");
+	    		q.setString(0, agentIdString);
+	    		q.setBoolean(1, true);
+	    		return q.list();
+	    	};
+	    };
+	    List countList = getHibernateTemplate().executeFind(hcb);
+		Iterator iter = countList.iterator();
+		while (iter.hasNext()) {
+			Object o[] = (Object[]) iter.next(); 
+			actualNumberRetakeHash.put(o[0], o[1]);
+		}
+		return actualNumberRetakeHash;
   }
   
   public List getStudentGradingSummaryData(final Long publishedAssessmentId, final String agentIdString) {
