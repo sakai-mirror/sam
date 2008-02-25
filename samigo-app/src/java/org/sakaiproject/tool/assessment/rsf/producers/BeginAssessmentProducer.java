@@ -28,6 +28,7 @@ import org.sakaiproject.tool.assessment.data.dao.authz.AuthorizationData;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
 import org.sakaiproject.tool.assessment.rsf.params.BeginAssessmentViewParameters;
+import org.sakaiproject.tool.assessment.rsf.params.TakeAssessmentViewParameters;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.DeliveryBean;
@@ -83,10 +84,11 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
     else
       log.warn("Something bad... we have no viewparams");
     
-    String alias = params.pubId;
-    
+    String alias = params.pubReference;
+
     //Begin cut and past (with small deviations) from existing LoginServlet that currently does
-    //the job of url aliased assessment delivery in Samigo.
+    //the job of url aliased assessment delivery in Samigo, some of this could possibly be removed
+    //unless this just replaces the LoginServlet someday.
     
     HttpSession httpSession = httpServletRequest.getSession(true);
     httpSession.setMaxInactiveInterval(3600); // one hour
@@ -166,19 +168,49 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
         BeginDeliveryActionListener listener = new BeginDeliveryActionListener();
         listener.processAction(null);
 
-        UIForm form = UIForm.make(tofill, "takeAssessmentForm:");
-        //UIOutput.make(form, "assessmentTitle", delivery.getAssessmentTitle());
+        UIForm form = UIForm.make(tofill, "takeAssessmentForm:", new TakeAssessmentViewParameters(alias));
+        UIOutput.make(form, "assessmentTitle", delivery.getAssessmentTitle());
         UIOutput.make(form, "courseName", delivery.getCourseName());
         UIOutput.make(form, "creatorName", delivery.getCreatorName());
-        UIOutput.make(form, "assessmentTitle", delivery.getAssessmentTitle());
-        //UIOutput.make(form, "maxAttempts", delivery.getSettings().getMaxAttempts() + "");
-        UIOutput.make(form, "dueDate", delivery.getDueDateString());
-        UIOutput.make(form, "feedback", delivery.getFeedback());
+        UIOutput.make(form, "pubId", alias);
         
-        UIBranchContainer timeLimit = UIBranchContainer.make(form, "timeLimit:");
-        UIOutput.make(timeLimit, "timeLimit", delivery.getTimeLimit());
-        UICommand.make(form, "beginAssessment", "#{beginAssessmentDeliveryBean.startAssessment}");
+        if (delivery.getHasTimeLimit()) {
+          UIBranchContainer timeLimit = UIBranchContainer.make(form, "timeLimit:");
+          UIOutput.make(timeLimit, "timeLimit", delivery.getTimeLimit());
+          UIOutput.make(timeLimit, "timeLimitHour", delivery.getTimeLimit_hour() + "");
+          UIOutput.make(timeLimit, "timeLimitMin", delivery.getTimeLimit_minute() + "");
+        }
+        else {
+          UIBranchContainer noTimeLimit = UIBranchContainer.make(form, "noTimeLimit:");
+          UIOutput.make(noTimeLimit, "timeLimit", delivery.getTimeLimit());          
+        }
+        
+        if (!delivery.getAnonymousLogin() && !delivery.getSettings().isUnlimitedAttempts()) {
+          UIBranchContainer limited = UIBranchContainer.make(tofill, "limited:");
+          UIOutput.make(limited, "maxAttempts", delivery.getSettings().getMaxAttempts() + "");
+          UIOutput.make(limited, "remaining", delivery.getSubmissionsRemaining() + "");
+        }
+        else if (!delivery.getAnonymousLogin() && delivery.getSettings().isUnlimitedAttempts()) {
+          UIBranchContainer.make(tofill, "unlimited:");
+        }
+        
+        if (delivery.getFeedbackComponent().getShowImmediate()) {
+          UIBranchContainer.make(tofill, "immediate:");
+        }
+        else if (delivery.getFeedbackComponent().getShowNoFeedback()) {
+          UIBranchContainer.make(tofill, "nofeedback:");
+        }
+        else if (delivery.getFeedbackComponent().getShowDateFeedback()) {
+          UIBranchContainer feedback = UIBranchContainer.make(tofill, "feedback:");
+          UIOutput.make(feedback, "feedBackDate", delivery.getSettings().getFeedbackDate().toString());
+        }
 
+        if (delivery.getDueDate() != null) {
+          UIBranchContainer duedate = UIBranchContainer.make(tofill, "duedate:");
+          UIOutput.make(duedate, "duedate", delivery.getDueDateString());
+        }
+        
+        UICommand.make(form, "beginAssessment", "#{beginAssessmentDeliveryBean.startAssessment}");
       }
     }
     else{ // notAuthorized
@@ -255,8 +287,12 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
     }
 
     public List reportNavigationCases() {
+      System.out.println(httpServletRequest.getRequestURL());
+      System.out.println(httpServletRequest.getParameter("pubId") + "   ");
+      
       String url = "/samigo/servlet/Login?id=" + httpServletRequest.getParameter("pubId")
                     + "&fromDirect=true";
+      System.out.println("url => " + url);
       List togo = new ArrayList();
       togo.add(new NavigationCase(null, new SimpleViewParameters(VIEW_ID)));
       togo.add(new NavigationCase("takeAssessment", new RawViewParameters(url)));

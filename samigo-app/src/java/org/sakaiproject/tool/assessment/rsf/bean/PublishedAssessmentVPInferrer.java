@@ -23,7 +23,7 @@ public class PublishedAssessmentVPInferrer implements EntityViewParamsInferrer {
   public ViewParameters inferDefaultViewParameters(String reference) {
     BeginAssessmentViewParameters params = new BeginAssessmentViewParameters();
     IdEntityReference ep = new IdEntityReference(reference);
-    params.pubId = ep.id;
+    params.pubReference = ep.id;
     params.viewID = BeginAssessmentProducer.VIEW_ID;
     return params;
   }

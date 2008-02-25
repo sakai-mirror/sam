@@ -8,5 +8,5 @@ import uk.org.ponder.rsf.viewstate.SimpleViewParameters;
  *
  */
 public class BeginAssessmentViewParameters extends SimpleViewParameters {
-  public String pubId;  
+  public String pubReference;  
 }

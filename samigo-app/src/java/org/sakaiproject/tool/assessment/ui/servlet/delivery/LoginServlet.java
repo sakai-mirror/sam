@@ -174,7 +174,7 @@ private static Log log = LogFactory.getLog(LoginServlet.class);
             relativePath = false;
             delivery.setActionString(null);
             path = "/authn/login?url=" + URLEncoder.encode(req.getRequestURL().toString()+"?id="+alias, "UTF-8");
-	  }
+          }
         }
         else { //isAuthenticated but not authorized
           path = "/jsf/delivery/accessDenied.faces";
@@ -190,9 +190,12 @@ private static Log log = LogFactory.getLog(LoginServlet.class);
           DeliveryActionListener deliveryListener = new DeliveryActionListener();
           deliveryListener.processAction(null);
         }
-        // can return a lot of things... but takeAssessment is the positive result
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.redirect(delivery.validate());
+        
+        //TODO: Should be something a bit more robust as validate() can retun a lot of things...
+        if ("takeAssessment".equals(delivery.validate())) {
+          path = "/jsf/delivery/deliverAssessment.faces";
+        }
+        
       }
     log.debug("***path"+path);
     if (relativePath){
