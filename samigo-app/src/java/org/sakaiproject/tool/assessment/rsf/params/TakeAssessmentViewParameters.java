@@ -8,13 +8,6 @@ import uk.org.ponder.rsf.viewstate.SimpleViewParameters;
  *
  */
 public class TakeAssessmentViewParameters extends SimpleViewParameters {
-  public TakeAssessmentViewParameters(String id) {
-    super("/samigo/servlet/Login");
-    this.id = id;
-    this.fromDirect = "true";
-    this.viewID = "/samigo/servlet/Login";
-  }
-  
   public String id;
   public String fromDirect;
 }

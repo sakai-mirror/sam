@@ -19,6 +19,10 @@
 
 	<bean class="org.sakaiproject.tool.assessment.rsf.bean.PublishedAssessmentVPInferrer">
 	</bean>
+	
+	<bean id="ignoreFossilizedValues" class="uk.org.ponder.springutil.BooleanFactory">
+    	<property name="value" value="true" />
+  	</bean>
 
 </beans>
  

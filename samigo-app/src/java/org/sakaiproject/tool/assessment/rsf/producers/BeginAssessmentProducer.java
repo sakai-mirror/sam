@@ -25,10 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.sakaiproject.tool.assessment.data.dao.authz.AuthorizationData;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentMetaDataIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
 import org.sakaiproject.tool.assessment.rsf.params.BeginAssessmentViewParameters;
-import org.sakaiproject.tool.assessment.rsf.params.TakeAssessmentViewParameters;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.DeliveryBean;
@@ -40,13 +40,14 @@ import uk.org.ponder.rsf.components.UIBranchContainer;
 import uk.org.ponder.rsf.components.UICommand;
 import uk.org.ponder.rsf.components.UIContainer;
 import uk.org.ponder.rsf.components.UIForm;
+import uk.org.ponder.rsf.components.UILink;
 import uk.org.ponder.rsf.components.UIOutput;
+import uk.org.ponder.rsf.components.decorators.UIFreeAttributeDecorator;
 import uk.org.ponder.rsf.flow.jsfnav.DynamicNavigationCaseReporter;
 import uk.org.ponder.rsf.flow.jsfnav.NavigationCase;
 import uk.org.ponder.rsf.view.ComponentChecker;
 import uk.org.ponder.rsf.view.DefaultView;
 import uk.org.ponder.rsf.view.ViewComponentProducer;
-import uk.org.ponder.rsf.viewstate.RawViewParameters;
 import uk.org.ponder.rsf.viewstate.SimpleViewParameters;
 import uk.org.ponder.rsf.viewstate.ViewParameters;
 import uk.org.ponder.rsf.viewstate.ViewParamsReporter;
@@ -117,7 +118,7 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
     // 3. If not, goto login.faces
     // both pages will set agentId and then direct user to BeginAssessment
     PublishedAssessmentService service = new PublishedAssessmentService();
-    PublishedAssessmentFacade pub = service.getPublishedAssessmentIdByAlias(alias);
+    PublishedAssessmentFacade pub = service.getPublishedAssessment(alias);
 
     delivery.setAssessmentId(pub.getPublishedAssessmentId().toString());
     delivery.setAssessmentTitle(pub.getTitle());
@@ -160,7 +161,7 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
                                                           delivery);
     if (isAuthorized){
       if (!assessmentIsAvailable) {
-        UIBranchContainer assessmentNotAvailable = UIBranchContainer.make(tofill, "assessmentNotAvailable:");
+        UIBranchContainer.make(tofill, "assessmentNotAvailable:");
         // TODO added info on why
       }
       else {
@@ -168,11 +169,17 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
         BeginDeliveryActionListener listener = new BeginDeliveryActionListener();
         listener.processAction(null);
 
-        UIForm form = UIForm.make(tofill, "takeAssessmentForm:", new TakeAssessmentViewParameters(alias));
+        UIForm form = UIForm.make(tofill, "takeAssessmentForm:");
+
+        String url = "/samigo/servlet/Login?id="
+          + pub.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.ALIAS)
+          + "&fromDirect=true";
+
+        UILink.make(form, "takeAssessment", url);
+        
         UIOutput.make(form, "assessmentTitle", delivery.getAssessmentTitle());
         UIOutput.make(form, "courseName", delivery.getCourseName());
         UIOutput.make(form, "creatorName", delivery.getCreatorName());
-        UIOutput.make(form, "pubId", alias);
         
         if (delivery.getHasTimeLimit()) {
           UIBranchContainer timeLimit = UIBranchContainer.make(form, "timeLimit:");
@@ -209,8 +216,6 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
           UIBranchContainer duedate = UIBranchContainer.make(tofill, "duedate:");
           UIOutput.make(duedate, "duedate", delivery.getDueDateString());
         }
-        
-        UICommand.make(form, "beginAssessment", "#{beginAssessmentDeliveryBean.startAssessment}");
       }
     }
     else{ // notAuthorized
@@ -243,13 +248,12 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
         }
       }
       else { //isAuthenticated but not authorized
-        UIBranchContainer assessmentNotAvailable = UIBranchContainer.make(tofill, "accessDenied:");
+        UIBranchContainer.make(tofill, "accessDenied:");
         // TODO added info on why
       }
     }
  
     //End cut and paste from LoginServlet (with small deviations)
-
 	}
 
     private boolean checkMembership(PublishedAssessmentFacade pub){
@@ -287,17 +291,9 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
     }
 
     public List reportNavigationCases() {
-      System.out.println(httpServletRequest.getRequestURL());
-      System.out.println(httpServletRequest.getParameter("pubId") + "   ");
-      
-      String url = "/samigo/servlet/Login?id=" + httpServletRequest.getParameter("pubId")
-                    + "&fromDirect=true";
-      System.out.println("url => " + url);
       List togo = new ArrayList();
       togo.add(new NavigationCase(null, new SimpleViewParameters(VIEW_ID)));
-      togo.add(new NavigationCase("takeAssessment", new RawViewParameters(url)));
-      
-      return togo;      
-      
+
+      return togo;
     }
 }
