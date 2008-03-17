@@ -2581,6 +2581,8 @@ public class DeliveryBean
   }
 
   private boolean isAvailable(){
+	  if (this.actionMode == PREVIEW_ASSESSMENT)
+		  return true;
 	  boolean isAvailable = true;
 	  Date currentDate = new Date();
 	  Date startDate = publishedAssessment.getAssessmentAccessControl().getStartDate();
