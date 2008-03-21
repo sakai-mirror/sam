@@ -20,6 +20,7 @@
     <deploy.target/>
   </properties>
   <build>
+  <!--
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -36,6 +37,7 @@
         </configuration>
       </plugin>
     </plugins>
+    -->
     <resources>
       <resource>
         <directory>${basedir}/src/java</directory>
