@@ -36,6 +36,7 @@ import org.sakaiproject.tool.assessment.ui.bean.shared.PersonBean;
 import org.sakaiproject.tool.assessment.ui.listener.delivery.BeginDeliveryActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 
+import uk.org.ponder.messageutil.MessageLocator;
 import uk.org.ponder.rsf.components.UIBranchContainer;
 import uk.org.ponder.rsf.components.UICommand;
 import uk.org.ponder.rsf.components.UIContainer;
@@ -43,6 +44,7 @@ import uk.org.ponder.rsf.components.UIForm;
 import uk.org.ponder.rsf.components.UILink;
 import uk.org.ponder.rsf.components.UIOutput;
 import uk.org.ponder.rsf.components.decorators.UIFreeAttributeDecorator;
+import uk.org.ponder.rsf.components.decorators.UITooltipDecorator;
 import uk.org.ponder.rsf.flow.jsfnav.DynamicNavigationCaseReporter;
 import uk.org.ponder.rsf.flow.jsfnav.NavigationCase;
 import uk.org.ponder.rsf.view.ComponentChecker;
@@ -69,6 +71,7 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
 
   public HttpServletRequest httpServletRequest;
   public HttpServletResponse httpServletResponse;
+  public MessageLocator messageLocator;
   
   private static Log log = LogFactory.getLog(BeginAssessmentProducer.class);
   
@@ -175,7 +178,10 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
           + pub.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.ALIAS)
           + "&fromDirect=true";
 
-        UILink.make(form, "takeAssessment", url);
+        UICommand.make(form, "takeAssessment", messageLocator.getMessage("begin_assessment_"), null)
+          .decorate(new UITooltipDecorator(messageLocator.getMessage("begin_assessment_")))
+          .decorate(new UIFreeAttributeDecorator("onclick", "window.location.href='" + url + "'"));
+        //UILink.make(form, "takeAssessment", url);
         
         UIOutput.make(form, "assessmentTitle", delivery.getAssessmentTitle());
         UIOutput.make(form, "courseName", delivery.getCourseName());
@@ -295,5 +301,9 @@ public class BeginAssessmentProducer implements ViewComponentProducer,
       togo.add(new NavigationCase(null, new SimpleViewParameters(VIEW_ID)));
 
       return togo;
+    }
+
+    public void setMessageLocator(MessageLocator messageLocator) {
+      this.messageLocator = messageLocator;
     }
 }
