@@ -112,13 +112,28 @@ public class PublishedAssessmentEntityProviderImpl implements PublishedAssessmen
     Map<String, String> props = new HashMap<String, String>();
     PublishedAssessmentService service = new PublishedAssessmentService();
     PublishedAssessmentFacade pub = service.getPublishedAssessment(reference.substring(ENTITY_PREFIX.length() + 2));
-    props.put("siteId", pub.getOwnerSiteId());
-    props.put("author", pub.getCreatedBy());
     props.put("title", pub.getTitle());
     props.put("description", pub.getDescription());
+    props.put("author", pub.getCreatedBy());
+    if (pub.getCreatedDate() != null)
+      props.put("created_date", pub.getCreatedDate().toString());
+    props.put("modified_by", pub.getLastModifiedBy());
+    if (pub.getLastModifiedDate() != null)
+      props.put("modified_date", pub.getLastModifiedDate().toString());
+    if (pub.getTotalScore() != null)
+      props.put("totalScore", pub.getTotalScore().toString());
+    if (pub.getStartDate() != null)
+      props.put("start_date", pub.getStartDate().toString());
     if (pub.getDueDate() != null)
       props.put("due_date", pub.getDueDate().toString());
-    
+    if (pub.getRetractDate() != null)
+      props.put("retract_date", pub.getRetractDate().toString());
+    Map<String, String> meta = pub.getAssessmentMetaDataMap();
+    for (String key : meta.keySet()) {
+      props.put(key, meta.get(key));
+    }
+    props.put("comments", pub.getComments());
+    props.put("siteId", pub.getOwnerSiteId());
     return props;
   }
 
