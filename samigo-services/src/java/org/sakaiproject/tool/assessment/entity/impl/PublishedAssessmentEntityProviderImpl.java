@@ -2,6 +2,7 @@ package org.sakaiproject.tool.assessment.entity.impl;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,8 @@ public class PublishedAssessmentEntityProviderImpl implements PublishedAssessmen
   private List<String> browseEntities(String siteId, String userId) {
     List refs = null;
     List assessments = null;
+    boolean canPublish = false;
+    Date currentDate = new Date();
     
     //TODO: support sorting by other attributes
     String orderBy = "title";
@@ -72,6 +75,7 @@ public class PublishedAssessmentEntityProviderImpl implements PublishedAssessmen
         .getBasicInfoOfAllInActivePublishedAssessments(orderBy, siteId, true);
       assessments.addAll(publishedAssessmentFacadeQueries
         .getBasicInfoOfAllActivePublishedAssessments(orderBy, siteId, true));
+      canPublish = true;
     }
     else if (securityService.unlock(CAN_TAKE, "/site/"+siteId)) {
       assessments = publishedAssessmentFacadeQueries
@@ -82,13 +86,16 @@ public class PublishedAssessmentEntityProviderImpl implements PublishedAssessmen
       refs = new ArrayList();
       for (int i = 0; i < assessments.size(); i++) {
         PublishedAssessmentFacade pub = (PublishedAssessmentFacade) assessments.get(i);
-        refs.add("/" + ENTITY_PREFIX + "/" + pub.getPublishedAssessmentId());
+        
+        if (canPublish || pub.getStartDate() == null || currentDate.after(pub.getStartDate()))
+          refs.add("/" + ENTITY_PREFIX + "/" + pub.getPublishedAssessmentId());
       }
     }
     return refs;
   }
 
-  public List<String> findEntityRefs(String[] prefixes, String[] name, String[] searchValue, boolean exactMatch) {
+  public List<String> findEntityRefs(String[] prefixes, String[] name, String[] searchValue,
+      boolean exactMatch) {
     String siteId = null;
     String userId = null;
 
@@ -112,7 +119,8 @@ public class PublishedAssessmentEntityProviderImpl implements PublishedAssessmen
   public Map<String, String> getProperties(String reference) {
     Map<String, String> props = new HashMap<String, String>();
     PublishedAssessmentService service = new PublishedAssessmentService();
-    PublishedAssessmentFacade pub = service.getPublishedAssessment(reference.substring(ENTITY_PREFIX.length() + 2));
+    PublishedAssessmentFacade pub =
+      service.getPublishedAssessment(reference.substring(ENTITY_PREFIX.length() + 2));
     props.put("title", pub.getTitle());
     props.put("description", pub.getDescription());
     props.put("author", pub.getCreatedBy());
@@ -125,10 +133,19 @@ public class PublishedAssessmentEntityProviderImpl implements PublishedAssessmen
       props.put("totalScore", pub.getTotalScore().toString());
     if (pub.getStartDate() != null)
       props.put("start_date", DateFormat.getInstance().format(pub.getStartDate()));
+    else if (pub.getAssessmentAccessControl().getStartDate() != null)
+      props.put("start_date", DateFormat.getInstance().format(
+          pub.getAssessmentAccessControl().getStartDate()));
     if (pub.getDueDate() != null)
       props.put("due_date", DateFormat.getInstance().format(pub.getDueDate()));
+    else if (pub.getAssessmentAccessControl().getDueDate() != null)
+      props.put("due_date", DateFormat.getInstance().format(
+          pub.getAssessmentAccessControl().getDueDate()));
     if (pub.getRetractDate() != null)
       props.put("retract_date", DateFormat.getInstance().format(pub.getRetractDate()));
+    else if (pub.getAssessmentAccessControl().getRetractDate() != null)
+      props.put("retract_date", DateFormat.getInstance().format(
+          pub.getAssessmentAccessControl().getRetractDate()));
 
     props.put("comments", pub.getComments());
     props.put("siteId", pub.getOwnerSiteId());
@@ -141,14 +158,16 @@ public class PublishedAssessmentEntityProviderImpl implements PublishedAssessmen
   }
 
   public void setPropertyValue(String reference, String name, String value) {
-    // This does nothing for now... we could all the setting of many published assessment properties here though... if you're feeling jumpy feel free.
+    // This does nothing for now... we could all the setting of many published assessment properties
+    // here though... if you're feeling jumpy feel free.
   }
 
   public PublishedAssessmentFacadeQueriesAPI getPublishedAssessmentFacadeQueries() {
     return publishedAssessmentFacadeQueries;
   }
 
-  public void setPublishedAssessmentFacadeQueries(PublishedAssessmentFacadeQueriesAPI publishedAssessmentFacadeQueries) {
+  public void setPublishedAssessmentFacadeQueries(
+      PublishedAssessmentFacadeQueriesAPI publishedAssessmentFacadeQueries) {
     this.publishedAssessmentFacadeQueries = publishedAssessmentFacadeQueries;
   }
 
