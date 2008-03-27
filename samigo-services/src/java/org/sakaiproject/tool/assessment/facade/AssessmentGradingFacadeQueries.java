@@ -438,7 +438,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
   public HashMap getSubmissionSizeOfAllPublishedAssessments(){
     HashMap h = new HashMap();
-    Object [] values = {"VIEW_PUBLISHED_ASSESSMENT", AgentFacade.getCurrentSiteId(), Boolean.valueOf(true)};
+    Object [] values = {"OWN_PUBLISHED_ASSESSMENT", AgentFacade.getCurrentSiteId(), Boolean.valueOf(true)};
     //List list = getHibernateTemplate().find("select new PublishedAssessmentData(a.publishedAssessmentId, count(a)) from AssessmentGradingData a where a.forGrade=? group by a.publishedAssessmentId", Boolean.valueOf(true));
     
     List list = getHibernateTemplate().find(
