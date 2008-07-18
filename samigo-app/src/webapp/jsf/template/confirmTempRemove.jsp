@@ -42,9 +42,9 @@
 
      <div class="validation tier1">
        <h:outputText value="#{templateMessages.remove_fer_sure}" />
-       <h:outputText value=" &quot;" />
+       <h:outputText value=" \"" />
        <h:outputText value="#{template.templateName}"/>
-       <h:outputText value="&quot;?" />
+       <h:outputText value=" \"?" />
 
        </div>
        <p class="act">
