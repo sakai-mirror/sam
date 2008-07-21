@@ -1358,7 +1358,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			query = "select new AssessmentData(a.assessmentBaseId, a.title, a.lastModifiedDate)"
 					+ " from AssessmentData a, AuthorizationData z where "
 					+ " a.title=? and a.assessmentBaseId!=? and z.functionId=? and "
-					+ " a.assessmentBaseId=z.qualifierId and z.agentIdString=?";
+					+ " a.assessmentBaseId=z.qualifierId and z.agentIdString=? and a.status=?";
 
 			final String hql = query;
 			final String titlef = title;
@@ -1370,6 +1370,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 					q.setLong(1, assessmentBaseId.longValue());
 					q.setString(2, "EDIT_ASSESSMENT");
 					q.setString(3, currentSiteId);
+					q.setInteger(4,1);
 					return q.list();
 				};
 			};
@@ -1435,7 +1436,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 
 	private String fileSizeInKB(int fileSize) {
 		String fileSizeString = "1";
-		int size = Math.round(fileSize / 1024);
+		int size = Math.round((float)fileSize / 1024.0f);
 		if (size > 0) {
 			fileSizeString = size + "";
 		}
