@@ -5,9 +5,10 @@
 	<link href="/library/skin/tool_base.css" type="text/css" rel="stylesheet" media="all" />
 	<link href="/library/skin/default/tool.css" type="text/css" rel="stylesheet" media="all" />
 	<link href="/samigo/css/tool_sam.css" type="text/css" rel="stylesheet" media="all" />
-	<title>jkgh</title>
+	<script src="/library/js/headscripts.js" language="JavaScript" type="text/javascript"></script>
+	<title rsf:id="assessmentTitle">Assessment Title</title>
 </head>
-<body rsf:id="scr=sakai-body">
+<body onload="setMainFrameHeight(window.frameElement.id);" rsf:id="scr=sakai-body">
 	<!--div class="portletBody"-->
 	<div class='portletBody' style='background:transparent;'>
 		<!-- content... -->
@@ -71,7 +72,7 @@
 			</p>
 		</form>
 		<div rsf:id="assessmentNotAvailable:">
-			<span rsf:id="msg=assessment_not_available_message">Assessment Not Available</span>
+			<span rsf:id="msg=assessment_not_available">Assessment Not Available</span>
 			<div class="validation" rsf:id="msg=assessment_not_available_message"></div>
 		</div>
 		<div rsf:id="accessDenied:">
