@@ -3,18 +3,18 @@
  * $Id: ItemService.java 9273 2006-05-10 22:34:28Z daisyf@stanford.edu $
  ***********************************************************************************
  *
- * Copyright (c) 2004, 2005, 2006 The Sakai Foundation.
+ * Copyright 2004, 2005, 2006, 2008 Sakai Foundation
  *
- * Licensed under the Educational Community License, Version 1.0 (the"License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at
  *
- *      http://www.opensource.org/licenses/ecl1.php
+ *       http://www.osedu.org/licenses/ECL-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
  * limitations under the License.
  *
  **********************************************************************************/
@@ -232,9 +232,9 @@ public class ItemService
   public ItemData cloneItem(ItemDataIfc item){
     ItemData cloned= new ItemData(
         item.getSection(),item.getSequence(), item.getDuration(), item.getInstruction(),
-	item.getDescription(),item.getTypeId(),item.getGrade(),item.getScore(),
-	item.getHint(),item.getHasRationale(),item.getStatus(),item.getCreatedBy(),
-	item.getCreatedDate(),item.getLastModifiedBy(),item.getLastModifiedDate(),
+        item.getDescription(),item.getTypeId(),item.getGrade(),item.getScore(), item.getDiscount(),
+        item.getHint(),item.getHasRationale(),item.getStatus(),item.getCreatedBy(),
+        item.getCreatedDate(),item.getLastModifiedBy(),item.getLastModifiedDate(),
         null, null, null, item.getTriesAllowed());
 
     // perform deep copy, set ItemTextSet, itemMetaDataSet and itemFeedbackSet
@@ -271,7 +271,7 @@ public class ItemService
       Answer newAnswer = new Answer(
           newItemText, answer.getText(), answer.getSequence(),
           answer.getLabel(),
-          answer.getIsCorrect(), answer.getGrade(), answer.getScore(), null);
+      	  answer.getIsCorrect(), answer.getGrade(), answer.getScore(), answer.getDiscount(), null);
       Set newAnswerFeedbackSet = copyAnswerFeedbackSet(
           newAnswer, answer.getAnswerFeedbackSet());
       newAnswer.setAnswerFeedbackSet(newAnswerFeedbackSet);

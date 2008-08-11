@@ -3,18 +3,18 @@
  * $Id$
  ***********************************************************************************
  *
- * Copyright (c) 2004, 2005, 2006 The Sakai Foundation.
+ * Copyright 2004, 2005, 2006, 2007, 2008 Sakai Foundation
  *
- * Licensed under the Educational Community License, Version 1.0 (the"License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at
  *
- *      http://www.opensource.org/licenses/ecl1.php
+ *       http://www.osedu.org/licenses/ECL-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
  * limitations under the License.
  *
  **********************************************************************************/
@@ -79,6 +79,8 @@ public class ItemContentsBean implements Serializable {
 	private String[] responseIds = null;
 
 	private float points;
+	
+	private float discount;
 
 	private float maxPoints;
 
@@ -238,6 +240,56 @@ public class ItemContentsBean implements Serializable {
 		}
 		setPoints(Float.parseFloat(pointsForEdit));
 	}
+	
+    /**
+     * String representation of the rounded discount.
+     *
+     * @return String representation of the discount.
+     */
+    public float getDiscount() {
+    	 return SectionContentsBean.roundTo2Decimals(discount);
+    }
+
+    /**
+     * String representation of the exact points (unrounded discount)
+     *
+     * @return String representation of the discount.
+     */
+    public float getExactDiscount() {
+    	return discount;
+    }
+
+    /**
+     * String representation of the Discount.
+     *
+     * @param discount
+     *            String representation of the Discount.
+     */
+    public void setDiscount(float discount) {
+    	this.discount = discount;
+    }
+
+    /**
+     * String representation of the rounded Discount.
+     *
+     * @return String representation of the Discount.
+     */
+    public String getDiscountForEdit() {
+    	return Float.toString(getDiscount());
+    }
+ 
+    /**
+     * String representation of the discount.
+     *
+     * @param discount
+     *            String representation of the discount.
+     */
+    public void setDiscountForEdit(String discountForEdit) {
+    	if (discountForEdit == null || discountForEdit.equals("")) {
+    		discountForEdit = "0";
+    	}
+    	setDiscount(Float.parseFloat(discountForEdit));
+    }
 	
 	public boolean getReview() {
 		if (getItemGradingDataArray().isEmpty()) {

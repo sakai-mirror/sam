@@ -3,18 +3,18 @@
  * $Id$
  ***********************************************************************************
  *
- * Copyright (c) 2004, 2005, 2006 The Sakai Foundation.
+ * Copyright 2004, 2005, 2006, 2007, 2008 Sakai Foundation
  *
- * Licensed under the Educational Community License, Version 1.0 (the"License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at
  *
- *      http://www.opensource.org/licenses/ecl1.php
+ *       http://www.osedu.org/licenses/ECL-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
  * limitations under the License.
  *
  **********************************************************************************/
@@ -49,6 +49,7 @@ import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.ItemFacade;
 import org.sakaiproject.tool.assessment.facade.QuestionPoolFacade;
 import org.sakaiproject.tool.assessment.facade.SectionFacade;
+import org.sakaiproject.tool.assessment.facade.TypeFacade;
 import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.QuestionPoolService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
@@ -59,8 +60,6 @@ import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 /**
  * <p>Title: Samigo</p>2
  * <p>Description: Sakai Assessment Manager</p>
- * <p>Copyright: Copyright (c) 2004 Sakai Project</p>
- * <p>Organization: Sakai Project</p>
  * @author Ed Smiley
  * @version $Id$
  */
@@ -222,6 +221,13 @@ public class SavePartListener
     	  hasRandomPartScore = true;
     	  score = new Float(requestedScore);
       }
+      boolean hasRandomPartDiscount = false;
+      Float discount = null;
+      String requestedDiscount = sectionBean.getRandomPartDiscount();
+      if (requestedDiscount != null && !requestedDiscount.equals("")) {
+    	  hasRandomPartDiscount = true;
+    	  discount = new Float(requestedDiscount);
+      }      
       ArrayList itemlist = qpservice.getAllItems(new Long(sectionBean.getSelectedPool()) );
       int i = 0;
       Iterator iter = itemlist.iterator();
@@ -232,9 +238,13 @@ public class SavePartListener
     	  item = qpservice.copyItemFacade2(item);
     	  item.setSection(section);
     	  item.setSequence(new Integer(i+1));
-    	  if (hasRandomPartScore) {
-    		  item.setScore(score);
-    	  
+    	  if (hasRandomPartScore || hasRandomPartDiscount) {
+    		  if (hasRandomPartScore) item.setScore(score);
+    		  long itemTypeId = item.getTypeId().longValue();
+    		  if (hasRandomPartDiscount &&
+    				  (itemTypeId == TypeFacade.MULTIPLE_CHOICE.longValue() || itemTypeId == TypeFacade.TRUE_FALSE.longValue()))
+    			  item.setDiscount(discount);
+
     		  ItemDataIfc data = item.getData();
     		  Set itemTextSet = data.getItemTextSet();
     		  if (itemTextSet != null) {
@@ -246,7 +256,10 @@ public class SavePartListener
     					  Iterator iterAS = answerSet.iterator();
     					  while (iterAS.hasNext()) {
     						  AnswerIfc answer = (AnswerIfc)iterAS.next();
-    						  answer.setScore(score);
+    						  if (hasRandomPartScore) answer.setScore(score);
+    						  if (hasRandomPartDiscount &&
+    								  (itemTypeId == TypeFacade.MULTIPLE_CHOICE.longValue() || itemTypeId == TypeFacade.TRUE_FALSE.longValue()))
+    							  answer.setDiscount(discount);
     					  }
     				  }
     			  }
@@ -260,6 +273,12 @@ public class SavePartListener
       }
       else {
     	  section.addSectionMetaData(SectionDataIfc.POINT_VALUE_FOR_QUESTION, "");
+      }
+      if (hasRandomPartDiscount && discount != null) {
+    	  section.addSectionMetaData(SectionDataIfc.DISCOUNT_VALUE_FOR_QUESTION, discount.toString());
+      }
+      else {
+    	  section.addSectionMetaData(SectionDataIfc.DISCOUNT_VALUE_FOR_QUESTION, "");
       }
     }
 
@@ -337,6 +356,23 @@ public class SavePartListener
     	err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","qdrawn_pt_error");
     	context.addMessage(null,new FacesMessage(err ));
     	return false;
+     }
+     
+     String randomDiscount = sectionBean.getRandomPartDiscount();
+     if (randomDiscount == null || randomDiscount.equals("")) {
+    	 return true;
+     }
+     try{
+    	 float randomDiscountFloat = Float.parseFloat(randomDiscount);
+    	 if(randomDiscountFloat < 0.0){
+    		 err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","qdrawn_pt_error");
+    		 context.addMessage(null,new FacesMessage(err ));
+    		 return false;
+    	 }
+     } catch(NumberFormatException e){
+    	 err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","qdrawn_pt_error");
+    	 context.addMessage(null,new FacesMessage(err ));
+    	 return false;
      }
      return true;
   }

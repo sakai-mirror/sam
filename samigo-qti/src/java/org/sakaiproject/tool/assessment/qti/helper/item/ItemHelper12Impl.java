@@ -3,18 +3,18 @@
  * $Id: ItemHelper12Impl.java 9274 2006-05-10 22:50:48Z daisyf@stanford.edu $
  ***********************************************************************************
  *
- * Copyright (c) 2003, 2004, 2005, 2006 The Sakai Foundation.
+ * Copyright 2003, 2004, 2005, 2006, 2007 Sakai Foundation
  *
- * Licensed under the Educational Community License, Version 1.0 (the"License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at
  *
- *      http://www.opensource.org/licenses/ecl1.php
+ *       http://www.osedu.org/licenses/ECL-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
  * limitations under the License.
  *
  **********************************************************************************/
@@ -70,7 +70,9 @@ public class ItemHelper12Impl extends ItemHelperBase
   private AuthoringXml authoringXml;
   private List allIdents;
   private Float currentMaxScore = new Float(0);
+  private Float currentMinScore = new Float(0);
   private float currentPerItemScore = 0;
+  private float currentPerItemDiscount = 0;
 
   /**
    *
@@ -119,10 +121,15 @@ public class ItemHelper12Impl extends ItemHelperBase
    * @param score
    * @param itemXml
    */
-  public void addMinScore(Float score, Item itemXml)
+  public void addMinScore(Float discount, Item itemXml)
   {
-    String xPath = "item/resprocessing/outcomes/decvar/@minvalue";
-    updateItemXml(itemXml, xPath, "0");
+	  String xPath = "item/resprocessing/outcomes/decvar/@minvalue";
+	  if (discount == null)
+	  {
+		  discount = new Float(0);
+	  }
+	  currentMinScore = discount;
+	  updateItemXml(itemXml, xPath, "" + discount.toString());
   }
 
   /**
@@ -363,6 +370,7 @@ public class ItemHelper12Impl extends ItemHelperBase
     if (itSize > 0)
     {
       currentPerItemScore = currentMaxScore.floatValue() / itSize;
+      currentPerItemDiscount = currentMinScore.floatValue();
     }
     int respCondCount = 0; //used to count the respconditions
 

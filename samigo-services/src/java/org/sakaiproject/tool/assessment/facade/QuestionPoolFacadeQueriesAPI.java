@@ -3,18 +3,18 @@
  * $Id: QuestionPoolFacadeQueriesAPI.java 9343 2006-05-12 23:30:02Z lydial@stanford.edu $
  ***********************************************************************************
  *
- * Copyright (c) 2004, 2005, 2006 The Sakai Foundation.
+ * Copyright 2004, 2005, 2006, 2007 Sakai Foundation
  *
- * Licensed under the Educational Community License, Version 1.0 (the"License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at
  *
- *      http://www.opensource.org/licenses/ecl1.php
+ *       http://www.osedu.org/licenses/ECL-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
  * limitations under the License.
  *
  **********************************************************************************/
@@ -62,6 +62,8 @@ public interface QuestionPoolFacadeQueriesAPI
    */
   public QuestionPoolIteratorFacade getAllPools(String agentId);
 
+  public QuestionPoolIteratorFacade getAllPoolsWithAccess(String agentId);
+  
   public ArrayList getBasicInfoOfAllPools(String agentId);
  
   public boolean poolIsUnique(Long questionPoolId, String title, Long parentPoolId, String agentId);
@@ -210,5 +212,14 @@ public interface QuestionPoolFacadeQueriesAPI
   public ItemFacade copyItemFacade2(ItemDataIfc itemData);
 
   public Integer getCountItemFacades(Long questionPoolId);
+  
+  /**
+   * Shared Pools with other user
+   */
+  public void addQuestionPoolAccess(String user, Long questionPoolId, Long accessTypeId);
+  
+  public void removeQuestionPoolAccess(String user, Long questionPoolId, Long accessTypeId);
+  
+  public List<AgentFacade> getAgentsWithAccess(final Long questionPoolId);
 
 }

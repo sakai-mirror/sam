@@ -3,18 +3,18 @@
  * $Id: GradingService.java 9784 2006-05-22 19:33:28Z daisyf@stanford.edu $
  ***********************************************************************************
  *
- * Copyright (c) 2004, 2005, 2006 The Sakai Foundation.
+ * Copyright 2004, 2005, 2006, 2007, 2008 Sakai Foundation
  *
- * Licensed under the Educational Community License, Version 1.0 (the"License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at
  *
- *      http://www.opensource.org/licenses/ecl1.php
+ *       http://www.osedu.org/licenses/ECL-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
  * limitations under the License.
  *
  **********************************************************************************/
@@ -608,7 +608,11 @@ public class GradingService
       }
 
       adata.setTotalAutoScore(new Float(totalAutoScore));
-      adata.setFinalScore(new Float(totalAutoScore+totalOverrideScore));
+      if (Float.compare((totalAutoScore+totalOverrideScore),new Float("0").floatValue())<0){
+    	  adata.setFinalScore(new Float("0"));
+      }else{
+    	  adata.setFinalScore(new Float(totalAutoScore+totalOverrideScore));
+      }
       saveOrUpdateAssessmentGrading(adata);
       if (scoreDifference != 0){
         notifyGradebookByScoringType(adata, pub);
@@ -724,12 +728,14 @@ public class GradingService
       {
         ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
         Long itemId = itemGrading.getPublishedItemId();
+        ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(itemId);
+        Long itemType2 = item.getTypeId();
         //float autoScore = (float) 0;
 
         float eachItemScore = ((Float) totalItems.get(itemId)).floatValue();
-        if(eachItemScore < 0)
+        if((eachItemScore < 0) && !((TypeIfc.MULTIPLE_CHOICE).equals(itemType2)||(TypeIfc.TRUE_FALSE).equals(itemType2)))
         {
-          itemGrading.setAutoScore(new Float(0));
+        	itemGrading.setAutoScore(new Float(0));
         }
       }
       log.debug("****x4. "+(new Date()).getTime());
@@ -750,7 +756,11 @@ public class GradingService
       float totalAutoScore = getTotalAutoScore(fullItemGradingSet);
       data.setTotalAutoScore(new Float(totalAutoScore));
       //log.debug("**#1 total AutoScore"+totalAutoScore);
-      data.setFinalScore(new Float(totalAutoScore + data.getTotalOverrideScore().floatValue()));
+      if (Float.compare((totalAutoScore + data.getTotalOverrideScore().floatValue()),new Float("0").floatValue())<0){
+    	  data.setFinalScore( new Float("0"));
+      }else{
+    	  data.setFinalScore(new Float(totalAutoScore + data.getTotalOverrideScore().floatValue()));
+      }
       log.debug("****x6. "+(new Date()).getTime());
     } catch (GradebookServiceException ge) {
       ge.printStackTrace();
@@ -934,10 +944,21 @@ public class GradingService
   public float getAnswerScore(ItemGradingIfc data, HashMap publishedAnswerHash)
   {
     AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
-    if (answer == null || answer.getScore() == null)
-      return (float) 0;
+    if (answer == null || answer.getScore() == null) {
+    	return (float) 0;
+    }
+    ItemDataIfc item = (ItemDataIfc) answer.getItem();
+    Long itemType = item.getTypeId();
     if (answer.getIsCorrect() == null || !answer.getIsCorrect().booleanValue())
-      return (float) 0;
+    {
+    	// return (float) 0;
+    	// Para que descuente (For discount)
+    	if ((TypeIfc.MULTIPLE_CHOICE).equals(itemType)||(TypeIfc.TRUE_FALSE).equals(itemType)){
+    		return (answer.getDiscount().floatValue() * ((float) -1));
+    	}else{
+    		return (float) 0;
+    	}
+    }
     return answer.getScore().floatValue();
   }
 
@@ -1389,7 +1410,11 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
         float oldAutoScore = adata.getTotalAutoScore().floatValue();
         float scoreDifference = totalAutoScore - oldAutoScore;
         adata.setTotalAutoScore(new Float(totalAutoScore));
-        adata.setFinalScore(new Float(totalAutoScore+totalOverrideScore));
+        if (Float.compare((totalAutoScore+totalOverrideScore),new Float("0").floatValue())<0){
+        	adata.setFinalScore(new Float("0"));
+        }else{
+        	adata.setFinalScore(new Float(totalAutoScore+totalOverrideScore));
+        }
         saveOrUpdateAssessmentGrading(adata);
         if (scoreDifference != 0){
           notifyGradebookByScoringType(adata, pub);
