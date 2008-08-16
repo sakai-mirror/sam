@@ -56,8 +56,8 @@
 
 <h:panelGrid columns="2" rowClasses="shorttext" rendered="#{author.isEditPendingAssessmentFlow}">
 
-     <h:outputLabel value="#{assessmentSettingsMessages.assessment_title}" rendered="#{assessmentSettings.title ne null}" />
-     <h:outputText value="#{assessmentSettings.title}" rendered="#{assessmentSettings.title ne null}" />
+     <h:outputLabel value="#{assessmentSettingsMessages.assessment_title}" rendered="#{assessmentSettings.title ne null}"/>
+     <h:outputText value="#{assessmentSettings.title}" rendered="#{assessmentSettings.title ne null}" escape="false" />
 
      <h:outputLabel value="#{assessmentSettingsMessages.assessment_available_date}" />
      <h:panelGroup>
@@ -126,7 +126,7 @@
 <h:panelGrid columns="2" rowClasses="shorttext" rendered="#{!author.isEditPendingAssessmentFlow}" border="0">
 
      <h:outputLabel value="#{assessmentSettingsMessages.assessment_title}" rendered="#{publishedSettings.title ne null}" />
-     <h:outputText value="#{publishedSettings.title}" rendered="#{publishedSettings.title ne null}" />
+     <h:outputText value="#{publishedSettings.title}" rendered="#{publishedSettings.title ne null}"  escape="false"/>
 
      <h:outputLabel value="#{assessmentSettingsMessages.assessment_available_date}" />
      <h:panelGroup>
@@ -243,7 +243,8 @@ function toggle(){
 		</h:commandButton>
 
        <!-- Cancel button -->
-       <h:commandButton value="#{assessmentSettingsMessages.button_cancel}" type="submit" action="#{author.getOutcome}" rendered="#{author.isEditPendingAssessmentFlow}"/>
+       <h:commandButton value="#{assessmentSettingsMessages.button_cancel}" type="submit" action="#{assessmentSettings.cancelFromPublishing}" rendered="#{author.isEditPendingAssessmentFlow}"/>
+
 	   <h:commandButton value="#{assessmentSettingsMessages.button_cancel}" type="submit" action="editAssessment" rendered="#{!author.isEditPendingAssessmentFlow}">
 		  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
 	   </h:commandButton>
