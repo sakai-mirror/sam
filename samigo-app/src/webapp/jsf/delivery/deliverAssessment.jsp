@@ -247,7 +247,7 @@ function saveTime()
 
   <%-- SUBMIT FOR GRADE --%>
   <h:commandButton id="submitForGrade" type="submit" value="#{deliveryMessages.button_submit_grading}"
-    action="#{delivery.submitForGrade}" styleClass="active" 
+    action="#{delivery.confirmSubmit}" styleClass="active" 
     rendered="#{(delivery.actionString=='takeAssessment' || delivery.actionString=='previewAssessment') 
              && delivery.navigation ne '1' 
              && !delivery.continue}"
@@ -256,7 +256,7 @@ function saveTime()
 
   <%-- SUBMIT FOR GRADE DURING PAU --%>
   <h:commandButton type="submit" value="#{deliveryMessages.button_submit}"
-    action="#{delivery.submitForGrade}"  id="submitForm1" styleClass="active"
+    action="#{delivery.confirmSubmit}"  id="submitForm1" styleClass="active"
     rendered="#{delivery.actionString=='takeAssessmentViaUrl' && !delivery.continue}"
     onclick="pauseTiming='false'; disableSubmit1();" onkeypress="pauseTiming='false'"/>
 
@@ -269,45 +269,41 @@ function saveTime()
               && delivery.navigation ne '1' && delivery.previous}" 
     onclick="disablePrevious()" onkeypress="" />
 
-  <!-- check for submit for grade permission to determine if button can be displayed -->
   <%-- SUBMIT FOR GRADE FOR LINEAR ACCESS --%>
-  <h:panelGroup rendered="#{(authorization!=null && authorization.takeAssessment && authorization.submitAssessmentForGrade) || delivery.actionString=='previewAssessment'}">
-    <h:commandButton type="submit" value="#{deliveryMessages.button_submit_grading}"
-      action="#{delivery.submitForGrade}"  id="submitForm" styleClass="active"
+  <h:commandButton type="submit" value="#{deliveryMessages.button_submit_grading}"
+      action="#{delivery.confirmSubmit}"  id="submitForm" styleClass="active"
       rendered="#{(delivery.actionString=='takeAssessment'
-                   || delivery.actionString=='takeAssessmentViaUrl'
 				   || delivery.actionString=='previewAssessment')
 				   && delivery.navigation eq '1' && !delivery.continue}" 
       disabled="#{delivery.actionString=='previewAssessment'}"
       onclick="pauseTiming='false'; disableSubmit()" onkeypress="pauseTiming='false'"/>
-  </h:panelGroup>
 
   <%-- SAVE AND EXIT --%>
   <h:commandButton type="submit" value="#{deliveryMessages.button_save_for_later}"
     action="#{delivery.saveAndExit}" id="saveAndExit"
     rendered="#{(delivery.actionString=='previewAssessment'  
                  || delivery.actionString=='takeAssessment')
-              && delivery.navigation ne '1'}"  
+              && delivery.navigation ne '1' && !delivery.hasTimeLimit}"  
     onclick="pauseTiming='false'; disableSave();" onkeypress="pauseTiming='false'" 
     disabled="#{delivery.actionString=='previewAssessment'}" />
 
   <%-- SUBMIT FOR GRADE DURING PAU --%>
   <h:commandButton type="submit" value="#{deliveryMessages.button_submit}"
-    action="#{delivery.submitForGrade}"  id="submitForm2" styleClass="active"
+    action="#{delivery.confirmSubmit}"  id="submitForm2" styleClass="active"
     rendered="#{delivery.actionString=='takeAssessmentViaUrl' && delivery.continue}"
     onclick="pauseTiming='false'; disableSubmit2();" onkeypress="pauseTiming='false'"/>
 
   <%-- SAVE AND EXIT DURING PAU WITH ANONYMOUS LOGIN--%>
   <h:commandButton  type="submit" value="#{deliveryMessages.button_quit}"
     action="#{delivery.saveAndExit}" id="quit"
-    rendered="#{(delivery.actionString=='takeAssessmentViaUrl' && delivery.anonymousLogin)}"
+    rendered="#{(delivery.actionString=='takeAssessmentViaUrl' && delivery.anonymousLogin) && !delivery.hasTimeLimit}"
     onclick="pauseTiming='false'; disableQuit()" onkeypress="pauseTiming='false'"  /> 
 
   <%-- SAVE AND EXIT FOR LINEAR ACCESS --%>
   <h:commandButton type="submit" value="#{deliveryMessages.button_save_for_later}"
     action="#{delivery.saveAndExit}" id="saveAndExit2"
     rendered="#{delivery.actionString=='takeAssessment'
-            && delivery.navigation eq '1' && delivery.continue}"
+            && delivery.navigation eq '1' && delivery.continue && !delivery.hasTimeLimit}"
     onclick="disableSave2();" onkeypress=""
     disabled="#{delivery.actionString=='previewAssessment'}"/>
 
