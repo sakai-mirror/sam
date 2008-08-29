@@ -3,18 +3,18 @@
  * $Id: PublishedAssessmentFacadeQueries.java 9273 2006-05-10 22:34:28Z daisyf@stanford.edu $
  ***********************************************************************************
  *
- * Copyright 2004, 2005, 2006, 2007, 2008 Sakai Foundation
+ * Copyright (c) 2004, 2005, 2006, 2007, 2008 Sakai Foundation
  *
  * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *       http://www.osedu.org/licenses/ECL-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  *
  **********************************************************************************/
@@ -1974,8 +1974,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				+ " where a.publishedAssessmentId = p.publishedAssessmentId"
 				+ " and a.forGrade=:forGrade and a.agentId=:agentId"
 				+ " and (az.agentIdString=:siteId or az.agentIdString in (:groupIds)) "
-				+ " and az.functionId=:functionId and az.qualifierId=p.publishedAssessmentId"
-				+ " order by p.publishedAssessmentId DESC, a.submittedDate DESC";
+				+ " and az.functionId=:functionId and az.qualifierId=p.publishedAssessmentId";
 
 			final HibernateCallback hcb_last = new HibernateCallback() {
 				public Object doInHibernate(Session session)
@@ -2615,7 +2614,6 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		 }
 		 return releaseToGroupsAsString;
 	}
-	
 
 	  /**
 	   * added by gopalrc Nov 2007
@@ -2662,5 +2660,17 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				};
 			};
 			return getHibernateTemplate().executeFind(hcb);
+	}
+
+	public Integer getPublishedAssessmentStatus(Long publishedAssessmentId) {
+		String query = "select p.status from PublishedAssessmentData p where p.publishedAssessmentId = ?";
+		List l = getHibernateTemplate().find(query, publishedAssessmentId);
+		if (l.size() > 0) {
+			Integer status = (Integer) l.get(0);
+			return status;
+		} else {
+			// just set to AssessmentBaseIfc.DEAD_STATUS
+			return Integer.valueOf(2);
+		}
 	}
 }
