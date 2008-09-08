@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -96,6 +97,7 @@ private static Log log = LogFactory.getLog(UploadAudioMediaServlet.class);
     String mediaLocation = req.getParameter("media")+"."+suffix;
     log.debug("****media location="+mediaLocation);
     String zip_mediaLocation=null;
+    String response = "empty";
 
     // test for nonemptiness first
     if (mediaLocation != null && !(mediaLocation.trim()).equals(""))
@@ -112,23 +114,27 @@ private static Log log = LogFactory.getLog(UploadAudioMediaServlet.class);
       //zip_mediaLocation = createZipFile(mediaDir.getPath(), mediaLocation);
     }
 
-    res.flushBuffer();
-
     //#2 - record media as question submission
     if (mediaIsValid){
       // note that this delivery bean is empty. this is not the same one created for the
       // user during take assessment.
       try{
         if (zip_mediaLocation != null)
-          submitMediaAsAnswer(req, zip_mediaLocation, saveToDb);
+        response = submitMediaAsAnswer(req, zip_mediaLocation, saveToDb);
         else
-          submitMediaAsAnswer(req, mediaLocation, saveToDb);
+        response = submitMediaAsAnswer(req, mediaLocation, saveToDb);
         log.info("Audio has been saved and submitted as answer to the question. Any old recordings have been removed from the system.");
       }
       catch (Exception ex){
         log.info(ex.getMessage());
       }
     }
+  	res.setContentType("text/plain");
+	res.setContentLength(response.length());
+	PrintWriter out = res.getWriter();
+	out.println(response);
+	out.close();
+	out.flush();
   }
 
   private boolean writeToFile(HttpServletRequest req, String mediaLocation){
@@ -289,7 +295,7 @@ private static Log log = LogFactory.getLog(UploadAudioMediaServlet.class);
     return outputStream;
   }
 
-  private void submitMediaAsAnswer(HttpServletRequest req,
+  private String submitMediaAsAnswer(HttpServletRequest req,
                                    String mediaLocation, String saveToDb)
     throws Exception{
     // read parameters passed in
@@ -297,7 +303,7 @@ private static Log log = LogFactory.getLog(UploadAudioMediaServlet.class);
     String duration  = req.getParameter("lastDuration");
     String agentId  = req.getParameter("agent");
     
-    int attemptsRemaining =0;
+    int attemptsRemaining = Integer.parseInt(req.getParameter("attempts"));
     GradingService gradingService = new GradingService();
     PublishedAssessmentService pubService = new PublishedAssessmentService();
     int assessmentIndex = mediaLocation.indexOf("assessment");
@@ -347,14 +353,13 @@ private static Log log = LogFactory.getLog(UploadAudioMediaServlet.class);
         // attempt set correctly
         if ((item.getTriesAllowed()).intValue() >= 9999)
           attemptsRemaining = 9999;  
-        else
-          attemptsRemaining = (item.getTriesAllowed()).intValue() -1;
       }
       else{
         if ((item.getTriesAllowed()).intValue() >= 9999 )
           attemptsRemaining = 9999;
-        else if (itemGrading.getAttemptsRemaining().intValue() > 0)
-          attemptsRemaining = itemGrading.getAttemptsRemaining().intValue() - 1;
+        else if (itemGrading.getAttemptsRemaining().intValue() > 0);
+        // We're now getting the applet to tell us how many attempts remain
+//          attemptsRemaining = itemGrading.getAttemptsRemaining().intValue() - 1;
         else
           throw new Exception("This page must have been reached by mistake. Our record shows that no more attempt for this question is allowed.");
       }
@@ -363,8 +368,8 @@ private static Log log = LogFactory.getLog(UploadAudioMediaServlet.class);
       // create an itemGrading
       if ((item.getTriesAllowed()).intValue() >= 9999 )
         attemptsRemaining = 9999;
-      else 
-        attemptsRemaining = (item.getTriesAllowed()).intValue() -1;
+      else; 
+//        attemptsRemaining = (item.getTriesAllowed()).intValue() -1;
       itemGrading = new ItemGradingData();
       itemGrading.setAssessmentGradingId(adata.getAssessmentGradingId());
       itemGrading.setPublishedItemId(item.getItemId());
@@ -380,10 +385,10 @@ private static Log log = LogFactory.getLog(UploadAudioMediaServlet.class);
     log.debug("****2. attemptsRemaining="+attemptsRemaining);
     log.debug("****3. itemGradingDataId="+itemGrading.getItemGradingId());
     // 3. save Media and fix up itemGrading
-    saveMedia(attemptsRemaining, mimeType, agentId, mediaLocation, itemGrading, saveToDb, duration);
+    return saveMedia(attemptsRemaining, mimeType, agentId, mediaLocation, itemGrading, saveToDb, duration);
   }
 
-  private void saveMedia(int attemptsRemaining, String mimeType, String agent,
+  private String saveMedia(int attemptsRemaining, String mimeType, String agent,
                          String mediaLocation, ItemGradingData itemGrading,
                         String saveToDb, String duration){
     boolean SAVETODB = false;
@@ -435,6 +440,7 @@ private static Log log = LogFactory.getLog(UploadAudioMediaServlet.class);
     catch(Exception e){
       log.warn(e.getMessage());
     }
+    return mediaId.toString();
   }
 
   private byte[] getMediaStream(String mediaLocation)
