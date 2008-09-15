@@ -77,7 +77,6 @@ function disableAllFeedbackCheck(feedbackType)
   }
   document.forms[0].submit();
 }
-
  
 function showHideReleaseGroups(){
   var showGroups;
@@ -101,6 +100,34 @@ function showHideReleaseGroups(){
   }
 }
 
+function setBlockDivs()
+{  
+   //alert("setBlockDivs()");
+   var divisionNo = ""; 
+   var blockDivs = ""; 
+   blockElements = document.getElementsByTagName("div");
+   //alert("blockElements.length" + blockElements.length);
+   for (i=0 ; i < blockElements.length; i++)
+   {
+      divisionNo = "" + blockElements[i].id;
+	  //alert("divisionNo=" + divisionNo);
+	  //alert("display=" + blockElements[i].style.display);
+      if(divisionNo.indexOf("__hide_division_assessmentSettingsAction") >=0 && blockElements[i].style.display == "block")
+      { 
+         //alert("divisionNo=" + divisionNo);
+         var id = divisionNo.substring(41);
+		 if (blockDivs == "") {
+            blockDivs = id;
+         }
+		 else {
+			 blockDivs = blockDivs + ";" + id; 
+		 }
+		 //alert("blockDivs=" + blockDivs);
+	  }
+   }
+   //document.forms[0].elements['assessmentSettingsAction:blockDivs'].value = "_id224";
+   document.forms[0].elements['assessmentSettingsAction:blockDivs'].value = blockDivs;
+}
 
 </script>
 
@@ -108,6 +135,7 @@ function showHideReleaseGroups(){
 <!-- content... -->
 <h:form id="assessmentSettingsAction">
   <h:inputHidden id="assessmentId" value="#{publishedSettings.assessmentId}"/>
+  <h:inputHidden id="blockDivs" value=""/>
 
   <!-- HEADINGS -->
   <%@ include file="/jsf/author/allHeadings.jsp" %>
@@ -319,6 +347,25 @@ function showHideReleaseGroups(){
     </div></div>
   </samigo:hideDivision>
 
+<!-- *** MARK FOR REVIEW *** -->
+<h:panelGroup>
+  <samigo:hideDivision title="#{assessmentSettingsMessages.mark_for_review}" >
+    <f:verbatim><div class="tier2"></f:verbatim>
+    <h:panelGrid columns="1">
+      <h:panelGroup>
+        <h:selectBooleanCheckbox id="markForReview" value="#{publishedSettings.isMarkForReview}" disabled="true"/>
+        <h:outputLabel for="timed_assmt" value="#{assessmentSettingsMessages.mark_for_review_label}"/>
+		<h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('markForReviewPopUp.faces','MarkForReview','width=300,height=220,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('markForReviewTipText.faces','MarkForReview','width=300,height=220,scrollbars=yes, resizable=yes');" >
+          <h:outputText  value=" #{assessmentSettingsMessages.whats_this_link}"/>
+        </h:outputLink>
+      </h:panelGroup>
+      <h:outputText value="#{assessmentSettingsMessages.mark_for_review_text_1}" />
+	  <h:outputText value="#{assessmentSettingsMessages.mark_for_review_text_2}" />
+    </h:panelGrid>
+	<f:verbatim></div></f:verbatim>
+  </samigo:hideDivision>
+</h:panelGroup>
+
   <!-- *** SUBMISSIONS *** -->
   <samigo:hideDivision id="div7" title="#{assessmentSettingsMessages.t_submissions}" >
 <%--     DEBUGGING:
@@ -435,7 +482,7 @@ function showHideReleaseGroups(){
       <h:panelGrid columns="1" rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable==true}" >
   		<h:selectOneRadio id="feedbackDelivery2" rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable==true}"
              value="#{publishedSettings.feedbackDelivery}"
-           layout="pageDirection" onclick="disableAllFeedbackCheck(this.value);">
+           layout="pageDirection" onclick="setBlockDivs();disableAllFeedbackCheck(this.value);">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.immediate_feedback}"/>
 		  <f:selectItem itemValue="4" itemLabel="#{assessmentSettingsMessages.feedback_on_submission} #{assessmentSettingsMessages.note_of_feedback_on_submission}"/>
           <f:selectItem itemValue="3" itemLabel="#{assessmentSettingsMessages.no_feedback}"/>
@@ -658,6 +705,7 @@ function showHideReleaseGroups(){
 
 <p class="act">
   <!-- Publish button -->
+  <!--
   <h:commandButton id="publish" value="#{assessmentSettingsMessages.button_unique_save_and_publish}" type="submit" styleClass="active" action="saveSettingsAndConfirmPublish" rendered="#{author.isRetractedForEdit}">
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRepublishAssessmentListener" />
     <f:param name="publishedAssessmentId" value="#{assessmentBean.assessmentId}"/>
@@ -666,7 +714,7 @@ function showHideReleaseGroups(){
   <h:commandButton id="publish2" value="#{assessmentSettingsMessages.button_unique_save_and_publish}" type="submit" styleClass="active" action="author" rendered="#{!author.isRetractedForEdit}">
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SavePublishedSettingsListener" />
   </h:commandButton>
-
+  -->
   <!-- Save button -->
   <h:commandButton accesskey="#{assessmentSettingsMessages.a_saveSettings}" type="submit" value="#{assessmentSettingsMessages.button_save_settings}" action="#{publishedSettings.getOutcome}"  styleClass="active" >
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SavePublishedSettingsListener" />
@@ -683,7 +731,9 @@ function showHideReleaseGroups(){
 </h:form>
 <!-- end content -->
 </div>
-        <script language="javascript" style="text/JavaScript">hideUnhideAllDivsExceptOne('none');showHideReleaseGroups();</script>
+
+        <script language="javascript" style="text/JavaScript">retainHideUnhideStatus('none');showHideReleaseGroups();</script>
+
       </body>
     </html>
   </f:view>

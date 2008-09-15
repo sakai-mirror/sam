@@ -103,6 +103,8 @@ sorting actions for table:
            type="org.sakaiproject.tool.assessment.ui.listener.delivery.BeginDeliveryActionListener" />
         <h:outputText value="#{takeable.assessmentTitle}" escape="false"/>
       </h:commandLink>
+	  <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:outputText value="#{selectIndexMessages.need_resubmit}" rendered="#{takeable.needResubmit}" styleClass="validate" />		
     </h:column>
     <h:column>
       <f:facet name="header">
@@ -207,7 +209,7 @@ sorting actions for table:
 
     <h:outputText value="#{reviewable.assessmentTitle}" rendered="#{reviewable.feedback != 'true'}" escape="false"/>
 
-	<h:commandLink title="#{selectIndexMessages.t_reviewAssessment}" action="takeAssessment" rendered="#{reviewable.feedback == 'true'}">
+	<h:commandLink title="#{selectIndexMessages.t_reviewAssessment}" action="#{delivery.getOutcome}" rendered="#{reviewable.feedback == 'true'}">
         <f:param name="publishedId" value="#{reviewable.assessmentId}" />
         <f:param name="nofeedback" value="false"/>
         <f:param name="actionString" value="reviewAssessment"/>

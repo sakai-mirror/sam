@@ -604,6 +604,10 @@
       <from-outcome>assessmentNotAvailable</from-outcome>
       <to-view-id>/jsf/delivery/assessmentNotAvailable.jsp</to-view-id>
     </navigation-case>
+    <navigation-case>
+      <from-outcome>saveForLaterWarning</from-outcome>
+      <to-view-id>/jsf/delivery/saveForLaterWarning.jsp</to-view-id>
+    </navigation-case>
   </navigation-rule>
 
   <!-- INDEX -->
@@ -670,6 +674,10 @@
     <navigation-case>
       <from-outcome>reviewAssessment</from-outcome>
       <to-view-id>/jsf/delivery/reviewAssessment.jsp</to-view-id>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>reviewAssessmentError</from-outcome>
+      <to-view-id>/jsf/delivery/reviewAssessmentError.jsp</to-view-id>
     </navigation-case>
     <navigation-case>
       <from-outcome>anonymousThankYou</from-outcome>
@@ -745,6 +753,10 @@
     <navigation-case>
       <from-outcome>previewItem</from-outcome>
       <to-view-id>/jsf/author/item/preview/previewItem.jsp</to-view-id>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>editPublishedAssessmentError</from-outcome>
+      <to-view-id>/jsf/author/editPublishedAssessmentError.jsp</to-view-id>
     </navigation-case>
     <navigation-case>
       <from-outcome>confirmEditPublishedAssessment</from-outcome>
