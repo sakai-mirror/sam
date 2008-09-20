@@ -72,12 +72,13 @@ document.links[newindex].onclick();
 <h:form id="assesssmentForm">
 
 <h:messages styleClass="validation"/>
-<div class="validation">
-  <h:outputText value="#{authorMessages.edit_published_assessment_warn_1}" rendered="#{!author.isEditPendingAssessmentFlow}"/>
-  <br/>
-  <h:outputText value="#{authorMessages.edit_published_assessment_warn_21}" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}"/>
-  <h:outputText value="#{authorMessages.edit_published_assessment_warn_22}" rendered="#{!author.isEditPendingAssessmentFlow && !assessmentBean.hasGradingData}"/>
-</div>
+  <h:panelGroup rendered="#{!author.isEditPendingAssessmentFlow}" styleClass="validation">
+    <h:panelGrid  columns="1">
+	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_1}" />
+	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_21}" rendered="#{assessmentBean.hasGradingData}"/>
+	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_22}" rendered="#{!assessmentBean.hasGradingData}"/>
+    </h:panelGrid>
+  </h:panelGroup>
 
   <h:inputHidden id="assessmentId" value="#{assessmentBean.assessmentId}"/>
   <h:inputHidden id="showCompleteAssessment" value="#{author.showCompleteAssessment}"/>
@@ -156,16 +157,22 @@ document.links[newindex].onclick();
 
 <h:panelGroup>
   <h:commandButton id="republish" value="#{authorMessages.button_republish}" type="submit" styleClass="active" rendered="#{!author.isEditPendingAssessmentFlow}"
-      action="saveSettingsAndConfirmPublish" >
+      action="#{author.getOutcome}" >
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRepublishAssessmentListener" />
   </h:commandButton>
 
   <h:commandButton id="republishRegrade" value="#{authorMessages.button_republish_and_regrade}" type="submit" styleClass="active" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}"
-      action="saveSettingsAndConfirmPublish" >
+      action="#{author.getOutcome}" >
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRepublishAssessmentListener" />
   </h:commandButton>
 
 </h:panelGroup>
+</h:panelGrid>
+
+<h:panelGrid columns="1" width="100%" columnClasses="navList" border="0" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}">
+  <h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('regradeRepublishPopUp.faces','RegradeRepublish','width=400,height=400,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('regradeRepublishPopUp.faces','RegradeRepublishPopUp','width=400,height=400,scrollbars=yes, resizable=yes');" >
+    <h:outputText  value=" #{assessmentSettingsMessages.whats_this_link}"/>
+  </h:outputLink>
 </h:panelGrid>
 
 <h:commandLink id="hiddenlink" action="#{itemauthor.doit}" value="">
@@ -274,7 +281,8 @@ document.links[newindex].onclick();
 
 	<h:panelGroup >
      <h:outputText rendered="#{question.itemData.typeId== 1}" value=" #{authorMessages.multiple_choice_sin}"/>
-     <h:outputText rendered="#{question.itemData.typeId== 2}" value=" #{authorMessages.multiple_choice_mul}"/>
+     <h:outputText rendered="#{question.itemData.typeId== 2}" value=" #{authorMessages.multiple_correct_ms}"/>
+     <h:outputText rendered="#{question.itemData.typeId== 12}" value=" #{authorMessages.multiple_correct_ss}"/>
      <h:outputText rendered="#{question.itemData.typeId== 3}" value=" #{authorMessages.multiple_choice_surv}"/>
      <h:outputText rendered="#{question.itemData.typeId== 4}" value=" #{authorMessages.true_false}"/>
      <h:outputText rendered="#{question.itemData.typeId== 5}" value=" #{authorMessages.short_answer_essay}"/>
@@ -353,6 +361,10 @@ document.links[newindex].onclick();
           <h:panelGroup rendered="#{question.itemData.typeId == 1}">
             <%@ include file="/jsf/author/preview_item/MultipleChoiceSingleCorrect.jsp" %>
           </h:panelGroup>
+
+		  <h:panelGroup rendered="#{question.itemData.typeId == 12}">
+            <%@ include file="/jsf/author/preview_item/MultipleChoiceMultipleCorrect.jsp" %>
+          </h:panelGroup>
 <f:verbatim> </div></f:verbatim>
 <h:panelGroup rendered="#{author.isEditPendingAssessmentFlow}">
     <f:verbatim>    <div class="longtext"> </f:verbatim> <h:outputLabel for="changeQType" value="#{authorMessages.ins_new_q} "/>
@@ -385,23 +397,31 @@ document.links[newindex].onclick();
 <p class="navList">
 <h:panelGroup>
   <h:commandButton id="republish1" value="#{authorMessages.button_republish}" type="submit" styleClass="active" rendered="#{!author.isEditPendingAssessmentFlow}"
-      action="saveSettingsAndConfirmPublish" >
+      action="#{author.getOutcome}">
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRepublishAssessmentListener" />
   </h:commandButton>
 
   <h:commandButton id="republishRegrade1" value="#{authorMessages.button_republish_and_regrade}" type="submit" styleClass="active" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}"
-      action="saveSettingsAndConfirmPublish" >
+      action="#{author.getOutcome}">
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRepublishAssessmentListener" />
   </h:commandButton>
 </h:panelGroup>
 </p>
 
-<div class="validation">
-  <h:outputText value="#{authorMessages.edit_published_assessment_warn_1}" rendered="#{!author.isEditPendingAssessmentFlow}"/>
-  <br/>
-  <h:outputText value="#{authorMessages.edit_published_assessment_warn_21}" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}"/>
-  <h:outputText value="#{authorMessages.edit_published_assessment_warn_22}" rendered="#{!author.isEditPendingAssessmentFlow && !assessmentBean.hasGradingData}"/>
-</div>
+<h:panelGrid columns="1" width="100%" columnClasses="navList" border="0" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}">
+  <h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('regradeRepublishPopUp.faces','RegradeRepublish','width=400,height=400,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('regradeRepublishPopUp.faces','RegradeRepublishPopUp','width=400,height=400,scrollbars=yes, resizable=yes');" >
+    <h:outputText  value=" #{assessmentSettingsMessages.whats_this_link}"/>
+  </h:outputLink>
+</h:panelGrid>
+
+
+  <h:panelGroup rendered="#{!author.isEditPendingAssessmentFlow}" styleClass="validation">
+    <h:panelGrid  columns="1">
+	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_1}" />
+	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_21}" rendered="#{assessmentBean.hasGradingData}"/>
+	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_22}" rendered="#{!assessmentBean.hasGradingData}"/>
+    </h:panelGrid>
+  </h:panelGroup>
 
 </h:form>
 <!-- end content -->

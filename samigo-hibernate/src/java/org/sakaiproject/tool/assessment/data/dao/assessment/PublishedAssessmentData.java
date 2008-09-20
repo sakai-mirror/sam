@@ -111,6 +111,48 @@ public class PublishedAssessmentData
     this.dueDate = dueDate;
     this.retractDate = retractDate;
   }
+  
+  /**
+   * "Convenient Constructor"
+   * This is a cheap object created for holding just the Id, title &
+   * delivery dates. This object is merely used for display. It is not used
+   * for persistence.
+   */
+  public PublishedAssessmentData(Long id, String title, String releaseTo,
+                                 Date startDate, Date dueDate, Date retractDate, Date lastModifiedDate, String lastModifiedBy) {
+    this.assessmentBaseId = id;
+    this.title = title;
+    this.releaseTo = releaseTo;
+    this.startDate = startDate;
+    this.dueDate = dueDate;
+    this.retractDate = retractDate;
+    this.lastModifiedDate = lastModifiedDate;
+    this.lastModifiedBy = lastModifiedBy;
+  }
+  
+  public PublishedAssessmentData(Long id, String title, String releaseTo,
+          Date startDate, Date dueDate, Date retractDate, Integer status) {
+	  this.assessmentBaseId = id;
+	  this.title = title;
+	  this.releaseTo = releaseTo;
+	  this.startDate = startDate;
+	  this.dueDate = dueDate;
+	  this.retractDate = retractDate;
+	  this.status = status;
+  }
+  
+  public PublishedAssessmentData(Long id, String title, String releaseTo,
+          Date startDate, Date dueDate, Date retractDate, Integer status, Date lastModifiedDate, String lastModifiedBy) {
+	  this.assessmentBaseId = id;
+	  this.title = title;
+	  this.releaseTo = releaseTo;
+	  this.startDate = startDate;
+	  this.dueDate = dueDate;
+	  this.retractDate = retractDate;
+	  this.status = status;
+	  this.lastModifiedDate = lastModifiedDate;
+	  this.lastModifiedBy = lastModifiedBy;
+  }
 
   /**
    * Someone forgot to check this in, so I'm adding it.
@@ -152,7 +194,7 @@ public class PublishedAssessmentData
           Boolean unlimitedSubmissions,
           Integer submissionsAllowed) {
 	  this(id, title, releaseTo, startDate, dueDate, retractDate, feedbackDate,
-			  feedbackDelivery, feedbackAuthoring, lateHandling, unlimitedSubmissions, submissionsAllowed, null, null);
+			  feedbackDelivery, feedbackAuthoring, lateHandling, unlimitedSubmissions, submissionsAllowed, null, null, null);
   }
   
   public PublishedAssessmentData(Long id, String title, String releaseTo,
@@ -162,15 +204,24 @@ public class PublishedAssessmentData
           Boolean unlimitedSubmissions,
           Integer submissionsAllowed, Integer scoringType) {
 	  this(id, title, releaseTo, startDate, dueDate, retractDate, feedbackDate,
-			  feedbackDelivery, feedbackAuthoring, lateHandling, unlimitedSubmissions, submissionsAllowed, scoringType, null);
+			  feedbackDelivery, feedbackAuthoring, lateHandling, unlimitedSubmissions, submissionsAllowed, scoringType, null, null);
   }
 
+  public PublishedAssessmentData(Long id, String title, String releaseTo,
+          Date startDate, Date dueDate, Date retractDate,
+          Date feedbackDate, Integer feedbackDelivery,  Integer feedbackAuthoring,
+          Integer lateHandling,
+          Boolean unlimitedSubmissions,
+          Integer submissionsAllowed, Integer scoringType, Integer status) {
+	  this(id, title, releaseTo, startDate, dueDate, retractDate, feedbackDate,
+			  feedbackDelivery, feedbackAuthoring, lateHandling, unlimitedSubmissions, submissionsAllowed, scoringType, status, null);
+  }
   public PublishedAssessmentData(Long id, String title, String releaseTo,
                                  Date startDate, Date dueDate, Date retractDate,
                                  Date feedbackDate, Integer feedbackDelivery,  Integer feedbackAuthoring,
                                  Integer lateHandling,
                                  Boolean unlimitedSubmissions,
-                                 Integer submissionsAllowed, Integer scoringType, Integer status) {
+                                 Integer submissionsAllowed, Integer scoringType, Integer status, Date lastModifiedDate) {
     this.assessmentBaseId = id;
     this.title = title;
     this.releaseTo = releaseTo;
@@ -191,6 +242,7 @@ public class PublishedAssessmentData
       this.submissionsAllowed = submissionsAllowed;
     this.scoringType = scoringType;
     this.status = status;
+    this.lastModifiedDate = lastModifiedDate;
   }
 
   public PublishedAssessmentData(Long id, int submissionSize) {

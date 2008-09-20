@@ -51,6 +51,31 @@
 <!-- HEADING -->
 <%@ include file="/jsf/author/item/itemHeadings.jsp" %>
 <h:form id="itemForm">
+
+<p class="act">
+  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getOutcome}" styleClass="active">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
+  </h:commandButton>
+  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getPoolOutcome}" styleClass="active">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
+  </h:commandButton>
+
+
+  <h:commandButton accesskey="#{authorMessages.a_cancel}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_cancel}" action="editAssessment" immediate="true">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
+  </h:commandButton>
+
+ <h:commandButton rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_cancel}" action="editPool" immediate="true">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
+ </h:commandButton>
+</p>
+
 <!-- QUESTION PROPERTIES -->
   <!-- 1 POINTS -->
   <div class="tier2">
@@ -112,7 +137,7 @@
    </samigo:wysiwyg>
 </h:panelGrid>
 <br/>
- <h:panelGroup rendered="#{assessmentSettings.feedbackAuthoring ne '2'}">
+ <h:panelGroup rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '2') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '2'))}">
   <h:outputText value="#{authorMessages.feedback_optional}" />
  <h:panelGrid>
    <!-- WYSIWYG  -->
@@ -121,6 +146,7 @@
    </samigo:wysiwyg>
 </h:panelGrid>
 </h:panelGroup>
+
   </div>
 
 

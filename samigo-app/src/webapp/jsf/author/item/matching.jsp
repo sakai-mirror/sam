@@ -65,6 +65,29 @@
 <!-- HEADING -->
 <%@ include file="/jsf/author/item/itemHeadings.jsp" %>
 <h:form id="itemForm">
+<p class="act">
+  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getOutcome}" styleClass="active">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
+  </h:commandButton>
+  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getPoolOutcome}" styleClass="active">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
+  </h:commandButton>
+
+  <h:commandButton accesskey="#{authorMessages.a_cancel}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_cancel}" action="editAssessment" immediate="true">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
+  </h:commandButton>
+
+ <h:commandButton rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_cancel}" action="editPool" immediate="true">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
+ </h:commandButton>
+</p>
+
   <!-- QUESTION PROPERTIES -->
   <!-- this is for creating multiple choice questions -->
   <%-- kludge: we add in 1 useless textarea, the 1st does not seem to work --%>
@@ -177,23 +200,24 @@
 <div class="tier2">
   
 <!-- WYSIWYG -->
-<h:panelGrid rendered="#{assessmentSettings.feedbackAuthoring ne '1'}">
+<h:panelGrid rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}">
   <h:outputText value="#{authorMessages.correct_match_feedback_opt}"/>
   <f:verbatim><br/></f:verbatim>
    <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.currentMatchPair.corrMatchFeedback}" hasToggle="yes">
      <f:validateLength maximum="4000"/>
    </samigo:wysiwyg>
    </h:panelGrid>
+
   <f:verbatim><br/></f:verbatim>
 
   <!-- WYSIWYG -->
-  <h:panelGrid rendered="#{assessmentSettings.feedbackAuthoring ne '1'}">
+  <h:panelGrid rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}">
    <h:outputText value="#{authorMessages.incorrect_match_feedback_opt}"/>
    <f:verbatim><br/></f:verbatim>
    <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.currentMatchPair.incorrMatchFeedback}" hasToggle="yes">
      <f:validateLength maximum="4000"/>
-   </samigo:wysiwyg>
-</h:panelGrid>
+  </samigo:wysiwyg>
+  </h:panelGrid>
 
 <f:verbatim><br/></f:verbatim>
   </div>
@@ -258,27 +282,27 @@
  <!-- 8 FEEDBACK -->
   <f:verbatim></f:verbatim>
 <f:verbatim><div class="longtext"></f:verbatim>
-  <h:outputLabel value="#{authorMessages.correct_incorrect_an}" rendered="#{assessmentSettings.feedbackAuthoring ne '2'}"/>
+  <h:outputLabel value="#{authorMessages.correct_incorrect_an}" rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '2') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '2'))}"/>
 <f:verbatim><br/></br/></div><div class="tier2"></f:verbatim>
 
-
- <h:panelGrid rendered="#{assessmentSettings.feedbackAuthoring ne '2'}">
+<h:panelGrid rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '2') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '2'))}">
   <h:outputText value="#{authorMessages.correct_answer_opti}" />
   <f:verbatim><br/></f:verbatim>
-
   <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.corrFeedback}" hasToggle="yes" >
      <f:validateLength maximum="4000"/>
    </samigo:wysiwyg>
  </h:panelGrid>
+
 <f:verbatim><br/></f:verbatim>
 
- <h:panelGrid rendered="#{assessmentSettings.feedbackAuthoring ne '2'}">
+ <h:panelGrid rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '2') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '2'))}">
   <h:outputText value="#{authorMessages.incorrect_answer_op}"/>
   <f:verbatim><br/></f:verbatim>
    <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.incorrFeedback}" hasToggle="yes" >
      <f:validateLength maximum="4000"/>
    </samigo:wysiwyg>
  </h:panelGrid>
+
 <f:verbatim><br/></div></f:verbatim>
 
 <!-- METADATA -->

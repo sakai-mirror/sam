@@ -147,13 +147,27 @@
       <!-- AuthorBean.editAssessmentSettings() prepare the edit page -->
       <!-- action=editAssessmentSettings if pass authz -->
       <span class="itemAction">
-      <h:commandLink title="#{authorFrontDoorMessages.t_editSettings}" id="editAssessmentSettings_author" immediate="true" action="#{author.getOutcome}"
-         rendered="#{authorization.editAnyAssessment or authorization.editOwnAssessment}">
-        <h:outputText id="linkSettings" value="#{authorFrontDoorMessages.link_settings}"/>
+
+      <h:commandLink title="#{authorFrontDoorMessages.t_copyAssessment}" id="copyAssessment" immediate="true" 
+        rendered="#{authorization.deleteAnyAssessment or authorization.deleteOwnAssessment}"
+        action="confirmCopyAssessment">
+        <h:outputText id="linkCopy" value="#{authorFrontDoorMessages.link_copy}"/>
         <f:param name="assessmentId" value="#{coreAssessment.assessmentBaseId}"/>
-        <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.AuthorSettingsListener" />
+        <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmCopyAssessmentListener" />
       </h:commandLink>
-        <h:outputText value=" #{authorFrontDoorMessages.separator} " 
+
+	  <h:outputText value=" #{authorFrontDoorMessages.separator} " 
+          rendered="#{authorization.editAnyAssessment or authorization.editOwnAssessment}"/>
+
+      <h:commandLink title="#{authorFrontDoorMessages.t_exportAssessment}" id="exportAssessment" immediate="true" 
+        rendered="#{authorization.deleteAnyAssessment or authorization.deleteOwnAssessment}"
+        action="chooseExportType">
+        <h:outputText id="linkExport" value="#{authorFrontDoorMessages.link_export}"/>
+        <f:param name="assessmentId" value="#{coreAssessment.assessmentBaseId}"/>
+        <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ChooseExportTypeListener" />
+      </h:commandLink>
+      
+	  <h:outputText value=" #{authorFrontDoorMessages.separator} " 
           rendered="#{authorization.editAnyAssessment or authorization.editOwnAssessment}"/>
 
       <!-- action=confirmRemoveAssessment if pass authz -->
@@ -164,48 +178,29 @@
         <f:param name="assessmentId" value="#{coreAssessment.assessmentBaseId}"/>
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRemoveAssessmentListener" />
       </h:commandLink>
-        <h:outputText value=" #{authorFrontDoorMessages.separator} " 
+        
+	  <h:outputText value=" #{authorFrontDoorMessages.separator} " 
           rendered="#{authorization.deleteAnyAssessment or authorization.deleteOwnAssessment}" />
 
-      <h:commandLink title="#{authorFrontDoorMessages.t_exportAssessment}" id="exportAssessment" immediate="true" 
-        rendered="#{authorization.deleteAnyAssessment or authorization.deleteOwnAssessment}"
-        action="chooseExportType">
-        <h:outputText id="linkExport" value="#{authorFrontDoorMessages.link_export}"/>
+	  <h:commandLink title="#{authorFrontDoorMessages.t_editSettings}" id="editAssessmentSettings_author" immediate="true" action="#{author.getOutcome}"
+         rendered="#{authorization.editAnyAssessment or authorization.editOwnAssessment}">
+        <h:outputText id="linkSettings" value="#{authorFrontDoorMessages.link_settings}"/>
         <f:param name="assessmentId" value="#{coreAssessment.assessmentBaseId}"/>
-        <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ChooseExportTypeListener" />
+        <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.AuthorSettingsListener" />
       </h:commandLink>
 
 </span>
     </h:column>
     <h:column>
       <f:facet name="header">
-       <h:panelGroup>
-        <h:commandLink title="#{authorFrontDoorMessages.t_sortLastModified}" id="sortCoreByLastModifiedDateActionA" immediate="true" action="sort"  rendered="#{author.coreAssessmentOrderBy!='lastModifiedDate'}">
-          <h:outputText value="#{authorFrontDoorMessages.header_last_modified_date}" styleClass="currentSort"/>
-          <f:param name="coreSortType" value="lastModifiedDate"/>
-          <f:param name="coreAscending" value="true"/>
-          <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SortCoreAssessmentListener" />
-        </h:commandLink>
- <h:commandLink title="#{authorFrontDoorMessages.t_sortLastModified}" immediate="true" action="sort" rendered="#{author.coreAssessmentOrderBy=='lastModifiedDate' && author.coreAscending }">
-       <h:outputText  value="#{authorFrontDoorMessages.header_last_modified_date} " styleClass="currentSort" />
-         
-           <f:param name="coreAscending" value="false" />
-           <f:actionListener  type="org.sakaiproject.tool.assessment.ui.listener.author.SortCoreAssessmentListener" />
-             <h:graphicImage alt="#{authorFrontDoorMessages.alt_sortLastModifiedDescending}" rendered="#{author.coreAscending}" url="/images/sortascending.gif"/>
-          </h:commandLink>
-          <h:commandLink  title="#{authorFrontDoorMessages.t_sortLastModified}" immediate="true" action="sort" rendered="#{author.coreAssessmentOrderBy=='lastModifiedDate'&& !author.coreAscending }">
-              <h:outputText  value="#{authorFrontDoorMessages.header_last_modified_date} " styleClass="currentSort" />
-           <f:param name="coreAscending" value="true" />
-           <f:actionListener  type="org.sakaiproject.tool.assessment.ui.listener.author.SortCoreAssessmentListener" />
-           <h:graphicImage alt="#{authorFrontDoorMessages.alt_sortLastModifiedAscending}" rendered="#{!author.coreAscending}" url="/images/sortdescending.gif"/>
-          </h:commandLink>
-         </h:panelGroup>
-      </f:facet>
-      <!--h:panelGrid columns="4"-->
-        <h:outputText id="lastModifiedDate" value="#{coreAssessment.lastModifiedDate}">
-         <f:convertDateTime pattern="#{generalMessages.output_date_picker}"/>
-        </h:outputText>
-      <!--/h:panelGrid-->
+        <h:outputText value="#{authorFrontDoorMessages.header_last_modified}"/>
+	  </f:facet>
+  	  <h:outputText value="#{coreAssessment.lastModifiedBy}" />
+      <h:outputText escape="false" value="<br />"/>
+      <h:outputText value="#{coreAssessment.lastModifiedDate}">
+         <f:convertDateTime pattern="#{generalMessages.output_date_no_sec}"/>
+      </h:outputText>
+      
     </h:column>
   </h:dataTable>
 </div>
@@ -398,6 +393,19 @@
           <f:convertDateTime pattern="#{generalMessages.output_date_picker}"/>
       </h:outputText>
     </h:column>
+
+	<h:column>
+      <f:facet name="header">
+        <h:outputText value="#{authorFrontDoorMessages.header_last_modified}"/>
+	  </f:facet>
+
+  	  <h:outputText value="#{publishedAssessment.lastModifiedBy}" />
+      <h:outputText escape="false" value="<br />"/>
+      <h:outputText value="#{publishedAssessment.lastModifiedDate}">
+         <f:convertDateTime pattern="#{generalMessages.output_date_no_sec}"/>
+      </h:outputText>
+    </h:column>
+
   </h:dataTable>
 
   <!--inactive-->
@@ -451,6 +459,8 @@
       </h:commandLink>
       <h:outputText id="inactivePublishedAssessmentTitle2" value="#{inactivePublishedAssessment.title}" escape="false"
         rendered="#{(!authorization.editAnyAssessment and !authorization.editOwnAssessment) or (author.editPubAssessmentRestricted and inactivePublishedAssessment.hasAssessmentGradingData)}" />
+     
+	  <h:outputText value="#{authorFrontDoorMessages.asterisk_2}" rendered="#{inactivePublishedAssessment.status == 3}" styleClass="validate"/>
       <h:outputText escape="false" rendered="#{authorization.adminPublishedAssessment}" value="<br />"/>
 
         <span class="itemAction"> 
@@ -574,9 +584,25 @@
       <h:outputText value="#{inactivePublishedAssessment.dueDate}" >
         <f:convertDateTime pattern="#{generalMessages.output_date_picker}"/>
         </h:outputText>
-     
+    </h:column>
+
+	<h:column>
+      <f:facet name="header">
+        <h:outputText value="#{authorFrontDoorMessages.header_last_modified}"/>
+	  </f:facet>
+
+  	  <h:outputText value="#{inactivePublishedAssessment.lastModifiedBy}" />
+      <h:outputText escape="false" value="<br />"/>
+      <h:outputText value="#{inactivePublishedAssessment.lastModifiedDate}">
+         <f:convertDateTime pattern="#{generalMessages.output_date_no_sec}"/>
+      </h:outputText>
     </h:column>
   </h:dataTable>
+
+  <h:panelGrid columns="1">
+    <h:outputText value="#{authorFrontDoorMessages.asterisk_2} #{authorFrontDoorMessages.retracted_for_edit}" rendered="#{author.isAnyAssessmentRetractForEdit == true}" styleClass="validate"/>
+  </h:panelGrid>
+
 </div>
 </div>
 

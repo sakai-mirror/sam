@@ -45,6 +45,30 @@
 <!-- HEADING -->
 <%@ include file="/jsf/author/item/itemHeadings.jsp" %>
 <h:form id="itemForm">
+
+<p class="act">
+  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getOutcome}" styleClass="active">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
+  </h:commandButton>
+  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getPoolOutcome}" styleClass="active">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
+  </h:commandButton>
+
+  <h:commandButton accesskey="#{authorMessages.a_cancel}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_cancel}" action="editAssessment" immediate="true">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
+  </h:commandButton>
+
+ <h:commandButton rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_cancel}" action="editPool" immediate="true">
+        <f:actionListener
+           type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
+ </h:commandButton>
+</p>
+
   <!-- QUESTION PROPERTIES -->
   <!-- this is for creating multiple choice SURVEY questions only -->
   <!-- text for answers are predetermined(in properties file), do not allow users to change -->
@@ -118,20 +142,19 @@
   </h:panelGrid>
 
  <!-- FEEDBACK -->
- <h:panelGroup rendered="#{assessmentSettings.feedbackAuthoring ne '2'}">
+ <h:panelGroup rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '2') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '2'))}">
  <f:verbatim><div class="longtext"></f:verbatim>
   <h:outputLabel value="#{authorMessages.feedback_optional}<br />" />
 <f:verbatim><div class="tier2"></f:verbatim>
   <!-- WYSIWYG -->
-
   <h:panelGrid>
    <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.generalFeedback}" hasToggle="yes">
      <f:validateLength maximum="4000"/>
    </samigo:wysiwyg>
-
   </h:panelGrid>
  <f:verbatim> </div></div></f:verbatim>
 </h:panelGroup>
+
 <!-- METADATA -->
 <h:panelGroup rendered="#{itemauthor.showMetadata == 'true'}" styleClass="longtext">
 <f:verbatim></f:verbatim>

@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.dao.grading.StudentGradingSummaryData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentFeedbackIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentGradingFacade;
@@ -104,6 +105,7 @@ public class SelectActionListener
         "select");
 
     select.setHasHighestMultipleSubmission(false);  // reset property
+    select.setHasAnyAssessmentBeenModified(false);
     
     // look for some sort information passed as parameters
     processSortInfo(select);
@@ -254,6 +256,7 @@ public class SelectActionListener
 
         delivery.setTimeElapse(getTimeElapsed(g.getTimeElapsed()));
         delivery.setSubmissionDate(g.getSubmittedDate());
+        delivery.setHasAssessmentBeenModified(getHasAssessmentBeenModified(select, g, publishedAssessmentHash));
 	/*
         if (g.getSubmittedDate() != null && g.getAttemptDate() != null) {
           long time = g.getSubmittedDate().getTime() -
@@ -273,9 +276,12 @@ public class SelectActionListener
 	*/
 
         delivery.setSubmitted(true); // records are all submitted for grade
+        PublishedAssessmentFacade p = (PublishedAssessmentFacade)publishedAssessmentHash.get(g.getPublishedAssessmentId());
         // check is feedback is available
-        String hasFeedback = hasFeedback(g, publishedAssessmentHash);
+        String hasFeedback = hasFeedback(p);
         delivery.setFeedback(hasFeedback);
+        boolean isAssessmentRetractForEdit = isAssessmentRetractForEdit(p);
+        delivery.setIsAssessmentRetractForEdit(isAssessmentRetractForEdit);
         if (containRandomPartAssessmentIds.contains(g.getPublishedAssessmentId())) {
         	delivery.setHasRandomDrawPart(true);
         }
@@ -546,12 +552,10 @@ public class SelectActionListener
    * these assessment, they still should be able to access it.The list returns
    * contains AssessmentGradingData with the PublishedAssessment Id and title.
    */
-  private String hasFeedback(AssessmentGradingFacade a, HashMap publishedAssessmentHash){
+  private String hasFeedback(PublishedAssessmentFacade p){
     String hasFeedback = "false";
     Date currentDate = new Date();
-    PublishedAssessmentFacade p = (PublishedAssessmentFacade)publishedAssessmentHash.
-        get(a.getPublishedAssessmentId());
-    //log.info("****LOOG PublishedAssessmentFacade = "+a.getPublishedAssessmentId());
+    
     if (p==null) {// published assessment may have been deleted
       //log.info("*** pub has been deleted ="+a.getPublishedAssessmentId());
       return hasFeedback;
@@ -566,7 +570,18 @@ public class SelectActionListener
     return hasFeedback;
   }
 
-
+  private boolean isAssessmentRetractForEdit(PublishedAssessmentFacade p){
+	  if (p == null) {// published assessment may have been deleted
+	      //log.info("*** pub has been deleted ="+a.getPublishedAssessmentId());
+	      return false;
+	    }
+	  
+	  if (AssessmentIfc.RETRACT_FOR_EDIT_STATUS.equals(p.getStatus())) {
+		  return true;
+	  }
+	  return false;
+  }
+  
   private String hasStats(AssessmentGradingFacade a, HashMap feedbackHash){
     String hasStats = "false";
 
@@ -634,6 +649,21 @@ public class SelectActionListener
       return p.getFeedbackDelivery().toString();
     else
       return null;
+  }
+  
+  private boolean getHasAssessmentBeenModified(SelectAssessmentBean select, AssessmentGradingFacade g, HashMap publishedAssessmentHash){
+	    PublishedAssessmentFacade p = (PublishedAssessmentFacade)publishedAssessmentHash.
+	        get(g.getPublishedAssessmentId());
+	    if (p != null) {
+	    	if (!Integer.valueOf(AssessmentIfc.RETRACT_FOR_EDIT_STATUS).equals(p.getStatus()) && p.getLastModifiedDate().after(g.getSubmittedDate())) {
+	    		log.debug("AssessmentGradingId = " + g.getAssessmentGradingId());
+	    		log.debug("LastModifiedDate = " + p.getLastModifiedDate());
+	    		log.debug("SubmittedDate = " + g.getSubmittedDate());
+	    		select.setHasAnyAssessmentBeenModified(true);
+	    		return true;
+	    	}
+	    }
+	    return false;
   }
 
   private String getTimeElapsed(Integer s){

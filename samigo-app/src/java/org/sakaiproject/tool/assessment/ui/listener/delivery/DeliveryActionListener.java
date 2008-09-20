@@ -46,6 +46,7 @@ import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentFeedbackIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
@@ -108,25 +109,31 @@ public class DeliveryActionListener
       log.debug("**** MacNetscape="+person.getIsMacNetscapeBrowser());
       // 1. get managed bean
       DeliveryBean delivery = (DeliveryBean) ContextUtil.lookupBean("delivery");
-      //log.debug("***DeliveryBean in deliveryListener = "+delivery);
-      // a. set publishedId, note that id can be changed by isPreviewingMode()
+      
+      
+      // set publishedId, note that id can be changed by isPreviewingMode()
       String id = getPublishedAssessmentId(delivery);
       String agent = getAgentString();
 
-      // b. Clear elapsed time, set not timed out
-      clearElapsedTime(delivery);
-
-      // 3. get assessment from deliveryBean if id matches. otherwise, this is the 1st time
+      // 2. get assessment from deliveryBean if id matches. otherwise, this is the 1st time
       // that DeliveryActionListener is called, so pull it from DB
       PublishedAssessmentFacade publishedAssessment = getPublishedAssessment(delivery, id);
-      // e. set show student score
+      int action = delivery.getActionMode();
+      if (DeliveryBean.REVIEW_ASSESSMENT == action && AssessmentIfc.RETRACT_FOR_EDIT_STATUS.equals(publishedAssessment.getStatus())) {
+      	// Bug 1547: If this is during review and the assessment is retracted for edit now, 
+    	// there is no action needed (the outcome is set in BeginDeliveryActionListener).
+      	return;
+      }
+      // Clear elapsed time, set not timed out
+      clearElapsedTime(delivery);
+
+      // set show student score
       setShowStudentScore(delivery, publishedAssessment);
       setShowStudentQuestionScore(delivery, publishedAssessment);
       setDeliverySettings(delivery, publishedAssessment);
       
-      int action = delivery.getActionMode();
       
-      // 2. there 3 types of navigation: by question (question will be displayed one at a time), 
+      // 3. there 3 types of navigation: by question (question will be displayed one at a time), 
       // by part (questions in a part will be displayed together) or by assessment (i.e. 
       // all questions will be displayed on one page). When navigating from TOC, a part number
       // signal that the navigation is either by question or by part. We then must set the 
@@ -1000,7 +1007,7 @@ public class DeliveryActionListener
     	
     	//calculate total # of correct answers. 
     	int correctAnswers = 0;
-    	if ((item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
+    	if ((item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )|| (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
     		Iterator itemTextIter = item.getItemTextArray().iterator();
     		while (itemTextIter.hasNext()){
     			ItemTextIfc itemText = (ItemTextIfc) itemTextIter.next();
@@ -1041,7 +1048,7 @@ public class DeliveryActionListener
       		    	break;
     			  }
     		  }
-    		  else if  ((item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
+    		  else if  ((item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )||(item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
       		    if ((answer !=null) && (answer.getIsCorrect() == null || !answer.getIsCorrect().booleanValue())){
     		    	haswronganswer =true;
     		    	
@@ -1064,7 +1071,7 @@ public class DeliveryActionListener
     		  }
     		   
     	}
-    	if ((item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
+    	if ((item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )|| (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )|| (item.getTypeId().equals(TypeIfc.MATCHING) )){
     		if (mcmc_match_counter==correctAnswers){
     			haswronganswer=false;
     		}
@@ -1172,6 +1179,7 @@ public class DeliveryActionListener
         if ( (answer.getText() == null || answer.getText().trim().equals(""))
             && (item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
                 item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
+                item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
                 item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY)))
         {
           // Ignore, it's a null answer
@@ -1181,6 +1189,7 @@ public class DeliveryActionListener
           // Set the label and key
           if (item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
               item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
+              item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
               item.getTypeId().equals(TypeIfc.MATCHING))
           {
             answer.setLabel(Character.toString(alphabet.charAt(k++)));
@@ -1246,6 +1255,7 @@ public class DeliveryActionListener
     ArrayList answers = new ArrayList();
     if (item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
         item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
+        item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
         item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY) ||
         item.getTypeId().equals(TypeIfc.TRUE_FALSE) ||
         item.getTypeId().equals(TypeIfc.MATCHING))

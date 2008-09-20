@@ -147,6 +147,7 @@ listener set selectFromQuestionPool, eliminating the rendered attribute
      <h:outputText value=" #{authorMessages.dash} "/>
      <h:outputText rendered="#{itemauthor.currentItem.itemType == 1}" value="#{authorMessages.multiple_choice_type}"/>
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 2}" value="#{authorMessages.multiple_choice_type}"/>
+     <h:outputText rendered="#{itemauthor.currentItem.itemType== 12}" value="#{authorMessages.multiple_choice_type}"/>
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 3}" value="#{authorMessages.multiple_choice_surv}"/>
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 4}" value="#{authorMessages.true_false}"/>
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 5}" value="#{authorMessages.short_answer_essay}"/>
@@ -184,12 +185,7 @@ listener set selectFromQuestionPool, eliminating the rendered attribute
   </h:commandLink>
 --%>
  </span>
- <br />
    <h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
-
- <br />
-
 </p>
 </div>
- <br />
 </h:form>

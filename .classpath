@@ -83,6 +83,11 @@
 	<classpathentry kind="var" path="M2_REPO/uk/org/ponder/sakairsf/sakairsf/0.7.2-sakai_2.2.x/sakairsf-0.7.2-sakai_2.2.x.jar"/>
 	<classpathentry kind="var" path="M2_REPO/uk/org/ponder/ponderutilcore/1.2.2/ponderutilcore-1.2.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/poi/poi/2.5.1-final-20040804/poi-2.5.1-final-20040804.jar"/>
-	<classpathentry kind="var" path="M2_REPO/liveconnect/jars/plugin.jar"/>
+	<classpathentry kind="var" path="M2_REPO/liveconnect/plugin/1.5/plugin-1.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/tool-util"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/user-util"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/site-impl"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/site-tool"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
