@@ -202,6 +202,12 @@ public class TemplateUpdateListener
       aac.setItemNavigation(new Integer(templateBean.getItemAccessType()));
       aac.setAssessmentFormat(new Integer(templateBean.getDisplayChunking()));
       aac.setItemNumbering(new Integer(templateBean.getQuestionNumbering()));
+      if (templateBean.getMarkForReview() != null && templateBean.getMarkForReview().equals(Boolean.TRUE)) {
+    	  aac.setMarkForReview(Integer.valueOf(1));
+      }
+      else {
+    	  aac.setMarkForReview(Integer.valueOf(0));
+      }
       aac.setSubmissionsSaved(new Integer(templateBean.getSubmissionModel()));
       
       if (templateBean.getValueMap().get("submissionModel_isInstructorEditable") != null && ((Boolean) templateBean.getValueMap().get("submissionModel_isInstructorEditable")).booleanValue()) {
@@ -220,7 +226,11 @@ public class TemplateUpdateListener
 		  aac.setUnlimitedSubmissions(Boolean.TRUE);
       }
       aac.setLateHandling(new Integer(templateBean.getLateHandling()));
-      aac.setAutoSubmit(new Integer(templateBean.getAutoSave()));
+      
+      if (templateBean.getValueMap().get("automaticSubmission_isInstructorEditable") == null) {
+    	  templateBean.setValue("automaticSubmission_isInstructorEditable", "false");
+      }
+      aac.setAutoSubmit(new Integer(templateBean.getAutomaticSubmission()));
 
       // Evaluation Model
       EvaluationModelIfc model = template.getEvaluationModel();
