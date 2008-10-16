@@ -80,5 +80,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/junit/jars/junit-3.8.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/myfaces/jars/myfaces-all-1.1.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/event-api"/>
+	<classpathentry kind="var" path="MAVEN_REPO"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

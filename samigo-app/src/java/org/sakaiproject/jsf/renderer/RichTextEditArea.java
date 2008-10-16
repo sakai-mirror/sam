@@ -32,11 +32,16 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.render.Renderer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.cover.ToolManager; 
 import org.sakaiproject.content.cover.ContentHostingService; 
 import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.util.ResourceLoader;
+
 
 
 /**
@@ -52,6 +57,8 @@ import org.sakaiproject.util.ResourceLoader;
  */
 public class RichTextEditArea extends Renderer
 {
+  private static Log log = LogFactory.getLog(RichTextEditArea.class);	
+
   //FCK config paths
   private static final String FCK_BASE = "/library/editor/FCKeditor/";
   private static final String FCK_SCRIPT = "fckeditor.js";
@@ -99,7 +106,8 @@ public class RichTextEditArea extends Renderer
     
     //fixes SAK-3116, I'm not sure if this logic really belongs in a renderer, but it 
     //need to happen before the wysiwig is written or the editor tries to be too smart 
-    value = FormattedText.escapeHtmlFormattedTextarea((String) value);
+    //value = FormattedText.escapeHtmlFormattedTextarea((String) value);
+    value = ContextUtil.unEscapeHtml((String) value);
 
     String tmpCol = (String) component.getAttributes().get("columns");
     String tmpRow = (String) component.getAttributes().get("rows");
@@ -527,8 +535,14 @@ public class RichTextEditArea extends Renderer
       .getRequestParameterMap();
 
     String newValue = (String) requestParameterMap.get(clientId + "_textinput");
+    StringBuffer alertMsg = new StringBuffer();
+    String finalValue = FormattedText.processFormattedText(newValue, alertMsg);
+    if (alertMsg.length() > 0)
+    {
+    	log.debug(alertMsg.toString());
+    }
 
     org.sakaiproject.jsf.component.RichTextEditArea comp = (org.sakaiproject.jsf.component.RichTextEditArea) component;
-    comp.setSubmittedValue(newValue);
+    comp.setSubmittedValue(finalValue);
   }
 }

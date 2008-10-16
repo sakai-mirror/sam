@@ -38,6 +38,7 @@ import org.sakaiproject.tool.assessment.services.GradingService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+import org.sakaiproject.util.FormattedText;
 
 /**
  * <p>
@@ -800,7 +801,7 @@ public class ItemContentsBean implements Serializable {
 			ItemGradingData data = (ItemGradingData) getItemGradingDataArray()
 					.toArray()[count - 1];
 			// ItemGradingData data = (ItemGradingData) iter.next();
-			rationale = data.getRationale();
+			rationale = ContextUtil.unEscapeHtml(data.getRationale());
 		}
 		return Validator.check(rationale, "");
 	}

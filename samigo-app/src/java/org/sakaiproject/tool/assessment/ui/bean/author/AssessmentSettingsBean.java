@@ -64,8 +64,10 @@ import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceH
 import org.sakaiproject.tool.assessment.integration.helper.ifc.PublishingTargetHelper;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.listener.author.SaveAssessmentAttachmentListener;
+import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.ui.listener.util.TimeUtil;
 import org.sakaiproject.tool.cover.SessionManager;
+import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.util.ResourceLoader;
 
 /**
@@ -1475,5 +1477,18 @@ public class AssessmentSettingsBean
 	  this.originalDueDateString = "";
 	  this.originalRetractDateString = "";
 	  this.originalFeedbackDateString = "";
+  }
+  public String cancelFromPublishing() {
+	  AssessmentSettingsBean assessmentSettings = (AssessmentSettingsBean) ContextUtil.lookupBean("assessmentSettings");
+	  //To unEscapeHtml for the fields that have been through ContextUtil.processFormattedText
+	  assessmentSettings.setTitle(ContextUtil.unEscapeHtml(assessment.getTitle()));
+	  assessmentSettings.setAuthors(ContextUtil.unEscapeHtml(assessment.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.AUTHORS)));
+	  assessmentSettings.setFinalPageUrl(ContextUtil.unEscapeHtml(assessment.getAssessmentAccessControl().getFinalPageUrl()));
+	  assessmentSettings.setBgColor(ContextUtil.unEscapeHtml(assessment.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.BGCOLOR)));
+	  assessmentSettings.setBgImage(ContextUtil.unEscapeHtml(assessment.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.BGIMAGE)));
+	  assessmentSettings.setKeywords(ContextUtil.unEscapeHtml(assessment.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.KEYWORDS)));
+	  assessmentSettings.setObjectives(ContextUtil.unEscapeHtml(assessment.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.OBJECTIVES)));
+	  assessmentSettings.setRubrics(ContextUtil.unEscapeHtml(assessment.getAssessmentMetaDataByLabel(AssessmentMetaDataIfc.RUBRICS)));
+	  return "editAssessmentSettings";
   }
 }

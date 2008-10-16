@@ -55,7 +55,7 @@
    separator=" > " first="0" rows="100" >
   <h:column>
     <h:commandLink action="#{questionpool.editPool}"  immediate="true">
-      <h:outputText value="#{parent.displayName}" />
+      <h:outputText value="#{parent.displayName}" escape="false"/>
       <f:param name="qpid" value="#{parent.questionPoolId}"/>
     </h:commandLink>
   </h:column>

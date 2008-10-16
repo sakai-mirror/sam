@@ -135,11 +135,11 @@
       <!-- action=editAssessment if pass authz -->
       <h:commandLink title="#{authorFrontDoorMessages.t_editAssessment}" id="editAssessment" immediate="true" action="#{author.getOutcome}"
         rendered="#{authorization.editAnyAssessment or authorization.editOwnAssessment}" >
-        <h:outputText id="assessmentTitle" value="#{coreAssessment.title}" styleClass="currentSort" />
+        <h:outputText id="assessmentTitle" value="#{coreAssessment.title}" styleClass="currentSort" escape="false"/>
         <f:param name="assessmentId" value="#{coreAssessment.assessmentBaseId}"/>
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
       </h:commandLink>
-      <h:outputText id="assessmentTitle2" value="#{coreAssessment.title}" 
+      <h:outputText id="assessmentTitle2" value="#{coreAssessment.title}"  escape="false"
         rendered="#{!authorization.editAnyAssessment and !authorization.editOwnAssessment}" />
  <h:outputText escape="false" rendered="#{authorization.adminCoreAssessment}" value="<br />"/>
 
@@ -254,6 +254,7 @@
           </h:commandLink>
          </h:panelGroup>
       </f:facet>
+
       <h:outputText escape="false" id="publishedAssessmentTitle" value="#{publishedAssessment.title} <br />" />
 
  <span class="itemAction">
@@ -423,6 +424,7 @@
           </h:commandLink>
          </h:panelGroup>
       </f:facet>
+
       <h:outputText escape="false" id="inactivePublishedAssessmentTitle" value="#{inactivePublishedAssessment.title} <br />" />
      
         <span class="itemAction"> 

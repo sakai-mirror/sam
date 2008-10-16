@@ -43,6 +43,7 @@ import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.TemplateBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.ui.bean.shared.BackingBean;
+import org.sakaiproject.util.FormattedText;
 
 
 /**
@@ -97,8 +98,8 @@ public class TemplateLoadListener
         (templateId);
 
       templateBean.setIdString(templateId);
-      templateBean.setTemplateName(template.getTitle());
-      templateBean.setTemplateAuthor((String) template.getAssessmentMetaDataMap(template.getAssessmentMetaDataSet()).get("author"));
+      templateBean.setTemplateName(ContextUtil.unEscapeHtml(template.getTitle()));
+      templateBean.setTemplateAuthor(ContextUtil.unEscapeHtml((String) template.getAssessmentMetaDataMap(template.getAssessmentMetaDataSet()).get("author")));
       templateBean.setTemplateDescription(template.getDescription());
 
       // Assessment Access Control

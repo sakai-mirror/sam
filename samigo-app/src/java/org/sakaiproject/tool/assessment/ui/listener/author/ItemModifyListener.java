@@ -52,6 +52,7 @@ import org.sakaiproject.tool.assessment.ui.bean.author.ItemAuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.ItemBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.MatchItemBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+import org.sakaiproject.util.FormattedText;
 
 /**
  * <p>Title: Samigo</p>
@@ -501,13 +502,13 @@ public class ItemModifyListener implements ActionListener
     while (iter.hasNext()){
        ItemMetaData meta= (ItemMetaData) iter.next();
        if (meta.getLabel().equals(ItemMetaDataIfc.OBJECTIVE)){
-	 bean.setObjective(meta.getEntry());
+	 bean.setObjective(ContextUtil.unEscapeHtml(meta.getEntry()));
        }
        if (meta.getLabel().equals(ItemMetaDataIfc.KEYWORD)){
-	 bean.setKeyword(meta.getEntry());
+	 bean.setKeyword(ContextUtil.unEscapeHtml(meta.getEntry()));
        }
        if (meta.getLabel().equals(ItemMetaDataIfc.RUBRIC)){
-	 bean.setRubric(meta.getEntry());
+	 bean.setRubric(ContextUtil.unEscapeHtml(meta.getEntry()));
        }
        if (meta.getLabel().equals(ItemMetaDataIfc.RANDOMIZE)){
 	 bean.setRandomized(meta.getEntry());

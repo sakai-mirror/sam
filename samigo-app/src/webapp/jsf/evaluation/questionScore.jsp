@@ -76,7 +76,7 @@ window.open('../evaluation/createNewEmail.faces','createEmail','width=600,height
 
   <h3>
    
-  <h:outputText value="#{evaluationMessages.part} #{questionScores.partName}#{evaluationMessages.comma} #{evaluationMessages.question} #{questionScores.itemName} (#{totalScores.assessmentName}) "/>
+  <h:outputText value="#{evaluationMessages.part} #{questionScores.partName}#{evaluationMessages.comma} #{evaluationMessages.question} #{questionScores.itemName} (#{totalScores.assessmentName}) " escape="false"/>
   </h3>
   <p class="navViewAction">
     <h:commandLink title="#{evaluationMessages.t_submissionStatus}" action="submissionStatus" immediate="true">

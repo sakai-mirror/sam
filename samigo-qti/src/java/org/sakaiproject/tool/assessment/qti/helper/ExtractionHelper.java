@@ -389,38 +389,12 @@ public class ExtractionHelper
   public void updateAssessment(AssessmentFacade assessment,
                                Map assessmentMap)
   {
-    String title;
-    String displayName;
-    String description;
-    String comments;
-
-    String instructorNotification;
-    String testeeNotification;
-    String multipartAllowed;
-    String createdBy;
-    String createdDate;
-
-    title = (String) assessmentMap.get("title");
-    displayName = (String) assessmentMap.get("title");
-    comments = (String) assessmentMap.get("comments");
-
     log.debug("ASSESSMENT updating metadata information");
     // set meta data
     List metalist = (List) assessmentMap.get("metadata");
     MetaDataList metadataList = new MetaDataList(metalist);
     metadataList.setDefaults(assessment);
     metadataList.addTo(assessment);
-    createdBy = assessment.getAssessmentMetaDataByLabel("CREATOR");
-
-    log.debug("ASSESSMENT updating basic information");
-    // set basic properties
-    assessment.setCreatedBy(createdBy);
-    assessment.setComments(comments);
-    assessment.setCreatedDate(new Date());
-    assessment.setLastModifiedBy("Sakai Import");
-    assessment.setLastModifiedDate(new Date());
-
-    // additional information
 
     // restricted IP address
     log.debug("ASSESSMENT updating access control, evaluation model, feedback");
@@ -430,7 +404,7 @@ public class ExtractionHelper
     log.debug("duration: " + duration);
 
     makeAccessControl(assessment, duration);
-    String submissionMsg = metadataList.getSubmissionMessage();
+    String submissionMsg = XmlUtil.processFormattedText(log, metadataList.getSubmissionMessage());
     updateSubmissionMessage(assessment,submissionMsg);
 
     // evaluation model control
@@ -919,7 +893,7 @@ public class ExtractionHelper
 //        "CONSIDER_USERID"); //
     String userId = assessment.getAssessmentMetaDataByLabel("USERID");
     String password = assessment.getAssessmentMetaDataByLabel("PASSWORD");
-    String finalPageUrl = assessment.getAssessmentMetaDataByLabel("FINISH_URL");
+    String finalPageUrl = XmlUtil.processFormattedText(log, assessment.getAssessmentMetaDataByLabel("FINISH_URL"));
 
     if (//"TRUE".equalsIgnoreCase(considerUserId) &&
         notNullOrEmpty(userId) && notNullOrEmpty(password))
@@ -1210,10 +1184,8 @@ public class ExtractionHelper
    */
   public void updateSection(SectionFacade section, Map sectionMap)
   {
-    section.setTitle( (String) sectionMap.get("title"));
-    section.setDescription(makeFCKAttachment((String) sectionMap.get("description")));
-    section.setLastModifiedBy("Sakai Import");
-    section.setLastModifiedDate(new Date());
+    section.setTitle(XmlUtil.processFormattedText(log, (String) sectionMap.get("title")));
+    section.setDescription(XmlUtil.processFormattedText(log, makeFCKAttachment((String) sectionMap.get("description"))));
   }
 
   /**
@@ -1295,10 +1267,6 @@ public class ExtractionHelper
     String status = (String) itemMap.get("status");
     String createdBy = (String) itemMap.get("createdBy");
 
-    // not being set yet
-    String instruction = (String) itemMap.get("instruction");
-    String hint = (String) itemMap.get("hint");
-
     // created by is not nullable
     if (createdBy == null)
     {
@@ -1368,9 +1336,9 @@ public class ExtractionHelper
       log.debug("itemMap: " + key + "=" + itemMap.get(key));
     }
 
-    String correctItemFeedback = (String) itemMap.get("correctItemFeedback");
-    String incorrectItemFeedback = (String) itemMap.get("incorrectItemFeedback");
-    String generalItemFeedback = (String) itemMap.get("generalItemFeedback");
+    String correctItemFeedback = XmlUtil.processFormattedText(log, (String) itemMap.get("correctItemFeedback"));
+    String incorrectItemFeedback = XmlUtil.processFormattedText(log, (String) itemMap.get("incorrectItemFeedback"));
+    String generalItemFeedback = XmlUtil.processFormattedText(log, (String) itemMap.get("generalItemFeedback"));
     if (generalItemFeedback==null) generalItemFeedback = "";
 
     // NOTE:
@@ -1432,7 +1400,7 @@ public class ExtractionHelper
     for (int i = 0; i < itemTextList.size(); i++)
     {
       ItemText itemText = new ItemText();
-      String text = (String) itemTextList.get(i);
+      String text = XmlUtil.processFormattedText(log, (String) itemTextList.get(i));
       // should be allow this or, continue??
       // for now, empty string OK, setting to empty string if null
       if (text == null)
@@ -1461,7 +1429,7 @@ public class ExtractionHelper
       for (int a = 0; a < answerList.size(); a++)
       {
         Answer answer = new Answer();
-        String answerText = (String) answerList.get(a);
+        String answerText = XmlUtil.processFormattedText(log, (String) answerList.get(a));
         // these are not supposed to be empty
         if (notNullOrEmpty(answerText))
         {
@@ -1513,8 +1481,8 @@ public class ExtractionHelper
             answerFeedback.setTypeId(AnswerFeedbackIfc.GENERAL_FEEDBACK);
             if (answerFeedbackList.get(sequence - 1) != null)
             {
-              answerFeedback.setText(makeFCKAttachment((String) answerFeedbackList.get(sequence -
-                  1)));
+              answerFeedback.setText(makeFCKAttachment(XmlUtil.processFormattedText(log, (String) answerFeedbackList.get(sequence -
+                  1))));
               set.add(answerFeedback);
               answer.setAnswerFeedbackSet(set);
             }
@@ -1588,8 +1556,8 @@ public class ExtractionHelper
     {
       try
       {
-        String firstFib = (String) itemTextList.get(0);
-        String firstText = (String) itemTList.get(0);
+        String firstFib = XmlUtil.processFormattedText(log, (String) itemTextList.get(0));
+        String firstText = XmlUtil.processFormattedText(log, (String) itemTList.get(0));
         if (firstFib.equals(firstText))
         {
           log.debug("Setting FIB instructional text.");
@@ -1608,7 +1576,7 @@ public class ExtractionHelper
     // loop through all our extracted FIB texts interposing FIB_BLANK_INDICATOR
     for (int i = 0; i < itemTextList.size(); i++)
     {
-      String text = (String) itemTextList.get(i);
+      String text = XmlUtil.processFormattedText(log, (String) itemTextList.get(i));
       // we are assuming non-empty text/answer/non-empty text/answer etc.
       if (text == null || text=="")
       {
@@ -1630,7 +1598,7 @@ public class ExtractionHelper
     for (int a = 0; a < answerList.size(); a++)
     {
       Answer answer = new Answer();
-      String answerText = (String) answerList.get(a);
+      String answerText = XmlUtil.processFormattedText(log, (String) answerList.get(a));
       // these are not supposed to be empty
       if (notNullOrEmpty(answerText))
       {
@@ -1663,8 +1631,8 @@ public class ExtractionHelper
           answerFeedback.setTypeId(AnswerFeedbackIfc.GENERAL_FEEDBACK);
           if (answerFeedbackList.get(sequence - 1) != null)
           {
-            answerFeedback.setText(makeFCKAttachment((String) answerFeedbackList.get(
-                sequence - 1)));
+            answerFeedback.setText(makeFCKAttachment(XmlUtil.processFormattedText(log, (String) answerFeedbackList.get(
+                sequence - 1))));
             set.add(answerFeedback);
             answer.setAnswerFeedbackSet(set);
           }
@@ -1743,7 +1711,7 @@ public class ExtractionHelper
     String itemTextString = "";
     if (itemTextList.size()>0)
     {
-      itemTextString = (String) itemTextList.get(0);
+      itemTextString = XmlUtil.processFormattedText(log, (String) itemTextList.get(0));
     }
 
     HashSet itemTextSet = new HashSet();
@@ -1758,7 +1726,7 @@ public class ExtractionHelper
     for (int i = 0; i < sourceList.size(); i++)
     {
       // create the entry for the matching item (source)
-      String sourceText = (String) sourceList.get(i);
+      String sourceText = XmlUtil.processFormattedText(log, (String) sourceList.get(i));
       if (sourceText == null) sourceText="";
       sourceText=sourceText.replaceAll("\\?\\?"," ");//SAK-2298
       log.debug("sourceText: " + sourceText);
@@ -1788,7 +1756,7 @@ public class ExtractionHelper
       char answerLabel = 'A';
       for (int a = 0; a < targetList.size(); a++)
       {
-        targetString = (String) targetList.get(a);
+        targetString = XmlUtil.processFormattedText(log, (String) targetList.get(a));
         if (targetString == null)
         {
           targetString = "";
@@ -1804,13 +1772,13 @@ public class ExtractionHelper
 
         if (correctMatchFeedbackList.size() > i)
         {
-          String fb = (String) correctMatchFeedbackList.get(i);
+          String fb = XmlUtil.processFormattedText(log, (String) correctMatchFeedbackList.get(i));
           answerFeedbackSet.add( new AnswerFeedback(
             target, AnswerFeedbackIfc.CORRECT_FEEDBACK, fb));
         }
         if (incorrectMatchFeedbackList.size() > i)
         {
-          String fb = (String) incorrectMatchFeedbackList.get(i);
+          String fb = XmlUtil.processFormattedText(log, (String) incorrectMatchFeedbackList.get(i));
           log.debug("setting incorrect fb="+fb);
           answerFeedbackSet.add( new AnswerFeedback(
             target, AnswerFeedbackIfc.INCORRECT_FEEDBACK, fb));
@@ -1854,7 +1822,7 @@ public class ExtractionHelper
           String targetFeedback = "";
           if (answerFeedbackList.size()>0)
           {
-            targetFeedback = (String) answerFeedbackList.get(targetIndex);
+            targetFeedback = XmlUtil.processFormattedText(log, (String) answerFeedbackList.get(targetIndex));
           }
           if (targetFeedback.length()>0)
           {

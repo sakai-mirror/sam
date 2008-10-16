@@ -57,6 +57,8 @@ import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.listener.author.SavePartAttachmentListener;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.cover.SessionManager;
+import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.util.ResourceLoader;
 
 /**
  * Used to be org.navigoproject.ui.web.asi.author.section.SectionActionForm.java
@@ -350,7 +352,7 @@ private List attachmentList;
       //Huong's new
       int items = delegate.getCountItems(pool.getQuestionPoolId() );	
       if(items>0){
-    	  String resultListName= pool.getDisplayName()+"("+ items +")" ;	
+    	  String resultListName= ContextUtil.unEscapeHtml(pool.getDisplayName())+"("+ items +")" ;	
     	  resultPoolList.add(new SelectItem((pool.getQuestionPoolId().toString()),resultListName) );
       }
     }
@@ -365,7 +367,7 @@ private List attachmentList;
           // if the pool still exists, it's possible that the pool has been deleted  
           int currItems = delegate.getCountItems(currPool.getQuestionPoolId());
           if(currItems>0){
-        	String currPoolName= currPool.getDisplayName()+"("+ currItems +")" ;
+        	String currPoolName= ContextUtil.unEscapeHtml(currPool.getDisplayName())+"("+ currItems +")" ;
             resultPoolList.add(new SelectItem((currPool.getQuestionPoolId().toString()), currPoolName));  
           }
         }

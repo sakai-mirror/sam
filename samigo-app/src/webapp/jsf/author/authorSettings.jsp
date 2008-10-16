@@ -219,7 +219,7 @@ function uncheckOther(field){
   <%@ include file="/jsf/author/allHeadings.jsp" %>
 
     <h3>
-     <h:outputText value="#{assessmentSettingsMessages.settings} #{assessmentSettingsMessages.dash} #{assessmentSettings.title}" />
+     <h:outputText value="#{assessmentSettingsMessages.settings} #{assessmentSettingsMessages.dash} #{assessmentSettings.title}"/>
     </h3>
 <p>
   <h:messages styleClass="validation"/>

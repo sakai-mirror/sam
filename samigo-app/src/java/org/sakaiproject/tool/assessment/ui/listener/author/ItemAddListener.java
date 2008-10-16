@@ -1063,10 +1063,6 @@ public class ItemAddListener
                                bean.getScaleName()));
     }
 
-
-
-
-
     // save settings for case sensitive for FIB.  Default=false  
       set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.CASE_SENSITIVE_FOR_FIB,
                                Boolean.toString(bean.getCaseSensitiveForFib())));
@@ -1136,7 +1132,7 @@ public class ItemAddListener
         if (afteropen.length>1) {
 // must have text in between {}
           String[] lastpart = afteropen[1].split("\\}");
-          String answer = FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("<.*?>", ""));
+          String answer = FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("&lt;.*?&gt;", ""));
           list.add(answer);
         }
     }
@@ -1145,17 +1141,17 @@ public class ItemAddListener
       if (i == 0) {
         String[] firstpart = tokens[i].split("\\{");
 	  if (firstpart.length>1) {
-		String answer = FormattedText.convertFormattedTextToPlaintext(firstpart[1].replaceAll("<.*?>", ""));
+		String answer = FormattedText.convertFormattedTextToPlaintext(firstpart[1].replaceAll("&lt;.*?&gt;", ""));
           list.add(answer);
         }
       }
       else if (i == (tokens.length - 1)) {
         String[] lastpart = tokens[i].split("\\}");
-        String answer = FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("<.*?>", ""));
+        String answer = FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("&lt;.*?&gt;", ""));
         list.add(answer);
       }
       else {
-    	String answer = FormattedText.convertFormattedTextToPlaintext(tokens[i].replaceAll("<.*?>", ""));
+    	String answer = FormattedText.convertFormattedTextToPlaintext(tokens[i].replaceAll("&lt;.*?&gt;", ""));
         list.add(answer);
       }
       }
