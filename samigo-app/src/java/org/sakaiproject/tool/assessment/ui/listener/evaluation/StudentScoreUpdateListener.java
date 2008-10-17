@@ -146,6 +146,7 @@ public class StudentScoreUpdateListener
               (new Float(question.getExactPoints()).floatValue()
                / (float) gradingarray.size()));
             data.setComments(ContextUtil.processFormattedText(log, question.getGradingComment()));
+            data.setAnswerText(ContextUtil.processFormattedText(log, data.getAnswerText()));
             log.debug("****4 itemGradingId="+data.getItemGradingId());
             log.debug("****5 set points = " + data.getAutoScore() + ", comments to " + data.getComments());
             itemGradingSet.add(data);

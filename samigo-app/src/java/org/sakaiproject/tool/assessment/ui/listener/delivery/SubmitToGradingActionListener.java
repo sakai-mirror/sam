@@ -582,6 +582,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 			break;			
 		case 8: // FIB
 		case 11: // FIN
+			boolean addedToAdds = false;
 			for (int m = 0; m < grading.size(); m++) {
 				ItemGradingData itemgrading = (ItemGradingData) grading.get(m);
 				itemgrading.setAgentId(AgentFacade.getAgentString());
@@ -597,8 +598,10 @@ public class SubmitToGradingActionListener implements ActionListener {
 					String s = itemgrading.getAnswerText();
 					log.debug("s = " + s);
 					itemgrading.setAnswerText(ContextUtil.processFormattedText(log, s));
-					adds.addAll(grading);
-					break;
+					if (!addedToAdds) {
+						adds.addAll(grading);
+						addedToAdds = true;
+					}
 				}
 			}
 			break;
