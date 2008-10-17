@@ -598,7 +598,6 @@ public class SubmitToGradingActionListener implements ActionListener {
 					String s = itemgrading.getAnswerText();
 					log.debug("s = " + s);
 					itemgrading.setAnswerText(ContextUtil.processFormattedText(log, s));
-					adds.addAll(grading);
 					if (!addedToAdds) {
 						adds.addAll(grading);
 						addedToAdds = true;
