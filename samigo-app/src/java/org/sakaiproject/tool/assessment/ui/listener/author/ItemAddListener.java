@@ -1042,101 +1042,85 @@ public class ItemAddListener
   }
 
   protected HashSet prepareMetaData(ItemFacade item, ItemBean bean) {
-    HashSet set = new HashSet();
-    if (bean.getKeyword() != null) {
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.KEYWORD,
-                               bean.getKeyword()));
-    }
-    if (bean.getRubric() != null) {
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.RUBRIC,
-                               bean.getRubric()));
-    }
-    if (bean.getObjective() != null) {
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.OBJECTIVE,
-                               bean.getObjective()));
-    }
-    // Randomize property got left out, added in  metadata
-    if (bean.getRandomized() != null) {
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.RANDOMIZE,
-                               bean.getRandomized()));
-    }
+	  HashSet set = new HashSet();
+	  if (bean.getKeyword() != null) {
+		  set.add(new ItemMetaData(item.getData(),
+				  ItemMetaDataIfc.KEYWORD, ContextUtil.processFormattedText(log, bean.getKeyword())));
+	  }
+	  if (bean.getRubric() != null) {
+		  set.add(new ItemMetaData(item.getData(),
+				  ItemMetaDataIfc.RUBRIC, ContextUtil.processFormattedText(log, bean.getRubric())));
+	  }
+	  if (bean.getObjective() != null) {
+		  set.add(new ItemMetaData(item.getData(),
+				  ItemMetaDataIfc.OBJECTIVE, ContextUtil.processFormattedText(log, bean.getObjective())));
+	  }
+	  // Randomize property got left out, added in metadata
+	  if (bean.getRandomized() != null) {
+		  set.add(new ItemMetaData(item.getData(),
+				  ItemMetaDataIfc.RANDOMIZE, bean.getRandomized()));
+	  }
+	  // 2/19/06 use PREDEFINED_SCALE to be in sync with what we are using
+	  // for import/export
+	  if (bean.getScaleName() != null) {
+		  set.add(new ItemMetaData(item.getData(),
+				  ItemMetaDataIfc.PREDEFINED_SCALE, bean.getScaleName()));
+	  }
+	  // save settings for case sensitive for FIB. Default=false
+	  set.add(new ItemMetaData(item.getData(),
+			  ItemMetaDataIfc.CASE_SENSITIVE_FOR_FIB, Boolean.toString(bean.getCaseSensitiveForFib())));
+	  // save settings for mutually exclusive for FIB. Default=false
+	  // first check to see if it's a valid mutually exclusive mutiple
+	  // answers FIB
+	  boolean wellformatted = false;
+	  if (bean.getMutuallyExclusiveForFib()) {
+		  wellformatted = isValidMutualExclusiveFIB(bean);
+	  }
 
-/*
-    // save ScaleName for survey if it's a survey item
-    if (bean.getScaleName() != null) {
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.SCALENAME,
-                               bean.getScaleName()));
-    }
+	  set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.MUTUALLY_EXCLUSIVE_FOR_FIB,
+			  Boolean.toString(wellformatted)));
 
-*/
-    // 2/19/06 use PREDEFINED_SCALE to be in sync with what we are using for import/export 
-    if (bean.getScaleName() != null) {
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.PREDEFINED_SCALE,
-                               bean.getScaleName()));
-    }
+	  // Do we need Mutually exclusive for numeric responses, what about questions like
+	  // the Square root of 4 is {2|-2} and {2|-2}.
 
-
-
-
-
-    // save settings for case sensitive for FIB.  Default=false  
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.CASE_SENSITIVE_FOR_FIB,
-                               Boolean.toString(bean.getCaseSensitiveForFib())));
-
-    // save settings for mutually exclusive for FIB. Default=false
-    // first check to see if it's a valid mutually exclusive mutiple answers FIB
-      boolean wellformatted = false;
-      if (bean.getMutuallyExclusiveForFib()) {
-        wellformatted = isValidMutualExclusiveFIB(bean);
-      }
-
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.MUTUALLY_EXCLUSIVE_FOR_FIB,
-                               Boolean.toString(wellformatted)));
-
-      
-        
-      // Do we need Mutually exclusive for numeric responses, what about questions like
-      // the Square root of 4 is {2|-2} and {2|-2}.
-      
-      //    save settings for mutually exclusive for FIN. Default=false
-	    // first check to see if it's a valid mutually exclusive mutiple answers FIN
-      /*
+	  //    save settings for mutually exclusive for FIN. Default=false
+	  // first check to see if it's a valid mutually exclusive mutiple answers FIN
+	  /*
 	      boolean wellformattedFIN = false;
- 	      
+
 	      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.MUTUALLY_EXCLUSIVE_FOR_FIN,
 	                               Boolean.toString(wellformattedFIN)));
 
-   */
-      
-     
-    // save part id
-    if (bean.getSelectedSection() != null) {
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.PARTID,
-                               bean.getSelectedSection()));
-    }
+	   */
 
-    // save pool id
-    if (bean.getSelectedPool() != null) {
-      set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.POOLID,
-                               bean.getSelectedPool()));
-    }
+	  // save part id
+	  if (bean.getSelectedSection() != null) {
+		  set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.PARTID,
+				  bean.getSelectedSection()));
+	  }
 
-    // save timeallowed for audio recording
-    /*
+	  // save pool id
+	  if (bean.getSelectedPool() != null) {
+		  set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.POOLID,
+				  bean.getSelectedPool()));
+	  }
+
+	  // save timeallowed for audio recording
+	  /*
         // save them in ItemFacade
         if (bean.getTimeAllowed()!=null){
         set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.TIMEALLOWED, bean.getTimeAllowed()));
             }
-     */
-    // save timeallowed for audio recording
-    /*
+	   */
+	  // save timeallowed for audio recording
+	  /*
         // save them in ItemFacade
         if (bean.getNumAttempts()!=null){
         set.add(new ItemMetaData(item.getData(), ItemMetaDataIfc.NUMATTEMPTS, bean.getNumAttempts()));
             }
-     */
+	   */
 
-    return set;
+	  return set;
   }
 
   private static ArrayList getFIBanswers(String entiretext) {
@@ -1148,7 +1132,7 @@ public class ItemAddListener
         if (afteropen.length>1) {
 // must have text in between {}
           String[] lastpart = afteropen[1].split("\\}");
-          String answer = FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("<.*?>", ""));
+          String answer = FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("&lt;.*?&gt;", ""));
           list.add(answer);
         }
     }
@@ -1157,17 +1141,17 @@ public class ItemAddListener
       if (i == 0) {
         String[] firstpart = tokens[i].split("\\{");
 	  if (firstpart.length>1) {
-		String answer = FormattedText.convertFormattedTextToPlaintext(firstpart[1].replaceAll("<.*?>", ""));
+		String answer = FormattedText.convertFormattedTextToPlaintext(firstpart[1].replaceAll("&lt;.*?&gt;", ""));
           list.add(answer);
         }
       }
       else if (i == (tokens.length - 1)) {
         String[] lastpart = tokens[i].split("\\}");
-        String answer = FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("<.*?>", ""));
+        String answer = FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("&lt;.*?&gt;", ""));
         list.add(answer);
       }
       else {
-    	String answer = FormattedText.convertFormattedTextToPlaintext(tokens[i].replaceAll("<.*?>", ""));
+    	String answer = FormattedText.convertFormattedTextToPlaintext(tokens[i].replaceAll("&lt;.*?&gt;", ""));
         list.add(answer);
       }
       }
@@ -1413,5 +1397,4 @@ Object[] fibanswers = getFIBanswers(entiretext).toArray();
     }
     return map;
   }
-
 }

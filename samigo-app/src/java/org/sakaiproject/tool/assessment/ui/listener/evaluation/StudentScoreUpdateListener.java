@@ -144,7 +144,8 @@ public class StudentScoreUpdateListener
             data.setAutoScore(new Float
               (new Float(question.getExactPoints()).floatValue()
                / (float) gradingarray.size()));
-            data.setComments(question.getGradingComment());
+            data.setComments(ContextUtil.processFormattedText(log, question.getGradingComment()));
+            data.setAnswerText(ContextUtil.processFormattedText(log, data.getAnswerText()));
             log.debug("****4 itemGradingId="+data.getItemGradingId());
             log.debug("****5 set points = " + data.getAutoScore() + ", comments to " + data.getComments());
             itemGradingSet.add(data);
@@ -162,7 +163,7 @@ public class StudentScoreUpdateListener
       if (adata == null)
         return true; // Nothing to save.
 
-      adata.setComments(bean.getComments());
+      adata.setComments(ContextUtil.processFormattedText(log, bean.getComments()));
       //log.debug("Got total comments: " + adata.getComments());
 
       // Some of the itemgradingdatas may be new.

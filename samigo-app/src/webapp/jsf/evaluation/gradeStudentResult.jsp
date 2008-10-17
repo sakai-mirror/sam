@@ -129,7 +129,7 @@ document.location='../evaluation/gradeStudentResult';
   <h:messages styleClass="validation"/>
 
 <f:verbatim><h4></f:verbatim>
-<h:outputText value="#{totalScores.assessmentName}" />
+<h:outputText value="#{totalScores.assessmentName}" escape="false"/>
 <f:verbatim></h4></f:verbatim>
 <div class="tier3">
 <h:panelGrid columns="2">

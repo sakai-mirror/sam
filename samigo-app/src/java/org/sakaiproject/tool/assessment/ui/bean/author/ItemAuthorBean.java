@@ -72,6 +72,7 @@ import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.cover.EntityManager;
 
+import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.util.ResourceLoader;
 
 
@@ -694,7 +695,7 @@ public class ItemAuthorBean
           selection.setLabel(rb.getString("p")+" "+ i );
         }
         else {
-          selection.setLabel(rb.getString("p")+" " + i + " - " + part.getTitle());
+          selection.setLabel(rb.getString("p")+" " + i + " - " + FormattedText.unEscapeHtml(part.getTitle()));
         }
         selection.setValue(part.getSectionId());
         list.add(selection);
@@ -785,7 +786,7 @@ public class ItemAuthorBean
       while(iter.hasNext())
       {
         QuestionPoolFacade pool = (QuestionPoolFacade) iter.next();
-        poolListSelectItems.add(new SelectItem((pool.getQuestionPoolId().toString()), pool.getDisplayName() ) );
+        poolListSelectItems.add(new SelectItem((pool.getQuestionPoolId().toString()), FormattedText.unEscapeHtml(pool.getDisplayName())));
 
       }
 

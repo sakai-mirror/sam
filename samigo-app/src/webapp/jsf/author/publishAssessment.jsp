@@ -51,8 +51,8 @@
 
 <h:panelGrid columns="2" rowClasses="shorttext">
 
-     <h:outputLabel value="#{assessmentSettingsMessages.assessment_title}" rendered="#{assessmentSettings.title ne null}" />
-     <h:outputText value="#{assessmentSettings.title}" rendered="#{assessmentSettings.title ne null}" />
+     <h:outputLabel value="#{assessmentSettingsMessages.assessment_title}" rendered="#{assessmentSettings.title ne null}"/>
+     <h:outputText value="#{assessmentSettings.title}" rendered="#{assessmentSettings.title ne null}" escape="false" />
 
      <h:outputLabel value="#{assessmentSettingsMessages.assessment_available_date}" />
      <h:panelGroup>
@@ -143,9 +143,10 @@ function toggle(){
           <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.author.PublishAssessmentListener" />
        </h:commandButton>
+
        <h:commandButton value="#{assessmentSettingsMessages.button_cancel}" type="submit"
          action="author" />
-</p>
+     </p>
 
  </h:form>
  <!-- end content -->
