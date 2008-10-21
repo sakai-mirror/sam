@@ -229,6 +229,8 @@ public class DeliveryBean
   // will be the new id which is not what we want in review assessment or grade assessment
   private Long assessmentGradingId;
   
+  private boolean fromTableOfContents;
+  
   /**
    * Creates a new DeliveryBean object.
    */
@@ -1320,6 +1322,57 @@ public class DeliveryBean
     return returnValue;
   }
 
+  public String confirmSubmit()
+  {
+	  String nextAction = checkBeforeProceed();
+	  log.debug("***** next Action="+nextAction);
+	  if (!("safeToProceed").equals(nextAction)){
+		  return nextAction;
+	  }
+
+	  setForGrade(false);
+	  syncTimeElapsedWithServer();
+
+	  if (this.actionMode == TAKE_ASSESSMENT
+			  || this.actionMode == TAKE_ASSESSMENT_VIA_URL)
+	  {
+		  SubmitToGradingActionListener listener =
+			  new SubmitToGradingActionListener();
+		  listener.processAction(null);
+	  }
+
+	  DeliveryActionListener l2 = new DeliveryActionListener();
+	  l2.processAction(null);
+	  return "confirmsubmit";
+  }
+  
+  public String confirmSubmitTOC()
+  {
+	  String nextAction = checkBeforeProceed();
+	  log.debug("***** next Action="+nextAction);
+	  if (!("safeToProceed").equals(nextAction)){
+		  return nextAction;
+	  }
+
+	  setForGrade(false);
+	  syncTimeElapsedWithServer();
+
+	  if (this.actionMode == TAKE_ASSESSMENT
+			  || this.actionMode == TAKE_ASSESSMENT_VIA_URL)
+	  {
+		  SubmitToGradingActionListener listener =
+			  new SubmitToGradingActionListener();
+		  listener.processAction(null);
+	  }
+	  
+	  setFromTableOfContents(true);
+	  DeliveryActionListener l2 = new DeliveryActionListener();
+	  l2.processAction(null);
+
+	  setContinue(false);
+	  return "confirmsubmit";
+  }
+
   public String saveAndExit()
   {
     String nextAction = checkBeforeProceed();
@@ -1422,6 +1475,24 @@ public class DeliveryBean
     l2.processAction(null);
 
     reload = false;
+    return "takeAssessment";
+  }
+
+  public String confirmSubmitPrevious()
+  {
+    String nextAction = checkBeforeProceed();
+    log.debug("***** next Action="+nextAction);
+    if (!("safeToProceed").equals(nextAction)){
+      return nextAction;
+    }
+
+    forGrade = false;
+
+    syncTimeElapsedWithServer();
+
+    DeliveryActionListener l2 = new DeliveryActionListener();
+    l2.processAction(null);
+
     return "takeAssessment";
   }
 
@@ -2728,6 +2799,16 @@ public class DeliveryBean
 	  public Long getAssessmentGradingId()
 	  {
 	      return assessmentGradingId;
+	  }
+
+	  public void setFromTableOfContents(boolean fromTableOfContents)
+	  {
+	    this.fromTableOfContents = fromTableOfContents;
+	  }
+	  
+	  public boolean getFromTableOfContents()
+	  {
+	      return fromTableOfContents;
 	  }
 
 	  public void setAssessmentGradingId(Long assessmentGradingId)
