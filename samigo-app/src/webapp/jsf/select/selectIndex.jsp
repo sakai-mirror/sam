@@ -54,17 +54,11 @@ function disableLinks(clickedLink){
 				if (linkIds[i] != clickedLink.id) {
 					//alert("disabling..." + linkIds[i]);
 					var obj = document.getElementById(linkIds[i]);
-					var href = obj.getAttribute("href");
 					var onclick = obj.getAttribute("onclick");
-					//First we store previous value in a new attribute
-					if(href && href != "" && href != null)
-					{
-					obj.setAttribute('href_bak', href);
-					}
 					if(onclick != null)
 					{
-					obj.setAttribute('onclick_back', onclick);
-					obj.setAttribute('onclick', "void(0);");
+						obj.setAttribute('onclick_back', onclick);
+						obj.setAttribute('onclick', "void(0);");
 					}
 					obj.removeAttribute('href'); 
 				}
@@ -119,7 +113,7 @@ sorting actions for table:
     <h:column>
       <f:facet name="header">
        <h:panelGroup>
-        <h:commandLink title="#{selectIndexMessages.t_sortTitle}" id="taketitle1" rendered="#{select.takeableSortOrder!='title'}">
+        <h:commandLink title="#{selectIndexMessages.t_sortTitle}" id="taketitle1" rendered="#{select.takeableSortOrder!='title'}" onmouseup="disableLinks(this);">
           <f:param name="takeableSortType" value="title" />
           <f:param name="takeAscending" value="true" />
           <f:actionListener
@@ -127,13 +121,13 @@ sorting actions for table:
           <h:outputText  value="#{selectIndexMessages.title} "  rendered="#{select.takeableSortOrder!='title'}" />
         </h:commandLink>
           <h:outputText  value="#{selectIndexMessages.title} " styleClass="currentSort" rendered="#{select.takeableSortOrder=='title'}" />
-          <h:commandLink title="#{selectIndexMessages.t_sortTitle}" id="taketitle2" rendered="#{select.takeableSortOrder=='title' && select.takeableAscending }">
+          <h:commandLink title="#{selectIndexMessages.t_sortTitle}" id="taketitle2" rendered="#{select.takeableSortOrder=='title' && select.takeableAscending }" onmouseup="disableLinks(this);">
            <f:param name="takeAscending" value="false" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
              <h:graphicImage alt="#{selectIndexMessages.alt_sortTitleDescending}" rendered="#{select.takeableAscending}" url="/images/sortascending.gif"/>
           </h:commandLink>
-          <h:commandLink title="#{selectIndexMessages.t_sortTitle}" id="taketitle3" rendered="#{select.takeableSortOrder=='title'&& !select.takeableAscending }">
+          <h:commandLink title="#{selectIndexMessages.t_sortTitle}" id="taketitle3" rendered="#{select.takeableSortOrder=='title'&& !select.takeableAscending }" onmouseup="disableLinks(this);">
            <f:param name="takeAscending" value="true" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -141,7 +135,7 @@ sorting actions for table:
           </h:commandLink>
        </h:panelGroup>
       </f:facet>
-      <h:commandLink title="#{selectIndexMessages.t_takeAssessment}" id="takeAssessment" action="beginAssessment" onmouseup="disableLinks(this);">
+      <h:commandLink title="#{selectIndexMessages.t_takeAssessment}" id="takeAssessment" action="beginAssessment" onmouseup="disableLinks(this);" >
         <f:param name="publishedId" value="#{takeable.assessmentId}" />
         <f:param name="actionString" value="takeAssessment"/>
         <f:actionListener
@@ -152,7 +146,7 @@ sorting actions for table:
     <h:column>
       <f:facet name="header">
        <h:panelGroup>
-        <h:commandLink title="#{selectIndexMessages.t_sortDueDate}" id="takedue1" rendered="#{select.takeableSortOrder!='due'}">
+        <h:commandLink title="#{selectIndexMessages.t_sortDueDate}" id="takedue1" rendered="#{select.takeableSortOrder!='due'}" onmouseup="disableLinks(this);">
           <f:param name="takeableSortType" value="due" />
           <f:param name="takeAscending" value="true" />
           <f:actionListener
@@ -160,13 +154,13 @@ sorting actions for table:
           <h:outputText value="#{selectIndexMessages.date_due} " rendered="#{select.takeableSortOrder!='due'}" />
         </h:commandLink>
         <h:outputText value="#{selectIndexMessages.date_due} " styleClass="currentSort" rendered="#{select.takeableSortOrder=='due'}" />
-        <h:commandLink title="#{selectIndexMessages.t_sortDueDate}" id="takedue2" rendered="#{select.takeableSortOrder=='due' && select.takeableAscending }">
+        <h:commandLink title="#{selectIndexMessages.t_sortDueDate}" id="takedue2" rendered="#{select.takeableSortOrder=='due' && select.takeableAscending }" onmouseup="disableLinks(this);">
           <f:param name="takeAscending" value="false" />
           <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
           <h:graphicImage alt="#{selectIndexMessages.alt_sortDueDateDescending}" rendered="#{select.takeableAscending}" url="/images/sortascending.gif"/>
         </h:commandLink>
-        <h:commandLink title="#{selectIndexMessages.t_sortDueDate}" id="takedue3" rendered="#{select.takeableSortOrder=='due'&& !select.takeableAscending }">
+        <h:commandLink title="#{selectIndexMessages.t_sortDueDate}" id="takedue3" rendered="#{select.takeableSortOrder=='due'&& !select.takeableAscending }" onmouseup="disableLinks(this);">
            <f:param name="takeAscending" value="true" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -225,7 +219,7 @@ sorting actions for table:
     <h:column>
       <f:facet name="header">
        <h:panelGroup>
-        <h:commandLink title="#{selectIndexMessages.t_sortTitle}" id="reviewtitle"  rendered="#{select.reviewableSortOrder!='title'}" >
+        <h:commandLink title="#{selectIndexMessages.t_sortTitle}" id="reviewtitle"  rendered="#{select.reviewableSortOrder!='title'}" onmouseup="disableLinks(this);">
           <f:param name="reviewableSortType" value="title" />
           <f:param name="reviewableAscending" value="true" />
           <f:actionListener
@@ -233,14 +227,14 @@ sorting actions for table:
           <h:outputText value="#{selectIndexMessages.title} "  rendered="#{select.reviewableSortOrder!='title'}" />
         </h:commandLink>
           <h:outputText value="#{selectIndexMessages.title} " styleClass="currentSort" rendered="#{select.reviewableSortOrder=='title'}" />
-        <h:commandLink title="#{selectIndexMessages.t_sortTitle}" rendered="#{select.reviewableSortOrder=='title' && select.reviewableAscending } ">
+        <h:commandLink title="#{selectIndexMessages.t_sortTitle}" rendered="#{select.reviewableSortOrder=='title' && select.reviewableAscending } " onmouseup="disableLinks(this);">
           <f:param name="reviewableAscending" value="false" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
           <h:graphicImage alt="#{selectIndexMessages.alt_sortTitleDescending}" rendered="#{select.reviewableSortOrder=='title' && select.reviewableAscending}"
             url="/images/sortascending.gif"/>
         </h:commandLink>
-       <h:commandLink title="#{selectIndexMessages.t_sortTitle}" rendered="#{select.reviewableSortOrder=='title' && !select.reviewableAscending } ">
+       <h:commandLink title="#{selectIndexMessages.t_sortTitle}" rendered="#{select.reviewableSortOrder=='title' && !select.reviewableAscending } " onmouseup="disableLinks(this);">
           <f:param name="reviewableAscending" value="true" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -253,7 +247,7 @@ sorting actions for table:
     <h:outputText value="#{reviewable.assessmentTitle}" rendered="#{reviewable.feedback != 'true'}"/>
 
 	<h:commandLink title="#{selectIndexMessages.t_reviewAssessment}" id="karen" action="takeAssessment" immediate="true" 
-		rendered="#{reviewable.feedback == 'true'}">
+		rendered="#{reviewable.feedback == 'true'}" onmouseup="disableLinks(this);">
         <f:param name="publishedId" value="#{reviewable.assessmentId}" />
         <f:param name="nofeedback" value="false"/>
         <f:param name="actionString" value="reviewAssessment"/>
@@ -271,7 +265,7 @@ sorting actions for table:
 
   <f:verbatim><br /></f:verbatim>
        <h:commandLink title="#{selectIndexMessages.t_histogram}" id="histogram" action="histogramScores" immediate="true"  
-        rendered="#{reviewable.feedback ne 'false' && reviewable.statistics && !reviewable.hasRandomDrawPart}">
+        rendered="#{reviewable.feedback ne 'false' && reviewable.statistics && !reviewable.hasRandomDrawPart}" onmouseup="disableLinks(this);">
         <f:param name="publishedId" value="#{reviewable.assessmentId}" />
         <f:param name="hasNav" value="false"/>
         <f:param name="allSubmissions" value="true" />
@@ -299,7 +293,7 @@ sorting actions for table:
     <h:column>
       <f:facet name="header">
        <h:panelGroup>
-        <h:commandLink title="#{selectIndexMessages.t_sortFbDate}" id="feedbackDate" rendered="#{select.reviewableSortOrder!='feedbackDate'}" >
+        <h:commandLink title="#{selectIndexMessages.t_sortFbDate}" id="feedbackDate" rendered="#{select.reviewableSortOrder!='feedbackDate'}" onmouseup="disableLinks(this);">
           <f:param name="reviewableSortType" value="feedbackDate" />
           <f:param name="reviewableAscending" value="true" />
           <f:actionListener
@@ -307,7 +301,7 @@ sorting actions for table:
           <h:outputText value="#{selectIndexMessages.feedback_date} " rendered="#{select.reviewableSortOrder!='feedbackDate'}" />
         </h:commandLink>
           <h:outputText value="#{selectIndexMessages.feedback_date} " styleClass="currentSort" rendered="#{select.reviewableSortOrder=='feedbackDate'}" />
-        <h:commandLink title="#{selectIndexMessages.t_sortFbDate}" rendered="#{select.reviewableSortOrder=='feedbackDate' && select.reviewableAscending}">
+        <h:commandLink title="#{selectIndexMessages.t_sortFbDate}" rendered="#{select.reviewableSortOrder=='feedbackDate' && select.reviewableAscending}" onmouseup="disableLinks(this);">
            <f:param name="reviewableAscending" value="false" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -315,7 +309,7 @@ sorting actions for table:
             rendered="#{select.reviewableSortOrder=='feedbackDate' && select.reviewableAscending}"
             url="/images/sortascending.gif"/>
         </h:commandLink>
-        <h:commandLink title="#{selectIndexMessages.t_sortFbDate}" rendered="#{select.reviewableSortOrder=='feedbackDate' && !select.reviewableAscending } ">
+        <h:commandLink title="#{selectIndexMessages.t_sortFbDate}" rendered="#{select.reviewableSortOrder=='feedbackDate' && !select.reviewableAscending } " onmouseup="disableLinks(this);">
           <f:param name="reviewableAscending" value="true" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -372,7 +366,7 @@ sorting actions for table:
     <h:column>
       <f:facet name="header">
         <h:panelGroup>
-        <h:commandLink title="#{selectIndexMessages.t_sortScore}" id="reviewgrade"  rendered="#{select.reviewableSortOrder!='grade'}">
+        <h:commandLink title="#{selectIndexMessages.t_sortScore}" id="reviewgrade"  rendered="#{select.reviewableSortOrder!='grade'}" >
           <f:param name="reviewableSortType" value="grade" />
           <f:param name="reviewableAscending" value="true" />
           <f:actionListener
@@ -380,7 +374,7 @@ sorting actions for table:
           <h:outputText value="#{selectIndexMessages.grade} "  rendered="#{select.reviewableSortOrder!='grade'}" />
         </h:commandLink>
           <h:outputText value="#{selectIndexMessages.grade} " styleClass="currentSort" rendered="#{select.reviewableSortOrder=='grade'}" />
-        <h:commandLink title="#{selectIndexMessages.t_sortScore}" rendered="#{select.reviewableSortOrder=='grade' && select.reviewableAscending  }">
+        <h:commandLink title="#{selectIndexMessages.t_sortScore}" rendered="#{select.reviewableSortOrder=='grade' && select.reviewableAscending  }" >
            <f:param name="reviewableAscending" value="false" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -388,7 +382,7 @@ sorting actions for table:
             rendered="#{select.reviewableSortOrder=='grade' && select.reviewableAscending}"
             url="/images/sortascending.gif"/>
         </h:commandLink>
-        <h:commandLink title="#{selectIndexMessages.t_sortScore}" rendered="#{select.reviewableSortOrder=='grade' && !select.reviewableAscending  }">
+        <h:commandLink title="#{selectIndexMessages.t_sortScore}" rendered="#{select.reviewableSortOrder=='grade' && !select.reviewableAscending  }" >
            <f:param name="reviewableAscending" value="true" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -409,7 +403,7 @@ sorting actions for table:
     <h:column>
       <f:facet name="header">
        <h:panelGroup>
-        <h:commandLink title="#{selectIndexMessages.t_sortScore}" id="reviewraw" rendered="#{select.reviewableSortOrder!='raw'}">
+        <h:commandLink title="#{selectIndexMessages.t_sortScore}" id="reviewraw" rendered="#{select.reviewableSortOrder!='raw'}" onmouseup="disableLinks(this);">
           <f:param name="reviewableSortType" value="raw" />
           <f:param name="reviewableAscending" value="true" />
           <f:actionListener
@@ -417,7 +411,7 @@ sorting actions for table:
           <h:outputText value="#{selectIndexMessages.score} " rendered="#{select.reviewableSortOrder!='raw'}"/>
         </h:commandLink>
           <h:outputText value="#{selectIndexMessages.score} " styleClass="currentSort" rendered="#{select.reviewableSortOrder=='raw'}"/>
-        <h:commandLink title="#{selectIndexMessages.t_sortScore}" rendered="#{select.reviewableSortOrder=='raw' && select.reviewableAscending}">
+        <h:commandLink title="#{selectIndexMessages.t_sortScore}" rendered="#{select.reviewableSortOrder=='raw' && select.reviewableAscending}" onmouseup="disableLinks(this);">
            <f:param name="reviewableAscending" value="false" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -425,7 +419,7 @@ sorting actions for table:
             rendered="#{select.reviewableSortOrder=='raw' && select.reviewableAscending}"
             url="/images/sortascending.gif"/>
         </h:commandLink>
-        <h:commandLink title="#{selectIndexMessages.t_sortScore}" rendered="#{select.reviewableSortOrder=='raw' && !select.reviewableAscending}">
+        <h:commandLink title="#{selectIndexMessages.t_sortScore}" rendered="#{select.reviewableSortOrder=='raw' && !select.reviewableAscending}" onmouseup="disableLinks(this);">
            <f:param name="reviewableAscending" value="true" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -446,7 +440,7 @@ sorting actions for table:
     <h:column>
       <f:facet name="header">
        <h:panelGroup>
-        <h:commandLink title="#{selectIndexMessages.t_sortTime}" id="reviewtime" rendered="#{select.reviewableSortOrder!='time'}">
+        <h:commandLink title="#{selectIndexMessages.t_sortTime}" id="reviewtime" rendered="#{select.reviewableSortOrder!='time'}" onmouseup="disableLinks(this);">
           <f:param name="reviewableSortType" value="time" />
           <f:param name="reviewableAscending" value="true" />
           <f:actionListener
@@ -454,14 +448,14 @@ sorting actions for table:
           <h:outputText value="#{selectIndexMessages.time} "  rendered="#{select.reviewableSortOrder!='time'}"/>
         </h:commandLink>
           <h:outputText value="#{selectIndexMessages.time} "  styleClass="currentSort" rendered="#{select.reviewableSortOrder=='time'}"/>
-        <h:commandLink title="#{selectIndexMessages.t_sortTime}" rendered="#{select.reviewableSortOrder=='time'&& select.reviewableAscending }">
+        <h:commandLink title="#{selectIndexMessages.t_sortTime}" rendered="#{select.reviewableSortOrder=='time'&& select.reviewableAscending }" onmouseup="disableLinks(this);">
            <f:param name="reviewableAscending" value="false" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
           <h:graphicImage alt="#{selectIndexMessages.alt_sortTimeDescending}" rendered="#{select.reviewableSortOrder=='time' && select.reviewableAscending}"
            url="/images/sortascending.gif"/>
         </h:commandLink>
-        <h:commandLink title="#{selectIndexMessages.t_sortTime}" rendered="#{select.reviewableSortOrder=='time'&& !select.reviewableAscending }">
+        <h:commandLink title="#{selectIndexMessages.t_sortTime}" rendered="#{select.reviewableSortOrder=='time'&& !select.reviewableAscending }" onmouseup="disableLinks(this);">
            <f:param name="reviewableAscending" value="true" />
            <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -490,7 +484,7 @@ sorting actions for table:
     <h:column>
       <f:facet name="header">
        <h:panelGroup>
-        <h:commandLink title="#{selectIndexMessages.t_sortSubmittedDate}" id="reviewsubmitted" rendered="#{select.reviewableSortOrder!='submitted'}">
+        <h:commandLink title="#{selectIndexMessages.t_sortSubmittedDate}" id="reviewsubmitted" rendered="#{select.reviewableSortOrder!='submitted'}" onmouseup="disableLinks(this);">
           <f:param name="reviewableSortType" value="submitted" />
           <f:param name="reviewableAscending" value="true" />
           <f:actionListener
@@ -498,7 +492,7 @@ sorting actions for table:
           <h:outputText value="#{selectIndexMessages.submitted} " rendered="#{select.reviewableSortOrder!='submitted'}"/>
         </h:commandLink>
           <h:outputText value="#{selectIndexMessages.submitted} " styleClass="currentSort" rendered="#{select.reviewableSortOrder=='submitted'}"/>
-        <h:commandLink title="#{selectIndexMessages.t_sortSubmittedDate}" rendered="#{select.reviewableSortOrder=='submitted' && select.reviewableAscending }">
+        <h:commandLink title="#{selectIndexMessages.t_sortSubmittedDate}" rendered="#{select.reviewableSortOrder=='submitted' && select.reviewableAscending }" onmouseup="disableLinks(this);">
           <f:param name="reviewableAscending" value="false" />
           <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
@@ -508,7 +502,7 @@ sorting actions for table:
         </h:commandLink>
 
 
-        <h:commandLink title="#{selectIndexMessages.t_sortSubmittedDate}" rendered="#{select.reviewableSortOrder=='submitted' && !select.reviewableAscending }">
+        <h:commandLink title="#{selectIndexMessages.t_sortSubmittedDate}" rendered="#{select.reviewableSortOrder=='submitted' && !select.reviewableAscending }" onmouseup="disableLinks(this);">
           <f:param name="reviewableAscending" value="true" />
           <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
