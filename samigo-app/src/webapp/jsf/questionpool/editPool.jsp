@@ -198,7 +198,7 @@ var textuncheckall="<h:outputText value="#{questionPoolMessages.t_uncheckAll}"/>
 
 
  <h:commandButton accesskey="#{questionPoolMessages.a_cancel}" style="act" value="#{questionPoolMessages.cancel}" action="poolList" immediate="true"/>
- <h:outputText escape="false" value="<span id=\"submitnotif\" style=\"visibility:hidden\"> Processing.....</span>"/>
+ <h:outputText escape="false" value="<span id=\"submitnotif\" style=\"visibility:hidden\"> #{deliveryMessages.processing}</span>"/>
  </div>
 
 </h:form>
