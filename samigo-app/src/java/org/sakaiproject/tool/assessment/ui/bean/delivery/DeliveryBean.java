@@ -55,6 +55,7 @@ import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.MediaData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentBaseIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
 import org.sakaiproject.tool.assessment.services.GradingService;
@@ -2563,20 +2564,19 @@ public class DeliveryBean
                           getPublishedAssessment().getPublishedAssessmentId().toString())).intValue();
     log.debug("***totalSubmitted="+totalSubmitted);
 
-    log.debug("check 0");
+    // log.debug("check 0");
+    if (isRemoved()){
+        return "isRemoved";
+    }
+    
+    log.debug("check 1");
     // check 0: check for start date
     if (!isAvailable()){
       return ("assessmentNotAvailable");
     }
     
-    log.debug("check 1");
-    // check 1: check for multiple window & browser trick 
-    if (assessmentGrading!=null && !checkDataIntegrity(assessmentGrading)){
-      return ("discrepancyInData");
-    }
-
     log.debug("check 2");
-    // check 2: if workingassessment has been submiited?
+    // check 1: check for multiple window & browser trick 
     // this is to prevent student submit assessment and use a 2nd window to 
     // continue working on the submitted work.
     if (assessmentGrading!=null && getAssessmentHasBeenSubmitted(assessmentGrading)){
@@ -2689,6 +2689,15 @@ public class DeliveryBean
     return isRetracted;
   }
 
+
+  private boolean isRemoved(){
+	  Integer status = publishedAssessment.getStatus();
+	  if (status.equals(AssessmentBaseIfc.DEAD_STATUS)) {
+		  return true;
+	  }
+	  return false;
+  }
+  
   private boolean checkDataIntegrity(AssessmentGradingData assessmentGrading){
     // get assessmentGrading from DB, this is to avoid same assessment being
     // opened in the differnt browser
