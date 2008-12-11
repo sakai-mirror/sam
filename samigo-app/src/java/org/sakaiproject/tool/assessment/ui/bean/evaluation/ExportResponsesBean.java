@@ -26,6 +26,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.jsf.model.PhaseAware;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetDataFileWriterXls;
 import org.sakaiproject.jsf.spreadsheet.SpreadsheetUtil;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
@@ -137,8 +139,12 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
     	String audioMessage = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","audio_message");
     	String fileUploadMessage = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","file_upload_message");
         GradingService gradingService = new GradingService();
-        List<List<Object>> list = gradingService.getExportResponsesData(assessmentId, anonymous, audioMessage, fileUploadMessage);
-        
+        String questionString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","question");
+        String textString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","text");
+        String rationaleString = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","rationale");
+        List exportResponsesDataList = gradingService.getExportResponsesData(assessmentId, anonymous, audioMessage, fileUploadMessage, questionString, textString, rationaleString);
+        List<List<Object>> list = (List<List<Object>>) exportResponsesDataList.get(0);
+
         // Now insert the header line
         ArrayList<Object> headerList = new ArrayList<Object>();
         if (anonymous) {
@@ -151,15 +157,8 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
   		  headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","num_submission"));
   	  	}
         headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","tot"));
-  	  	PublishedAssessmentService pubService = new PublishedAssessmentService();
-  	  	int numberOfQuestions = pubService.getPublishedItemCount(Long.valueOf(assessmentId)).intValue();
-  	  	log.debug("numberOfQuestions=" + numberOfQuestions);
-  	  	for (int i = 1; i <= numberOfQuestions; i++) {
-  		  headerList.add(ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","question") 
-  				  + " " + i + " "
-  				  + ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","text"));
-  	  	}
-  	  	list.add(0,headerList);
+	headerList.addAll((ArrayList) exportResponsesDataList.get(1));
+  	    list.add(0,headerList);
         return list;
     }
     

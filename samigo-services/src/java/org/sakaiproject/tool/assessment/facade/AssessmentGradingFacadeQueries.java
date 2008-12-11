@@ -1566,16 +1566,22 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
       };
       return getHibernateTemplate().executeFind(hcb);
   }
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage) {
-	  ArrayList finalList = new ArrayList();
+  
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String questionString, String textString, String rationaleString) {
+	  ArrayList dataList = new ArrayList();
+	  ArrayList headerList = new ArrayList();
+	  ArrayList finalList = new ArrayList(2);
 	  PublishedAssessmentService pubService = new PublishedAssessmentService();
+	  
 	  HashMap publishedAnswerHash = pubService.preparePublishedAnswerHash(pubService.getPublishedAssessment(publishedAssessmentId.toString()));
 	  HashMap publishedItemTextHash = pubService.preparePublishedItemTextHash(pubService.getPublishedAssessment(publishedAssessmentId.toString()));
 	  HashMap publishedItemHash = pubService.preparePublishedItemHash(pubService.getPublishedAssessment(publishedAssessmentId.toString()));
+	  
 	  List list = getAllOrderedSubmissions(publishedAssessmentId);
 	  Iterator assessmentGradingIter = list.iterator();	  
 	  int numSubmission = 1;
 	  String lastAgentId = "";
+	  boolean fistItemGradingData = true;
 	  while(assessmentGradingIter.hasNext()) {
 		  ArrayList responseList = new ArrayList();
 		  AssessmentGradingData assessmentGradingData = (AssessmentGradingData) assessmentGradingIter.next();
@@ -1614,9 +1620,10 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		  ArrayList grades = new ArrayList();
           grades.addAll(studentGradingMap.values());
 	      Collections.sort(grades, new QuestionComparator(publishedItemHash));
-	      
-	       for (Object oo: grades) {	   
 
+   	   	  int questionNumber = 0;
+	       for (Object oo: grades) {	   
+	    	   questionNumber++;
 	    	   // There can be more than one answer to a question, e.g. for
 	    	   // FIB with more than one blank or matching questions. So sort
 	    	   // by sequence number of answer. (don't bother to sort if just 1)
@@ -1626,6 +1633,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    		   Collections.sort(l, new AnswerComparator(publishedAnswerHash));
 
 	    	   String maintext = "";
+	    	   String rationale = "";
+	    	   boolean addRationale = false;
+	    	   
 	    	   // loop over answers per question
 	    	   int count = 0;
 	    	   ItemGradingIfc grade = null;
@@ -1635,7 +1645,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    		   grade = (ItemGradingIfc)ooo;
 	    		   // now print answer data
 	    		   log.debug("<br> "+ grade.getPublishedItemId() + " " + grade.getRationale() + " " + grade.getAnswerText() + " " + grade.getComments() + " " + grade.getReview());
-	    		   Long publishedItemId = grade.getPublishedItemId();
+	    		   Long publishedItemId = grade.getPublishedItemId();	    		   
 	    		   ItemDataIfc publishedItemData = (ItemDataIfc) publishedItemHash.get(publishedItemId);
 	    		   Long typeId = publishedItemData.getTypeId();
 	    		   if (typeId.equals(TypeIfc.FILL_IN_BLANK) || typeId.equals(TypeIfc.FILL_IN_NUMERIC)) {
@@ -1726,7 +1736,21 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
 		    		   count++;
 	    		   }
-	    	   }
+
+	    		   
+	    		   // taking care of rationale
+	    		   if (!addRationale && (typeId.equals(TypeIfc.MULTIPLE_CHOICE) || typeId.equals(TypeIfc.MULTIPLE_CORRECT) || typeId.equals(TypeIfc.TRUE_FALSE))) {
+	    			   log.debug("MULTIPLE_CHOICE or MULTIPLE_CORRECT or MULTIPLE_CORRECT_SINGLE_SELECTION or TRUE_FALSE");
+	    			   if (publishedItemData.getHasRationale()) {
+	    				   addRationale = true;
+	    				   rationale = grade.getRationale();
+	    				   if (rationale == null) {
+	    					   rationale = "";
+	    				   }
+	    			   }
+	    		   }
+	    	   } // inner for - answers
+
 	    	   
 	    	   if (isFinFib && maintext.indexOf("No Answer") >= 0 && count == 1) {
 	    		   maintext = "No Answer";
@@ -1734,12 +1758,33 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    	   else if (maintext.equals("")) {
 	    		   maintext = "No Answer";
 	    	   }
-	    	   
+
 	    	   responseList.add(maintext);
-	       }
-	       finalList.add(responseList);
+
+	    	   if (addRationale) {
+	    		   responseList.add(rationale);
+	    	   }
+	    	   
+	    	   // Only set header based on the first item grading data
+	    	   if (fistItemGradingData) {
+	    		   headerList.add(makeHeader(questionString, textString, questionNumber));
+	    		   if (addRationale) {
+	    			   headerList.add(makeHeader(questionString, rationaleString, questionNumber));
+	    		   }
+	    	   }
+	    } // outer for - questions
+  
+	       
+           dataList.add(responseList);
+           
+           if (fistItemGradingData) {
+ 			  fistItemGradingData = false;
+	   }
 	  }
-	  Collections.sort(finalList, new ResponsesComparator(anonymous));
+  
+	  Collections.sort(dataList, new ResponsesComparator(anonymous));
+	  finalList.add(dataList);
+	  finalList.add(headerList);
 	  return finalList;
   }
   
@@ -2011,4 +2056,13 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
    	    }
 	}
 	
+	
+	private String makeHeader(String question, String headerType, int questionNumber) {
+		StringBuffer sb = new StringBuffer(question);
+		sb.append(" ");
+		sb.append(questionNumber);
+		sb.append(" ");
+		sb.append(headerType);
+		return sb.toString();
+	}
 }
