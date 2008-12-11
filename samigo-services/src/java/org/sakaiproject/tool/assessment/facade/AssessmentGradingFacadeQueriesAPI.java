@@ -194,4 +194,7 @@ public interface AssessmentGradingFacadeQueriesAPI
   public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage);
 
   public void removeUnsubmittedAssessmentGradingData(AssessmentGradingIfc data);
+
+  public String getFilename(Long itemGradingId, String agentId, String filename);
+
 }
