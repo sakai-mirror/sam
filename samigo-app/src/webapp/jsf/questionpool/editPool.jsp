@@ -177,7 +177,7 @@
 
 
  <h:commandButton accesskey="#{questionPoolMessages.a_cancel}" style="act" value="#{questionPoolMessages.cancel}" action="poolList" immediate="true"/>
- <h:outputText escape="false" value="<span id=\"submitnotif\" style=\"visibility:hidden\"> Processing.....</span>"/>
+ <h:outputText escape="false" value="<span id=\"submitnotif\" style=\"visibility:hidden\"> #{questionPoolMessages.processing}</span>"/>
  </div>
 
 </h:form>
