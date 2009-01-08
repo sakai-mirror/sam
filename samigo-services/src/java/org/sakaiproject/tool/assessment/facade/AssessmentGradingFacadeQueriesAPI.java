@@ -191,5 +191,10 @@ public interface AssessmentGradingFacadeQueriesAPI
 
   public int getLateSubmissionsNumberByAgentId(Long publishedAssessmentId, String agentIdString, Date dueDate);
   
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage);
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String questionString, String textString, String rationaleString);
+
+  public void removeUnsubmittedAssessmentGradingData(AssessmentGradingIfc data);
+
+  public String getFilename(Long itemGradingId, String agentId, String filename);
+
 }

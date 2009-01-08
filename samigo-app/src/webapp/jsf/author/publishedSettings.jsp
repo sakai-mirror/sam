@@ -77,12 +77,45 @@ function disableAllFeedbackCheck(feedbackType)
   }
   document.forms[0].submit();
 }
+
+ 
+function setBlockDivs()
+{  
+   //alert("setBlockDivs()");
+   var divisionNo = ""; 
+   var blockDivs = ""; 
+   blockElements = document.getElementsByTagName("div");
+   //alert("blockElements.length" + blockElements.length);
+   for (i=0 ; i < blockElements.length; i++)
+   {
+      divisionNo = "" + blockElements[i].id;
+	  //alert("divisionNo=" + divisionNo);
+	  //alert("display=" + blockElements[i].style.display);
+      if(divisionNo.indexOf("__hide_division_assessmentSettingsAction") >=0 && blockElements[i].style.display == "block")
+      { 
+         //alert("divisionNo=" + divisionNo);
+         var id = divisionNo.substring(41);
+		 if (blockDivs == "") {
+            blockDivs = id;
+         }
+		 else {
+			 blockDivs = blockDivs + ";" + id; 
+		 }
+		 //alert("blockDivs=" + blockDivs);
+	  }
+   }
+   //document.forms[0].elements['assessmentSettingsAction:blockDivs'].value = "_id224";
+   document.forms[0].elements['assessmentSettingsAction:blockDivs'].value = blockDivs;
+}
+
+>>>>>>> .merge-right.r52147
 </script>
 
 <div class="portletBody">
 <!-- content... -->
 <h:form id="assessmentSettingsAction">
   <h:inputHidden id="assessmentId" value="#{publishedSettings.assessmentId}"/>
+  <h:inputHidden id="blockDivs" value=""/>
 
   <!-- HEADINGS -->
   <%@ include file="/jsf/author/allHeadings.jsp" %>
@@ -410,7 +443,7 @@ function disableAllFeedbackCheck(feedbackType)
       <h:panelGrid columns="1" rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable==true}" >
   		<h:selectOneRadio id="feedbackDelivery2" rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable==true}"
              value="#{publishedSettings.feedbackDelivery}"
-           layout="pageDirection" onclick="disableAllFeedbackCheck(this.value);">
+           layout="pageDirection" onclick="setBlockDivs();disableAllFeedbackCheck(this.value);">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.immediate_feedback}"/>
 		  <f:selectItem itemValue="4" itemLabel="#{assessmentSettingsMessages.feedback_on_submission} #{assessmentSettingsMessages.note_of_feedback_on_submission}"/>
           <f:selectItem itemValue="3" itemLabel="#{assessmentSettingsMessages.no_feedback}"/>
@@ -648,7 +681,7 @@ function disableAllFeedbackCheck(feedbackType)
 </h:form>
 <!-- end content -->
 </div>
-        <script language="javascript" style="text/JavaScript">hideUnhideAllDivsExceptOne('none');</script>
+        <script language="javascript" style="text/JavaScript">retainHideUnhideStatus('none');</script>
       </body>
     </html>
   </f:view>

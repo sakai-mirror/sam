@@ -43,6 +43,7 @@ import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.MediaData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
@@ -57,7 +58,7 @@ import org.sakaiproject.tool.assessment.facade.TypeFacade;
 import org.sakaiproject.tool.assessment.facade.TypeFacadeQueriesAPI;
 import org.sakaiproject.tool.assessment.integration.context.IntegrationContextFactory;
 import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceHelper;
-//import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
+import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 
 /**
  * The GradingService calls the back end to get/store grading information. 
@@ -767,6 +768,11 @@ public class GradingService
     notifyGradebookByScoringType(data, pub);
     log.debug("****x8. "+(new Date()).getTime());
     //log.debug("**#2 total AutoScore"+data.getTotalAutoScore());
+    
+    if (Boolean.TRUE.equals(data.getForGrade())) {
+    	// remove the assessmentGradingData created during gradiing (by updatding total score page)
+    	removeUnsubmittedAssessmentGradingData(data);
+    }
   }
 
   private float getTotalAutoScore(Set itemGradingSet){
@@ -945,7 +951,9 @@ public class GradingService
     GradebookServiceHelper gbsHelper =
       IntegrationContextFactory.getInstance().getGradebookServiceHelper();
 
-    if (gbsHelper.gradebookExists(GradebookFacade.getGradebookUId(), g)
+    PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+	String currentSiteId = publishedAssessmentService.getPublishedAssessmentSiteId(pub.getPublishedAssessmentId().toString());
+    if (gbsHelper.gradebookExists(GradebookFacade.getGradebookUId(currentSiteId), g)
         && toGradebook.equals(EvaluationModelIfc.TO_DEFAULT_GRADEBOOK.toString())){
         if(log.isDebugEnabled()) log.debug("Attempting to update a score in the gradebook");
 
@@ -954,51 +962,34 @@ public class GradingService
     int retryCount = PersistenceService.getInstance().getRetryCount().intValue();
     while (retryCount > 0){
       try {
-        /* for testing the catch block 
-        if (retryCount >2)
-          throw new Exception();
-        */
         gbsHelper.updateExternalAssessmentScore(data, g);
         retryCount = 0;
       }
       catch (Exception e) {
-        log.warn("problem sending grades to gradebook: "+e.getMessage());
-        log.warn("retrying...sending grades to gradebook. ");
-        //String errorMessage = e.getMessage();
+	  log.warn("problem sending grades to gradebook: "+e.getMessage());
+          log.warn("retrying...sending grades to gradebook. ");
           log.warn("retry....");
-          retryCount--;
-          try {
-            int deadlockInterval = PersistenceService.getInstance().getDeadlockInterval().intValue();
-            Thread.sleep(deadlockInterval);
-          }
-          catch(InterruptedException ex){
-            log.warn(ex.getMessage());
-          }
-         if (retryCount==0) {
-            // after retries, still failed updating gradebook
-            log.warn("After all retries, still failed ...  Now throw error to UI");
-            throw new GradebookServiceException(e);
-         }
+	  retryCount--;
+	  try {
+	      int deadlockInterval = PersistenceService.getInstance().getDeadlockInterval().intValue();
+	      Thread.sleep(deadlockInterval);
+	  }
+	  catch(InterruptedException ex){
+	      log.warn(ex.getMessage());
+	  }
+	  if (retryCount==0) {
+	      // after retries, still failed updating gradebook
+	      log.warn("After all retries, still failed ...  Now throw error to UI");
+	      throw new GradebookServiceException(e);
+	  }
       }
     }
-
-////
-
-/*
-        try {
-            gbsHelper.updateExternalAssessmentScore(data, g);
-        } catch (Exception e) {
-            // Got GradebookException from gradebook tool 
-            e.printStackTrace();
-            throw new GradebookServiceException(e);
-
-        }
-*/
     } else {
        if(log.isDebugEnabled()) log.debug("Not updating the gradebook.  toGradebook = " + toGradebook);
     }
   }
 
+  
  /**
    * This grades Fill In Blank questions.  (see SAK-1685) 
 
@@ -1604,15 +1595,39 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	    return numberRetake;
   }
   
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage) {
+
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String questionString, String textString, String rationaleString) {
 	  List list = null;
 	    try {
 	    	list = PersistenceService.getInstance().
-	        getAssessmentGradingFacadeQueries().getExportResponsesData(publishedAssessmentId, anonymous,audioMessage, fileUploadMessage);
+	        getAssessmentGradingFacadeQueries().getExportResponsesData(publishedAssessmentId, anonymous,audioMessage, fileUploadMessage, questionString, textString, rationaleString);
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	    }
 	    return list;
+  }
+  
+  private void removeUnsubmittedAssessmentGradingData(AssessmentGradingIfc data){
+	  try {
+	      PersistenceService.getInstance().
+	        getAssessmentGradingFacadeQueries().removeUnsubmittedAssessmentGradingData(data);
+	    } catch (Exception e) {
+	      //e.printStackTrace();
+	      log.error("Exception thrown from removeUnsubmittedAssessmentGradingData" + e.getMessage());
+	    }
+  }
+  
+  
+
+  public String getFileName(Long itemGradingId, String agentId, String filename) {
+	  String name = "";
+	    try {
+	    	name = PersistenceService.getInstance().
+	        getAssessmentGradingFacadeQueries().getFilename(itemGradingId, agentId, filename);
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return name;
   }
 }
 

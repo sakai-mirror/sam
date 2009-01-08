@@ -106,6 +106,7 @@ function disableAllFeedbackCheck(feedbackType)
       }
     }
   }
+
   document.forms[0].onsubmit();
   document.forms[0].submit();
 }
@@ -199,6 +200,35 @@ function uncheckOther(field){
  
 }
 
+function setBlockDivs()
+{  
+   //alert("setBlockDivs()");
+   var divisionNo = ""; 
+   var blockDivs = ""; 
+   blockElements = document.getElementsByTagName("div");
+   //alert("blockElements.length" + blockElements.length);
+   for (i=0 ; i < blockElements.length; i++)
+   {
+      divisionNo = "" + blockElements[i].id;
+	  //alert("divisionNo=" + divisionNo);
+	  //alert("display=" + blockElements[i].style.display);
+      if(divisionNo.indexOf("__hide_division_assessmentSettingsAction") >=0 && blockElements[i].style.display == "block")
+      { 
+         //alert("divisionNo=" + divisionNo);
+         var id = divisionNo.substring(41);
+		 if (blockDivs == "") {
+            blockDivs = id;
+         }
+		 else {
+			 blockDivs = blockDivs + ";" + id; 
+		 }
+		 //alert("blockDivs=" + blockDivs);
+	  }
+   }
+   //document.forms[0].elements['assessmentSettingsAction:blockDivs'].value = "_id224";
+   document.forms[0].elements['assessmentSettingsAction:blockDivs'].value = blockDivs;
+}
+
 
 //-->
 </script>
@@ -214,6 +244,7 @@ function uncheckOther(field){
 <h:form id="assessmentSettingsAction" onsubmit="return editorCheck();">
 
   <h:inputHidden id="assessmentId" value="#{assessmentSettings.assessmentId}"/>
+  <h:inputHidden id="blockDivs" value=""/>
 
   <!-- HEADINGS -->
   <%@ include file="/jsf/author/allHeadings.jsp" %>
@@ -380,9 +411,8 @@ function uncheckOther(field){
     <h:panelGrid
         summary="#{templateMessages.timed_assmt_sec}">
       <h:panelGroup rendered="#{assessmentSettings.valueMap.timedAssessment_isInstructorEditable==true}">
-        <h:selectBooleanCheckbox id="selTimeAssess" onclick="checkUncheckTimeBox();document.forms[0].onsubmit();document.forms[0].submit();"
+        <h:selectBooleanCheckbox id="selTimeAssess" onclick="checkUncheckTimeBox();setBlockDivs();document.forms[0].onsubmit();document.forms[0].submit();"
          value="#{assessmentSettings.valueMap.hasTimeAssessment}">
-					<f:valueChangeListener type="org.sakaiproject.tool.assessment.ui.listener.author.TimedAssessmentChangeListener" />
 				</h:selectBooleanCheckbox>
         <h:outputText value="#{assessmentSettingsMessages.timed_assessment} " />
 				<h:selectOneMenu id="timedHours" value="#{assessmentSettings.timedHours}" disabled="#{!assessmentSettings.valueMap.hasTimeAssessment}" >
@@ -421,7 +451,7 @@ function uncheckOther(field){
   <f:verbatim> <div class="longtext"></f:verbatim> <h:outputLabel for="itemNavigation" value="#{assessmentSettingsMessages.navigation}" /><f:verbatim></div><div class="tier3"></f:verbatim>
       <h:panelGrid columns="2"  >
         <h:selectOneRadio id="itemNavigation" value="#{assessmentSettings.itemNavigation}"  layout="pageDirection" 
-		onclick="submitForm();">
+		onclick="setBlockDivs();submitForm();">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.linear_access}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.random_access}"/>
         </h:selectOneRadio>
@@ -571,7 +601,7 @@ function uncheckOther(field){
    
       <h:panelGrid border="0" columns="1"  >
         <h:selectOneRadio id="feedbackDelivery" value="#{assessmentSettings.feedbackDelivery}"
-           layout="pageDirection" onclick="disableAllFeedbackCheck(this.value);">
+           layout="pageDirection" onclick="setBlockDivs();disableAllFeedbackCheck(this.value);">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.immediate_feedback}"/>
           <f:selectItem itemValue="4" itemLabel="#{assessmentSettingsMessages.feedback_on_submission} #{assessmentSettingsMessages.note_of_feedback_on_submission}"/>
           <f:selectItem itemValue="3" itemLabel="#{assessmentSettingsMessages.no_feedback}"/>
@@ -797,7 +827,7 @@ function uncheckOther(field){
 </h:form>
 <!-- end content -->
 </div>
-         <script language="javascript" style="text/JavaScript">hideUnhideAllDivsExceptOne('none');</script>
+         <script language="javascript" style="text/JavaScript">retainHideUnhideStatus('none');</script>
       </body>
     </html>
   </f:view>

@@ -102,7 +102,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
       final HibernateCallback hcb = new HibernateCallback(){
       	public Object doInHibernate(Session session) throws HibernateException, SQLException {
       		Query q = session.createQuery(
-      				"from AssessmentGradingData a where a.publishedAssessmentId=? and a.forGrade=? order by a.agentId ASC, a.finalScore DESC, a.submittedDate DESC");
+      				"from AssessmentGradingData a where a.publishedAssessmentId=? " +
+      				"and (a.forGrade=? or a.gradedBy is not null or a.gradedDate is not null) " +
+      				"order by a.agentId ASC, a.finalScore DESC, a.submittedDate DESC");
       		q.setLong(0, Long.parseLong(publishedId));
       		q.setBoolean(1, true);
       		return q.list();
@@ -119,7 +121,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     	    final HibernateCallback hcb2 = new HibernateCallback(){
     	    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
     	    		Query q = session.createQuery(
-    	    				"from AssessmentGradingData a where a.publishedAssessmentId=? and a.forGrade=? order by a.agentId ASC, a.submittedDate DESC");
+    	    				"from AssessmentGradingData a where a.publishedAssessmentId=? " +
+    	    				"and (a.forGrade=? or a.gradedBy is not null or a.gradedDate is not null) " +
+    	    				"order by a.agentId ASC, a.submittedDate DESC");
     	      		q.setLong(0, Long.parseLong(publishedId));
     	      		q.setBoolean(1, true);
     	    		return q.list();
@@ -184,8 +188,6 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 //      List list = getHibernateTemplate().find("from AssessmentGradingData a where a.publishedAssessmentId=? and a.forGrade=1", objects, types);
 //      return list;
   }
-
-
 
   public HashMap getItemScores(Long publishedId, final Long itemId, String which)
   {
@@ -281,7 +283,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
       final HibernateCallback hcb = new HibernateCallback(){
       	public Object doInHibernate(Session session) throws HibernateException, SQLException {
-      		Query q = session.createQuery("from AssessmentGradingData a where a.publishedAssessmentId=? and a.agentId=? order by a.submittedDate DESC");
+      		Query q = session.createQuery("from AssessmentGradingData a where a.publishedAssessmentId=? " +
+      				"and a.agentId=? and a.gradedBy is null and a.gradedDate is null " +
+      				"order by a.submittedDate DESC");
       		q.setLong(0, publishedId.longValue());
       		q.setString(1, agentId);
       		return q.list();
@@ -1003,13 +1007,15 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
   
   public List getHighestSubmittedAssessmentGradingList(final Long publishedAssessmentId){
-	    final String query = "from AssessmentGradingData a where a.publishedAssessmentId=? and a.forGrade=? order by a.agentId asc, a.finalScore desc";
+	    final String query = "from AssessmentGradingData a where a.publishedAssessmentId=? and (a.forGrade=? or (a.forGrade=? and a.status=?)) order by a.agentId asc, a.finalScore desc";
 
 	    final HibernateCallback hcb = new HibernateCallback(){
 	    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
 	    		Query q = session.createQuery(query);
 	    		q.setLong(0, publishedAssessmentId.longValue());
 	    		q.setBoolean(1, true);
+	    		q.setBoolean(2, false);
+	    		q.setInteger(3, AssessmentGradingIfc.NO_SUBMISSION.intValue());
 	    		return q.list();
 	    	};
 	    };
@@ -1560,16 +1566,22 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
       };
       return getHibernateTemplate().executeFind(hcb);
   }
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage) {
-	  ArrayList finalList = new ArrayList();
+  
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String questionString, String textString, String rationaleString) {
+	  ArrayList dataList = new ArrayList();
+	  ArrayList headerList = new ArrayList();
+	  ArrayList finalList = new ArrayList(2);
 	  PublishedAssessmentService pubService = new PublishedAssessmentService();
+	  
 	  HashMap publishedAnswerHash = pubService.preparePublishedAnswerHash(pubService.getPublishedAssessment(publishedAssessmentId.toString()));
 	  HashMap publishedItemTextHash = pubService.preparePublishedItemTextHash(pubService.getPublishedAssessment(publishedAssessmentId.toString()));
 	  HashMap publishedItemHash = pubService.preparePublishedItemHash(pubService.getPublishedAssessment(publishedAssessmentId.toString()));
+	  
 	  List list = getAllOrderedSubmissions(publishedAssessmentId);
 	  Iterator assessmentGradingIter = list.iterator();	  
 	  int numSubmission = 1;
 	  String lastAgentId = "";
+	  boolean fistItemGradingData = true;
 	  while(assessmentGradingIter.hasNext()) {
 		  ArrayList responseList = new ArrayList();
 		  AssessmentGradingData assessmentGradingData = (AssessmentGradingData) assessmentGradingIter.next();
@@ -1608,9 +1620,10 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		  ArrayList grades = new ArrayList();
           grades.addAll(studentGradingMap.values());
 	      Collections.sort(grades, new QuestionComparator(publishedItemHash));
-	      
-	       for (Object oo: grades) {	   
 
+   	   	  int questionNumber = 0;
+	       for (Object oo: grades) {	   
+	    	   questionNumber++;
 	    	   // There can be more than one answer to a question, e.g. for
 	    	   // FIB with more than one blank or matching questions. So sort
 	    	   // by sequence number of answer. (don't bother to sort if just 1)
@@ -1620,6 +1633,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    		   Collections.sort(l, new AnswerComparator(publishedAnswerHash));
 
 	    	   String maintext = "";
+	    	   String rationale = "";
+	    	   boolean addRationale = false;
+	    	   
 	    	   // loop over answers per question
 	    	   int count = 0;
 	    	   ItemGradingIfc grade = null;
@@ -1629,7 +1645,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    		   grade = (ItemGradingIfc)ooo;
 	    		   // now print answer data
 	    		   log.debug("<br> "+ grade.getPublishedItemId() + " " + grade.getRationale() + " " + grade.getAnswerText() + " " + grade.getComments() + " " + grade.getReview());
-	    		   Long publishedItemId = grade.getPublishedItemId();
+	    		   Long publishedItemId = grade.getPublishedItemId();	    		   
 	    		   ItemDataIfc publishedItemData = (ItemDataIfc) publishedItemHash.get(publishedItemId);
 	    		   Long typeId = publishedItemData.getTypeId();
 	    		   if (typeId.equals(TypeIfc.FILL_IN_BLANK) || typeId.equals(TypeIfc.FILL_IN_NUMERIC)) {
@@ -1720,7 +1736,21 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
 		    		   count++;
 	    		   }
-	    	   }
+
+	    		   
+	    		   // taking care of rationale
+	    		   if (!addRationale && (typeId.equals(TypeIfc.MULTIPLE_CHOICE) || typeId.equals(TypeIfc.MULTIPLE_CORRECT) || typeId.equals(TypeIfc.TRUE_FALSE))) {
+	    			   log.debug("MULTIPLE_CHOICE or MULTIPLE_CORRECT or MULTIPLE_CORRECT_SINGLE_SELECTION or TRUE_FALSE");
+	    			   if (publishedItemData.getHasRationale()) {
+	    				   addRationale = true;
+	    				   rationale = grade.getRationale();
+	    				   if (rationale == null) {
+	    					   rationale = "";
+	    				   }
+	    			   }
+	    		   }
+	    	   } // inner for - answers
+
 	    	   
 	    	   if (isFinFib && maintext.indexOf("No Answer") >= 0 && count == 1) {
 	    		   maintext = "No Answer";
@@ -1728,12 +1758,33 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    	   else if (maintext.equals("")) {
 	    		   maintext = "No Answer";
 	    	   }
-	    	   
+
 	    	   responseList.add(maintext);
-	       }
-	       finalList.add(responseList);
+
+	    	   if (addRationale) {
+	    		   responseList.add(rationale);
+	    	   }
+	    	   
+	    	   // Only set header based on the first item grading data
+	    	   if (fistItemGradingData) {
+	    		   headerList.add(makeHeader(questionString, textString, questionNumber));
+	    		   if (addRationale) {
+	    			   headerList.add(makeHeader(questionString, rationaleString, questionNumber));
+	    		   }
+	    	   }
+	    } // outer for - questions
+  
+	       
+           dataList.add(responseList);
+           
+           if (fistItemGradingData) {
+ 			  fistItemGradingData = false;
+	   }
 	  }
-	  Collections.sort(finalList, new ResponsesComparator(anonymous));
+  
+	  Collections.sort(dataList, new ResponsesComparator(anonymous));
+	  finalList.add(dataList);
+	  finalList.add(headerList);
 	  return finalList;
   }
   
@@ -1882,5 +1933,136 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 				return 0;
 			}
 		}
+	}
+	
+	  public void removeUnsubmittedAssessmentGradingData(final AssessmentGradingIfc data) {
+		    final HibernateCallback hcb = new HibernateCallback(){
+		    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		    		Query q = session.createQuery(
+		    				"from AssessmentGradingData a where a.publishedAssessmentId=? and a.agentId=? " +
+		    				"and a.forGrade=? and a.gradedBy is not null and a.gradedDate is not null " +
+		    				"order by a.submittedDate desc");
+		    		q.setLong(0, data.getPublishedAssessmentId().longValue());
+		    		q.setString(1, data.getAgentId());
+		    		q.setBoolean(2, false);
+		    		return q.list();
+		    	};
+		    };
+		    List assessmentGradings = getHibernateTemplate().executeFind(hcb);
+		    if (assessmentGradings.size() != 0) { 
+		    	deleteAll(assessmentGradings);
+		    }
+	  }
+	public String getFilename(Long itemGradingId, String agentId, String filename) {
+		int dotIndex = filename.lastIndexOf(".");
+   	    if (dotIndex < 0) {
+   	    	return getFilenameWOExtesion(itemGradingId, agentId, filename);
+   	    }
+   	    else {
+   	    	return getFilenameWExtesion(itemGradingId, agentId, filename, dotIndex);
+   	    }
+	}
+
+	private String getFilenameWOExtesion(Long itemGradingId, String agentId, String filename) {
+		StringBuffer bindVar = new StringBuffer(filename);
+		bindVar.append("%");
+		
+   	    Object [] values = {itemGradingId.longValue(), agentId, bindVar.toString()};
+	    List list = getHibernateTemplate().find(
+	    		"select filename from MediaData m where m.itemGradingData.itemGradingId=? and m.createdBy=? and m.filename like ?", values);
+   	    if (list.size() == 0) {
+	    	return filename;
+	    }
+   	    
+   	    HashSet hs = new HashSet();
+   	    Iterator iter = list.iterator();
+   	    String name = "";
+   	    // Only add the filename which
+   	    // 1. with no extension because the newly updated one has no extention
+   	    // 2. name is same to filename or name like filename(...
+   	    // For example, if the filename is ab. We only want ab, ab(1), ab(2)... and don't want abc to be in
+   	    while(iter.hasNext()) {
+   	    	name = ((String) iter.next()).trim();
+   	    	if (name.indexOf(".") < 0 && (name.equals(filename) || name.startsWith(filename + "("))) {
+   	    		hs.add(name);
+   	    	}
+   	    }
+   	    
+   	    if (hs.size() == 0) {
+   	    	return filename;
+   	    }
+   	    
+   	    StringBuffer testName = new StringBuffer(filename);
+	    int i = 1;
+	    while(true) {
+	    	if (!hs.contains(testName.toString())) {
+	    		return testName.toString();
+	    	}
+	    	else {
+	    		i++;
+	    		testName = new StringBuffer(filename);
+	    	    testName.append("(");
+	    		testName.append(i);
+	    		testName.append(")");
+	    	}
+	    }
+	}
+	
+	private String getFilenameWExtesion(Long itemGradingId, String agentId, String filename, int dotIndex) {
+		String filenameWithoutExtension = filename.substring(0, dotIndex);
+		StringBuffer bindVar = new StringBuffer(filenameWithoutExtension);
+		bindVar.append("%");
+		bindVar.append(filename.substring(dotIndex));
+   	       	    
+		Object [] values = {itemGradingId.longValue(), agentId, bindVar.toString()};
+	    List list = getHibernateTemplate().find(
+	    		"select filename from MediaData m where m.itemGradingData.itemGradingId=? and m.createdBy=? and m.filename like ?", values);
+   	    if (list.size() == 0) {
+	    	return filename;
+	    }
+   	    
+   	    HashSet hs = new HashSet();
+   	    Iterator iter = list.iterator();
+   	    String name = "";
+   	    int nameLenght = 0;
+   	    String extension = filename.substring(dotIndex);
+   	    int extensionLength = extension.length();
+   	    while(iter.hasNext()) {
+   	    	name = ((String) iter.next()).trim();
+   	    	if ((name.equals(filename) || name.startsWith(filenameWithoutExtension + "("))) {
+   	    		nameLenght = name.length();
+   	    		hs.add(name.substring(0, nameLenght - extensionLength));
+   	    	}
+   	    }
+   	    
+   	    if (hs.size() == 0) {
+   	    	return filename;
+   	    }
+   	    
+	    StringBuffer testName = new StringBuffer(filenameWithoutExtension);
+	    int i = 1;
+   	    while(true) {
+	    	if (!hs.contains(testName.toString())) {
+	    		testName.append(extension);
+	    		return testName.toString();
+	    	}
+	    	else {
+	    		i++;
+	    		testName = new StringBuffer(filenameWithoutExtension);
+	    	    testName.append("(");
+	    		testName.append(i);
+	    		testName.append(")");
+	    	}
+   	    }
+	}
+	
+	
+	private String makeHeader(String question, String headerType, int questionNumber) {
+		StringBuffer sb = new StringBuffer(question);
+		sb.append(" ");
+		sb.append(questionNumber);
+		sb.append(" ");
+		sb.append(headerType);
+		return sb.toString();
 	}
 }
