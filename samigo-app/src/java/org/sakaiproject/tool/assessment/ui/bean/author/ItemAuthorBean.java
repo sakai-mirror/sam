@@ -1179,6 +1179,9 @@ public class ItemAuthorBean
       session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
       return newAttachmentList;
     }
+    else if (item == null) {
+    	return new ArrayList();
+    }
     else return item.getItemAttachmentList();
   }
 
