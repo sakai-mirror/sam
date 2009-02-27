@@ -3,7 +3,6 @@
   <comment/>
   <projects>
     <project>entitybroker-api</project>
-    <project>sakai-gradebook-service</project>
     <project>sakai-gradebook-service-api</project>
     <project>sakai-jsf-app</project>
     <project>sakai-jsf-tool</project>
