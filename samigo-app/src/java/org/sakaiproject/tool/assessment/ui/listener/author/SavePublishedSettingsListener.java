@@ -237,10 +237,10 @@ public class SavePublishedSettingsListener
           List list = null;
           
           if ((scoringType).equals(EvaluationModelIfc.HIGHEST_SCORE)){
-        	  list = gradingService.getHighestSubmittedAssessmentGradingList(assessment.getPublishedAssessmentId());
+        	  list = gradingService.getHighestSubmittedOrGradedAssessmentGradingList(assessment.getPublishedAssessmentId());
           }
           else {
-           list = gradingService.getLastSubmittedAssessmentGradingList(assessment.getPublishedAssessmentId());
+        	  list = gradingService.getLastSubmittedOrGradedAssessmentGradingList(assessment.getPublishedAssessmentId());
           }
           
           //ArrayList list = gradingService.getAllSubmissions(assessment.getPublishedAssessmentId().toString());
@@ -271,8 +271,6 @@ public class SavePublishedSettingsListener
         }
       }
     }
-
-    assessmentService.saveAssessment(assessment);
 
     //#4 - regenerate the publsihed assessment list in autor bean again
     // sortString can be of these value:title,releaseTo,dueDate,startDate
