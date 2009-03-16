@@ -72,6 +72,7 @@ private Long assessmentGradingId;
   private ArrayList itemGradingArrayList;
   private String rationale="";
   private boolean retakeAllowed;
+  private Integer timeElapsed;
   
   public AgentResults() {
   }
@@ -352,5 +353,13 @@ private Long assessmentGradingId;
 	}
 	public void setRetakeAllowed(boolean retakeAllowed) {
 		this.retakeAllowed = retakeAllowed;
+	}
+
+
+	public Integer getTimeElapsed() {
+		return timeElapsed;
+	}
+	public void setTimeElapsed(Integer timeElapsed) {
+		this.timeElapsed = timeElapsed;
 	}
 }
