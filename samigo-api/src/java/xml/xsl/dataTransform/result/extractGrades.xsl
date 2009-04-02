@@ -2,8 +2,19 @@
 <!--
  * <p>Title: NavigoProject.org</p>
  * <p>Description: QTI Persistence XML to XML Transform</p>
- * <p>Copyright 2003, Trustees of Indiana University, The Regents of the University
- * of Michigan, and Stanford University, all rights reserved.</p>
+ * <p>Copyright (c) 2003 The Sakai Foundation<br />
+ *
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at<br />
+ *
+ *       http://www.osedu.org/licenses/ECL-2.0<br />
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.</p>
  * @author <a href="mailto:esmiley@stanford.edu">Ed Smiley</a>
  * @version $Id: extractGrades.xsl,v 1.1.1.1 2004/07/28 21:32:09 rgollub.stanford.edu Exp $
 -->

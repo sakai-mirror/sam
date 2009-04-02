@@ -19,8 +19,6 @@
  *
  **********************************************************************************/
 
-
-
 package org.sakaiproject.tool.assessment.ui.bean.author;
 
 import java.io.Serializable;
@@ -30,17 +28,6 @@ import java.util.Collection;
 import org.apache.struts.upload.FormFile;
 
 /**
- * <p>
- * Title: sakaiproject.org
- * </p>
- *
- * <p>
- * Description: form for uploading media.
- * </p>
- *
- * Copyright 2003, Trustees of Indiana University, The Regents of the University
- * of Michigan, and Stanford University, all rights reserved.
- *
  * Used to be org.navigoproject.ui.web.form.edit.FileUploadForm.java
  *
  * @author Rachel Gollub
