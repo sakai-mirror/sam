@@ -1,16 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/liveconnect/plugin/1.5/plugin-1.5.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sakai-samigo-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sakai-samigo-cp"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sakai-samigo-help"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sakai-samigo-hibernate"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sakai-samigo-pack"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sakai-samigo-qti"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sakai-samigo-services"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sakai-samlite-impl"/>
-	<classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="src" path="src/java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/liveconnect/plugin/1.5/plugin-1.5.jar"/>
 </classpath>
