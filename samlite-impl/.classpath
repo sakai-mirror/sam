@@ -6,7 +6,7 @@
   <classpathentry kind="var" path="M2_REPO/ims/imsqti/1.2/imsqti-1.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/xmlbeans/jsr173/1.0_api/jsr173-1.0_api.jar"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.0.6/sakai-component-manager-1.0.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.0.7/sakai-component-manager-1.0.7.jar"/>
   <classpathentry kind="src" path="/sakai-samigo-api"/>
   <classpathentry kind="var" path="M2_REPO/xmlbeans/xbean/2.2.0/xbean-2.2.0.jar"/>
 </classpath>
