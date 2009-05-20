@@ -253,6 +253,9 @@ window.open('../evaluation/createNewEmail.faces','createEmail','width=600,height
   </h:dataTable>
 </div>
 
+<h:outputText value="#{author.updateFormTime}" />
+<h:inputHidden value="#{author.currentFormTime}" />
+
 <h:outputLink id="createEmail" onclick="clickEmailLink(this);" value="../evaluation/gradeStudentResult">
   <h:outputText value="  #{evaluationMessages.email} #{studentScores.firstName}" rendered="#{studentScores.email != null && studentScores.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
 </h:outputLink>
