@@ -1,3 +1,4 @@
+<html>
 <%@ page contentType="text/html;charset=utf-8" pageEncoding="utf-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
@@ -5,18 +6,19 @@
 <!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<!-- $Id$
+ 
+<!--
+* $Id: timeout.jsp 4069 2005-11-21 19:33:41Z hquinn@stanford.edu $
 <%--
 ***********************************************************************************
 *
 * Copyright (c) 2004, 2005, 2006 The Sakai Foundation.
 *
-* Licensed under the Educational Community License, Version 1.0 (the"License");
+* Licensed under the Educational Community License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
 *
-*      http://www.opensource.org/licenses/ecl1.php
+*      http://www.osedu.org/licenses/ECL-2.0
 *
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,40 +32,21 @@
   <f:view>
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head><%= request.getAttribute("html.head") %>
-      <title><h:outputText value="#{questionPoolMessages.copy_q}"/></title>
+      <title><h:outputText value="#{evaluationMessages.data_discrepancy_title}"/></title>
       </head>
       <body onload="<%= request.getAttribute("html.body.onload") %>">
-<!-- content... -->
+
 <div class="portletBody">
-<div class="heading">Copy Question</div>
-
-
-<h2>Question Text:</h2>
-<br>
-<logic:iterate id="qpool" collection='<%=session.getAttribute("selectedItems")%>'>
-<bean:write name="qpool" property="itemText" />
-<br>
-</logic:iterate>
-
-<h:panelGrid columns="2" >
-
-<h:outputText styleClass="number" value="1"/>
-<h:outputText value="#{questionPoolMessages.copy_q_to}"/>
-
-<h:outputText value=""/>
-
-<h:outputText styleClass="number" value="2"/>
-<h:outputText value="#{questionPoolMessages.click_copy}"/>
-
-</h:panelGrid>
-  <center>
-  <h:commandButton type="submit" id="Submit" value="#{questionPoolMessages.save}"
-    action="editPool"/>
-  <h:commandButton type="cancel" id="Cancel" value="#{questionPoolMessages.cancel}"
-    action="cancelEditPool"/>
-
-  </center>
+  <!-- content... -->
+  <h3><h:outputText value="#{evaluationMessages.data_discrepancy_title}"/></h3>
+  <f:verbatim>&nbsp;</f:verbatim>
+  <h:panelGrid border="0">
+    <h:outputText value="#{evaluationMessages.data_discrepancy_1}"/>
+    <h:outputText value="#{evaluationMessages.data_discrepancy_2}"/>
+  </h:panelGrid>
+  <!-- end content -->
 </div>
-</body>
+      </body>
+    </html>
+  </f:view>
 </html>
-</f:view>

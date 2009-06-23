@@ -24,7 +24,8 @@
 package org.sakaiproject.tool.assessment.ui.bean.author;
 import java.io.Serializable;
 import java.util.ArrayList;
-import javax.faces.context.FacesContext;
+import java.util.Date;
+
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
@@ -32,6 +33,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentTemplateFacade;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 /**
  * General authoring information.
@@ -72,6 +75,9 @@ public class AuthorBean implements Serializable
   private boolean inactivePublishedAscending = true;
   private String outcome;
   private boolean showTemplateList;
+  // currentFormTime is used to make sure the data we get back is from
+  // the current form
+  private long currentFormTime = 0;
 
   /**
    * @return the id
@@ -484,4 +490,30 @@ public class AuthorBean implements Serializable
     this.showTemplateList = showTemplateList;
   }
 
+  
+  // the following three functions are intended to detect when the user is submitting
+  // a form that is no longer valid. This can happen with multiple windows.
+  //  <h:outputText value="#{author.updateFormTime}" />
+  //  <h:inputHidden value="#{author.currentFormTime}" />
+  // A separate update is needed because inputHidden and inputText call the getter
+  // twice, once when displaying the form and once when submitting it.
+  // If it was only called for display, we could do the update as part of the
+  // getter. getUpdateFormTime is called simply to set the timestamp.  It returns
+  // a zero-length string so that it is safe to display it.
+  public String getUpdateFormTime() {
+	  currentFormTime = (new Date()).getTime();
+	  return "";
+  }
+
+  public long getCurrentFormTime(){
+	  return currentFormTime;
+  }
+  public void setCurrentFormTime(long formTime) {
+	  if (formTime != currentFormTime) {
+		  try {
+			  ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+			  context.redirect("discrepancyInData");
+		  } catch (Exception e) {};
+	  }
+  }
 }
