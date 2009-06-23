@@ -23,6 +23,7 @@
   <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar"/>
   <classpathentry kind="var" path="M2_REPO/commons-validator/commons-validator/1.0.2/commons-validator-1.0.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/ojb/db-ojb/1.0.rc6/db-ojb-1.0.rc6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/fop/fop/0.20.5/fop-0.20.5.jar"/>
   <classpathentry kind="var" path="M2_REPO/ims/imsqti/1.2/imsqti-1.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/jdbc/jdbc2_0/stdext-h2.1.8/jdbc2_0-stdext-h2.1.8.jar"/>
@@ -36,11 +37,12 @@
   <classpathentry kind="var" path="M2_REPO/org/apache/myfaces/core/myfaces-impl/1.1.5/myfaces-impl-1.1.5.jar"/>
   <classpathentry kind="var" path="M2_REPO/odmg/odmg/3.0/odmg-3.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/navigo/OKI-SPRING-HIBERNATE/0/OKI-SPRING-HIBERNATE-0.jar"/>
-  <classpathentry kind="var" path="M2_REPO/OKI/OkiOSID/2.0/OkiOSID-2.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/OKI/OkiSID/rc6.1/OkiSID-rc6.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/oro/oro/2.0.7/oro-2.0.7.jar"/>
-  <classpathentry kind="src" path="/sakai-import-api"/>
-  <classpathentry kind="src" path="/sakai-import-impl"/>
+  <classpathentry kind="src" path="/sakai-component"/>
+  <classpathentry kind="src" path="/sakai-component-api"/>
+  <classpathentry kind="src" path="/sakai-content-api"/>
+  <classpathentry kind="src" path="/sakai-entity-api"/>
   <classpathentry kind="src" path="/sakai-jsf-app"/>
   <classpathentry kind="src" path="/sakai-jsf-tool"/>
   <classpathentry kind="src" path="/sakai-samigo-api"/>
@@ -51,10 +53,13 @@
   <classpathentry kind="src" path="/sakai-sections-impl-standalone"/>
   <classpathentry kind="src" path="/sakai-sections-model"/>
   <classpathentry kind="src" path="/sakai-tool-api"/>
+  <classpathentry kind="src" path="/sakai-user-api"/>
   <classpathentry kind="src" path="/sakai-util"/>
+  <classpathentry kind="src" path="/sakai-util-api"/>
   <classpathentry kind="var" path="M2_REPO/navigo/SakaiBaseFramework/1.0.a1/SakaiBaseFramework-1.0.a1.jar"/>
   <classpathentry kind="var" path="M2_REPO/saxpath/saxpath/1.0-FCS/saxpath-1.0-FCS.jar"/>
   <classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring/2.0.6/spring-2.0.6.jar"/>
   <classpathentry kind="var" path="M2_REPO/taglibs/standard/1.0.4/standard-1.0.4.jar"/>
   <classpathentry kind="var" path="M2_REPO/struts/struts/1.1h2.1.8/struts-1.1h2.1.8.jar"/>
   <classpathentry kind="var" path="M2_REPO/struts/struts-legacy/1.1/struts-legacy-1.1.jar"/>
