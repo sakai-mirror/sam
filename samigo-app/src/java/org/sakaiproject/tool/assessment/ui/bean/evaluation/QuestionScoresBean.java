@@ -289,7 +289,7 @@ public class QuestionScoresBean
   public void setPublishedId(String ppublishedId)
   {
     publishedId = ppublishedId;
-    
+    /*
     //added by gopalrc - Jan 2007
 	if (isReleasedToGroups()) {
 		setSelectedSectionFilterValue(TotalScoresBean.RELEASED_SECTIONS_GROUPS_SELECT_VALUE);
@@ -297,7 +297,7 @@ public class QuestionScoresBean
 	else {
 		setSelectedSectionFilterValue(TotalScoresBean.ALL_SECTIONS_SELECT_VALUE);
 	}
-    
+    */
   }
 
   /**
