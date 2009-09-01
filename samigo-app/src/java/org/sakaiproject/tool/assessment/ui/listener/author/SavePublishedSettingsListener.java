@@ -272,6 +272,8 @@ public class SavePublishedSettingsListener
       }
     }
 
+    assessmentService.saveAssessment(assessment);
+
     //#4 - regenerate the publsihed assessment list in autor bean again
     // sortString can be of these value:title,releaseTo,dueDate,startDate
     // get the managed bean, author and reset the list.
