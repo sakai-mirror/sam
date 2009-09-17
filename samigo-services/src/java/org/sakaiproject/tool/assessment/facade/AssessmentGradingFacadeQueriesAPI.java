@@ -113,6 +113,8 @@ public interface AssessmentGradingFacadeQueriesAPI
   public MediaData getMedia(Long mediaId);
 
   public ArrayList getMediaArray(Long itemGradingId);
+  
+  public ArrayList getMediaArray2(Long itemGradingId);
 
   public ArrayList getMediaArray(ItemGradingData item);
 
