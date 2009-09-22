@@ -517,16 +517,19 @@ public class SubmitToGradingActionListener implements ActionListener {
 					}
 				}
 			}
-
-
-			if (answerModified) {
+			
+			// Click the Reset Selection link
+			if(item.getUnanswered()) {
+				answerModified = true;
+			}
+			
+			if (answerModified || item.getUnanswered()) {
 				for (int m = 0; m < grading.size(); m++) {
 					ItemGradingData itemgrading = (ItemGradingData) grading
-							.get(m);
+					.get(m);
 					if (itemgrading.getItemGradingId() != null
 							&& itemgrading.getItemGradingId().intValue() > 0) {
 						// remove all old answer for MC & Surevy
-
 						removes.add(itemgrading);
 					} else {
 						// add new answer
@@ -545,8 +548,8 @@ public class SubmitToGradingActionListener implements ActionListener {
 					}
 				}
 			}
-                        else{
-                          handleMarkForReview(grading, adds);
+			else{
+				handleMarkForReview(grading, adds);
 			}
 			break;
 		case 4: // T/F
