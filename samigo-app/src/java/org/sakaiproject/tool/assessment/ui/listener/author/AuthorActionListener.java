@@ -34,6 +34,7 @@ import javax.faces.event.ActionListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAssessmentData;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacadeQueries;
 import org.sakaiproject.tool.assessment.facade.AssessmentTemplateFacade;
@@ -44,6 +45,7 @@ import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+import org.sakaiproject.util.FormattedText;
 
 /**
  * <p>Title: Samigo</p>2
@@ -109,6 +111,12 @@ public class AuthorActionListener
 		author.setCoreAssessmentOrderBy(AssessmentFacadeQueries.TITLE);
 		ArrayList assessmentList = assessmentService.getBasicInfoOfAllActiveAssessments(
 						AssessmentFacadeQueries.TITLE, author.isCoreAscending());
+		Iterator iterator = assessmentList.iterator();
+		while (iterator.hasNext()) {
+		    AssessmentFacade assessmentFacade= (AssessmentFacade) iterator.next();
+		    assessmentFacade.setTitle(FormattedText.unEscapeHtml(assessmentFacade.getTitle()));
+		}
+
 		// get the managed bean, author and set the list
 		author.setAssessments(assessmentList);
 
@@ -121,6 +129,7 @@ public class AuthorActionListener
 		author.setPublishedAssessmentOrderBy(PublishedAssessmentFacadeQueries.TITLE);
 		ArrayList publishedList = publishedAssessmentService.getBasicInfoOfAllActivePublishedAssessments(
 						PublishedAssessmentFacadeQueries.TITLE, true);
+		unEscapeTitle(publishedList);
 		setSubmissionSize(publishedList, map);
 		setHasAssessmentGradingData(publishedList, agMap);
 		// get the managed bean, author and set the list
@@ -131,6 +140,7 @@ public class AuthorActionListener
 		author.setInactivePublishedAssessmentOrderBy(PublishedAssessmentFacadeQueries.TITLE);
 		ArrayList inactivePublishedList = publishedAssessmentService.getBasicInfoOfAllInActivePublishedAssessments(
 						PublishedAssessmentFacadeQueries.TITLE, true);
+		unEscapeTitle(inactivePublishedList);
 		setSubmissionSize(inactivePublishedList, map);
 		setHasAssessmentGradingData(inactivePublishedList, agMap);
 		// get the managed bean, author and set the list
@@ -151,6 +161,14 @@ public class AuthorActionListener
 			author.setIsAnyAssessmentRetractForEdit(false);
 		}
   }
+
+    private void unEscapeTitle(ArrayList list) {
+	Iterator iterator = list.iterator();
+	while (iterator.hasNext()) {
+	    PublishedAssessmentFacade assessmentFacade= (PublishedAssessmentFacade) iterator.next();
+	    assessmentFacade.setTitle(FormattedText.unEscapeHtml(assessmentFacade.getTitle()));
+	}
+    }
   
   private void setSubmissionSize(ArrayList list, HashMap map){
     for (int i=0; i<list.size();i++){

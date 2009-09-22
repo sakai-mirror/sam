@@ -142,8 +142,7 @@ public class StudentScoreListener
           }
       } // End of SAK-13930
 
-      //if (adata.getComments() != null)
-          bean.setComments(FormattedText.unEscapeHtml(adata.getComments()));
+      bean.setComments(FormattedText.unEscapeHtml(adata.getComments()));
 
       //dbean.setForGrading(false);
       return true;
