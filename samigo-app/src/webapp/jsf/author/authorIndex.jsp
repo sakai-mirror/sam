@@ -135,13 +135,12 @@
       <!-- action=editAssessment if pass authz -->
       <h:commandLink title="#{authorFrontDoorMessages.t_editAssessment}" id="editAssessment" immediate="true" action="#{author.getOutcome}"
         rendered="#{authorization.editAnyAssessment or authorization.editOwnAssessment}" >
-        <h:outputText id="assessmentTitle" value="#{coreAssessment.title}" styleClass="currentSort" escape="false"/>
+        <h:outputText id="assessmentTitle" value="#{coreAssessment.title}" styleClass="currentSort"/>
         <f:param name="editType" value="pendingAssessment" />
         <f:param name="assessmentId" value="#{coreAssessment.assessmentBaseId}"/>
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
       </h:commandLink>
-      <h:outputText id="assessmentTitle2" value="#{coreAssessment.title}"  escape="false"
-        rendered="#{!authorization.editAnyAssessment and !authorization.editOwnAssessment}" />
+      <h:outputText id="assessmentTitle2" value="#{coreAssessment.title}" rendered="#{!authorization.editAnyAssessment and !authorization.editOwnAssessment}" />
  <h:outputText escape="false" rendered="#{authorization.adminCoreAssessment}" value="<br />"/>
 
       <!-- AuthorBean.editAssessmentSettings() prepare the edit page -->
@@ -254,12 +253,12 @@
 	  <!-- action=editAssessment if pass authz -->
       <h:commandLink title="#{authorFrontDoorMessages.t_editPublishedAssessment}" id="editPublishedAssessment" immediate="true" action="confirmEditPublishedAssessment"
         rendered="#{(authorization.editAnyAssessment or authorization.editOwnAssessment) and (!author.editPubAssessmentRestricted or !publishedAssessment.hasAssessmentGradingData)}" >
-        <h:outputText id="publishedAssessmentTitle" value="#{publishedAssessment.title}" styleClass="currentSort" escape="false"/>
+        <h:outputText id="publishedAssessmentTitle" value="#{publishedAssessment.title}" styleClass="currentSort" />
         <f:param name="publishedAssessmentId" value="#{publishedAssessment.publishedAssessmentId}"/>
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmEditPublishedAssessmentListener" />
       </h:commandLink>
 
-      <h:outputText id="publishedAssessmentTitle2" value="#{publishedAssessment.title}" escape="false"
+      <h:outputText id="publishedAssessmentTitle2" value="#{publishedAssessment.title}" 
         rendered="#{(!authorization.editAnyAssessment and !authorization.editOwnAssessment) or (author.editPubAssessmentRestricted and publishedAssessment.hasAssessmentGradingData)}" />
       <h:outputText escape="false" rendered="#{authorization.adminPublishedAssessment}" value="<br />"/>
 
@@ -446,11 +445,11 @@
   	  <!-- action=editAssessment if pass authz -->
       <h:commandLink title="#{authorFrontDoorMessages.t_editInactivePublishedAssessment}" id="editInactivePublishedAssessment" immediate="true" action="confirmEditPublishedAssessment"
         rendered="#{(authorization.editAnyAssessment or authorization.editOwnAssessment) and (!author.editPubAssessmentRestricted or !inactivePublishedAssessment.hasAssessmentGradingData)}" >
-        <h:outputText id="inactivePublishedAssessmentTitle" value="#{inactivePublishedAssessment.title}" styleClass="currentSort" escape="false" />
+        <h:outputText id="inactivePublishedAssessmentTitle" value="#{inactivePublishedAssessment.title}" styleClass="currentSort" />
         <f:param name="publishedAssessmentId" value="#{inactivePublishedAssessment.publishedAssessmentId}"/>
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmEditPublishedAssessmentListener" />
       </h:commandLink>
-      <h:outputText id="inactivePublishedAssessmentTitle2" value="#{inactivePublishedAssessment.title}" escape="false"
+      <h:outputText id="inactivePublishedAssessmentTitle2" value="#{inactivePublishedAssessment.title}"
         rendered="#{(!authorization.editAnyAssessment and !authorization.editOwnAssessment) or (author.editPubAssessmentRestricted and inactivePublishedAssessment.hasAssessmentGradingData)}" />
      
 	  <h:outputText value="#{authorFrontDoorMessages.asterisk_2}" rendered="#{inactivePublishedAssessment.status == 3}" styleClass="validate"/>
