@@ -2,15 +2,10 @@
   <name>sakai-import-sam</name>
   <comment/>
   <projects>
-    <project>sakai-import-api</project>
-    <project>sakai-import-impl</project>
-    <project>sakai-jsf-app</project>
-    <project>sakai-jsf-tool</project>
     <project>sakai-samigo-api</project>
     <project>sakai-samigo-hibernate</project>
     <project>sakai-samigo-qti</project>
     <project>sakai-samigo-services</project>
-    <project>sakai-sections-impl</project>
   </projects>
   <buildSpec>
     <buildCommand>

@@ -2,15 +2,8 @@
   <name>sakai-samigo-services</name>
   <comment/>
   <projects>
-    <project>entitybroker-api</project>
-    <project>sakai-gradebook-service-api</project>
-    <project>sakai-jsf-app</project>
-    <project>sakai-jsf-tool</project>
     <project>sakai-samigo-api</project>
     <project>sakai-samigo-hibernate</project>
-    <project>sakai-sections-api</project>
-    <project>sakai-sections-impl</project>
-    <project>sakai-sections-impl-standalone</project>
   </projects>
   <buildSpec>
     <buildCommand>
