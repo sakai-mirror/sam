@@ -553,8 +553,12 @@ public class ItemModifyListener implements ActionListener
 
 	// get part id for the item
        if (meta.getLabel().equals(ItemMetaDataIfc.PARTID)){
-	 bean.setSelectedSection(meta.getEntry());
-	 bean.setOrigSection(meta.getEntry());
+	   // Because the PARTID in sam_publisheditemmetadata_t is not correct,
+	   // get it from itemfacade instead
+           //bean.setSelectedSection(meta.getEntry());
+           //bean.setOrigSection(meta.getEntry());
+           bean.setSelectedSection(itemfacade.getData().getSection().getSectionId().toString());
+           bean.setOrigSection(itemfacade.getData().getSection().getSectionId().toString());
        }
 
 	// get pool id for the item

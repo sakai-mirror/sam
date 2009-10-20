@@ -56,6 +56,7 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.ItemData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemMetaData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemText;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAnswer;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAnswerFeedback;
@@ -430,6 +431,13 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		Iterator n = itemMetaDataSet.iterator();
 		while (n.hasNext()) {
 			ItemMetaData itemMetaData = (ItemMetaData) n.next();
+			// The itemMetaData.getEntry() is actually the pending/core part id.
+			// What should be used is the published part id.
+			// However, the published part id has not been created at this point.
+			// Therefore, we have to update it later.
+			// I really don't think this is good. I would like to remove PARTID
+			// from the ItemMetaData. However, there are lots of changes involved and
+			// I don't have time for this now. Will do it in later release.
 			PublishedItemMetaData publishedItemMetaData = new PublishedItemMetaData(
 					publishedItem, itemMetaData.getLabel(), itemMetaData
 							.getEntry());
@@ -635,6 +643,31 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			saveOrUpdate(publishedAssessment);
 		} catch (Exception e) {
 			throw e;
+		}
+
+		// reset PARTID in ItemMetaData to the section of the newly created section
+		// I really don't think PARTID should be in ItemMetaData. However, there will
+		// be lots of changes invloved if I remove PARTID from ItemMetaData. I need
+		// to spend time to evaulate and make the changes - not able to do this at
+		// this point.
+		Set sectionSet = publishedAssessment.getSectionSet();
+		Iterator sectionIter = sectionSet.iterator();
+		while (sectionIter.hasNext()) {
+		    PublishedSectionData section = (PublishedSectionData) sectionIter.next();
+		    Set itemSet = section.getItemSet();
+		    Iterator itemIter = itemSet.iterator();
+		    while (itemIter.hasNext()) {
+			PublishedItemData item = (PublishedItemData) itemIter.next();
+			Set itemMetaDataSet = item.getItemMetaDataSet();
+			Iterator itemMetaDataIter = itemMetaDataSet.iterator();
+			while (itemMetaDataIter.hasNext()) {
+			    PublishedItemMetaData itemMetaData = (PublishedItemMetaData) itemMetaDataIter.next();
+			    if (itemMetaData.getLabel() != null && itemMetaData.getLabel().equals(ItemMetaDataIfc.PARTID)) {
+				log.debug("sectionId = " + section.getSectionId());
+				itemMetaData.setEntry(section.getSectionId().toString());
+			    }
+			}
+		    }
 		}
 
 		// add to gradebook
