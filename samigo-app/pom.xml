@@ -511,6 +511,12 @@
     <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-jsf-spreadsheet</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.myfaces.core</groupId>
+          <artifactId>myfaces-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 <!-- for spreadsheet support -->
     <dependency>
