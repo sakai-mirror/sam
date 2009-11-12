@@ -161,6 +161,13 @@ public class Question {
 		this.questionType = questionType;
 	}
 	
+	//gopalrc added 12 Nov 2009
+	public void finalizeQuestionStructure() {
+		if (getQuestionType() == EXTENDED_MATCHING_ITEM_QUESTION) {
+			//questionLines.add
+		}
+	}
+	
 	
 	
 }
