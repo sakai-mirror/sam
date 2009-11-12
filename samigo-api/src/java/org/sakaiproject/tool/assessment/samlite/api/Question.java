@@ -12,6 +12,9 @@ public class Question {
 	public static final int TRUE_FALSE_QUESTION = 30;
 	public static final int SHORT_ESSAY_QUESTION = 40;
 	
+    //gopalrc - added 11 Nov 2009
+    public static final int EXTENDED_MATCHING_ITEM_QUESTION = 50;
+	
 	private int questionNumber;
 	private String questionPoints;
 	private List questionLines;
@@ -19,6 +22,7 @@ public class Question {
 	private String correctAnswer;
 	private List answers;
 	private boolean hasPoints;
+
 	
 	public Question() {
 		this.questionNumber = 0;
@@ -30,6 +34,8 @@ public class Question {
 		this.hasPoints = false;
 	}
 
+
+	
 	public void addAnswer(String id, String text, boolean isCorrect) {
 		this.answers.add(new Answer(id, text, isCorrect));
 	}
@@ -38,6 +44,37 @@ public class Question {
 		return answers;
 	}
 
+	//gopalrc - added 12 Nov 2009
+	public List getEmiAnswers() {
+		if (getQuestionType() != EXTENDED_MATCHING_ITEM_QUESTION) {
+			return null;
+		}
+		List emiAnswers = new LinkedList();
+		Iterator iter = answers.iterator();
+		while (iter.hasNext()) {
+			Answer answer = (Answer) iter.next();
+			if (!answer.isCorrect()) {
+				emiAnswers.add(answer);
+			}
+		}
+		return emiAnswers;
+	}
+	
+	//gopalrc - added 12 Nov 2009
+	public List getEmiCorrectAnswers() {
+		if (getQuestionType() != EXTENDED_MATCHING_ITEM_QUESTION) {
+			return null;
+		}
+		List emiCorrectAnswers = new LinkedList();
+		Iterator iter = answers.iterator();
+		while (iter.hasNext()) {
+			Answer answer = (Answer) iter.next();
+			if (answer.isCorrect()) {
+				emiCorrectAnswers.add(answer);
+			}
+		}
+		return emiCorrectAnswers;
+	}
 
 	public void setAnswers(List answers) {
 		this.answers = answers;
@@ -107,6 +144,10 @@ public class Question {
 			return "True/False";
 		case SHORT_ESSAY_QUESTION:
 			return "Short Essay";
+			
+		//gopalrc - added 11 Nov 2009	
+		case EXTENDED_MATCHING_ITEM_QUESTION:
+			return "Extended Matching Items";
 		};
 		return "Unrecognized Type";
 	}

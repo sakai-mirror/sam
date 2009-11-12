@@ -73,6 +73,10 @@ public class SamLiteServiceImpl implements SamLiteService {
 	private Pattern startOfQuestionNumericPattern;
 	private Pattern pointsPattern;
 	
+	//gopalrc added 11 Nov 2009
+	private Pattern extendedMatchingCorrectAnswersPattern;
+	
+	
 	public void init() {	
 		// Initialization		
 		startOfQuestionNumericPattern = Pattern.compile("^(\\d+\\.|\\)|\\]\\s*)", Pattern.CASE_INSENSITIVE);
@@ -80,6 +84,11 @@ public class SamLiteServiceImpl implements SamLiteService {
 		correctMultipleChoicePattern = Pattern.compile("^\\*\\s*([a-z])\\.\\s*(.*)", Pattern.CASE_INSENSITIVE);
 		correctFillInPattern = Pattern.compile("^\\*\\s*(.*)");
 		answerPattern = Pattern.compile("^([a-z])\\.\\s*(.*)", Pattern.CASE_INSENSITIVE);
+		
+		//gopalrc added 11 Nov 2009 - 
+		// REGEX: ^(\d+\.+ ).*\[[a-z[ ,]]*\].* - start with digits point space then string containing brackets with [a-z] commas or spaces 
+		// TODO - make the regex more accurate
+		extendedMatchingCorrectAnswersPattern = Pattern.compile("^(\\d+\\.+ ).*\\[[a-z[ ,]]*\\].*", Pattern.CASE_INSENSITIVE);
 	} 
 	
 	public Question saveLast(QuestionGroup questionGroup, Question question) {
@@ -167,14 +176,24 @@ public class SamLiteServiceImpl implements SamLiteService {
 				Matcher startOfQuestionNumericMatcher = startOfQuestionNumericPattern.matcher(line);
 				Matcher pointsMatcher = pointsPattern.matcher(line);				
 				
+				//gopalrc - added 12 Nov 2009
+				Matcher extendedMatchingCorrectAnswersMatcher = extendedMatchingCorrectAnswersPattern.matcher(line);
+				
 				// The question can begin with the word 'Question'
 				boolean isQuestionStart = startOfQuestionMatcher.find();
 				// Or it can begin with a number followed by a delimitor
-				boolean isQuestionNumericStart = startOfQuestionNumericMatcher.find();
+				boolean isQuestionNumericStart = startOfQuestionNumericMatcher.find(); 
 				// Some users may prefer to delineate questions with just the points line
 				boolean isJustPoints = pointsMatcher.find();
+
+				//gopalrc - added 12 Nov 2009
+				boolean isEMICorrectAnswerLine = extendedMatchingCorrectAnswersMatcher.find(); 
+				System.out.println("********************* isEMICorrectAnswerLine: " + isEMICorrectAnswerLine + " ***************************");
+				System.out.println("********************* line: " + line + " ***************************");
+				System.out.println("**********************************************************************");
 				
-				if (isQuestionStart || isQuestionNumericStart || isJustPoints) {
+				
+				if (!isEMICorrectAnswerLine && (isQuestionStart || isQuestionNumericStart || isJustPoints)) {
 					question = saveLast(questionGroup, question);
 					
 					if (isQuestionStart)
@@ -208,17 +227,33 @@ public class SamLiteServiceImpl implements SamLiteService {
 	
 	
 	private void parseLine(Question question, String line) {				
-		boolean isEndOfQuestion = endQuestionPattern.matcher(line).find();
+  		boolean isEndOfQuestion = endQuestionPattern.matcher(line).find();
 		boolean isCorrectAnswer = correctAnswerPattern.matcher(line).lookingAt();
 		Matcher answerMatcher = answerPattern.matcher(line);
 		boolean isAnswer = answerMatcher.find();
 		boolean isEmptyTrue = unnecessaryTruePattern.matcher(line).find();
 		boolean isEmptyFalse = unnecessaryFalsePattern.matcher(line).find();		
-					
+		
+		//gopalrc - added 12 Nov 2009
+		boolean isEMI = extendedMatchingCorrectAnswersPattern.matcher(line).find();
+		System.out.println("********************* isEMI: " + isEMI + " ***************************");
+		System.out.println("********************* line: " + line + " ***************************");
+
+		
 		if (isEndOfQuestion) {
 			// Do nothing, we just want to ignore this line
 		} else if (isAnswer) {
 			question.addAnswer(answerMatcher.group(1), answerMatcher.group(2), false);
+		//gopalrc - added 11 Nov	
+		} else if (isEMI) {
+	  		question.setQuestionType(Question.EXTENDED_MATCHING_ITEM_QUESTION);
+	  		String answerId = line.substring(0, line.indexOf("."));
+	  		String questionAnswers = (line.substring(line.indexOf(".")+1)).trim();
+			question.addAnswer(answerId, questionAnswers, true);
+			
+			System.out.println("********************* AnswerId: " + answerId + " ***************************");
+			System.out.println("********************* questionAnswers: " + questionAnswers + " ***************************");
+		
 		} else if (isCorrectAnswer) {
 			Matcher multipleChoiceMatcher = correctMultipleChoicePattern.matcher(line);
 			boolean isMC = multipleChoiceMatcher.find();

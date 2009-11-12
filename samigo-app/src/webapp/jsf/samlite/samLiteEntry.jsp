@@ -128,6 +128,27 @@
 				    	</div>
 					</td>
 				</tr>
+
+				<tr>
+				  	<td align="left" valign="top">
+					    <a href="javascript:toggleLayer('example_emi_question');"><h:outputText value="#{samLiteMessages.example_emi_label}"/></a>
+					    <div id="example_emi_question" class="inopPanel" style="display:none">
+					    	<strong><h:outputText value="#{samLiteMessages.example_instruction_label}"/></strong><h:outputText value="#{samLiteMessages.example_emi_instructions}"/><p/>
+				   			<strong><h:outputText value="#{samLiteMessages.example_example_label}"/></strong><br/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_question_format4}"/><br/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_theme}"/><p/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_answer_a}"/><br/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_answer_b}"/><br/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_answer_c}"/><br/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_answer_d}"/><p/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_question_lead_in}"/><p/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_question_1}"/><br/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_question_2}"/><br/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_question_3}"/><br/>
+				   			<h:outputText value="#{samLiteMessages.example_emi_question_4}"/><br/>
+				   		</div>
+				    </td>
+				</tr>
 				<tr>
 				  	<td align="left" valign="top">
 					    <a href="javascript:toggleLayer('example_mc_question');"><h:outputText value="#{samLiteMessages.example_mc_label}"/></a>
@@ -143,6 +164,7 @@
 				   		</div>
 				    </td>
 				</tr>
+
 				<tr>
 					  	<td align="left" valign="top">
 						    <a href="javascript:toggleLayer('example_mcmc_question');"><h:outputText value="#{samLiteMessages.example_mcmc_label}"/></a>
