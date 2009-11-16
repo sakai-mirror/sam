@@ -150,6 +150,7 @@ public class Question {
 				}
 				else {
 					// add at end
+					textToAdd = textToAdd.substring(0, textToAdd.indexOf("[")).trim() + "<br />";
 					questionLines.add(textToAdd);
 				}
 			}
