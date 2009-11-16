@@ -22,6 +22,9 @@ public class Question {
 	private String correctAnswer;
 	private List answers;
 	private boolean hasPoints;
+	
+	//gopalrc - added 16 Nov 2009
+	private String availableOptions;
 
 	
 	public Question() {
@@ -44,37 +47,6 @@ public class Question {
 		return answers;
 	}
 
-	//gopalrc - added 12 Nov 2009
-	public List getEmiAnswers() {
-		if (getQuestionType() != EXTENDED_MATCHING_ITEM_QUESTION) {
-			return null;
-		}
-		List emiAnswers = new LinkedList();
-		Iterator iter = answers.iterator();
-		while (iter.hasNext()) {
-			Answer answer = (Answer) iter.next();
-			if (!answer.isCorrect()) {
-				emiAnswers.add(answer);
-			}
-		}
-		return emiAnswers;
-	}
-	
-	//gopalrc - added 12 Nov 2009
-	public List getEmiCorrectAnswers() {
-		if (getQuestionType() != EXTENDED_MATCHING_ITEM_QUESTION) {
-			return null;
-		}
-		List emiCorrectAnswers = new LinkedList();
-		Iterator iter = answers.iterator();
-		while (iter.hasNext()) {
-			Answer answer = (Answer) iter.next();
-			if (answer.isCorrect()) {
-				emiCorrectAnswers.add(answer);
-			}
-		}
-		return emiCorrectAnswers;
-	}
 
 	public void setAnswers(List answers) {
 		this.answers = answers;
@@ -162,10 +134,38 @@ public class Question {
 	}
 	
 	//gopalrc added 12 Nov 2009
-	public void finalizeQuestionStructure() {
+	public void postProcessing() {
 		if (getQuestionType() == EXTENDED_MATCHING_ITEM_QUESTION) {
-			//questionLines.add
+			int themeLineIndex = 1;
+			questionLines.set(themeLineIndex, questionLines.get(themeLineIndex).toString() + "<br />");
+			Iterator answerLines = answers.iterator();
+			int optionLine = 2;
+			while (answerLines.hasNext()) {
+				Answer answer = (Answer) answerLines.next();
+				String textToAdd = answer.getId() + ". " + answer.getText();
+				if (!answer.isCorrect()) {
+					// add at next options position
+					availableOptions += answer.getId();
+					questionLines.add(optionLine++, textToAdd + "<br />");
+				}
+				else {
+					// add at end
+					questionLines.add(textToAdd);
+				}
+			}
+			answerLines = answers.iterator();
+			while (answerLines.hasNext()) {
+				Answer answer = (Answer)answerLines.next();
+				if (!answer.isCorrect()) {
+					answerLines.remove();
+				}
+				else {
+					answer.postProcessing(questionType);
+				}
+			}
 		}
+
+		
 	}
 	
 	

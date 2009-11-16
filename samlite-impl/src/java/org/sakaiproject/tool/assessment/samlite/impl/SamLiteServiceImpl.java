@@ -100,6 +100,8 @@ public class SamLiteServiceImpl implements SamLiteService {
 			// If it doesn't have points yet, it's not going to get any
 			if (!question.hasPoints())
 				question.setQuestionPoints("0");
+			//gopalrc - added 16 Nov 2009
+			question.postProcessing();
 			questionGroup.addQuestion(question);
 		}
 		
@@ -171,6 +173,7 @@ public class SamLiteServiceImpl implements SamLiteService {
 				lines[i] = lines[i].replace('\r', ' ');
 			String line = lines[i].trim();
 			
+			
 			if (null != line && !"".equals(line)) {	
 				Matcher startOfQuestionMatcher = startOfQuestionPattern.matcher(line);
 				Matcher startOfQuestionNumericMatcher = startOfQuestionNumericPattern.matcher(line);
@@ -188,10 +191,6 @@ public class SamLiteServiceImpl implements SamLiteService {
 
 				//gopalrc - added 12 Nov 2009
 				boolean isEMICorrectAnswerLine = extendedMatchingCorrectAnswersMatcher.find(); 
-				System.out.println("********************* isEMICorrectAnswerLine: " + isEMICorrectAnswerLine + " ***************************");
-				System.out.println("********************* line: " + line + " ***************************");
-				System.out.println("**********************************************************************");
-				
 				
 				if (!isEMICorrectAnswerLine && (isQuestionStart || isQuestionNumericStart || isJustPoints)) {
 					question = saveLast(questionGroup, question);
@@ -226,7 +225,7 @@ public class SamLiteServiceImpl implements SamLiteService {
 	}
 	
 	
-	private void parseLine(Question question, String line) {				
+	private void parseLine(Question question, String line) {		
   		boolean isEndOfQuestion = endQuestionPattern.matcher(line).find();
 		boolean isCorrectAnswer = correctAnswerPattern.matcher(line).lookingAt();
 		Matcher answerMatcher = answerPattern.matcher(line);
@@ -235,25 +234,19 @@ public class SamLiteServiceImpl implements SamLiteService {
 		boolean isEmptyFalse = unnecessaryFalsePattern.matcher(line).find();		
 		
 		//gopalrc - added 12 Nov 2009
-		boolean isEMI = extendedMatchingCorrectAnswersPattern.matcher(line).find();
-		System.out.println("********************* isEMI: " + isEMI + " ***************************");
-		System.out.println("********************* line: " + line + " ***************************");
-
+		boolean isEMICorrectAnswer = extendedMatchingCorrectAnswersPattern.matcher(line).find();
 		
 		if (isEndOfQuestion) {
 			// Do nothing, we just want to ignore this line
 		} else if (isAnswer) {
 			question.addAnswer(answerMatcher.group(1), answerMatcher.group(2), false);
 		//gopalrc - added 11 Nov	
-		} else if (isEMI) {
+		} else if (isEMICorrectAnswer) {
 	  		question.setQuestionType(Question.EXTENDED_MATCHING_ITEM_QUESTION);
 	  		String answerId = line.substring(0, line.indexOf("."));
 	  		String questionAnswers = (line.substring(line.indexOf(".")+1)).trim();
 			question.addAnswer(answerId, questionAnswers, true);
-			
-			System.out.println("********************* AnswerId: " + answerId + " ***************************");
-			System.out.println("********************* questionAnswers: " + questionAnswers + " ***************************");
-		
+
 		} else if (isCorrectAnswer) {
 			Matcher multipleChoiceMatcher = correctMultipleChoicePattern.matcher(line);
 			boolean isMC = multipleChoiceMatcher.find();
@@ -453,6 +446,10 @@ public class SamLiteServiceImpl implements SamLiteService {
 		case Question.TRUE_FALSE_QUESTION:
 			processTrueFalseQuestion(section, question);
 			break;
+		//gopalrc - added 16 Nov 2009	
+		case Question.EXTENDED_MATCHING_ITEM_QUESTION:
+			processExtendedMatchingItemsQuestion(section, question);
+			break;
 		default:
 			// TODO: Notify the user that this question didn't work...	
 		};
@@ -613,6 +610,41 @@ public class SamLiteServiceImpl implements SamLiteService {
 			}
 		}
 	}
+	
+	
+	//gopalrc - added 16 Nov 2009
+	private void processExtendedMatchingItemsQuestion(SectionType section, Question question) {
+		ItemType item = section.addNewItem();
+		item.setTitle("Extended Matching Items");
+		
+		ItemmetadataType itemMetaData = item.addNewItemmetadata();
+		QtimetadataType qtiMetaData = itemMetaData.addNewQtimetadata();
+		
+		buildMetaDataField(qtiMetaData, "qmd_itemtype", "Multiple Choice");
+		buildMetaDataField(qtiMetaData, "TEXT_FORMAT", "HTML");
+		buildMetaDataField(qtiMetaData, "hasRationale", "False");
+		
+		ItemrubricType itemRubric = item.addNewItemrubric();
+		MattextType mattext = itemRubric.addNewMaterial().addNewMattext();
+		mattext.setCharset("UTF-8");
+		mattext.setTexttype("text/plain");
+
+		buildPresentationAndResponseLid(item, question, "Resp001", "MCSC", ResponseLidType.Rcardinality.SINGLE);
+		
+		addRespProcessing(item, question, "MCSC");
+		
+		int numberOfAnswers = question.getAnswers().size();
+		char c = 'A';
+		for (int i=0;i<numberOfAnswers;i++) {	
+			buildItemFeedback(item, String.valueOf(c) + "1");
+			c++;
+		}
+		
+		buildItemFeedback(item, "Correct");
+		buildItemFeedback(item, "InCorrect");
+	}
+	
+	
 	
 	private void processTrueFalseQuestion(SectionType section, Question question) {
 		ItemType item = section.addNewItem();
