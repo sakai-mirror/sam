@@ -91,6 +91,9 @@ public class AuthoringXml
   public static final String ITEM_TF = "trueFalseTemplate.xml";
   public static final String ITEM_MATCHING = "matchTemplate.xml";
   
+  //gopalrc - added 17 Nov 2009
+  public static final String ITEM_EXTENDED_MATCHING_ITEMS = "emiTemplate.xml";
+
   public static final String SURVEY_10 = SURVEY_PATH + "10.xml";
   public static final String SURVEY_5 = SURVEY_PATH + "5.xml";
   public static final String SURVEY_AGREE = SURVEY_PATH + "AGREE.xml";

@@ -38,7 +38,7 @@ public interface TypeIfc extends java.io.Serializable {
   public static Long MULTIPLE_CORRECT_SINGLE_SELECTION = Long.valueOf(12);
   
   //gopalrc - added 9 Nov 2009
-  public static final Long EXTENDED_MATCHING = Long.valueOf(13);
+  public static final Long EXTENDED_MATCHING_ITEMS = Long.valueOf(13);
 
   public static Long MATCHING = Long.valueOf(9);
   // these are section type available in this site,

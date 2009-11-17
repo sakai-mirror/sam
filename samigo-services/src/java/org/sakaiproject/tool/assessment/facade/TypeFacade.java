@@ -50,7 +50,7 @@ public class TypeFacade implements Serializable, TypeIfc{
   public static final Long MATCHING = Long.valueOf(9);
   public static final Long MULTIPLE_CORRECT_SINGLE_SELECTION = Long.valueOf(12);
   //gopalrc - added 9 Nov 2009
-  public static final Long EXTENDED_MATCHING = Long.valueOf(13);
+  public static final Long EXTENDED_MATCHING_ITEMS = Long.valueOf(13);
   
   
   // these are section type available in this site,

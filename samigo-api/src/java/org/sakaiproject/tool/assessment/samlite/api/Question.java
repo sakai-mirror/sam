@@ -13,7 +13,7 @@ public class Question {
 	public static final int SHORT_ESSAY_QUESTION = 40;
 	
     //gopalrc - added 11 Nov 2009
-    public static final int EXTENDED_MATCHING_ITEM_QUESTION = 50;
+    public static final int EXTENDED_MATCHING_ITEMS_QUESTION = 50;
 	
 	private int questionNumber;
 	private String questionPoints;
@@ -118,7 +118,7 @@ public class Question {
 			return "Short Essay";
 			
 		//gopalrc - added 11 Nov 2009	
-		case EXTENDED_MATCHING_ITEM_QUESTION:
+		case EXTENDED_MATCHING_ITEMS_QUESTION:
 			return "Extended Matching Items";
 		};
 		return "Unrecognized Type";
@@ -135,7 +135,7 @@ public class Question {
 	
 	//gopalrc added 12 Nov 2009
 	public void postProcessing() {
-		if (getQuestionType() == EXTENDED_MATCHING_ITEM_QUESTION) {
+		if (getQuestionType() == EXTENDED_MATCHING_ITEMS_QUESTION) {
 			int themeLineIndex = 1;
 			questionLines.set(themeLineIndex, questionLines.get(themeLineIndex).toString() + "<br />");
 			Iterator answerLines = answers.iterator();

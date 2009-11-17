@@ -42,7 +42,7 @@ public class TypeD implements TypeIfc{
   public static final Long MATCHING = Long.valueOf(9);
   
   //gopalrc - added 9 Nov 2009
-  public static final Long EXTENDED_MATCHING = Long.valueOf(13);
+  public static final Long EXTENDED_MATCHING_ITEMS = Long.valueOf(13);
   
   // these are section type available in this site,
   public static final Long DEFAULT_SECTION = Long.valueOf(21);

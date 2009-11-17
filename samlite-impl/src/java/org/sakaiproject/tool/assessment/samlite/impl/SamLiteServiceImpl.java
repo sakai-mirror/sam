@@ -242,7 +242,7 @@ public class SamLiteServiceImpl implements SamLiteService {
 			question.addAnswer(answerMatcher.group(1), answerMatcher.group(2), false);
 		//gopalrc - added 11 Nov	
 		} else if (isEMICorrectAnswer) {
-	  		question.setQuestionType(Question.EXTENDED_MATCHING_ITEM_QUESTION);
+	  		question.setQuestionType(Question.EXTENDED_MATCHING_ITEMS_QUESTION);
 	  		String answerId = line.substring(0, line.indexOf("."));
 	  		String questionAnswers = (line.substring(line.indexOf(".")+1)).trim();
 			question.addAnswer(answerId, questionAnswers, true);
@@ -447,7 +447,7 @@ public class SamLiteServiceImpl implements SamLiteService {
 			processTrueFalseQuestion(section, question);
 			break;
 		//gopalrc - added 16 Nov 2009	
-		case Question.EXTENDED_MATCHING_ITEM_QUESTION:
+		case Question.EXTENDED_MATCHING_ITEMS_QUESTION:
 			processExtendedMatchingItemsQuestion(section, question);
 			break;
 		default:
@@ -620,7 +620,7 @@ public class SamLiteServiceImpl implements SamLiteService {
 		ItemmetadataType itemMetaData = item.addNewItemmetadata();
 		QtimetadataType qtiMetaData = itemMetaData.addNewQtimetadata();
 		
-		buildMetaDataField(qtiMetaData, "qmd_itemtype", "Multiple Choice");
+		buildMetaDataField(qtiMetaData, "qmd_itemtype", "Extended Matching Items");
 		buildMetaDataField(qtiMetaData, "TEXT_FORMAT", "HTML");
 		buildMetaDataField(qtiMetaData, "hasRationale", "False");
 		
@@ -629,9 +629,9 @@ public class SamLiteServiceImpl implements SamLiteService {
 		mattext.setCharset("UTF-8");
 		mattext.setTexttype("text/plain");
 
-		buildPresentationAndResponseLid(item, question, "Resp001", "MCSC", ResponseLidType.Rcardinality.SINGLE);
+		buildPresentationAndResponseLid(item, question, "Resp001", "EMIQ", ResponseLidType.Rcardinality.MULTIPLE);
 		
-		addRespProcessing(item, question, "MCSC");
+		addRespProcessing(item, question, "EMIQ");
 		
 		int numberOfAnswers = question.getAnswers().size();
 		char c = 'A';
@@ -642,6 +642,11 @@ public class SamLiteServiceImpl implements SamLiteService {
 		
 		buildItemFeedback(item, "Correct");
 		buildItemFeedback(item, "InCorrect");
+		
+		
+		
+		
+		
 	}
 	
 	

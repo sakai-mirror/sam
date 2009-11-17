@@ -60,9 +60,34 @@ private static final String msgResource =
   private boolean showSurvey;
   private boolean showFillInTheBlank;
   private boolean showFillInNumeric;
+
+  //gopalrc Added 17 November 2009
+  private boolean showExtendedMatchingItems;
+  
   private boolean selectFromQuestionPool;
   private boolean selectFromQuestionBank;
+  
 
+  /**
+   * gopalrc - added 17 November 2009
+   * Should we show extended matching items question?
+   * @return if true
+   */
+  public boolean isShowExtendedMatchingItems()
+  {
+    return showExtendedMatchingItems;
+  }
+  /**
+   * gopalrc - added 17 November 2009
+   * Set whether file upload should be shown.
+   * @param showFileUpload if this type should be shown
+   */
+  public void setShowExtendedMatchingItems(boolean showExtendedMatchingItems)
+  {
+    this.showExtendedMatchingItems = showExtendedMatchingItems;
+  }
+  
+  
   /**
    * Should we show file upload question?
    * @return if true
@@ -266,8 +291,9 @@ private static final String msgResource =
     if (showFillInTheBlank)
       list.add(new SelectItem("8", getResourceDisplayName("fill_in_the_blank")));
 
-if (showFillInNumeric)
+    if (showFillInNumeric)
       list.add(new SelectItem("11", getResourceDisplayName("fill_in_numeric")));
+    
     if (showMatching)
       list.add(new SelectItem("9", getResourceDisplayName("matching")));
 
@@ -280,6 +306,10 @@ if (showFillInNumeric)
     if (showFileUpload)
       list.add(new SelectItem("6", getResourceDisplayName("file_upload")));
 
+    //gopalrc - added 17 Nov 2009 - resource display name in AuthorMessages.properties
+    if (showExtendedMatchingItems)
+        list.add(new SelectItem("13", getResourceDisplayName("extended_matching_items")));
+    
     if (selectFromQuestionPool)
       list.add(new SelectItem("10", getResourceDisplayName("import_from_q")));
 

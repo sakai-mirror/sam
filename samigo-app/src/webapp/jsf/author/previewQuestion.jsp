@@ -95,6 +95,10 @@
             <%@ include file="/jsf/author/questionpreview/MultipleChoiceSurvey.jsp" %>
           </h:panelGroup>
 
+          <h:panelGroup rendered="#{itemContents.itemData.typeId == 13}">
+            <%@ include file="/jsf/author/questionpreview/ExtendedMatchingItems.jsp" %>
+          </h:panelGroup>
+
         </h:panelGrid>
 <p class="act">
   <h:commandButton id="back" accesskey="#{authorMessages.a_back}" value="#{authorMessages.button_back}"  action="editPool" type="submit" styleClass="active"/>
