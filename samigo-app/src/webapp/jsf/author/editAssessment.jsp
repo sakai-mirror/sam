@@ -306,6 +306,8 @@ document.links[newindex].onclick();
      <h:outputText rendered="#{question.itemData.typeId== 9}" value=" #{authorMessages.matching}"/>
      <h:outputText rendered="#{question.itemData.typeId== 7}" value=" #{authorMessages.audio_recording}"/>
      <h:outputText rendered="#{question.itemData.typeId== 6}" value=" #{authorMessages.file_upload}"/>
+     <h:outputText rendered="#{question.itemData.typeId== 13}" value=" #{authorMessages.extended_matching_items}"/>
+     
 
      <h:outputText value=" #{authorMessages.dash} " />
      <h:inputText id="answerptr" value="#{question.updatedScore}" required="true" size="6" onkeydown="inIt()" >
@@ -380,6 +382,12 @@ document.links[newindex].onclick();
 		  <h:panelGroup rendered="#{question.itemData.typeId == 12}">
             <%@ include file="/jsf/author/preview_item/MultipleChoiceMultipleCorrect.jsp" %>
           </h:panelGroup>
+
+		  <!-- gopalrc - added 18 Nov 2008 -->
+		  <h:panelGroup rendered="#{question.itemData.typeId == 13}">
+            <%@ include file="/jsf/author/preview_item/ExtendedMatchingItems.jsp" %>
+          </h:panelGroup>
+
 <f:verbatim> </div></f:verbatim>
 <h:panelGroup rendered="#{author.isEditPendingAssessmentFlow}">
     <f:verbatim>    <div class="longtext"> </f:verbatim> <h:outputLabel for="changeQType" value="#{authorMessages.ins_new_q} "/>

@@ -204,6 +204,12 @@ log.debug("after getting item.getItemType() ");
                 case 11:
                     nextpage = "fillInNumericItem";
                     break;
+                    
+                // gopalrc - added 18 November    
+                case 13:
+                    nextpage = "emiItem";
+                    break;
+                    
                 case 9:
      			MatchItemBean matchitem = new MatchItemBean();
 

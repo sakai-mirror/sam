@@ -157,6 +157,9 @@ listener set selectFromQuestionPool, eliminating the rendered attribute
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 7}" value="#{authorMessages.audio_recording}"/>
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 6}" value="#{authorMessages.file_upload}"/>
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 10}" value="#{authorMessages.import_from_q}"/>
+	 <!-- gopalrc - added 18 Nov 2009 -->
+     <h:outputText rendered="#{itemauthor.currentItem.itemType== 13}" value="#{authorMessages.extended_matching_items}"/>
+
    </b>
  </span>
  <span class="rightNav">

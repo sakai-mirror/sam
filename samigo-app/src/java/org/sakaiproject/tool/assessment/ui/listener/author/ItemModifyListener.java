@@ -235,6 +235,14 @@ public class ItemModifyListener implements ActionListener
                     itemauthorbean.setItemTypeString("Fill In Numeric");  //  need to get it from properties file
                     nextpage = "fillInNumericItem";
                     break;
+
+                //gopalrc - added 18 Nov 2009    
+                case 13:
+                    itemauthorbean.setItemTypeString("Extended Matching Items");  //  need to get it from properties file
+                    nextpage = "emiItem";
+                    break;
+
+                    
                 case 9:
                         itemauthorbean.setItemTypeString("Matching");  //  need to get it from properties file
 			MatchItemBean matchitem = new MatchItemBean();

@@ -446,10 +446,12 @@ public class SamLiteServiceImpl implements SamLiteService {
 		case Question.TRUE_FALSE_QUESTION:
 			processTrueFalseQuestion(section, question);
 			break;
+			
 		//gopalrc - added 16 Nov 2009	
 		case Question.EXTENDED_MATCHING_ITEMS_QUESTION:
 			processExtendedMatchingItemsQuestion(section, question);
 			break;
+			
 		default:
 			// TODO: Notify the user that this question didn't work...	
 		};
@@ -615,12 +617,12 @@ public class SamLiteServiceImpl implements SamLiteService {
 	//gopalrc - added 16 Nov 2009
 	private void processExtendedMatchingItemsQuestion(SectionType section, Question question) {
 		ItemType item = section.addNewItem();
-		item.setTitle("Extended Matching Items");
+		item.setTitle(question.getQuestionTypeAsString());
 		
 		ItemmetadataType itemMetaData = item.addNewItemmetadata();
 		QtimetadataType qtiMetaData = itemMetaData.addNewQtimetadata();
 		
-		buildMetaDataField(qtiMetaData, "qmd_itemtype", "Extended Matching Items");
+		buildMetaDataField(qtiMetaData, "qmd_itemtype", question.getQuestionTypeAsString());
 		buildMetaDataField(qtiMetaData, "TEXT_FORMAT", "HTML");
 		buildMetaDataField(qtiMetaData, "hasRationale", "False");
 		

@@ -127,6 +127,10 @@
             <%@ include file="/jsf/author/preview_item/MultipleChoiceMultipleCorrect.jsp" %>
           </h:panelGroup>
 
+		  <h:panelGroup rendered="#{question.itemData.typeId == 13}">
+            <%@ include file="/jsf/author/preview_item/ExtendedMatchingItems.jsp" %>
+          </h:panelGroup>
+
         </h:panelGrid>
 
 </h:column>

@@ -936,6 +936,12 @@
       <from-outcome>matchingItem</from-outcome>
       <to-view-id>/jsf/author/item/matching.jsp</to-view-id>
     </navigation-case>
+  	<!-- gopalrc added 18 Nov 2009-->
+    <navigation-case>
+      <from-outcome>emiItem</from-outcome>
+      <to-view-id>/jsf/author/item/extendedMatchingItems.jsp</to-view-id>
+    </navigation-case>
+
 
   <!-- QUESTION POOL	 -->
     <navigation-case>
@@ -1286,7 +1292,6 @@
          <renderer-class>com.corejsf.UploadRenderer</renderer-class>
       </renderer>
    </render-kit>
-
 
 
 </faces-config>
