@@ -98,7 +98,7 @@ public class XMLImportBean implements Serializable
   public void importAssessment(ValueChangeEvent e)
   {
 	  String uploadFile = (String) e.getNewValue();
-	  if(uploadFile.endsWith(".zip")) {
+	  if(uploadFile.toLowerCase().endsWith(".zip")) {
 		  isCP = true;
 		  importFromCP(uploadFile);
 	  }
