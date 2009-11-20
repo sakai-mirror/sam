@@ -632,11 +632,20 @@ public class ItemData
    * Added by Huong Nguyen for other types as well.
    */
   public String getAnswerKey(){
+	  
+		System.out.println("******************************************");
+		System.out.println("***********ANSWERKEY 1111 **************");
+		System.out.println("**********getTypeId() = " + getTypeId());
+		System.out.println("******************************************");
+	  
    String answerKey="";
    ArrayList itemTextArray = getItemTextArraySorted();
+
+   
    if (itemTextArray.size()==0)
      return answerKey;
 
+   
    ArrayList answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();
    HashMap h = new HashMap();
 
@@ -681,11 +690,21 @@ public class ItemData
        }
      }
    }
+   
+	System.out.println("******************************************");
+	System.out.println("***********ANSWERKEY 33333**************");
+	System.out.println("**********getTypeId() = " + getTypeId());
+	System.out.println("******************************************");
+
+   
 
    if (this.getTypeId().equals(TypeD.MATCHING))
-       {
+   {
+		System.out.println("******************************************");
+		System.out.println("***********MATCHING - NOT EMI**************");
+		System.out.println("******************************************");
 	   for (int k=0; k<answerArray.size();k++)
-	       {
+	   {
 		   AnswerIfc a = (AnswerIfc)answerArray.get(k);
 		   String pair = (String)h.get(a.getLabel());
      //if answer is not a match to any text, just print answer label
@@ -697,9 +716,20 @@ public class ItemData
 		   else
 
 		       answerKey = pair;
-	       }
-       }
+	   }
+   }
 
+   //gopalrc - added 20 Nov 2009
+   // NB - nesting different from PublishedItemData (Why??) - Outside above for loop.
+	if (this.getTypeId().equals(TypeD.EXTENDED_MATCHING_ITEMS)) {
+		System.out.println("******************************************");
+		System.out.println("***********EMI**************");
+		System.out.println("******************************************");
+		for (int k = 0; k < answerArray.size(); k++) {
+			AnswerIfc a = (AnswerIfc) answerArray.get(k);
+
+		}
+	}
 
 
    return answerKey;

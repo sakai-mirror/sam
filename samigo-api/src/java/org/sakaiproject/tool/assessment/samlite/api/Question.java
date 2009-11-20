@@ -137,12 +137,14 @@ public class Question {
 	public void postProcessing() {
 		if (getQuestionType() == EXTENDED_MATCHING_ITEMS_QUESTION) {
 			int themeLineIndex = 1;
-			questionLines.set(themeLineIndex, questionLines.get(themeLineIndex).toString() + "<br />");
+			questionLines.set(themeLineIndex, questionLines.get(themeLineIndex).toString() + "<br /><br />");
 			Iterator answerLines = answers.iterator();
 			int optionLine = 2;
+			String textToAdd = "Options: ";
+			questionLines.add(optionLine++, textToAdd + "<br />");
 			while (answerLines.hasNext()) {
 				Answer answer = (Answer) answerLines.next();
-				String textToAdd = answer.getId() + ". " + answer.getText();
+				textToAdd = answer.getId() + ". " + answer.getText();
 				if (!answer.isCorrect()) {
 					// add at next options position
 					availableOptions += answer.getId();

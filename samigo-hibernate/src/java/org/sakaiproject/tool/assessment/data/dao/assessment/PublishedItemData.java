@@ -605,6 +605,17 @@ public class PublishedItemData
 						answerKey = pair;
 				}
 			}
+			
+			//gopalrc - added 20 Nov 2009
+			// NB - nesting different from PublishedItemData (Why??) - Inside above for loop.
+			if (this.getTypeId().equals(TypeD.EXTENDED_MATCHING_ITEMS)) {
+				for (int k = 0; k < answerArray.size(); k++) {
+					AnswerIfc a = (AnswerIfc) answerArray.get(k);
+
+				}
+			}
+
+		
 		}
 
 		return answerKey;
