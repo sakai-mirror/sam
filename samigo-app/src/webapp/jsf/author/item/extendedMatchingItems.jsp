@@ -89,7 +89,7 @@
 
 <!-- DISCOUNT -->
 <div class="longtext">
-<h:panelGrid columns="2" border="0" rendered="#{itemauthor.currentItem.itemType == 1}">
+<h:panelGrid columns="2" border="0" rendered="#{itemauthor.currentItem.itemType == 13}">
   <h:panelGrid border="0">
     <h:outputLabel value="#{authorMessages.negative_point_value}"/>
     <h:outputText value="&nbsp;" escape="false"/>
@@ -107,9 +107,9 @@
 </div>
 
 
-  <!-- 2 TEXT -->
+  <!-- 2 QUESTION THEME TEXT -->
 
-   <div class="longtext"><h:outputLabel value="#{authorMessages.q_text}" />
+   <div class="longtext"><h:outputLabel value="#{authorMessages.question_theme_text}" />
 </div>
   <!-- WYSIWYG -->
    
@@ -123,67 +123,35 @@
   <!-- 2a ATTACHMENTS -->
   <%@ include file="/jsf/author/item/attachment.jsp" %>
 
-  <!-- 3 ANSWER -->
+
+
+  <!-- 3 ANSWER OPTIONS -->
   <div class="longtext">
-    <h:outputLabel value="#{authorMessages.answer} " />  </div>
-  <!-- need to add a listener, for the radio button below,to toggle between single and multiple correct-->
-<div class="tier2">
-    <h:selectOneRadio layout="pageDirection"
-		onclick="this.form.onsubmit();this.form.submit();"
-                onkeypress="this.form.onsubmit();this.form.submit();"
-           value="#{itemauthor.currentItem.itemType}"
-	valueChangeListener="#{itemauthor.currentItem.toggleChoiceTypes}" >
-      <f:selectItem itemValue="1"
-        itemLabel="#{authorMessages.single}" />
-      <f:selectItem itemValue="12"
-        itemLabel="#{authorMessages.multipl_mc_ss}" />
-      <f:selectItem itemValue="2"
-        itemLabel="#{authorMessages.multipl_mc_ms}" />
-    </h:selectOneRadio>
-</div>
+    <h:outputLabel value="#{authorMessages.answer_options} " />  </div>
 
-	<!-- dynamicaly generate rows of answers based on number of answers-->
+<!-- dynamicaly generate rows of answer options -->
 <div class="tier2">
- <h:dataTable id="mcchoices" value="#{itemauthor.currentItem.multipleChoiceAnswers}" var="answer" headerClass="navView longtext">
+ <h:dataTable id="mcchoices" value="#{itemauthor.currentItem.emiAnswerOptions}" var="answer" headerClass="navView longtext">
 <h:column>
+
 <h:panelGrid columns="2">
-<h:panelGroup>
-      
-
+  <h:panelGroup>
 	
-<h:outputText value="#{authorMessages.correct_answer}"  />
-<f:verbatim><br/></f:verbatim>
-<!-- if multiple correct, use checkboxes -->
-        <h:selectManyCheckbox value="#{itemauthor.currentItem.corrAnswers}" id="mccheckboxes"
-	rendered="#{itemauthor.currentItem.itemType == 2 || itemauthor.currentItem.itemType == 12}">
-	<f:selectItem itemValue="#{answer.label}" itemLabel="#{answer.label}"/>
-        </h:selectManyCheckbox>
+    <h:outputText value="#{answer.label}"  />
+    <f:verbatim><br/></f:verbatim>
+    <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiAnswerOptions}" rendered="#{itemauthor.currentItem.itemType == 13}">
+      <h:outputText id="text" value="#{authorMessages.button_remove}"/>
+      <f:param name="emiAnswerOptionId" value="#{answer.label}"/>
+    </h:commandLink>		 
 
-<h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeChoices}" rendered="#{itemauthor.currentItem.multipleCorrect}">
-  <h:outputText id="text" value="#{authorMessages.button_remove}"/>
-  <f:param name="answerid" value="#{answer.label}"/>
-</h:commandLink>		 
-
-	<!-- if single correct, use radiobuttons -->
-<h:selectOneRadio onclick="uncheckOthers(this);" onkeypress="uncheckOthers(this);" id="mcradiobtn"
-	layout="pageDirection"
-	value="#{itemauthor.currentItem.corrAnswer}"
-	rendered="#{itemauthor.currentItem.itemType == 1}">
-
-	<f:selectItem itemValue="#{answer.label}" itemLabel="#{answer.label}"/>
-</h:selectOneRadio>
-
-<h:commandLink title="#{authorMessages.t_removeC}" id="removelinkSingle" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeChoicesSingle}" rendered="#{!itemauthor.currentItem.multipleCorrect}">
-  <h:outputText id="textSingle" value="#{authorMessages.button_remove}"/>
-  <f:param name="answeridSingle" value="#{answer.label}"/>
-</h:commandLink>
- </h:panelGroup>
+  </h:panelGroup>
+  
         <!-- WYSIWYG -->
- <h:panelGrid>
-   <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes" >
-     <f:validateLength maximum="4000"/>
-   </samigo:wysiwyg>
- </h:panelGrid>
+  <h:panelGrid>
+    <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes" >
+      <f:validateLength maximum="4000"/>
+    </samigo:wysiwyg>
+  </h:panelGrid>
 			
          <h:outputText value="#{authorMessages.feedback_optional}" rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}" />
 
@@ -193,15 +161,16 @@
            <f:validateLength maximum="4000"/>
          </samigo:wysiwyg>
   </h:panelGrid>
-        </h:panelGrid>
+</h:panelGrid>
+        
 </h:column>
 </h:dataTable>
 
 </div>
-<h:inputHidden id="selectedRadioBtn" value="#{itemauthor.currentItem.corrAnswer}" />
+
 <div class="shorttext tier2">
-  <h:outputText value="#{authorMessages.insert_additional_a}" />
-<h:selectOneMenu  id="insertAdditionalAnswerSelectMenu"  onchange="this.form.onsubmit(); clickAddChoiceLink();" value="#{itemauthor.currentItem.additionalChoices}" >
+  <h:outputText value="#{authorMessages.insert_additional_answer_options}" />
+<h:selectOneMenu  id="insertAdditionalAnswerSelectMenu"  onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsLink();" value="#{itemauthor.currentItem.additionalEmiAnswerOptions}" >
   <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
   <f:selectItem itemLabel="1" itemValue="1"/>
   <f:selectItem itemLabel="2" itemValue="2"/>
@@ -210,11 +179,75 @@
   <f:selectItem itemLabel="5" itemValue="5"/>
   <f:selectItem itemLabel="6" itemValue="6"/>
 </h:selectOneMenu>
-<h:commandLink id="hiddenAddChoicelink" action="#{itemauthor.currentItem.addChoicesAction}" value="">
+<h:commandLink id="hiddenAddEmiAnswerOptionsActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsAction}" value="">
 </h:commandLink>
 </div>
 <br/>
-    <!-- 4 RANDOMIZE -->
+
+
+
+  <!-- 4 QUESTION-ANSWER COMBINATIONS -->
+
+  <div class="longtext">
+    <h:outputLabel value="#{authorMessages.question_answer_combinations} " />  </div>
+
+<!-- dynamicaly generate rows of question-answer combos -->
+<div class="tier2">
+ <h:dataTable id="mcchoices" value="#{itemauthor.currentItem.emiQuestionAnswerCombinations}" var="answer" headerClass="navView longtext">
+<h:column>
+
+<h:panelGrid columns="2">
+  <h:panelGroup>
+	
+    <h:outputText value="#{answer.sequence}"  />
+    <f:verbatim><br/></f:verbatim>
+    <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiQuestionAnswerCombinations}" rendered="#{itemauthor.currentItem.itemType == 13}">
+      <h:outputText id="text" value="#{authorMessages.button_remove}"/>
+      <f:param name="emiAnswerOptionId" value="#{answer.label}"/>
+    </h:commandLink>		 
+
+  </h:panelGroup>
+  
+        <!-- WYSIWYG -->
+  <h:panelGrid>
+    <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes" >
+      <f:validateLength maximum="4000"/>
+    </samigo:wysiwyg>
+  </h:panelGrid>
+			
+         <h:outputText value="#{authorMessages.feedback_optional}" rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}" />
+
+        <!-- WYSIWYG -->
+  <h:panelGrid rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}">
+         <samigo:wysiwyg rows="140" value="#{answer.feedback}" hasToggle="yes" >
+           <f:validateLength maximum="4000"/>
+         </samigo:wysiwyg>
+  </h:panelGrid>
+</h:panelGrid>
+        
+</h:column>
+</h:dataTable>
+
+</div>
+
+<div class="shorttext tier2">
+  <h:outputText value="#{authorMessages.insert_additional_q_a_combos}" />
+<h:selectOneMenu  id="insertAdditionalEmiQAComboSelectMenu"  onchange="this.form.onsubmit(); clickAddEmiQuestionAnswerCombinationsLink();" value="#{itemauthor.currentItem.additionalEmiQuestionAnswerCombinations}" >
+  <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
+  <f:selectItem itemLabel="1" itemValue="1"/>
+  <f:selectItem itemLabel="2" itemValue="2"/>
+  <f:selectItem itemLabel="3" itemValue="3"/>
+  <f:selectItem itemLabel="4" itemValue="4"/>
+  <f:selectItem itemLabel="5" itemValue="5"/>
+  <f:selectItem itemLabel="6" itemValue="6"/>
+</h:selectOneMenu>
+<h:commandLink id="hiddenAddEmiQuestionAnswerCombinationsActionlink" action="#{itemauthor.currentItem.addEmiQuestionAnswerCombinationsAction}" value="">
+</h:commandLink>
+</div>
+<br/>
+
+
+  <!-- 4 RANDOMIZE -->
   <div class="longtext">
     <h:outputLabel value="#{authorMessages.randomize_answers}" />    </div>
 <div class="tier3">

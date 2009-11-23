@@ -145,6 +145,38 @@ for (i=0; i<document.links.length; i++) {
 document.links[newindex].onclick();
 }
 
+
+//gopalrc - added 23 Nov 2009
+function clickAddEmiAnswerOptionsLink(){
+
+	var newindex = 0;
+	for (i=0; i<document.links.length; i++) {
+	  if ( document.links[i].id.indexOf("hiddenAddEmiAnswerOptionsActionlink") >=0){
+	    newindex = i;
+	    break;
+	  }
+	}
+
+	document.links[newindex].onclick();
+}
+
+
+//gopalrc - added 23 Nov 2009
+function clickAddEmiQuestionAnswerCombinationsLink(){
+
+	var newindex = 0;
+	for (i=0; i<document.links.length; i++) {
+	  if ( document.links[i].id.indexOf("hiddenAddEmiQuestionAnswerCombinationsActionlink") >=0){
+	    newindex = i;
+	    break;
+	  }
+	}
+
+	document.links[newindex].onclick();
+}
+
+
+
 function countNum(){
   var spanList= document.getElementsByTagName("SPAN");
   var count=1;
