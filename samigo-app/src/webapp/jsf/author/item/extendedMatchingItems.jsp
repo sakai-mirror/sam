@@ -131,7 +131,7 @@
 
 <!-- dynamicaly generate rows of answer options -->
 <div class="tier2">
- <h:dataTable id="mcchoices" value="#{itemauthor.currentItem.emiAnswerOptions}" var="answer" headerClass="navView longtext">
+ <h:dataTable id="emiAnswerOptions" value="#{itemauthor.currentItem.emiAnswerOptions}" var="answer" headerClass="navView longtext">
 <h:column>
 
 <h:panelGrid columns="2">
@@ -186,6 +186,22 @@
 
 
 
+  <!-- 4 LEAD IN STATEMENT -->
+
+  <div class="longtext"><h:outputLabel value="#{authorMessages.lead_in_statement}" /></div>
+  <!-- WYSIWYG -->
+  <h:panelGrid>
+   <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.leadInstatement}" hasToggle="yes">
+     <f:validateLength minimum="1" maximum="4000"/>
+   </samigo:wysiwyg>
+
+  </h:panelGrid>
+
+<br/>
+
+
+
+
   <!-- 4 QUESTION-ANSWER COMBINATIONS -->
 
   <div class="longtext">
@@ -193,7 +209,7 @@
 
 <!-- dynamicaly generate rows of question-answer combos -->
 <div class="tier2">
- <h:dataTable id="mcchoices" value="#{itemauthor.currentItem.emiQuestionAnswerCombinations}" var="answer" headerClass="navView longtext">
+ <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinations}" var="answer" headerClass="navView longtext">
 <h:column>
 
 <h:panelGrid columns="2">
@@ -203,7 +219,7 @@
     <f:verbatim><br/></f:verbatim>
     <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiQuestionAnswerCombinations}" rendered="#{itemauthor.currentItem.itemType == 13}">
       <h:outputText id="text" value="#{authorMessages.button_remove}"/>
-      <f:param name="emiAnswerOptionId" value="#{answer.label}"/>
+      <f:param name="emiQuestionAnswerComboId" value="#{answer.label}"/>
     </h:commandLink>		 
 
   </h:panelGroup>

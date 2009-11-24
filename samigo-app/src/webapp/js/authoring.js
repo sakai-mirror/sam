@@ -148,6 +148,8 @@ document.links[newindex].onclick();
 
 //gopalrc - added 23 Nov 2009
 function clickAddEmiAnswerOptionsLink(){
+	
+	//alert("clickAddEmiAnswerOptionsLink");
 
 	var newindex = 0;
 	for (i=0; i<document.links.length; i++) {
@@ -163,6 +165,8 @@ function clickAddEmiAnswerOptionsLink(){
 
 //gopalrc - added 23 Nov 2009
 function clickAddEmiQuestionAnswerCombinationsLink(){
+
+	//alert("clickAddEmiQuestionAnswerCombinationsLink");
 
 	var newindex = 0;
 	for (i=0; i<document.links.length; i++) {

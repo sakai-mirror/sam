@@ -633,11 +633,6 @@ public class ItemData
    */
   public String getAnswerKey(){
 	  
-		System.out.println("******************************************");
-		System.out.println("***********ANSWERKEY 1111 **************");
-		System.out.println("**********getTypeId() = " + getTypeId());
-		System.out.println("******************************************");
-	  
    String answerKey="";
    ArrayList itemTextArray = getItemTextArraySorted();
 
@@ -691,18 +686,9 @@ public class ItemData
      }
    }
    
-	System.out.println("******************************************");
-	System.out.println("***********ANSWERKEY 33333**************");
-	System.out.println("**********getTypeId() = " + getTypeId());
-	System.out.println("******************************************");
-
-   
 
    if (this.getTypeId().equals(TypeD.MATCHING))
    {
-		System.out.println("******************************************");
-		System.out.println("***********MATCHING - NOT EMI**************");
-		System.out.println("******************************************");
 	   for (int k=0; k<answerArray.size();k++)
 	   {
 		   AnswerIfc a = (AnswerIfc)answerArray.get(k);
@@ -721,10 +707,8 @@ public class ItemData
 
    //gopalrc - added 20 Nov 2009
    // NB - nesting different from PublishedItemData (Why??) - Outside above for loop.
+   //TODO - Complete Answerkey for EMI
 	if (this.getTypeId().equals(TypeD.EXTENDED_MATCHING_ITEMS)) {
-		System.out.println("******************************************");
-		System.out.println("***********EMI**************");
-		System.out.println("******************************************");
 		for (int k = 0; k < answerArray.size(); k++) {
 			AnswerIfc a = (AnswerIfc) answerArray.get(k);
 

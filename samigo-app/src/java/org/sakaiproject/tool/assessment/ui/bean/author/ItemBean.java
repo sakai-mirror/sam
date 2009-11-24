@@ -68,8 +68,7 @@ public class ItemBean
   //gopalrc - added 23 Nov 2009
   private ArrayList emiAnswerOptions;  // store List of possible options for an EMI question's anwers
   private String additionalEmiAnswerOptions = "0";  // additonal options for an EMI question's anwers
-  
-  //gopalrc - added 23 Nov 2009
+  private String leadInstatement;
   private ArrayList emiQuestionAnswerCombinations;  // store List of possible options for an EMI question's anwers
   private String additionalEmiQuestionAnswerCombinations = "0";  // additonal options for an EMI question's anwers
   
@@ -1382,13 +1381,13 @@ public class ItemBean
 
     //************ EMI Answer Options******************
     
-    //gopalrc - added23 Nov 2003
+    //gopalrc - added 23 Nov 2009
     public void setEmiAnswerOptions(ArrayList list)
     {
       this.emiAnswerOptions= list;
     }
     
-    //gopalrc - added23 Nov 2003
+    //gopalrc - added 23 Nov 2009
     public ArrayList getEmiAnswerOptions() {
     	ArrayList list = new ArrayList();
     	// build a default list of 4 options, a, b, c, d,
@@ -1416,6 +1415,11 @@ public class ItemBean
     
     //gopalrc - added 23 Nov 2009
     public String removeEmiAnswerOptions() {
+    	
+System.out.println("**********************************************");    	
+System.out.println("**********removeEmiAnswerOptions()************");    	
+System.out.println("**********************************************");    	
+
 		String labelToRemove = ContextUtil.lookupParam("emiAnswerOptionId");
 		ArrayList list = getEmiAnswerOptions(); // get existing list
 		if (list == null) {
@@ -1491,17 +1495,31 @@ public class ItemBean
        return "emiItem";
   }
     
+
+    
+    //*************** EMI Question-Answer Combinations **********************
+    //gopalrc - added 24 Nov 2009
+    public String getLeadInstatement() {
+    	return leadInstatement;
+    }
+
+    //gopalrc - added 24 Nov 2009
+    public void setLeadInstatement(String leadInstatement) {
+    	this.leadInstatement = leadInstatement;
+    }
+
+
     
     
   //*************** EMI Question-Answer Combinations **********************
     
-    //gopalrc - added23 Nov 2003
+    //gopalrc - added 23 Nov 2009
     public void setEmiQuestionAnswerCombinations(ArrayList list)
     {
       this.emiQuestionAnswerCombinations= list;
     }
     
-    //gopalrc - added23 Nov 2003
+    //gopalrc - added 23 Nov 2009
     public ArrayList getEmiQuestionAnswerCombinations() {
     	ArrayList list = new ArrayList();
     	// build a default list of 4 options, a, b, c, d,
@@ -1529,7 +1547,11 @@ public class ItemBean
     
     //gopalrc - added 23 Nov 2009
     public String removeEmiQuestionAnswerCombinations() {
-		String labelToRemove = ContextUtil.lookupParam("emiQuestionAnswerCombinations");
+    	System.out.println("**********************************************");    	
+    	System.out.println("***removeEmiQuestionAnswerCombinations()******");    	
+    	System.out.println("**********************************************");    	
+
+    	String labelToRemove = ContextUtil.lookupParam("emiQuestionAnswerComboId");
 		ArrayList list = getEmiQuestionAnswerCombinations(); // get existing list
 		if (list == null) {
 			return null;
@@ -1572,7 +1594,7 @@ public class ItemBean
     }
 
     
-    public String addEmiQuestionAnswerCombinations() {
+    public String addEmiQuestionAnswerCombinationsAction() {
     	
         String newvalue = this.getAdditionalEmiQuestionAnswerCombinations();
         ArrayList list = getEmiQuestionAnswerCombinations(); // get existing list
