@@ -209,13 +209,20 @@
 
 <!-- dynamicaly generate rows of question-answer combos -->
 <div class="tier2">
- <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinations}" var="answer" headerClass="navView longtext">
-<h:column>
+  <h:outputText value="#{authorMessages.note_emi_correct_options}" />
+  <br/>
+  <h:outputText value="#{authorMessages.note_emi_separate}" />
+  <br/>
+  <h:outputText value="#{authorMessages.note_emi_example}" />
+  <br/>
 
-<h:panelGrid columns="2">
+ <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinations}" var="answer" headerClass="navView longtext">
+ <h:column>
+
+ <h:panelGrid columns="2">
   <h:panelGroup>
 	
-    <h:outputText value="#{answer.sequence}"  />
+    <h:outputText value="#{answer.label}"  />
     <f:verbatim><br/></f:verbatim>
     <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiQuestionAnswerCombinations}" rendered="#{itemauthor.currentItem.itemType == 13}">
       <h:outputText id="text" value="#{authorMessages.button_remove}"/>

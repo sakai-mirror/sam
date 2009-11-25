@@ -1384,7 +1384,12 @@ public class ItemBean
     //gopalrc - added 23 Nov 2009
     public void setEmiAnswerOptions(ArrayList list)
     {
-      this.emiAnswerOptions= list;
+    	Iterator iter = list.iterator();
+    	while (iter.hasNext()) {
+    		AnswerBean answerbean = (AnswerBean) iter.next();
+       		answerbean.setIsCorrect(Boolean.FALSE);
+    	}
+    	this.emiAnswerOptions= list;
     }
     
     //gopalrc - added 23 Nov 2009
@@ -1401,9 +1406,8 @@ public class ItemBean
     		AnswerBean answerbean = new AnswerBean();
            		answerbean.setSequence( Long.valueOf(i+1));
            		answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
-                    
+           		answerbean.setIsCorrect(Boolean.FALSE);
           		list.add(answerbean);
-                 
         	}
     	
     	setEmiAnswerOptions(list);
@@ -1415,11 +1419,6 @@ public class ItemBean
     
     //gopalrc - added 23 Nov 2009
     public String removeEmiAnswerOptions() {
-    	
-System.out.println("**********************************************");    	
-System.out.println("**********removeEmiAnswerOptions()************");    	
-System.out.println("**********************************************");    	
-
 		String labelToRemove = ContextUtil.lookupParam("emiAnswerOptionId");
 		ArrayList list = getEmiAnswerOptions(); // get existing list
 		if (list == null) {
@@ -1476,8 +1475,8 @@ System.out.println("**********************************************");
                   AnswerBean answerbean = new AnswerBean();
                   answerbean.setSequence( Long.valueOf(i+1));
                   answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
+             	  answerbean.setIsCorrect(Boolean.FALSE);
                   list.add(answerbean);
-
                 }
               setEmiAnswerOptions(list);
               setAdditionalEmiAnswerOptions("0");
@@ -1497,7 +1496,7 @@ System.out.println("**********************************************");
     
 
     
-    //*************** EMI Question-Answer Combinations **********************
+    //*************** EMI Lead In Statement **********************
     //gopalrc - added 24 Nov 2009
     public String getLeadInstatement() {
     	return leadInstatement;
@@ -1516,7 +1515,12 @@ System.out.println("**********************************************");
     //gopalrc - added 23 Nov 2009
     public void setEmiQuestionAnswerCombinations(ArrayList list)
     {
-      this.emiQuestionAnswerCombinations= list;
+    	Iterator iter = list.iterator();
+    	while (iter.hasNext()) {
+    		AnswerBean answerbean = (AnswerBean) iter.next();
+       		answerbean.setIsCorrect(Boolean.TRUE);
+    	}
+    	this.emiQuestionAnswerCombinations= list;
     }
     
     //gopalrc - added 23 Nov 2009
@@ -1532,10 +1536,9 @@ System.out.println("**********************************************");
     	for (int i=0; i<defaultlength; i++){
     		AnswerBean answerbean = new AnswerBean();
            		answerbean.setSequence( Long.valueOf(i+1));
-           		answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
-                    
+				answerbean.setLabel(answerbean.getSequence().toString());
+           		answerbean.setIsCorrect(Boolean.TRUE);
           		list.add(answerbean);
-                 
         	}
     	
     	setEmiQuestionAnswerCombinations(list);
@@ -1547,10 +1550,6 @@ System.out.println("**********************************************");
     
     //gopalrc - added 23 Nov 2009
     public String removeEmiQuestionAnswerCombinations() {
-    	System.out.println("**********************************************");    	
-    	System.out.println("***removeEmiQuestionAnswerCombinations()******");    	
-    	System.out.println("**********************************************");    	
-
     	String labelToRemove = ContextUtil.lookupParam("emiQuestionAnswerComboId");
 		ArrayList list = getEmiQuestionAnswerCombinations(); // get existing list
 		if (list == null) {
@@ -1569,8 +1568,8 @@ System.out.println("**********************************************");
 				currentindex = currentindex + 1;
 				// reset sequence and labels , shift the seq/labels after a
 				// choice is deleted
-				answerbean.setSequence( Long.valueOf(currentindex));
-				answerbean.setLabel(AnswerBean.getChoiceLabels()[currentindex - 1]);
+				answerbean.setSequence(Long.valueOf(currentindex));
+				answerbean.setLabel(answerbean.getSequence().toString());
 			}
 		}
 		return null;
@@ -1606,7 +1605,8 @@ System.out.println("**********************************************");
               for (int i=currentsize; i<newlength; i++){
                   AnswerBean answerbean = new AnswerBean();
                   answerbean.setSequence( Long.valueOf(i+1));
-                  answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
+  			      answerbean.setLabel(answerbean.getSequence().toString());
+                  answerbean.setIsCorrect(Boolean.TRUE);
                   list.add(answerbean);
 
                 }

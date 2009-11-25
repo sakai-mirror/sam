@@ -121,7 +121,11 @@ public class ItemAddListener
 	return;
 
     }   
-   
+
+    //gopalrc - added 25 Nov 2009
+    if(iType.equals(TypeFacade.EXTENDED_MATCHING_ITEMS.toString()))
+    	checkEMI();
+    
     if(iType.equals(TypeFacade.MULTIPLE_CHOICE.toString()))
 	checkMC(true);
 
@@ -216,6 +220,70 @@ public class ItemAddListener
   }
     
 
+  //gopalrc - added 25 Nov 2009
+  public void checkEMI(){
+	  ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
+	  ItemBean item =itemauthorbean.getCurrentItem();
+	  int countAnswerText=0;
+	  int indexLabel= 0;
+	  Iterator iter = item.getEmiAnswerOptions().iterator();
+	  boolean missingchoices=false;
+
+	  StringBuilder missingLabelbuf = new StringBuilder();
+	  String txt="";
+	  String label="";
+	  FacesContext context=FacesContext.getCurrentInstance();
+	  int counter=0;
+	  if(item.getEmiAnswerOptions()!=null){
+		  while (iter.hasNext()) {
+			  AnswerBean answerbean = (AnswerBean) iter.next();
+			  String answerTxt=ContextUtil.stringWYSIWYG(answerbean.getText());
+			  if(answerTxt.toLowerCase().replaceAll("<^[^(img)]*?>", "").trim().equals("")) {
+				  answerbean.setText("");
+			  }
+			  label = answerbean.getLabel();
+			  txt=answerbean.getText();
+
+			  if ((txt!=null)&& (!txt.equals(""))) {
+				  countAnswerText++;
+
+				  if(!label.equals(AnswerBean.getChoiceLabels()[indexLabel])){
+					  missingchoices= true;
+					  if( "".equals(missingLabelbuf.toString()))
+						  missingLabelbuf.append(" "+AnswerBean.getChoiceLabels()[indexLabel]);
+					  else
+						  missingLabelbuf.append(", "+AnswerBean.getChoiceLabels()[indexLabel]);           
+					  indexLabel++;
+				  }
+				  indexLabel++;
+			  }
+		  } // end of while
+
+		  String missingLabel = missingLabelbuf.toString();
+		  if(!error){
+			  if(countAnswerText<=1){
+				  String answerList_err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","answerList_error");
+				  context.addMessage(null,new FacesMessage(answerList_err));
+				  error=true;
+
+			  }
+			  else if(missingchoices){
+				  String selectionError=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","missingChoices_error");
+				  context.addMessage(null,new FacesMessage(selectionError+missingLabel));
+				  error=true;
+
+			  }
+		  }
+	  }
+	  if(error){
+		  item.setOutcome("emiItem");
+		  item.setPoolOutcome("emiItem");
+	  }
+  }
+  
+  
+  
+  
   public void checkMC(boolean isSingleSelect){
 	  ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 	  ItemBean item =itemauthorbean.getCurrentItem();
@@ -328,6 +396,8 @@ public class ItemAddListener
 
     }
 
+  
+  
     public boolean isErrorFIB() {
 	ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 	ItemBean item =itemauthorbean.getCurrentItem();
@@ -995,6 +1065,49 @@ public class ItemAddListener
 			textSet.add(text1);
 
 		}
+
+		//gopalrc - added 25 Nov 2009
+		else if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+
+			Iterator iter = bean.getEmiAnswerOptions().iterator();
+			Answer answer = null;
+			while (iter.hasNext()) {
+				AnswerBean answerbean = (AnswerBean) iter.next();
+				answer = new Answer(text1,
+						stripPtags(answerbean.getText()), answerbean
+						.getSequence(), answerbean.getLabel(),
+						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+				HashSet answerFeedbackSet1 = new HashSet();
+				answerFeedbackSet1.add(new AnswerFeedback(answer,
+						AnswerFeedbackIfc.GENERAL_FEEDBACK,
+						stripPtags(answerbean.getFeedback())));
+				answer.setAnswerFeedbackSet(answerFeedbackSet1);
+
+				answerSet1.add(answer);
+			}
+			
+			iter = bean.getEmiQuestionAnswerCombinations().iterator();
+			answer = null;
+			while (iter.hasNext()) {
+				AnswerBean answerbean = (AnswerBean) iter.next();
+				answer = new Answer(text1,
+						stripPtags(answerbean.getText()), answerbean
+						.getSequence(), answerbean.getLabel(),
+						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+				HashSet answerFeedbackSet1 = new HashSet();
+				answerFeedbackSet1.add(new AnswerFeedback(answer,
+						AnswerFeedbackIfc.GENERAL_FEEDBACK,
+						stripPtags(answerbean.getFeedback())));
+				answer.setAnswerFeedbackSet(answerFeedbackSet1);
+
+				answerSet1.add(answer);
+			}			
+
+			text1.setAnswerSet(answerSet1);
+			textSet.add(text1);
+
+		}
+		
 
 		// for file Upload and audio recording
 		else {
