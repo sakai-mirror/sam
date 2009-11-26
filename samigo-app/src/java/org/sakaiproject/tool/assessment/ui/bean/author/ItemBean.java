@@ -1384,11 +1384,6 @@ public class ItemBean
     //gopalrc - added 23 Nov 2009
     public void setEmiAnswerOptions(ArrayList list)
     {
-    	Iterator iter = list.iterator();
-    	while (iter.hasNext()) {
-    		AnswerBean answerbean = (AnswerBean) iter.next();
-       		answerbean.setIsCorrect(Boolean.FALSE);
-    	}
     	this.emiAnswerOptions= list;
     }
     
@@ -1406,7 +1401,6 @@ public class ItemBean
     		AnswerBean answerbean = new AnswerBean();
            		answerbean.setSequence( Long.valueOf(i+1));
            		answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
-           		answerbean.setIsCorrect(Boolean.FALSE);
           		list.add(answerbean);
         	}
     	
@@ -1475,7 +1469,6 @@ public class ItemBean
                   AnswerBean answerbean = new AnswerBean();
                   answerbean.setSequence( Long.valueOf(i+1));
                   answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
-             	  answerbean.setIsCorrect(Boolean.FALSE);
                   list.add(answerbean);
                 }
               setEmiAnswerOptions(list);
@@ -1515,11 +1508,6 @@ public class ItemBean
     //gopalrc - added 23 Nov 2009
     public void setEmiQuestionAnswerCombinations(ArrayList list)
     {
-    	Iterator iter = list.iterator();
-    	while (iter.hasNext()) {
-    		AnswerBean answerbean = (AnswerBean) iter.next();
-       		answerbean.setIsCorrect(Boolean.TRUE);
-    	}
     	this.emiQuestionAnswerCombinations= list;
     }
     
@@ -1537,7 +1525,6 @@ public class ItemBean
     		AnswerBean answerbean = new AnswerBean();
            		answerbean.setSequence( Long.valueOf(i+1));
 				answerbean.setLabel(answerbean.getSequence().toString());
-           		answerbean.setIsCorrect(Boolean.TRUE);
           		list.add(answerbean);
         	}
     	
@@ -1606,7 +1593,6 @@ public class ItemBean
                   AnswerBean answerbean = new AnswerBean();
                   answerbean.setSequence( Long.valueOf(i+1));
   			      answerbean.setLabel(answerbean.getSequence().toString());
-                  answerbean.setIsCorrect(Boolean.TRUE);
                   list.add(answerbean);
 
                 }

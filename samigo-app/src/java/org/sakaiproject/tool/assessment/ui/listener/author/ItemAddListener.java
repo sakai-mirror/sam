@@ -903,6 +903,7 @@ public class ItemAddListener
 
 	private HashSet prepareText(ItemFacade item, ItemBean bean,
 			ItemAuthorBean itemauthor) {
+		
 		HashSet textSet = new HashSet();
 		HashSet answerSet1 = new HashSet();
 
@@ -1124,6 +1125,11 @@ public class ItemAddListener
 
   private Set preparePublishedText(ItemFacade item, ItemBean bean, ItemService delegate) {
 
+		System.out.println("*********************************************");
+		System.out.println("*************preparePublishedText()**********");
+		System.out.println("*********************************************");
+
+	  
 	  if (item.getTypeId().equals(TypeFacade.TRUE_FALSE)) {
 		  preparePublishedTextForTF(item, bean);
 	  }

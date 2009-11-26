@@ -23,13 +23,27 @@ should be included in file importing DeliveryMessages
 **********************************************************************************/
 --%>
 -->
+
+GOPAL - PREVIEW_ITEM/ExtendedMatchingItems.jsp
+
   <h:outputText escape="false" value="#{question.itemData.text}" />
   <!-- ATTACHMENTS -->
   <%@ include file="/jsf/author/preview_item/attachment.jsp" %>
 
   <h:dataTable value="#{question.itemData.itemTextArraySorted}" var="itemText">
     <h:column>
-      <h:dataTable value="#{itemText.answerArraySorted}" var="answer">
+      
+
+      <h:dataTable value="#{itemText.emiQuestionAnswerCombinations}" var="answer" border="1">
+        <h:column> 
+         <h:panelGroup rendered="#{answer.text != null && answer.text ne ''}">
+          <h:outputText escape="false" value="#{answer.label}. #{answer.text}" /> 
+        </h:panelGroup>
+        </h:column>
+
+
+        <h:column> 
+      <h:dataTable value="#{itemText.emiAnswerOptions}" dir="LTR" var="answer">
         <h:column> 
          <h:panelGroup rendered="#{answer.text != null && answer.text ne ''}">
           <h:graphicImage id="image1" rendered="#{answer.isCorrect}"
@@ -37,7 +51,6 @@ should be included in file importing DeliveryMessages
           <h:graphicImage id="image2" rendered="#{!answer.isCorrect}"
              alt="#{authorMessages.not_correct}" url="/images/unchecked.gif"/>      
           <h:outputText escape="false" value="#{answer.label}. #{answer.text}" /> 
-
         </h:panelGroup>
         </h:column><h:column>
         <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">    
@@ -50,6 +63,23 @@ should be included in file importing DeliveryMessages
 		</h:panelGroup>
         </h:column>
       </h:dataTable>
+        </h:column>
+
+
+        <h:column>
+        <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">    
+         <h:outputLabel value=" #{authorMessages.feedback}: " />
+         <h:outputText escape="false" value="#{answer.generalAnswerFeedback}" />
+		</h:panelGroup>
+        <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && !author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">    
+         <h:outputLabel value=" #{authorMessages.feedback}: " />
+         <h:outputText escape="false" value="#{answer.generalAnswerFeedback}" />
+		</h:panelGroup>
+
+        </h:column>
+      </h:dataTable>
+      
+      <f:verbatim><br/><br/><br/></f:verbatim>
 
     </h:column>
   </h:dataTable>

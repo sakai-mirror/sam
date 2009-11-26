@@ -120,5 +120,42 @@ public class ItemText
     Collections.sort(list);
     return list;
   }
+  
+  
+  //gopalrc - added 26 Nov 2009
+  public ArrayList getEmiAnswerOptions() {
+	    ArrayList list = getAnswerArray();
+	    ArrayList emiAnswerOptions = new ArrayList();
+	    if (list == null) {
+	    	return emiAnswerOptions;
+	    }
+	    Iterator iter = list.iterator();
+	    while (iter.hasNext()) {
+	    	Answer answer = (Answer) iter.next();
+	    	if (answer.getLabel() != null && answer.getLabel().matches("[A-Za-z]")) {
+	    		emiAnswerOptions.add(answer);
+	    	}
+	    }
+	    Collections.sort(emiAnswerOptions);
+	    return emiAnswerOptions;
+  }
+  
+  //gopalrc - added 26 Nov 2009
+  public ArrayList getEmiQuestionAnswerCombinations() {
+	    ArrayList list = getAnswerArray();
+	    ArrayList emiQuestionAnswerCombinations = new ArrayList();
+	    if (list == null) {
+	    	return emiQuestionAnswerCombinations;
+	    }
+	    Iterator iter = list.iterator();
+	    while (iter.hasNext()) {
+	    	Answer answer = (Answer) iter.next();
+	    	if (answer.getLabel() != null && answer.getLabel().matches("[0-9]+")) {
+	    		emiQuestionAnswerCombinations.add(answer);
+	    	}
+	    }
+	    Collections.sort(emiQuestionAnswerCombinations);
+	    return emiQuestionAnswerCombinations;
+  }
 
 }

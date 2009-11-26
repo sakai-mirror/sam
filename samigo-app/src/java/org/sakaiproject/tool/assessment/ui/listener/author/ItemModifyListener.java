@@ -283,6 +283,10 @@ public class ItemModifyListener implements ActionListener
   }
 
   private void populateItemText(ItemAuthorBean itemauthorbean, ItemFacade itemfacade, ItemBean bean)  {
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		System.out.println("*********************************************");
+		System.out.println("***************populateItemText()*****************");
+		System.out.println("*********************************************");
 
 	  Set itemtextSet = itemfacade.getItemTextSet();
 	  Iterator iter = itemtextSet.iterator();
@@ -290,6 +294,12 @@ public class ItemModifyListener implements ActionListener
 		  ItemTextIfc  itemText = (ItemTextIfc) iter.next();
 		  bean.setItemText(itemText.getText());
 
+		  
+			System.out.println("*********************************************");
+			System.out.println("***************bean.getItemText() = " + bean.getItemText());
+			System.out.println("*********************************************");
+		  
+		  
 		  /////////////////////////////////////////////////////////////
 		  // Get current Answers choices
 		  /////////////////////////////////////////////////////////////
@@ -403,6 +413,11 @@ public class ItemModifyListener implements ActionListener
 
 
 		  if ((Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CHOICE)) ||(Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CORRECT)) || (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CORRECT_SINGLE_SELECTION)) ) {
+			  
+				System.out.println("*********************************************");
+				System.out.println("***************MULTIPLE_CHOICE***************");
+				System.out.println("*********************************************");
+			  
 			  Set answerobjlist = itemText.getAnswerSet();
 			  String afeedback =  "" ;
 			  Iterator iter1 = answerobjlist.iterator();
@@ -410,11 +425,21 @@ public class ItemModifyListener implements ActionListener
 			  ArrayList correctlist = new ArrayList();
 			  //need to check sequence no, since this answerSet returns answers in random order
 			  int count = answerobjlist.size();
+
+				System.out.println("*********************************************");
+				System.out.println("***************answerobjlist.size() = "+count);
+				System.out.println("*********************************************");
+			  
 			  AnswerIfc[] answerArray = new AnswerIfc[count];
 			  while(iter1.hasNext())
 			  {
 				  AnswerIfc answerobj = (AnswerIfc) iter1.next();
 				  Long seq = answerobj.getSequence();
+
+					System.out.println("*********************************************");
+					System.out.println("***************answerobj.getSequence() = "+answerobj.getSequence());
+					System.out.println("*********************************************");
+
 				  answerArray[seq.intValue()-1] = answerobj;
 			  }
 			  for (int i=0; i<answerArray.length; i++) {
@@ -471,8 +496,12 @@ public class ItemModifyListener implements ActionListener
 
 		  
 		  
-
+		  //gopalrc - added 26 November 2009
 		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+				System.out.println("*********************************************");
+				System.out.println("**********EXTENDED_MATCHING_ITEMS************");
+				System.out.println("*********************************************");
+
 			  Set answerobjlist = itemText.getAnswerSet();
 			  String afeedback =  "" ;
 			  Iterator iter1 = answerobjlist.iterator();
@@ -480,12 +509,22 @@ public class ItemModifyListener implements ActionListener
 			  ArrayList qaComboList = new ArrayList();
 			  //need to check sequence no, since this answerSet returns answers in random order
 			  int count = answerobjlist.size();
+
+			    System.out.println("*********************************************");
+				System.out.println("***************answerobjlist.size() = "+count);
+				System.out.println("*********************************************");
+
 			  AnswerIfc[] answerArray = new AnswerIfc[count];
+			  int seq = 0;
 			  while(iter1.hasNext())
 			  {
 				  AnswerIfc answerobj = (AnswerIfc) iter1.next();
-				  Long seq = answerobj.getSequence();
-				  answerArray[seq.intValue()-1] = answerobj;
+				  
+					System.out.println("*********************************************");
+					System.out.println("***************answerobj.getSequence() = "+answerobj.getSequence());
+					System.out.println("*********************************************");
+
+				  answerArray[seq++] = answerobj;
 			  }
 			  for (int i=0; i<answerArray.length; i++) {
 				  Set feedbackSet = answerArray[i].getAnswerFeedbackSet();
@@ -500,8 +539,8 @@ public class ItemModifyListener implements ActionListener
 				  answerbean.setLabel(answerArray[i].getLabel());
 				  answerbean.setFeedback(afeedback);
 				  answerbean.setIsCorrect(answerArray[i].getIsCorrect());
-				  if (answerbean.getIsCorrect() != null &&
-						  answerbean.getIsCorrect().booleanValue()) {
+				  if (answerbean.getLabel() != null &&
+						  answerbean.getLabel().matches("[0-9]+")) {
 					  qaComboList.add(answerbean);
 				  }
 				  else {
