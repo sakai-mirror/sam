@@ -43,6 +43,10 @@ public class ItemText
   private String text;
   private Set answerSet;
 
+  //gopalrc - added 27 Nov 2009
+  private ArrayList emiAnswerOptions;
+  private ArrayList emiQuestionAnswerCombinations;
+  
   public ItemText() {}
 
   public ItemText(ItemData item, Long sequence, String text, Set answerSet) {
@@ -90,6 +94,10 @@ public class ItemText
 
   public void setAnswerSet(Set answerSet) {
     this.answerSet = answerSet;
+
+    //gopalrc Added 27 Nov 2009
+    emiAnswerOptions = null;
+    emiQuestionAnswerCombinations = null;
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws IOException {
@@ -124,8 +132,12 @@ public class ItemText
   
   //gopalrc - added 26 Nov 2009
   public ArrayList getEmiAnswerOptions() {
+	  if (emiAnswerOptions != null) {
+		  return emiAnswerOptions;
+	  }
+	  else { // use lazy initialization
 	    ArrayList list = getAnswerArray();
-	    ArrayList emiAnswerOptions = new ArrayList();
+	    emiAnswerOptions = new ArrayList();
 	    if (list == null) {
 	    	return emiAnswerOptions;
 	    }
@@ -138,12 +150,17 @@ public class ItemText
 	    }
 	    Collections.sort(emiAnswerOptions);
 	    return emiAnswerOptions;
+	  }
   }
   
   //gopalrc - added 26 Nov 2009
   public ArrayList getEmiQuestionAnswerCombinations() {
+	  if (emiQuestionAnswerCombinations != null) {
+		  return emiQuestionAnswerCombinations;
+	  }
+	  else { // use lazy initialization
 	    ArrayList list = getAnswerArray();
-	    ArrayList emiQuestionAnswerCombinations = new ArrayList();
+	    emiQuestionAnswerCombinations = new ArrayList();
 	    if (list == null) {
 	    	return emiQuestionAnswerCombinations;
 	    }
@@ -152,10 +169,33 @@ public class ItemText
 	    	Answer answer = (Answer) iter.next();
 	    	if (answer.getLabel() != null && answer.getLabel().matches("[0-9]+")) {
 	    		emiQuestionAnswerCombinations.add(answer);
+	    		ArrayList answerOptions = this.getEmiAnswerOptions();
+	    		//set of possible selection options indicating correct and incorrect options
+	    		ArrayList selections = new ArrayList();
+	    		Iterator optionsIter = answerOptions.iterator();
+	    		while (optionsIter.hasNext()) {
+	    			Answer option = (Answer)optionsIter.next();
+	    			Answer selection = null;
+	    			try {
+						selection = option.clone();
+					} catch (CloneNotSupportedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if (answer.isEmiOptionCorrect(option.getLabel())) {
+						selection.setIsCorrect(Boolean.TRUE);
+					}
+					else {
+						selection.setIsCorrect(Boolean.FALSE);
+					}
+					selections.add(selection);
+	    		}
+	    		answer.setEmiSelectionOptions(selections);
 	    	}
 	    }
 	    Collections.sort(emiQuestionAnswerCombinations);
 	    return emiQuestionAnswerCombinations;
+	  }
   }
 
 }

@@ -24,20 +24,59 @@ should be included in file importing DeliveryMessages
 
 GOPAL - questionpreview/ExtendedMatchingItems.jsp
 
-  <h:outputText escape="false" value="#{itemContents.itemData.text}" />
+  <h:outputText escape="false" value="#{itemContents.itemData.themeText}" />
+  <f:verbatim><br/><br/></f:verbatim>
+  <h:outputText escape="false" value="#{itemContents.itemData.leadInText}" />
+  <f:verbatim><br/><br/></f:verbatim>
+
   <h:dataTable value="#{itemContents.itemData.itemTextArraySorted}" var="itemText">
     <h:column>
-      <h:dataTable value="#{itemText.answerArraySorted}" var="answer">
-        <h:column>
-          <h:graphicImage id="image1" rendered="#{answer.isCorrect}"
-             alt="#{authorMessages.correct}" url="/images/checked.gif" >
-          </h:graphicImage>
-          <h:graphicImage id="image2" rendered="#{!answer.isCorrect}"
-             alt="#{authorMessages.not_correct}" url="/images/unchecked.gif" >
-          </h:graphicImage>
-          <h:outputText escape="false" value="#{answer.label}. #{answer.text}" />
+
+      <h:dataTable value="#{itemText.emiQuestionAnswerCombinations}" var="answer">
+        <h:column> 
+         <h:panelGroup rendered="#{answer.text != null && answer.text ne ''}">
+          <h:outputText escape="false" value="#{answer.label}. #{answer.text}" /> 
+        </h:panelGroup>
+        </h:column>
+
+
+        <h:column> 
+      <h:dataTable value="#{answer.emiSelectionOptions}" var="answerOption">
+        <h:column> 
+         <h:panelGroup rendered="#{answerOption.text != null && answerOption.text ne ''}">
+          <h:graphicImage id="image1" rendered="#{answerOption.isCorrect}"
+             alt="#{authorMessages.correct}" url="/images/checked.gif" />         
+          <h:graphicImage id="image2" rendered="#{!answerOption.isCorrect}"
+             alt="#{authorMessages.not_correct}" url="/images/unchecked.gif"/>      
+          <h:outputText escape="false" value="#{answerOption.label}. #{answerOption.text}" /> 
+        </h:panelGroup>
+        </h:column><h:column>
+        <h:panelGroup rendered="#{answerOption.text ne null && answerOption.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answerOption.generalAnswerFbIsNotEmpty}">    
+         <h:outputLabel value=" #{authorMessages.feedback}: " />
+         <h:outputText escape="false" value="#{answerOption.generalAnswerFeedback}" />
+		</h:panelGroup>
+        <h:panelGroup rendered="#{answerOption.text ne null && answerOption.text ne '' && !author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1' && answerOption.generalAnswerFbIsNotEmpty}">    
+         <h:outputLabel value=" #{authorMessages.feedback}: " />
+         <h:outputText escape="false" value="#{answerOption.generalAnswerFeedback}" />
+		</h:panelGroup>
         </h:column>
       </h:dataTable>
+        </h:column>
+
+
+        <h:column>
+        <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">    
+         <h:outputLabel value=" #{authorMessages.feedback}: " />
+         <h:outputText escape="false" value="#{answer.generalAnswerFeedback}" />
+		</h:panelGroup>
+        <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && !author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">    
+         <h:outputLabel value=" #{authorMessages.feedback}: " />
+         <h:outputText escape="false" value="#{answer.generalAnswerFeedback}" />
+		</h:panelGroup>
+
+        </h:column>
+      </h:dataTable>
+      
 
       <f:verbatim><br /></f:verbatim>
       <%-- answer --%>

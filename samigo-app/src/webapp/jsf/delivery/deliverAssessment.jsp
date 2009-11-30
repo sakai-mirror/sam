@@ -259,6 +259,13 @@ String.prototype.endsWith = function(txt)
            <%@ include file="/jsf/delivery/item/deliverMultipleChoiceMultipleCorrect.jsp" %>
            </f:subview>
           </h:panelGroup>
+          
+          <h:panelGroup rendered="#{question.itemData.typeId == 13}">
+           <f:subview id="deliverExtendedMatchingItems">
+           <%@ include file="/jsf/delivery/item/deliverExtendedMatchingItems.jsp" %>
+           </f:subview>
+          </h:panelGroup>
+          
           <h:panelGroup rendered="#{question.itemData.typeId == 5}">
            <f:subview id="deliverShortAnswer">
            <%@ include file="/jsf/delivery/item/deliverShortAnswer.jsp" %>

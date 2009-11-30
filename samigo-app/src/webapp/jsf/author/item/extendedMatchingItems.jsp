@@ -191,7 +191,7 @@
   <div class="longtext"><h:outputLabel value="#{authorMessages.lead_in_statement}" /></div>
   <!-- WYSIWYG -->
   <h:panelGrid>
-   <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.leadInstatement}" hasToggle="yes">
+   <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.leadInStatement}" hasToggle="yes">
      <f:validateLength minimum="1" maximum="4000"/>
    </samigo:wysiwyg>
 

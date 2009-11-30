@@ -85,5 +85,11 @@ public  interface AnswerIfc
   String getInCorrectAnswerFeedback();
 
   String getGeneralAnswerFeedback();
+  
+  
+  //gopalrc added 30 Nov 2009
+  String getEmiCorrectOptionLabelsAsString();
+  int getNumberOfCorrectOptions();
+  
 
 }

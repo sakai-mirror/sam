@@ -249,4 +249,31 @@ public class PublishedAnswer
 	public boolean getTextIsNotEmpty() {
 		return publishedItemData.isNotEmpty(getText());
 	}
+	
+	 
+	//gopalrc added 30 Nov 2009
+	public String getEmiCorrectOptionLabelsAsString() {
+		String optionString = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]")).trim();
+		if (optionString == null) {
+			return "";
+		}
+		return optionString;
+	}
+
+	//gopalrc - added 30 Nov 2009
+	public int getNumberOfCorrectOptions() {
+		int count = 0;
+		String emiCorrectOptionsString = getEmiCorrectOptionLabelsAsString().trim();
+		if (emiCorrectOptionsString == null || emiCorrectOptionsString.equals("")) {
+			count = 0;
+		}
+		else if (emiCorrectOptionsString.indexOf(",") == -1) {
+		}
+		else {
+			String[] correctOptionLabels = emiCorrectOptionsString.split(",");
+			count = correctOptionLabels.length;
+		}
+		return count;
+	}
+	
 }

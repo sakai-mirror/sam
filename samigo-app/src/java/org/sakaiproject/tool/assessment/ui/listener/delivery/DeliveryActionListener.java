@@ -1006,7 +1006,9 @@ public class DeliveryActionListener
     if (item.getTypeId().equals(TypeIfc.ESSAY_QUESTION) ||
         item.getTypeId().equals(TypeIfc.FILE_UPLOAD) ||
         item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY) ||
+        item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
         item.getTypeId().equals(TypeIfc.AUDIO_RECORDING))
+
     {
       itemBean.setFeedback(item.getGeneralItemFeedback());
     }
@@ -1046,7 +1048,7 @@ public class DeliveryActionListener
     	
     	//calculate total # of correct answers. 
     	int correctAnswers = 0;
-    	if ((item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )|| (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
+    	if ((item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) || (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )|| (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
     		Iterator itemTextIter = item.getItemTextArray().iterator();
     		while (itemTextIter.hasNext()){
     			ItemTextIfc itemText = (ItemTextIfc) itemTextIter.next();
@@ -1087,7 +1089,7 @@ public class DeliveryActionListener
       		    	break;
     			  }
     		  }
-    		  else if  ((item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )||(item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
+    		  else if  ((item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) || (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )||(item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
       		    if ((answer !=null) && (answer.getIsCorrect() == null || !answer.getIsCorrect().booleanValue())){
     		    	haswronganswer =true;
     		    	

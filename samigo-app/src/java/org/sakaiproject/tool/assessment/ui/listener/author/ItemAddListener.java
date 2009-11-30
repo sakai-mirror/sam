@@ -914,7 +914,12 @@ public class ItemAddListener
 		ItemText text1 = new ItemText();
 		text1.setItem(item.getData());
 		text1.setSequence(Long.valueOf(1));
-		text1.setText(bean.getItemText());
+		if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+			text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
+		}
+		else {
+			text1.setText(bean.getItemText());
+		}
 		
 		// ///////////////////////////////////////////////////////////
 		//

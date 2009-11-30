@@ -29,7 +29,7 @@ public class Answer {
 	//gopalrc added 16 Nov 2009
 	public void postProcessing(int questionType) {
 		if (questionType == Question.EXTENDED_MATCHING_ITEMS_QUESTION) {
-			text = text.substring(text.indexOf("[")+1, text.indexOf("]")).trim();
+			text = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]")).trim();
 		}
 	}
 

@@ -45,6 +45,7 @@ import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.TypeException;
 import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
+import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
@@ -149,6 +150,15 @@ public class ItemContentsBean implements Serializable {
 	private List itemGradingAttachmentList;
 	
 	private Long itemGradingIdForFilePicker;
+	
+	
+    //gopalrc - added 30 Nov 2009 - for EMI question
+    private String themeText;
+    private String leadInText;
+    //gopalrc - centralize - currently in ItemData, ItemBean, and ItemContentsBean 
+    public static final String LEAD_IN_STATEMENT_DEMARCATOR = "lead_in_statement_demarcator:";
+	
+	
 	
 	public ItemContentsBean() {
 	}
@@ -1173,5 +1183,39 @@ public class ItemContentsBean implements Serializable {
 	  this.itemGradingIdForFilePicker = itemGradingIdForFilePicker;
   }
 
+  
+  //gopalrc - added 30 Nov 2009
+  public String getLeadInText() {
+	if (leadInText == null) {
+		setThemeAndLeadInText();
+	}
+	return leadInText;
+  }
+
+
+  //gopalrc - added 30 Nov 2009
+  public String getThemeText() {
+	if (themeText == null) {
+		setThemeAndLeadInText();
+	}
+	return themeText;
+  }
+
+  //gopalrc - added 30 Nov 2009
+  public void setThemeAndLeadInText() {
+	String text = getText();  
+	if ((TypeIfc.EXTENDED_MATCHING_ITEMS).equals(getItemData().getTypeId()) &&
+			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
+		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
+		themeText = itemTextElements[0];
+		leadInText = itemTextElements[1];
+	}
+  }
+    
+	  
+  
+  
+  
+  
 }
 

@@ -26,6 +26,8 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerFeedbackIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemData;
+import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
+import org.sakaiproject.tool.assessment.samlite.api.Question;
 import org.apache.log4j.*;
 import java.io.Serializable;
 import java.io.IOException;
@@ -35,7 +37,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 
 public class Answer
-    implements Serializable, AnswerIfc, Comparable {
+    implements Serializable, AnswerIfc, Comparable, Cloneable { //gopalrc - added cloneable 27 Nov 2009
   static Category errorLogger = Category.getInstance("errorLogger");
 
   private static final long serialVersionUID = 7526471155622776147L;
@@ -53,7 +55,14 @@ public class Answer
   private Set answerFeedbackSet;
   private HashMap answerFeedbackMap;
   private ItemData dat=new ItemData();
-  public Answer() {}
+  
+  //gopalrc - added 27 Nov 2008
+  //set of possible selection options indicating correct and incorrect options
+  private ArrayList emiSelectionOptions;
+  
+  
+
+public Answer() {}
 
   public Answer(ItemTextIfc itemText, String text, Long sequence, String label,
                 Boolean isCorrect, String grade, Float score, Float discount) {
@@ -256,5 +265,55 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
     return dat.isNotEmpty(getText());
   }
 
+ 
+	//gopalrc added 16 Nov 2009
+	public String getEmiCorrectOptionLabelsAsString() {
+		String optionString = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]")).trim();
+		if (optionString == null) {
+			return "";
+		}
+		return optionString;
+	}
 
+	
+	//gopalrc added 16 Nov 2009
+	public boolean isEmiOptionCorrect(String optionLabel) {
+		String correctOptionLabels = getEmiCorrectOptionLabelsAsString();
+		if (correctOptionLabels.indexOf(optionLabel) > -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	//gopalrc added 27 Nov 2009
+	public ArrayList getEmiSelectionOptions() {
+		return emiSelectionOptions;
+	}
+
+	//gopalrc added 27 Nov 2009
+	public void setEmiSelectionOptions(ArrayList emiSelectionOptions) {
+		this.emiSelectionOptions = emiSelectionOptions;
+	}
+	
+	//gopalrc added 27 Nov 2009
+	protected Answer clone() throws CloneNotSupportedException {
+		return (Answer)super.clone();
+	}
+	
+
+	//gopalrc - added 30 Nov 2009
+	public int getNumberOfCorrectOptions() {
+		int count = 0;
+		Iterator iter = emiSelectionOptions.iterator();
+		while (iter.hasNext()) {
+			Answer answer = (Answer) iter.next();
+			if (answer.getIsCorrect()) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
 }

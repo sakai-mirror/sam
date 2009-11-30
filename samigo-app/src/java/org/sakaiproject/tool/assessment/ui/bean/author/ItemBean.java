@@ -68,10 +68,12 @@ public class ItemBean
   //gopalrc - added 23 Nov 2009
   private ArrayList emiAnswerOptions;  // store List of possible options for an EMI question's anwers
   private String additionalEmiAnswerOptions = "0";  // additonal options for an EMI question's anwers
-  private String leadInstatement;
+  private String leadInStatement;
   private ArrayList emiQuestionAnswerCombinations;  // store List of possible options for an EMI question's anwers
   private String additionalEmiQuestionAnswerCombinations = "0";  // additonal options for an EMI question's anwers
-  
+
+  //gopalrc - centralize - currently in ItemData, ItemBean, and ItemContentsBean 
+  public static final String LEAD_IN_STATEMENT_DEMARCATOR = "lead_in_statement_demarcator:";
 
 
 
@@ -182,9 +184,18 @@ public class ItemBean
   {
     return itemText;
   }
+  
   public void setItemText(String itemText)
   {
-    this.itemText = itemText;
+	if (this.getItemType().equals(TypeFacade.EXTENDED_MATCHING_ITEMS.toString()) &&
+			itemText.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
+		String[] itemTextElements = itemText.split(LEAD_IN_STATEMENT_DEMARCATOR);
+		this.itemText = itemTextElements[0];
+		this.leadInStatement = itemTextElements[1];
+	}
+	else {
+	    this.itemText = itemText;
+	}
   }
 
   /**
@@ -1491,13 +1502,13 @@ public class ItemBean
     
     //*************** EMI Lead In Statement **********************
     //gopalrc - added 24 Nov 2009
-    public String getLeadInstatement() {
-    	return leadInstatement;
+    public String getLeadInStatement() {
+    	return leadInStatement;
     }
 
     //gopalrc - added 24 Nov 2009
-    public void setLeadInstatement(String leadInstatement) {
-    	this.leadInstatement = leadInstatement;
+    public void setLeadInStatement(String leadInStatement) {
+    	this.leadInStatement = leadInStatement;
     }
 
 

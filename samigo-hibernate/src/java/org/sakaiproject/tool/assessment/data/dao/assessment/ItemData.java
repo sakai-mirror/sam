@@ -20,6 +20,8 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 //import org.sakaiproject.tool.assessment.facade.TypeFacadeQueriesAPI;
 //import org.sakaiproject.tool.assessment.services.PersistenceService;
+//import org.sakaiproject.tool.assessment.facade.TypeFacade;
+//import org.sakaiproject.tool.assessment.ui.bean.author.AnswerBean;
 
 public class ItemData
     implements java.io.Serializable,
@@ -55,6 +57,15 @@ public class ItemData
   private HashMap itemFeedbackMap;
   private Set itemAttachmentSet;
 
+  //gopalrc - added 30 Nov 2009 - for EMI question
+  private String themeText;
+  private String leadInText;
+  //gopalrc - centralize - currently in ItemData, ItemBean, and ItemContentsBean 
+  public static final String LEAD_IN_STATEMENT_DEMARCATOR = "lead_in_statement_demarcator:";
+
+
+  
+  
   public ItemData() {}
 
   // this constructor should be deprecated, it is missing triesAllowed
@@ -711,13 +722,15 @@ public class ItemData
 	if (this.getTypeId().equals(TypeD.EXTENDED_MATCHING_ITEMS)) {
 		for (int k = 0; k < answerArray.size(); k++) {
 			AnswerIfc a = (AnswerIfc) answerArray.get(k);
-
+			if (a.getLabel().matches("[0-9]+")) {
+				answerKey += a.getLabel() + ":" + a.getEmiCorrectOptionLabelsAsString();
+				if (k < answerArray.size()-1) answerKey += " ; ";  
+			}
 		}
 	}
 
 
    return answerKey;
-
 
   }
 
@@ -776,5 +789,34 @@ public class ItemData
   }
 
 
+  //gopalrc - added 30 Nov 2009
+  public String getLeadInText() {
+	if (leadInText == null) {
+		setThemeAndLeadInText();
+	}
+	return leadInText;
+  }
+
+
+  //gopalrc - added 30 Nov 2009
+  public String getThemeText() {
+	if (themeText == null) {
+		setThemeAndLeadInText();
+	}
+	return themeText;
+  }
+
+  //gopalrc - added 30 Nov 2009
+  public void setThemeAndLeadInText() {
+	String text = getText();  
+	if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId()) &&
+			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
+		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
+		themeText = itemTextElements[0];
+		leadInText = itemTextElements[1];
+	}
+  }
+  
+  
 
 }

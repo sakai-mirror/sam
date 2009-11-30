@@ -24,9 +24,10 @@ should be included in file importing DeliveryMessages
 --%>
 -->
 
-GOPAL - PREVIEW_ITEM/ExtendedMatchingItems.jsp
-
-  <h:outputText escape="false" value="#{question.itemData.text}" />
+  <h:outputText escape="false" value="#{question.itemData.themeText}" />
+  <f:verbatim><br/><br/></f:verbatim>
+  <h:outputText escape="false" value="#{question.itemData.leadInText}" />
+  <f:verbatim><br/><br/></f:verbatim>
   <!-- ATTACHMENTS -->
   <%@ include file="/jsf/author/preview_item/attachment.jsp" %>
 
@@ -34,7 +35,7 @@ GOPAL - PREVIEW_ITEM/ExtendedMatchingItems.jsp
     <h:column>
       
 
-      <h:dataTable value="#{itemText.emiQuestionAnswerCombinations}" var="answer" border="1">
+      <h:dataTable value="#{itemText.emiQuestionAnswerCombinations}" var="answer" border="1" style="border-style:solid">
         <h:column> 
          <h:panelGroup rendered="#{answer.text != null && answer.text ne ''}">
           <h:outputText escape="false" value="#{answer.label}. #{answer.text}" /> 
@@ -43,23 +44,23 @@ GOPAL - PREVIEW_ITEM/ExtendedMatchingItems.jsp
 
 
         <h:column> 
-      <h:dataTable value="#{itemText.emiAnswerOptions}" dir="LTR" var="answer">
+      <h:dataTable value="#{answer.emiSelectionOptions}" var="answerOption">
         <h:column> 
-         <h:panelGroup rendered="#{answer.text != null && answer.text ne ''}">
-          <h:graphicImage id="image1" rendered="#{answer.isCorrect}"
+         <h:panelGroup rendered="#{answerOption.text != null && answerOption.text ne ''}">
+          <h:graphicImage id="image1" rendered="#{answerOption.isCorrect}"
              alt="#{authorMessages.correct}" url="/images/checked.gif" />         
-          <h:graphicImage id="image2" rendered="#{!answer.isCorrect}"
+          <h:graphicImage id="image2" rendered="#{!answerOption.isCorrect}"
              alt="#{authorMessages.not_correct}" url="/images/unchecked.gif"/>      
-          <h:outputText escape="false" value="#{answer.label}. #{answer.text}" /> 
+          <h:outputText escape="false" value="#{answerOption.label}. #{answerOption.text}" /> 
         </h:panelGroup>
         </h:column><h:column>
-        <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">    
+        <h:panelGroup rendered="#{answerOption.text ne null && answerOption.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answerOption.generalAnswerFbIsNotEmpty}">    
          <h:outputLabel value=" #{authorMessages.feedback}: " />
-         <h:outputText escape="false" value="#{answer.generalAnswerFeedback}" />
+         <h:outputText escape="false" value="#{answerOption.generalAnswerFeedback}" />
 		</h:panelGroup>
-        <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && !author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">    
+        <h:panelGroup rendered="#{answerOption.text ne null && answerOption.text ne '' && !author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1' && answerOption.generalAnswerFbIsNotEmpty}">    
          <h:outputLabel value=" #{authorMessages.feedback}: " />
-         <h:outputText escape="false" value="#{answer.generalAnswerFeedback}" />
+         <h:outputText escape="false" value="#{answerOption.generalAnswerFeedback}" />
 		</h:panelGroup>
         </h:column>
       </h:dataTable>
