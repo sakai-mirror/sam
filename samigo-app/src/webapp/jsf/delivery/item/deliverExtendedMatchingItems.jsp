@@ -43,12 +43,61 @@ should be included in file importing DeliveryMessages
       </h:graphicImage>
     </h:column>
     <h:column>
-     <h:selectBooleanCheckbox value="#{selection.response}"
-        disabled="#{delivery.actionString=='reviewAssessment'
-                 || delivery.actionString=='gradeAssessment'}" />
+
+
      <h:outputText value=" #{selection.answer.label}" escape="false" />
      <h:outputText value="#{deliveryMessages.dot}" rendered="#{selection.answer.label ne ''}" />
      <h:outputText value=" #{selection.answer.text}" escape="false" />
+     
+     
+     
+<!--
+<%--
+***********SUBSELECTIONS BELOW*************************************************************
+--%>
+-->
+
+  <h:dataTable value="#{selection.subSelectionOptions}" var="subSelection">
+    <h:column rendered="#{delivery.feedback eq 'true' &&
+       delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
+      <h:graphicImage id="image"
+        rendered="#{subSelection.answer.isCorrect eq 'true' && subSelection.response}"
+        alt="#{deliveryMessages.alt_correct}" url="/images/checkmark.gif" >
+      </h:graphicImage>
+      <h:graphicImage id="image2"
+        rendered="#{subSelection.answer.isCorrect ne 'true' && subSelection.response}"
+        width="16" height="16"
+        alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
+      </h:graphicImage>
+    </h:column>
+    <h:column>
+     <h:selectBooleanCheckbox value="#{subSelection.response}"
+        disabled="#{delivery.actionString=='reviewAssessment'
+                 || delivery.actionString=='gradeAssessment'}" />
+     <h:outputText value=" #{subSelection.answer.label}" escape="false" />
+     <h:outputText value="#{deliveryMessages.dot}" rendered="#{subSelection.answer.label ne ''}" />
+     <h:outputText value=" #{subSelection.answer.text}" escape="false" />
+    </h:column>
+    <h:column>
+      <h:panelGroup rendered="#{delivery.feedback eq 'true' &&
+       delivery.feedbackComponent.showSelectionLevel &&
+	   subSelection.answer.generalAnswerFeedback != 'null' && subSelection.answer.generalAnswerFeedback != null && subSelection.answer.generalAnswerFeedback != ''}" > 
+	   <!-- The above != 'null' is for SAK-5475. Once it gets fixed, we can remove this condition -->
+       <f:verbatim><br /></f:verbatim>
+       <h:outputText value="#{deliveryMessages.feedback}#{deliveryMessages.column} " />
+       <h:outputText value="#{subSelection.answer.generalAnswerFeedback}" escape="false" />
+      </h:panelGroup>
+    </h:column>
+  </h:dataTable>
+
+
+<!--
+<%--
+*********SUBSELECTIONS BELOW***************************************************************
+--%>
+-->
+     
+     
     </h:column>
     <h:column>
       <h:panelGroup rendered="#{delivery.feedback eq 'true' &&
@@ -59,6 +108,9 @@ should be included in file importing DeliveryMessages
        <h:outputText value="#{deliveryMessages.feedback}#{deliveryMessages.column} " />
        <h:outputText value="#{selection.answer.generalAnswerFeedback}" escape="false" />
       </h:panelGroup>
+      
+      <f:verbatim><br /><br /><br /></f:verbatim>
+        
     </h:column>
   </h:dataTable>
 

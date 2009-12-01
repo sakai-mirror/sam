@@ -55,6 +55,7 @@ public interface TypeIfc extends java.io.Serializable {
   public static Long FINAL = Long.valueOf(64);
   public static String SITE_AUTHORITY = "stanford.edu";
   public static String DOMAIN_ASSESSMENT_ITEM = "assessment.item";
+  
 
   Long getTypeId();
 

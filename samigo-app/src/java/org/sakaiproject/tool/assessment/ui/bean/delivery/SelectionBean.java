@@ -50,6 +50,11 @@ public class SelectionBean {
 	private String feedback;
 
 	private String responseId;
+	
+	//gopalrc - added 1 Dec 2009
+	private ArrayList subSelectionOptions = null;
+	
+
 
 	public ItemContentsBean getItemContentsBean() {
 		return parent;
@@ -112,4 +117,15 @@ public class SelectionBean {
 	public String getAnswerId() {
 		return answer.getId().toString();
 	}
+	
+	//gopalrc - added 1 Dec 2009
+	public ArrayList getSubSelectionOptions() {
+		return subSelectionOptions;
+	}
+
+	//gopalrc - added 1 Dec 2009
+	public void setSubSelectionOptions(ArrayList subSelectionOptions) {
+		this.subSelectionOptions = subSelectionOptions;
+	}
+
 }

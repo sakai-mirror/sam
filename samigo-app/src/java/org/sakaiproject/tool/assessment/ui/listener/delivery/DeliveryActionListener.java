@@ -1006,7 +1006,6 @@ public class DeliveryActionListener
     if (item.getTypeId().equals(TypeIfc.ESSAY_QUESTION) ||
         item.getTypeId().equals(TypeIfc.FILE_UPLOAD) ||
         item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY) ||
-        item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
         item.getTypeId().equals(TypeIfc.AUDIO_RECORDING))
 
     {
@@ -1112,7 +1111,7 @@ public class DeliveryActionListener
     		  }
     		   
     	}
-    	if ((item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )|| (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )|| (item.getTypeId().equals(TypeIfc.MATCHING) )){
+    	if ( (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) || (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )|| (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )|| (item.getTypeId().equals(TypeIfc.MATCHING) )){
     		if (mcmc_match_counter==correctAnswers){
     			haswronganswer=false;
     		}
@@ -1165,6 +1164,11 @@ public class DeliveryActionListener
       // get duplicates.
       ItemTextIfc text = (ItemTextIfc) key1.next();
       Iterator key2 = null;
+      
+      //gopalrc - to populate the Answer.emiSelectionOptions
+      if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
+    	  text.getEmiQuestionAnswerCombinations();
+      }
 
       // Never randomize Fill-in-the-blank or Numeric Response, always randomize matching
       if (randomize && !(item.getTypeId().equals(TypeIfc.FILL_IN_BLANK)||item.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC)) || item.getTypeId().equals(TypeIfc.MATCHING))
@@ -1221,6 +1225,7 @@ public class DeliveryActionListener
             && (item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
                 item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
                 item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
+                item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
                 item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY)))
         {
           // Ignore, it's a null answer
@@ -1231,6 +1236,7 @@ public class DeliveryActionListener
           if (item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
               item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
               item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
+              //item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
               item.getTypeId().equals(TypeIfc.MATCHING))
           {
             answer.setLabel(Character.toString(alphabet.charAt(k++)));
@@ -1299,15 +1305,41 @@ public class DeliveryActionListener
         item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
         item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY) ||
         item.getTypeId().equals(TypeIfc.TRUE_FALSE) ||
+        item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
         item.getTypeId().equals(TypeIfc.MATCHING))
     {
       Iterator iter = myanswers.iterator();
+      SelectionBean selectionBean = null;
+      
       while (iter.hasNext())
       {
-        SelectionBean selectionBean = new SelectionBean();
-        selectionBean.setItemContentsBean(itemBean);
         AnswerIfc answer = (AnswerIfc) iter.next();
+
+        //gopalrc - added condition - 1 Dec 2009
+        ArrayList subSelectionOptions = null;
+        if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
+        	if (!answer.getLabel().matches("[0-9]+")) {
+        		continue;
+        	}
+        	else {
+        		subSelectionOptions = new ArrayList();
+        		Iterator answerOptions = answer.getEmiSelectionOptions().iterator();
+        		while (answerOptions.hasNext()) {
+        			AnswerIfc option = (AnswerIfc) answerOptions.next();
+        			SelectionBean subSelection = new SelectionBean();
+        			subSelection.setAnswer(option);
+        			subSelectionOptions.add(subSelection);
+        		}
+        	}
+        }
+        
+    	selectionBean = new SelectionBean();
+        selectionBean.setItemContentsBean(itemBean);
         selectionBean.setAnswer(answer);
+        
+        //gopalrc - added condition - 1 Dec 2009
+        if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) 
+        	selectionBean.setSubSelectionOptions(subSelectionOptions);
 
         // It's saved lower case in the db -- this is a kludge
         if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) && // True/False
@@ -1398,12 +1430,13 @@ public class DeliveryActionListener
         {
           answers.add(selectionBean);
         }
-      }
+      } //end while
     }
     // Delete this
     itemBean.setAnswers(answers);
     itemBean.setSelectionArray(answers);
 
+    
     if (item.getTypeId().equals(TypeIfc.MATCHING)) // matching
     {
       populateMatching(item, itemBean, publishedAnswerHash);
@@ -1424,6 +1457,7 @@ public class DeliveryActionListener
     else if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) || 
     		item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
             item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
+            item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
             item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ) 
     {
       itemBean.setRationale(FormattedText.convertFormattedTextToPlaintext(itemBean.getRationale()));

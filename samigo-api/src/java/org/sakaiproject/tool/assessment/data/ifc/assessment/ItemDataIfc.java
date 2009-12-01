@@ -170,4 +170,12 @@ public interface ItemDataIfc extends java.io.Serializable {
   void setItemAttachmentSet(Set itemAttachmentSet);
 
   List getItemAttachmentList();
+  
+  
+  
+  //gopalrc - added 1 Dec 2009
+  String getLeadInText();
+  String getThemeText();
+  void setThemeAndLeadInText();
+  
 }

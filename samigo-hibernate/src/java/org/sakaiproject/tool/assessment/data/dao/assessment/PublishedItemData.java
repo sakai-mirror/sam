@@ -38,6 +38,7 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 //import org.sakaiproject.tool.assessment.facade.AgentFacade;
 //import org.sakaiproject.tool.assessment.facade.TypeFacadeQueriesAPI;
@@ -45,7 +46,7 @@ import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 //import org.sakaiproject.tool.assessment.services.PersistenceService;
 
 public class PublishedItemData
-    implements java.io.Serializable, ItemDataIfc, Comparable {
+    implements java.io.Serializable, ItemDataIfc, Comparable, AssessmentConstantsIfc {
   static Category errorLogger = Category.getInstance("errorLogger");
 
   private static final long serialVersionUID = 7526471155622776147L;
@@ -77,6 +78,10 @@ public class PublishedItemData
   private ItemGradingData lastItemGradingDataByAgent;
   private Set itemAttachmentSet;
 
+  //gopalrc - added 1 Dec 2009 - for EMI question
+  private String themeText;
+  private String leadInText;
+  
   public PublishedItemData() {}
 
   // this constructor should be deprecated, it is missing triesAllowed
@@ -689,5 +694,38 @@ public class PublishedItemData
     }
     return list;
   }
+  
+  
+  
+
+  //gopalrc - added 30 Nov 2009
+  public String getLeadInText() {
+	if (leadInText == null) {
+		setThemeAndLeadInText();
+	}
+	return leadInText;
+  }
+
+
+  //gopalrc - added 30 Nov 2009
+  public String getThemeText() {
+	if (themeText == null) {
+		setThemeAndLeadInText();
+	}
+	return themeText;
+  }
+
+  //gopalrc - added 30 Nov 2009
+  public void setThemeAndLeadInText() {
+	String text = getText();  
+	if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId()) &&
+			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
+		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
+		themeText = itemTextElements[0];
+		leadInText = itemTextElements[1];
+	}
+  }
+  
+    
 
 }

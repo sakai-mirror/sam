@@ -39,11 +39,13 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.ItemData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemMetaData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemText;
+import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemFeedbackIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.osid.assessment.impl.ItemImpl;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
@@ -53,7 +55,7 @@ import org.sakaiproject.tool.assessment.services.PersistenceService;
  * ItemFacade implements ItemDataIfc that encapsulates our out of bound (OOB)
  * agreement.
  */
-public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
+public class ItemFacade implements Serializable, ItemDataIfc, Comparable, AssessmentConstantsIfc {
   private static Log log = LogFactory.getLog(ItemFacade.class);
 
   private static final long serialVersionUID = 7526471155622776147L;
@@ -93,6 +95,13 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
   protected TypeFacade itemTypeFacade;
   protected Set itemAttachmentSet;
   protected String itemAttachmentMetaData;
+  
+
+  //gopalrc - added 30 Nov 2009 - for EMI question
+  private String themeText;
+  private String leadInText;
+
+
   
   /** ItemFacade is the class that is exposed to developer
    *  It contains some of the useful methods specified in
@@ -1072,4 +1081,37 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
   public String getItemAttachmentMetaData() {
 	  return itemAttachmentMetaData;
   }
+  
+  
+  
+
+  //gopalrc - added 30 Nov 2009
+  public String getLeadInText() {
+	if (leadInText == null) {
+		setThemeAndLeadInText();
+	}
+	return leadInText;
+  }
+
+
+  //gopalrc - added 30 Nov 2009
+  public String getThemeText() {
+	if (themeText == null) {
+		setThemeAndLeadInText();
+	}
+	return themeText;
+  }
+
+  //gopalrc - added 30 Nov 2009
+  public void setThemeAndLeadInText() {
+	String text = getText();  
+	if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId()) &&
+			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
+		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
+		themeText = itemTextElements[0];
+		leadInText = itemTextElements[1];
+	}
+  }
+  
+    
 }

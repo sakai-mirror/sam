@@ -52,4 +52,9 @@ public interface ItemTextIfc
   ArrayList getAnswerArray();
 
   ArrayList getAnswerArraySorted();
+  
+  //gopalrc - added 26 Nov 2009
+  public ArrayList getEmiAnswerOptions();
+  public ArrayList getEmiQuestionAnswerCombinations();
+  
 }

@@ -33,6 +33,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
+import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.tool.assessment.facade.TypeFacade;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 
@@ -42,7 +43,7 @@ import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
  * $Id$
  */
 public class ItemBean
-  implements Serializable
+  implements Serializable, AssessmentConstantsIfc
 {
   //private static Log log = LogFactory.getLog(ItemBean.class);
 
@@ -71,10 +72,6 @@ public class ItemBean
   private String leadInStatement;
   private ArrayList emiQuestionAnswerCombinations;  // store List of possible options for an EMI question's anwers
   private String additionalEmiQuestionAnswerCombinations = "0";  // additonal options for an EMI question's anwers
-
-  //gopalrc - centralize - currently in ItemData, ItemBean, and ItemContentsBean 
-  public static final String LEAD_IN_STATEMENT_DEMARCATOR = "lead_in_statement_demarcator:";
-
 
 
   private boolean[] choiceCorrectArray;

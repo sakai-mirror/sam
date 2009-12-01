@@ -17,15 +17,13 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemFeedbackIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
-//import org.sakaiproject.tool.assessment.facade.TypeFacadeQueriesAPI;
-//import org.sakaiproject.tool.assessment.services.PersistenceService;
-//import org.sakaiproject.tool.assessment.facade.TypeFacade;
-//import org.sakaiproject.tool.assessment.ui.bean.author.AnswerBean;
+
 
 public class ItemData
     implements java.io.Serializable,
-    ItemDataIfc, Comparable {
+    ItemDataIfc, Comparable, AssessmentConstantsIfc {
   static Category errorLogger = Category.getInstance("errorLogger");
 
   private static final long serialVersionUID = 7526471155622776147L;
@@ -60,8 +58,6 @@ public class ItemData
   //gopalrc - added 30 Nov 2009 - for EMI question
   private String themeText;
   private String leadInText;
-  //gopalrc - centralize - currently in ItemData, ItemBean, and ItemContentsBean 
-  public static final String LEAD_IN_STATEMENT_DEMARCATOR = "lead_in_statement_demarcator:";
 
 
   
