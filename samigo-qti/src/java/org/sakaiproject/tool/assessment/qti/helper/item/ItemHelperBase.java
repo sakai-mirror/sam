@@ -61,8 +61,8 @@ public abstract class ItemHelperBase
   protected static final long ITEM_TF = TypeIfc.TRUE_FALSE.longValue();
   protected static final long ITEM_MATCHING = TypeIfc.MATCHING.longValue();
 
-  //gopalrc - added 17 Nov 2009
-  public static final long ITEM_EXTENDED_MATCHING_ITEMS = TypeIfc.EXTENDED_MATCHING_ITEMS.longValue();
+  //gopalrc - added 17 Nov 2009 - Extended Matching Items Question
+  public static final long ITEM_EMI = TypeIfc.EXTENDED_MATCHING_ITEMS.longValue();
 
   /**
    * We will have a versioned AuthoringXml in subclasses.
@@ -262,9 +262,10 @@ public abstract class ItemHelperBase
     {
       template = AuthoringXml.ITEM_MATCHING;
     }
-    else if (ITEM_EXTENDED_MATCHING_ITEMS == typeId)
+    //gopalrc - added
+    else if (ITEM_EMI == typeId)
     {
-      template = AuthoringXml.ITEM_EXTENDED_MATCHING_ITEMS;
+      template = AuthoringXml.ITEM_EMI;
     }
 
     log.debug("typeId: " + typeId);

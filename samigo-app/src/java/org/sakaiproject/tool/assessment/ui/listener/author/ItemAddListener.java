@@ -621,7 +621,7 @@ public class ItemAddListener
               }
               if ((bean.getGeneralFeedback() != null)) {
                 	updateItemFeedback(item, ItemFeedbackIfc.GENERAL_FEEDBACK, stripPtags(bean.getGeneralFeedback()));
-              }
+           }
       }
       else {
         	//prepare itemText, including answers

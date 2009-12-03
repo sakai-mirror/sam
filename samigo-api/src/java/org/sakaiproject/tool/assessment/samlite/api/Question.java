@@ -1,10 +1,15 @@
 package org.sakaiproject.tool.assessment.samlite.api;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 
-public class Question {
+//import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
+import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
+//import org.sakaiproject.tool.assessment.ui.bean.author.AnswerBean;
+
+public class Question implements AssessmentConstantsIfc{
 	public static final int UNDEFINED_QUESTION = 0;
 	public static final int MULTIPLE_CHOICE_QUESTION = 10;
 	public static final int MULTIPLE_CHOICE_MULTIPLE_ANSWER_QUESTION = 15;
@@ -14,6 +19,15 @@ public class Question {
 	
     //gopalrc - added 11 Nov 2009
     public static final int EXTENDED_MATCHING_ITEMS_QUESTION = 50;
+    //gopalrc - added 3 Dec 2009 - for EMI question
+    private String themeText;
+    private String leadInText;
+    private ArrayList emiAnswerOptions;  // store List of possible options for an EMI question's anwers
+    private ArrayList emiQuestionAnswerCombinations;  // store List of possible options for an EMI question's anwers
+	//gopalrc - added 16 Nov 2009
+	private String availableOptions;
+    
+    
 	
 	private int questionNumber;
 	private String questionPoints;
@@ -23,8 +37,6 @@ public class Question {
 	private List answers;
 	private boolean hasPoints;
 	
-	//gopalrc - added 16 Nov 2009
-	private String availableOptions;
 
 	
 	public Question() {
@@ -135,11 +147,21 @@ public class Question {
 	
 	//gopalrc added 12 Nov 2009
 	public void postProcessing() {
+		
 		if (getQuestionType() == EXTENDED_MATCHING_ITEMS_QUESTION) {
+			
+			/*
+			if (!questionLines.get(2).toString().startsWith(LEAD_IN_STATEMENT_DEMARCATOR)) {
+				questionLines.set(2, LEAD_IN_STATEMENT_DEMARCATOR+questionLines.get(2).toString());
+			}
+			*/
+			
+			
+						
 			int themeLineIndex = 1;
+			int optionLine = 2;
 			questionLines.set(themeLineIndex, questionLines.get(themeLineIndex).toString() + "<br /><br />");
 			Iterator answerLines = answers.iterator();
-			int optionLine = 2;
 			String textToAdd = "Options: ";
 			questionLines.add(optionLine++, textToAdd + "<br />");
 			while (answerLines.hasNext()) {
@@ -166,11 +188,79 @@ public class Question {
 					answer.postProcessing(questionType);
 				}
 			}
+			
 		}
 
 		
 	}
 	
 	
+//************ Theme and Lead-In Text ******************
+
+  //gopalrc - added 3 Dec 2009
+  public String getLeadInText() {
+	if (leadInText == null) {
+		setThemeAndLeadInText();
+	}
+	return leadInText;
+  }
+
+
+  //gopalrc - added 3 Dec 2009
+  public String getThemeText() {
+	if (themeText == null) {
+		setThemeAndLeadInText();
+	}
+	return themeText;
+  }
+
+  //gopalrc - added 3 Dec 2009
+  public void setThemeAndLeadInText() {
+	String text = (String)questionLines.get(1).toString() + (String)questionLines.get(2);  
+	if (getQuestionType() == EXTENDED_MATCHING_ITEMS_QUESTION &&
+			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
+		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
+		themeText = itemTextElements[0];
+		leadInText = itemTextElements[1];
+	}
+  }
+	  
+	  	
+  //************ EMI Answer Options and Q-A combinations******************
+  
+  
+  //gopalrc - added 3 Dec 2009
+  public ArrayList getEmiAnswerOptions() {
+  	if (emiAnswerOptions==null) {
+  		setEmiOptionsAndQACombinations();
+    }
+  	return emiAnswerOptions;
+  }
+  
+  //gopalrc - added 3 Dec 2009
+  public ArrayList getEmiQuestionAnswerCombinations() {
+  	if (emiQuestionAnswerCombinations==null) {
+  		setEmiOptionsAndQACombinations();
+    }
+  	return emiQuestionAnswerCombinations;
+  }
+ 
+  //gopalrc - added 3 Dec 2009
+  private void setEmiOptionsAndQACombinations() {
+	emiAnswerOptions = new ArrayList();
+	emiQuestionAnswerCombinations = new ArrayList();
+	Iterator iter = answers.iterator();
+	while (iter.hasNext()) {
+		Answer answer = (Answer)iter.next();
+		if (answer.getId().matches("[0-9]+")) {
+			emiQuestionAnswerCombinations.add(answer);
+		}
+		else {
+			emiAnswerOptions.add(answer);
+		}
+	}
+  }
+  
+  
 	
 }

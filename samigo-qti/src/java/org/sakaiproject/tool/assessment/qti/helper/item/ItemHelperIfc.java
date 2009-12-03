@@ -53,7 +53,8 @@ public interface ItemHelperIfc
   public static final long ITEM_MATCHING = TypeIfc.MATCHING.longValue();
   
   //gopalrc - added 17 Nov 2009
-  public static final long ITEM_EXTENDED_MATCHING_ITEMS = TypeIfc.EXTENDED_MATCHING_ITEMS.longValue();
+  public static final long ITEM_EMI = TypeIfc.EXTENDED_MATCHING_ITEMS.longValue();
+  
   
   public String[] itemTypes =
     {
@@ -71,6 +72,7 @@ public interface ItemHelperIfc
     "Extended Matching Items",
   };
 
+  
   /**
    * Get Item Xml for a given item type as a Long .
    * @param type item type as a Long  

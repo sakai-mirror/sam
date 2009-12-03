@@ -1588,6 +1588,9 @@ public class ItemBean
     }
 
     
+    /**
+     * gopalrc - added 23 Nov 2009
+     */
     public String addEmiQuestionAnswerCombinationsAction() {
     	
         String newvalue = this.getAdditionalEmiQuestionAnswerCombinations();

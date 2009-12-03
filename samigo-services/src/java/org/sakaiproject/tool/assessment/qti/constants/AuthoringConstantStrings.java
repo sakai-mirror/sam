@@ -85,6 +85,9 @@ file = File Upload
   public static final String ESSAY_ALT = "Essay";
   public static final String AUDIO = "Audio Recording";
   public static final String FILE = "File Upload";
+  
+  //gopalrc - added 3 Dec
+  public static final String EMI = "Extended Matching Items";
 
   /*
   public static final String ANONYMOUS = rb.getString("anonymous"); // Anonymous Users
@@ -111,7 +114,7 @@ file = File Upload
   // I'm just adding an "" to make FIN the itemTypes[11].  This is used in ItemTypeExtractionStrategy.getValidType()
   
   public static final String[] itemTypes =
-  { "Unknown Type", MCSC, MCMC, SURVEY, TF, ESSAY, FILE, AUDIO, FIB, MATCHING,"", FIN, MCMCSS };
+  { "Unknown Type", MCSC, MCMC, SURVEY, TF, ESSAY, FILE, AUDIO, FIB, MATCHING,"", FIN, MCMCSS, EMI };
   
 
   // Feedback Type
