@@ -165,35 +165,35 @@
             <dependency>
                 <groupId>org.sakaiproject.edu-services.sections</groupId>
                 <artifactId>sections-impl-standalone</artifactId>
-                <version>[1.0.0-beta01,1.1)</version>
+                <version>[1.0.0-beta01,1.1.0)</version>
                 <scope>provided</scope>
             </dependency>
             <!-- Sakai-embedded version -->
             <dependency>
                 <groupId>org.sakaiproject.edu-services.sections</groupId>
                 <artifactId>sections-impl</artifactId>
-                <version>[1.0.0-beta01,1.1)</version>
+                <version>[1.0.0-beta01,1.1.0)</version>
             </dependency>
             <dependency>
                 <groupId>org.sakaiproject.jsf</groupId>
                 <artifactId>jsf-tool</artifactId>
-                <version>[2.7.0-M1,2.8)</version>
+                <version>[2.7.0-M1,2.8.0)</version>
             </dependency>
             <dependency>
                 <groupId>org.sakaiproject.jsf</groupId>
                 <artifactId>jsf-app</artifactId>
-                <version>[2.7.0-M1,2.8)</version>
+                <version>[2.7.0-M1,2.8.0)</version>
             </dependency>
             <dependency>
                 <groupId>org.sakaiproject.jsf</groupId>
                 <artifactId>jsf-widgets-sun-depend</artifactId>
-                <version>[2.7.0-M1,2.8)</version>
+                <version>[2.7.0-M1,2.8.0)</version>
                 <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.sakaiproject.jsf</groupId>
                 <artifactId>jsf-spreadsheet</artifactId>
-                <version>[2.7.0-M1,2.8)</version>
+                <version>[2.7.0-M1,2.8.0)</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
