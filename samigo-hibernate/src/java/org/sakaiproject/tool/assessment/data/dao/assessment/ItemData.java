@@ -579,20 +579,25 @@ public class ItemData
      {
        ItemTextIfc itemText = (ItemTextIfc) iter.next();
        text += "" + itemText.getText(); //each text add it in
+       
+       //if EMI use only the first textItem's text for display
+       if (this.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
+    	   break;
+       }
 
        if (this.getTypeId().equals(TypeIfc.FILL_IN_BLANK))
        { //e.g. Roses are {}. Violets are {}. replace as
          // Roses are ____. Violets are ____.
          text = text.replaceAll("\\{","__");
          text = text.replaceAll("\\}","__");
-      }
+       }
        
         if (this.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC))
        { //e.g. Roses are {}. Violets are {}. replace as
          // Roses are ____. Violets are ____.
     	 text = text.replaceAll("\\{","__");
          text = text.replaceAll("\\}","__");
-      }
+       }
     }
     return text;
   }
@@ -813,6 +818,12 @@ public class ItemData
 	}
   }
   
-  
+  //gopalrc - for EMI - the first textItem contains the components 
+  // from which the actual answers are constructed 
+  public ArrayList getFirstSortedTextItemArray() {
+	  ArrayList firstTextItem = new ArrayList();
+	  firstTextItem.add(this.getItemTextArraySorted().get(0));
+	  return firstTextItem;
+  }
 
 }

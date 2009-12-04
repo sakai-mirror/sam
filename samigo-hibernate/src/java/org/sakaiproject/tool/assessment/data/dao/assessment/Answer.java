@@ -268,11 +268,21 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
  
 	//gopalrc added 16 Nov 2009
 	public String getEmiCorrectOptionLabelsAsString() {
-		String optionString = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]")).trim();
+		String optionString = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]")).trim().toUpperCase();
 		if (optionString == null) {
 			return "";
 		}
 		return optionString;
+	}
+	
+	
+	//gopalrc added 4 Dec 2009
+	public String getEmiTextWithoutCorrectOptionLabels() {
+		String textWithoutLabels = text.substring(0, text.lastIndexOf("[")).trim();
+		if (textWithoutLabels == null) {
+			return "";
+		}
+		return textWithoutLabels;
 	}
 
 	
@@ -295,6 +305,9 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
 	//gopalrc added 27 Nov 2009
 	public void setEmiSelectionOptions(ArrayList emiSelectionOptions) {
 		this.emiSelectionOptions = emiSelectionOptions;
+System.out.println("*********************************************************");
+System.out.println("********************this.emiSelectionOptions.size = " + this.emiSelectionOptions.size());
+System.out.println("*********************************************************");
 	}
 	
 	//gopalrc added 27 Nov 2009

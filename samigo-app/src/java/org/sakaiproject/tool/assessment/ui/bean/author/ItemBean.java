@@ -1405,14 +1405,13 @@ public class ItemBean
      	}
     	else {
     	int defaultlength = 4;
-    	for (int i=0; i<defaultlength; i++){
-    		AnswerBean answerbean = new AnswerBean();
+    		for (int i=0; i<defaultlength; i++){
+    			AnswerBean answerbean = new AnswerBean();
            		answerbean.setSequence( Long.valueOf(i+1));
            		answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
           		list.add(answerbean);
         	}
-    	
-    	setEmiAnswerOptions(list);
+    		setEmiAnswerOptions(list);
     	}// else
 
         return list;
@@ -1528,15 +1527,15 @@ public class ItemBean
     	// for modify
      	}
     	else {
-    	int defaultlength = 4;
-    	for (int i=0; i<defaultlength; i++){
-    		AnswerBean answerbean = new AnswerBean();
+    		int defaultlength = 4;
+    		for (int i=0; i<defaultlength; i++){
+    			AnswerBean answerbean = new AnswerBean();
            		answerbean.setSequence( Long.valueOf(i+1));
 				answerbean.setLabel(answerbean.getSequence().toString());
           		list.add(answerbean);
         	}
     	
-    	setEmiQuestionAnswerCombinations(list);
+    		setEmiQuestionAnswerCombinations(list);
     	}// else
 
         return list;

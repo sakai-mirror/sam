@@ -625,7 +625,10 @@ public class ItemAddListener
       }
       else {
         	//prepare itemText, including answers
-            if (!item.getTypeId().equals(TypeFacade.MATCHING)) {
+    	  	if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+                item.setItemTextSet(prepareTextForEMI(item, bean, itemauthor));
+    	  	}
+    	  	else if (!item.getTypeId().equals(TypeFacade.MATCHING)) {
               item.setItemTextSet(prepareText(item, bean, itemauthor));
             }
             else {
@@ -900,6 +903,111 @@ public class ItemAddListener
 		}
 		return textSet;
 	}
+  
+  
+  /**
+   * gopalrc - added 4 Dec 2009
+   * Prepare Text for Extended Matching Item Questions
+   * @param item
+   * @param bean
+   * @param itemauthor
+   * @return
+   */
+  private HashSet prepareTextForEMI(ItemFacade item, ItemBean bean,
+			ItemAuthorBean itemauthor) {
+
+		HashSet textSet = new HashSet();
+		HashSet answerSet1 = new HashSet();
+	  
+	  
+	  	// ///////////////////////////////////////////////////////////
+		//
+		// 1. save Theme and Lead-In Text in first ItemText 
+		//  
+		// ///////////////////////////////////////////////////////////
+		ItemText text1 = new ItemText();
+		text1.setItem(item.getData());
+		text1.setSequence(Long.valueOf(0));
+		text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
+		
+		
+		// ///////////////////////////////////////////////////////////
+		//
+		// 2. save Answer construction components 
+		// (emiAnswerOptions and emiQuestionAnswerCombinations)
+		// with first ItemText.
+		// These will be used to construct the actual answers.
+		// ///////////////////////////////////////////////////////////
+		Iterator iter = bean.getEmiAnswerOptions().iterator();
+		Answer answer = null;
+		while (iter.hasNext()) {
+			AnswerBean answerbean = (AnswerBean) iter.next();
+			answer = new Answer(text1,
+					stripPtags(answerbean.getText()), answerbean
+					.getSequence(), answerbean.getLabel(),
+					Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+			HashSet answerFeedbackSet1 = new HashSet();
+			answerFeedbackSet1.add(new AnswerFeedback(answer,
+					AnswerFeedbackIfc.GENERAL_FEEDBACK,
+					stripPtags(answerbean.getFeedback())));
+			answer.setAnswerFeedbackSet(answerFeedbackSet1);
+
+			answerSet1.add(answer);
+		}
+
+		iter = bean.getEmiQuestionAnswerCombinations().iterator();
+		answer = null;
+		while (iter.hasNext()) {
+			AnswerBean answerbean = (AnswerBean) iter.next();
+			answer = new Answer(text1,
+					stripPtags(answerbean.getText()), answerbean
+					.getSequence(), answerbean.getLabel(),
+					Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+			HashSet answerFeedbackSet1 = new HashSet();
+			answerFeedbackSet1.add(new AnswerFeedback(answer,
+					AnswerFeedbackIfc.GENERAL_FEEDBACK,
+					stripPtags(answerbean.getFeedback())));
+			answer.setAnswerFeedbackSet(answerFeedbackSet1);
+
+			answerSet1.add(answer);
+		}			
+
+		text1.setAnswerSet(answerSet1);
+		textSet.add(text1);
+
+		
+		
+		
+		// ///////////////////////////////////////////////////////////
+		//
+		// 3. Prepare and save actual answers from answer components 
+		// (emiAnswerOptions and emiQuestionAnswerCombinations)
+		// ///////////////////////////////////////////////////////////
+		iter = text1.getEmiQuestionAnswerCombinations().iterator();
+		Answer qaCombo = null;
+		while (iter.hasNext()) {
+			qaCombo = (Answer) iter.next();
+			
+			ItemText itemText = new ItemText();
+			itemText.setItem(item.getData());
+			itemText.setSequence(Long.valueOf(qaCombo.getLabel()));
+			itemText.setText(qaCombo.getEmiTextWithoutCorrectOptionLabels());
+			
+			HashSet answerSet = new HashSet();
+			Iterator selectionOptions = qaCombo.getEmiSelectionOptions().iterator();
+			while (selectionOptions.hasNext()) {
+				Answer actualAnswer = (Answer) selectionOptions.next();
+				actualAnswer.setAnswerFeedbackSet(qaCombo.getAnswerFeedbackSet());
+				answerSet.add(actualAnswer);
+			}
+			itemText.setAnswerSet(answerSet);
+			textSet.add(itemText);
+		}			
+		
+		return textSet;
+	}
+  
+  
 
 	private HashSet prepareText(ItemFacade item, ItemBean bean,
 			ItemAuthorBean itemauthor) {
