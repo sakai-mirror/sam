@@ -1166,10 +1166,12 @@ public class DeliveryActionListener
       Iterator key2 = null;
       
       //gopalrc - to populate the Answer.emiSelectionOptions
+/*      
       if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
     	  text.getEmiQuestionAnswerCombinations();
       }
-
+*/
+      
       // Never randomize Fill-in-the-blank or Numeric Response, always randomize matching
       if (randomize && !(item.getTypeId().equals(TypeIfc.FILL_IN_BLANK)||item.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC)) || item.getTypeId().equals(TypeIfc.MATCHING))
           {
@@ -1236,7 +1238,7 @@ public class DeliveryActionListener
           if (item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
               item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
               item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
-              //item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
+              item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
               item.getTypeId().equals(TypeIfc.MATCHING))
           {
             answer.setLabel(Character.toString(alphabet.charAt(k++)));
@@ -1258,6 +1260,8 @@ public class DeliveryActionListener
               }
             }
           }
+          
+          
           if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) &&
               answer.getIsCorrect() != null &&
               answer.getIsCorrect().booleanValue())
@@ -1272,12 +1276,16 @@ public class DeliveryActionListener
         		key = rb.getString("false_msg");
         	}
           }
+          
+          
           if (item.getTypeId().equals(TypeIfc.FILE_UPLOAD) ||
               item.getTypeId().equals(TypeIfc.ESSAY_QUESTION) ||
               item.getTypeId().equals(TypeIfc.AUDIO_RECORDING))
           {
             key += answer.getText();
           }
+          
+          
           if (item.getTypeId().equals(TypeIfc.FILL_IN_BLANK)||item.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC))
           {
             if ("".equals(key))
@@ -1289,6 +1297,8 @@ public class DeliveryActionListener
               key += ", " + answer.getText();
             }
           }
+          
+          
           myanswers.add(answer);
         }
       }
@@ -1316,6 +1326,7 @@ public class DeliveryActionListener
         AnswerIfc answer = (AnswerIfc) iter.next();
 
         //gopalrc - added condition - 1 Dec 2009
+/*        
         ArrayList subSelectionOptions = null;
         if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
         	if (!answer.getLabel().matches("[0-9]+")) {
@@ -1332,15 +1343,18 @@ public class DeliveryActionListener
         		}
         	}
         }
+*/
         
     	selectionBean = new SelectionBean();
         selectionBean.setItemContentsBean(itemBean);
         selectionBean.setAnswer(answer);
         
         //gopalrc - added condition - 1 Dec 2009
+/*        
         if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) 
         	selectionBean.setSubSelectionOptions(subSelectionOptions);
-
+*/
+        
         // It's saved lower case in the db -- this is a kludge
         if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) && // True/False
             answer.getText().equals("true"))
@@ -1440,7 +1454,10 @@ public class DeliveryActionListener
     if (item.getTypeId().equals(TypeIfc.MATCHING)) // matching
     {
       populateMatching(item, itemBean, publishedAnswerHash);
-
+    }
+    else if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) // gopalrc - added 7 Dec 2009 - EMI
+    {
+        populateEMI(item, itemBean, publishedAnswerHash);
     }
     else if (item.getTypeId().equals(TypeIfc.FILL_IN_BLANK)) // fill in the blank
     {
@@ -1466,6 +1483,98 @@ public class DeliveryActionListener
     return itemBean;
   }
 
+  
+  public void populateEMI(ItemDataIfc item, ItemContentsBean bean, HashMap publishedAnswerHash)
+  {
+    Iterator iter = item.getItemTextArraySorted().iterator();
+    int j = 1;
+    ArrayList beans = new ArrayList();
+    ArrayList newAnswers = null;
+    while (iter.hasNext())
+    {
+      ItemTextIfc text = (ItemTextIfc) iter.next();
+      if (text.getSequence().equals(Long.valueOf(0))) continue;
+      MatchingBean mbean = new MatchingBean();
+      newAnswers = new ArrayList();
+      mbean.setText(Integer.toString(j++) + ". " + text.getText());
+      mbean.setItemText(text);
+      mbean.setItemContentsBean(bean);
+
+      ArrayList choices = new ArrayList();
+      ArrayList shuffled = new ArrayList();
+      Iterator iter2 = text.getAnswerArraySorted().iterator();
+      while (iter2.hasNext())
+      {
+        shuffled.add(iter2.next());
+
+      }
+      Collections.shuffle(shuffled,
+                          new Random( (long) item.getText().hashCode() +
+                          getAgentString().hashCode()));
+
+/*
+      Collections.shuffle
+        (shuffled, new Random( (long) item.getText().hashCode()));
+*/
+      iter2 = shuffled.iterator();
+
+      int i = 0;
+      ResourceLoader rb = null;
+      if (rb == null) { 	 
+  		rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.DeliveryMessages");
+  	  }
+      choices.add(new SelectItem("0", rb.getString("matching_select"), "")); // default value for choice
+      while (iter2.hasNext())
+      {
+        AnswerIfc answer = (AnswerIfc) iter2.next();
+        newAnswers.add(Character.toString(alphabet.charAt(i)) +
+                       ". " + answer.getText());
+        choices.add(new SelectItem(answer.getId().toString(),
+                                   Character.toString(alphabet.charAt(i++)),
+                                   ""));
+      }
+
+      mbean.setChoices(choices); // Set the A/B/C... pulldown
+
+      iter2 = bean.getItemGradingDataArray().iterator();
+      while (iter2.hasNext())
+      {
+
+        ItemGradingData data = (ItemGradingData) iter2.next();
+
+        if (data.getPublishedItemTextId().equals(text.getId()))
+        {
+          // We found an existing grading data for this itemtext
+          mbean.setItemGradingData(data);
+          AnswerIfc pubAnswer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId()); 
+          if (pubAnswer != null)
+          {
+            mbean.setAnswer(pubAnswer);
+            mbean.setResponse(data.getPublishedAnswerId().toString());
+            if (pubAnswer.getIsCorrect() != null &&
+                pubAnswer.getIsCorrect().booleanValue())
+            {
+              mbean.setFeedback(pubAnswer.getCorrectAnswerFeedback());
+              mbean.setIsCorrect(true);
+            }
+            else
+            {
+              mbean.setFeedback(pubAnswer.getInCorrectAnswerFeedback());
+              mbean.setIsCorrect(false);
+            }
+          }
+          break;
+        }
+      }
+
+      beans.add(mbean);
+    }
+    bean.setMatchingArray(beans);
+    bean.setAnswers(newAnswers); // Change the answers to just text
+  }
+
+  
+  
   public void populateMatching(ItemDataIfc item, ItemContentsBean bean, HashMap publishedAnswerHash)
   {
     Iterator iter = item.getItemTextArraySorted().iterator();

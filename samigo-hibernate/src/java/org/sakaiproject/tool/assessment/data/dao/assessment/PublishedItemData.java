@@ -568,6 +568,23 @@ public class PublishedItemData
 		ArrayList answerArray = ((ItemTextIfc) itemTextArray.get(0))
 				.getAnswerArraySorted();
 		HashMap h = new HashMap();
+		
+		//gopalrc - added 20 Nov 2009
+		// NB - ItemData nesting different from PublishedItemData (Why??) - Inside above for loop.
+	   //TODO - Complete Answerkey for EMI
+		if (this.getTypeId().equals(TypeD.EXTENDED_MATCHING_ITEMS)) {
+			for (int k = 0; k < answerArray.size(); k++) {
+				AnswerIfc a = (AnswerIfc) answerArray.get(k);
+				if (a.getLabel().matches("[0-9]+")) {
+					answerKey += a.getLabel() + ":" + a.getEmiCorrectOptionLabelsAsString();
+					if (k < answerArray.size()-1) answerKey += " ; ";  
+				}
+			}
+			return answerKey;
+		}
+		
+		
+		
 		for (int i = 0; i < itemTextArray.size(); i++) {
 			ItemTextIfc text = (ItemTextIfc) itemTextArray.get(i);
 			ArrayList answers = text.getAnswerArraySorted();
@@ -611,16 +628,6 @@ public class PublishedItemData
 				}
 			}
 			
-			//gopalrc - added 20 Nov 2009
-			// NB - nesting different from PublishedItemData (Why??) - Inside above for loop.
-			if (this.getTypeId().equals(TypeD.EXTENDED_MATCHING_ITEMS)) {
-				for (int k = 0; k < answerArray.size(); k++) {
-					AnswerIfc a = (AnswerIfc) answerArray.get(k);
-
-				}
-			}
-
-		
 		}
 
 		return answerKey;

@@ -52,7 +52,7 @@ public class SelectionBean {
 	private String responseId;
 	
 	//gopalrc - added 1 Dec 2009
-	private ArrayList subSelectionOptions = null;
+	//private ArrayList subSelectionOptions = null;
 	
 
 
@@ -118,6 +118,7 @@ public class SelectionBean {
 		return answer.getId().toString();
 	}
 	
+/*
 	//gopalrc - added 1 Dec 2009
 	public ArrayList getSubSelectionOptions() {
 		return subSelectionOptions;
@@ -127,5 +128,6 @@ public class SelectionBean {
 	public void setSubSelectionOptions(ArrayList subSelectionOptions) {
 		this.subSelectionOptions = subSelectionOptions;
 	}
-
+*/
+	
 }

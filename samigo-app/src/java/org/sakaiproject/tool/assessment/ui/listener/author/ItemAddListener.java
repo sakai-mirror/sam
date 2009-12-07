@@ -212,7 +212,7 @@ public class ItemAddListener
     }
 	
     if (!saveItem(itemauthorbean)){
-	throw new RuntimeException("failed to saveItem.");
+    	throw new RuntimeException("failed to saveItem.");
     }
     item.setOutcome("editAssessment");
     item.setPoolOutcome("editPool");
@@ -956,7 +956,7 @@ public class ItemAddListener
 		}
 
 		iter = bean.getEmiQuestionAnswerCombinations().iterator();
-		answer = null;
+		//answer = null;
 		while (iter.hasNext()) {
 			AnswerBean answerbean = (AnswerBean) iter.next();
 			answer = new Answer(text1,
@@ -983,27 +983,82 @@ public class ItemAddListener
 		// 3. Prepare and save actual answers from answer components 
 		// (emiAnswerOptions and emiQuestionAnswerCombinations)
 		// ///////////////////////////////////////////////////////////
+/*				
+		iter = bean.getEmiQuestionAnswerCombinations().iterator();
+		answer = null;
+		int seq = 1;
+		while (iter.hasNext()) {
+			AnswerBean answerbean = (AnswerBean) iter.next();
+			ItemText itemText = new ItemText();
+			itemText.setItem(text1.getItem());
+			itemText.setSequence(Long.valueOf(seq++));
+			itemText.setText(answerbean.getText());
+
+			HashSet answerSet = new HashSet();
+			Iterator selectionOptions = qaCombo.getEmiSelectionOptions().iterator();
+			while (selectionOptions.hasNext()) {
+				answer = new Answer(itemText,
+						stripPtags(answerbean.getText()), answerbean
+						.getSequence(), answerbean.getLabel(),
+						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+				HashSet answerFeedbackSet1 = new HashSet();
+				answerFeedbackSet1.add(new AnswerFeedback(answer,
+						AnswerFeedbackIfc.GENERAL_FEEDBACK,
+						stripPtags(answerbean.getFeedback())));
+				answer.setAnswerFeedbackSet(answerFeedbackSet1);
+			}
+			
+			
+			answerSet.add(answer);
+		}			
+
+		text1.setAnswerSet(answerSet1);
+		textSet.add(text1);
+*/
+		
+		
 		iter = text1.getEmiQuestionAnswerCombinations().iterator();
 		Answer qaCombo = null;
+//		int seq = 1;
 		while (iter.hasNext()) {
 			qaCombo = (Answer) iter.next();
 			
 			ItemText itemText = new ItemText();
-			itemText.setItem(item.getData());
+			itemText.setItem(text1.getItem());
 			itemText.setSequence(Long.valueOf(qaCombo.getLabel()));
+//			itemText.setSequence(Long.valueOf(seq++));
 			itemText.setText(qaCombo.getEmiTextWithoutCorrectOptionLabels());
 			
 			HashSet answerSet = new HashSet();
 			Iterator selectionOptions = qaCombo.getEmiSelectionOptions().iterator();
 			while (selectionOptions.hasNext()) {
-				Answer actualAnswer = (Answer) selectionOptions.next();
-				actualAnswer.setAnswerFeedbackSet(qaCombo.getAnswerFeedbackSet());
+				Answer selectOption = (Answer) selectionOptions.next();
+				Answer actualAnswer = new Answer(itemText,
+						selectOption.getText(), selectOption
+						.getSequence(), selectOption.getLabel(),
+						selectOption.getIsCorrect(), null, selectOption.getScore(), 
+						selectOption.getDiscount());
+				
+//				actualAnswer.setItemText(itemText);
+//				actualAnswer.setItem(item.getData());
+//				actualAnswer.setAnswerFeedbackSet(qaCombo.getAnswerFeedbackSet());
+
+				HashSet answerFeedbackSet1 = new HashSet();
+				answerFeedbackSet1.add(new AnswerFeedback(actualAnswer,
+						AnswerFeedbackIfc.GENERAL_FEEDBACK,
+						stripPtags(qaCombo.getAnswerFeedback(AnswerFeedbackIfc.GENERAL_FEEDBACK))));
+				actualAnswer.setAnswerFeedbackSet(answerFeedbackSet1);
+				
+				
 				answerSet.add(actualAnswer);
 			}
 			itemText.setAnswerSet(answerSet);
 			textSet.add(itemText);
-		}			
+		}
 		
+					
+					
+					
 		return textSet;
 	}
   
