@@ -1,8 +1,8 @@
 <projectDescription>
-  <name>sakai-samigo-pack</name>
+  <name>samigo-pack</name>
   <comment/>
   <projects>
-    <project>sakai-samlite-impl</project>
+    <project>samlite-impl</project>
   </projects>
   <buildSpec>
     <buildCommand>

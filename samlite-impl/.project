@@ -1,8 +1,10 @@
 <projectDescription>
-  <name>sakai-samlite-impl</name>
+  <name>samlite-impl</name>
   <comment/>
   <projects>
-    <project>sakai-samigo-api</project>
+    <project>samigo-api</project>
+    <project>samigo-hibernate</project>
+    <project>samigo-services</project>
   </projects>
   <buildSpec>
     <buildCommand>

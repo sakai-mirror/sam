@@ -24,15 +24,25 @@ should be included in file importing DeliveryMessages
 **********************************************************************************/
 --%>
 -->
-  <h:outputText value="#{question.text}"  escape="false"/>
+  <h:outputText value="#{question.themeText}"  escape="false"/>
+  <f:verbatim><br /><br /></f:verbatim>
+  <h:outputText value="#{question.leadInText}"  escape="false"/>
+  <f:verbatim><br /><br /></f:verbatim>
   <!-- ATTACHMENTS -->
   <%@ include file="/jsf/delivery/item/attachment.jsp" %>
 
+
+<!--
+<%--
   <h:dataTable value="#{question.answers}" var="answer">
    <h:column>
      <h:outputText value="#{answer}" escape="false" />
    </h:column>
   </h:dataTable>
+--%>
+-->
+
+  
   <h:dataTable value="#{question.matchingArray}" var="matching">
     <h:column rendered="#{delivery.feedback eq 'true' &&
        delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
@@ -46,18 +56,7 @@ should be included in file importing DeliveryMessages
         alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
       </h:graphicImage>
    </h:column>
-   <h:column>
-    
-     <h:selectBooleanCheckbox value="#{matching.response}"
-        disabled="#{delivery.actionString=='reviewAssessment'
-                 || delivery.actionString=='gradeAssessment'}" />
-     <h:outputText value=" #{selection.answer.label}" escape="false" />
-     <h:outputText value="#{deliveryMessages.dot}" rendered="#{selection.answer.label ne ''}" />
-     <h:outputText value=" #{selection.answer.text}" escape="false" />
-    
-    
-    
-   </h:column>
+   
    <h:column>
      <h:outputText value="#{matching.text}" escape="false"/>
      <h:panelGroup rendered="#{delivery.feedback eq 'true' &&
@@ -69,6 +68,22 @@ should be included in file importing DeliveryMessages
        <h:outputText value="#{matching.feedback}" escape="false" />
      </h:panelGroup>
   </h:column>
+
+   <h:column>
+  <h:dataTable value="#{matching.choices}" var="selection">
+   <h:column>
+     <h:selectBooleanCheckbox value="#{selection.response}"
+        disabled="#{delivery.actionString=='reviewAssessment'
+                 || delivery.actionString=='gradeAssessment'}" />
+     <h:outputText value=" #{selection.answer.label}" escape="false" />
+     <h:outputText value="#{deliveryMessages.dot}" rendered="#{selection.answer.label ne ''}" />
+     <h:outputText value=" #{selection.answer.text}" escape="false" />
+   </h:column>
+  </h:dataTable>
+  <f:verbatim><br /><br /></f:verbatim>
+   </h:column>
+
+  
   </h:dataTable>
 
 <f:verbatim><br /></f:verbatim>

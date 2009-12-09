@@ -1523,18 +1523,32 @@ public class DeliveryActionListener
       if (rb == null) { 	 
   		rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.DeliveryMessages");
   	  }
-      choices.add(new SelectItem("0", rb.getString("matching_select"), "")); // default value for choice
+      
+      
+      //choices.add(new SelectItem("0", rb.getString("matching_select"), "")); // default value for choice
       while (iter2.hasNext())
       {
         AnswerIfc answer = (AnswerIfc) iter2.next();
         newAnswers.add(Character.toString(alphabet.charAt(i)) +
                        ". " + answer.getText());
+        
+        SelectionBean selectionBean = null;
+        selectionBean = new SelectionBean();
+        selectionBean.setItemContentsBean(bean);
+        selectionBean.setAnswer(answer);
+
+/*        
         choices.add(new SelectItem(answer.getId().toString(),
                                    Character.toString(alphabet.charAt(i++)),
                                    ""));
+*/
+
+        choices.add(selectionBean);
+
+        
       }
 
-      mbean.setChoices(choices); // Set the A/B/C... pulldown
+      mbean.setChoices(choices); // Set the A/B/C... choices
 
       iter2 = bean.getItemGradingDataArray().iterator();
       while (iter2.hasNext())

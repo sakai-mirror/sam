@@ -1,8 +1,8 @@
 <projectDescription>
-  <name>sakai-samigo-hibernate</name>
+  <name>samigo-hibernate</name>
   <comment/>
   <projects>
-    <project>sakai-samigo-api</project>
+    <project>samigo-api</project>
   </projects>
   <buildSpec>
     <buildCommand>

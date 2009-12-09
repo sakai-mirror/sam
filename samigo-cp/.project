@@ -1,11 +1,11 @@
 <projectDescription>
-  <name>sakai-samigo-cp</name>
+  <name>samigo-cp</name>
   <comment/>
   <projects>
-    <project>sakai-samigo-api</project>
-    <project>sakai-samigo-hibernate</project>
-    <project>sakai-samigo-qti</project>
-    <project>sakai-samigo-services</project>
+    <project>samigo-api</project>
+    <project>samigo-hibernate</project>
+    <project>samigo-qti</project>
+    <project>samigo-services</project>
   </projects>
   <buildSpec>
     <buildCommand>
