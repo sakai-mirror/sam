@@ -128,7 +128,7 @@ public class QuestionScoreUpdateListener
 
           // check if there is differnce in score, if so, update. Otherwise, do nothing
           float newAutoScore = (new Float(ar.getTotalAutoScore())).floatValue() / (float) datas.size();
-          String newComments = FormattedText.escapeHtml(ar.getComments(), false);
+          String newComments = FormattedText.convertPlaintextToFormattedText(ar.getComments());
           ar.setComments(newComments);
           if (newComments!=null) {
         	  newComments = newComments.trim();

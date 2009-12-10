@@ -150,7 +150,7 @@ public class StudentScoreUpdateListener
             if (data.getAutoScore() !=null) {
               oldAutoScore=data.getAutoScore().floatValue();
             }
-            String newComments = FormattedText.escapeHtml(question.getGradingComment(), false);
+            String newComments = FormattedText.convertPlaintextToFormattedText(question.getGradingComment());
             if (newComments != null) {
       		  newComments = newComments.trim();
             }
@@ -194,7 +194,7 @@ public class StudentScoreUpdateListener
               log.debug("****4 itemGradingId="+data.getItemGradingId());
               log.debug("****5 set points = " + data.getAutoScore() + ", comments to " + data.getComments());
             }
-            data.setAnswerText(FormattedText.escapeHtml(data.getAnswerText(), false));
+            data.setAnswerText(FormattedText.convertPlaintextToFormattedText(data.getAnswerText()));
             itemGradingSet.add(data);
           }
         }
@@ -210,7 +210,7 @@ public class StudentScoreUpdateListener
       if (adata == null)
         return true; // Nothing to save.
 
-      String newComments = FormattedText.escapeHtml(bean.getComments(), false);
+      String newComments = FormattedText.convertPlaintextToFormattedText(bean.getComments());
       if (newComments != null) {
     	  newComments = newComments.trim();
       }

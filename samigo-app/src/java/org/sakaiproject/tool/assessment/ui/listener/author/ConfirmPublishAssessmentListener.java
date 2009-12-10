@@ -95,7 +95,7 @@ public class ConfirmPublishAssessmentListener
     //#2a - look for error: check if core assessment title is unique
     boolean error=false;
 
-    String assessmentName=assessmentSettings.getTitle();
+    String assessmentName=FormattedText.convertPlaintextToFormattedText(assessmentSettings.getTitle());
     if(assessmentName!=null &&(assessmentName.trim()).equals("")){
      	String nameEmpty_err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages","assessmentName_empty");
 	context.addMessage(null,new FacesMessage(nameEmpty_err));
@@ -206,7 +206,7 @@ public class ConfirmPublishAssessmentListener
     //#3 now u can proceed to save core assessment
     assessment = s.save(assessmentSettings);
     //unEscape the FormattedText.convertPlaintextToFormattedText in s.save()
-    assessment.setTitle(FormattedText.unEscapeHtml(assessment.getTitle()));
+    assessment.setTitle(FormattedText.convertFormattedTextToPlaintext(assessment.getTitle()));
     assessmentSettings.setAssessment(assessment);
 
     //  we need a publishedUrl, this is the url used by anonymous user

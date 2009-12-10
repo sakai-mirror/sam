@@ -1385,9 +1385,16 @@ public class DeliveryActionListener
     {
       populateFin(item, itemBean);
     }
-    else if (item.getTypeId().equals(TypeIfc.ESSAY_QUESTION)) //numeric response
+    else if (item.getTypeId().equals(TypeIfc.ESSAY_QUESTION)) 
     {
-      itemBean.setResponseText(FormattedText.unEscapeHtml(itemBean.getResponseText()));
+      itemBean.setResponseText(FormattedText.convertFormattedTextToPlaintext(itemBean.getResponseText()));
+    }
+    else if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) || 
+    		item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
+            item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
+            item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ) 
+    {
+      itemBean.setRationale(FormattedText.convertFormattedTextToPlaintext(itemBean.getRationale()));
     }
 
     return itemBean;
@@ -1516,7 +1523,7 @@ public class DeliveryActionListener
           if ((data.getPublishedAnswerId()!=null) && data.getPublishedAnswerId().equals(answer.getId()))
           {
             fbean.setItemGradingData(data);
-            fbean.setResponse(FormattedText.unEscapeHtml(data.getAnswerText()));
+            fbean.setResponse(FormattedText.convertFormattedTextToPlaintext(data.getAnswerText()));
             fbean.setIsCorrect(false);
             if (answer.getText() == null)
             {
@@ -1675,7 +1682,7 @@ public class DeliveryActionListener
           {
         	  
             fbean.setItemGradingData(data);
-            fbean.setResponse(FormattedText.unEscapeHtml(data.getAnswerText()));
+            fbean.setResponse(FormattedText.convertFormattedTextToPlaintext(data.getAnswerText()));
             fbean.setIsCorrect(false);
             if (answer.getText() == null)
             {

@@ -114,7 +114,7 @@ public class AuthorActionListener
 		Iterator iterator = assessmentList.iterator();
 		while (iterator.hasNext()) {
 		    AssessmentFacade assessmentFacade= (AssessmentFacade) iterator.next();
-		    assessmentFacade.setTitle(FormattedText.unEscapeHtml(assessmentFacade.getTitle()));
+		    assessmentFacade.setTitle(FormattedText.convertFormattedTextToPlaintext(assessmentFacade.getTitle()));
 		}
 
 		// get the managed bean, author and set the list
@@ -166,7 +166,7 @@ public class AuthorActionListener
 	Iterator iterator = list.iterator();
 	while (iterator.hasNext()) {
 	    PublishedAssessmentFacade assessmentFacade= (PublishedAssessmentFacade) iterator.next();
-	    assessmentFacade.setTitle(FormattedText.unEscapeHtml(assessmentFacade.getTitle()));
+	    assessmentFacade.setTitle(FormattedText.convertFormattedTextToPlaintext(assessmentFacade.getTitle()));
 	}
     }
   

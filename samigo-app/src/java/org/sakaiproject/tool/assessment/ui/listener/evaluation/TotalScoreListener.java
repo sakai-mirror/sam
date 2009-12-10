@@ -38,12 +38,10 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.event.ValueChangeListener;
-import javax.faces.model.SelectItem;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.section.api.coursemanagement.CourseSection;
 import org.sakaiproject.tool.assessment.business.entity.RecordingData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAccessControl;
@@ -606,8 +604,6 @@ log.debug("totallistener: firstItem = " + bean.getFirstItem());
       else
         results.setFinalScore("0.0");
       
-      results.setComments(FormattedText.unEscapeHtml(gdata.getComments()));
-
       Iterator i3 = gdata.getItemGradingSet().iterator();
       Long typeId = new Long(-1);
       boolean autoGrade = true;
@@ -643,6 +639,9 @@ log.debug("totallistener: firstItem = " + bean.getFirstItem());
     		  results.setStatus(AssessmentGradingIfc.NEED_HUMAN_ATTENTION);
     	  }
       }
+
+      results.setComments(FormattedText.convertFormattedTextToPlaintext(gdata.getComments()));
+      
       Date dueDate = null;
       PublishedAccessControl ac = (PublishedAccessControl) p.getAssessmentAccessControl();
       if (ac!=null)
