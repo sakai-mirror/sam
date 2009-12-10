@@ -280,13 +280,14 @@
                                     message="project.build.directory=${project.build.directory}" />
                                 <echo message="basedir=${basedir}" />
                                 <echo message="basedir=${project.version}" />
+                                <!--
                                 <copy
                                     file="${project.build.directory}/../samigo-audio/target/samigo-audio-${project.version}.jar"
                                     tofile="${project.build.directory}/samigo-app-${project.version}/applets/samigo-audio-dev.jar" />
-                                <!--  <copy
+                                -->
+                                <copy
 	                                file="${basedir}/../samigo-audio/target/samigo-audio-${project.version}.jar"
-                                    tofile="${project.build.directory}/samigo-app-${project.version}/applets/samigo-audio-dev.jar" />
-                                    -->
+                                    tofile="${project.build.directory}/samigo-app-${project.version}/applets/samigo-audio-dev.jar" />   
                             </tasks>
                         </configuration>
                         <goals>
