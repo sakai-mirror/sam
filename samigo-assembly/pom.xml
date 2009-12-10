@@ -58,6 +58,13 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+        <!-- Substitute for now redundant samigo-shared-deploy pom that put OkiOSID in shared. arwhyte, 20091209  -->   
+        <dependency>
+            <groupId>OKI</groupId>
+            <artifactId>OkiOSID</artifactId>
+            <version>2.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     
     <build>
