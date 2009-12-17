@@ -472,6 +472,9 @@ public class ItemModifyListener implements ActionListener
 		  
 		  //gopalrc - added 26 November 2009
 		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+			  if (!itemText.getSequence().equals(Long.valueOf(0))) {
+				  continue;
+			  }
 			  Set answerobjlist = itemText.getAnswerSet();
 			  String afeedback =  "" ;
 			  Iterator iter1 = answerobjlist.iterator();
@@ -510,6 +513,11 @@ public class ItemModifyListener implements ActionListener
 
 			  bean.setEmiAnswerOptions(answerOptionsList);
 			  bean.setEmiQuestionAnswerCombinations(qaComboList);
+			  
+			  System.out.println("***************ItemModifyListener********************************");
+			  System.out.println("bean.getEmiAnswerOptions().size() = " + bean.getEmiAnswerOptions().size());
+			  System.out.println("bean.getEmiQuestionAnswerCombinations().size() = " + bean.getEmiQuestionAnswerCombinations().size());
+			  System.out.println("***************ItemModifyListener********************************");
 
 
 		  } // EMI

@@ -1113,5 +1113,15 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 	}
   }
   
+  
+  //gopalrc - for EMI - the first textItem contains the components 
+  // from which the actual answers are constructed 
+  public ArrayList getFirstSortedTextItemArray() {
+	  ArrayList firstTextItem = new ArrayList();
+	  firstTextItem.add(this.getItemTextArraySorted().get(0));
+	  return firstTextItem;
+  }
+  
+
     
 }

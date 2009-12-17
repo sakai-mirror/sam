@@ -1294,7 +1294,7 @@ public class ItemAddListener
   private Set preparePublishedText(ItemFacade item, ItemBean bean, ItemService delegate) {
 
 		System.out.println("*********************************************");
-		System.out.println("*************preparePublishedText()**********");
+		System.out.println("*****ItemAddListener.preparePublishedText()**");
 		System.out.println("*********************************************");
 
 	  

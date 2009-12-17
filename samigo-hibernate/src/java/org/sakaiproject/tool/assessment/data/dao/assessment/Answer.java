@@ -299,9 +299,6 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
 	
 	//gopalrc added 27 Nov 2009
 	public ArrayList getEmiSelectionOptions() {
-		System.out.println("*********************************************************");
-		System.out.println("********************this.emiSelectionOptions.size = " + this.emiSelectionOptions.size());
-		System.out.println("*********************************************************");
 		return emiSelectionOptions;
 	}
 

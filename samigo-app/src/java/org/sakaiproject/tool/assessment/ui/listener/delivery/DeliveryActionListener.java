@@ -1487,7 +1487,7 @@ public class DeliveryActionListener
   public void populateEMI(ItemDataIfc item, ItemContentsBean bean, HashMap publishedAnswerHash)
   {
     Iterator iter = item.getItemTextArraySorted().iterator();
-    int j = 1;
+    //int j = 1;
     ArrayList beans = new ArrayList();
     ArrayList newAnswers = null;
     while (iter.hasNext())
@@ -1496,7 +1496,9 @@ public class DeliveryActionListener
       if (text.getSequence().equals(Long.valueOf(0))) continue;
       MatchingBean mbean = new MatchingBean();
       newAnswers = new ArrayList();
-      mbean.setText(Integer.toString(j++) + ". " + text.getText());
+      //mbean.setText(Integer.toString(j++) + ". " + text.getText());
+      mbean.setText(text.getSequence() + ". " + text.getText());
+
       mbean.setItemText(text);
       mbean.setItemContentsBean(bean);
 
@@ -1508,14 +1510,14 @@ public class DeliveryActionListener
         shuffled.add(iter2.next());
 
       }
+  
+      //gopalrc - inactivate shuffling of options until this is clarified
+/*      
       Collections.shuffle(shuffled,
                           new Random( (long) item.getText().hashCode() +
                           getAgentString().hashCode()));
-
-/*
-      Collections.shuffle
-        (shuffled, new Random( (long) item.getText().hashCode()));
 */
+
       iter2 = shuffled.iterator();
 
       int i = 0;
