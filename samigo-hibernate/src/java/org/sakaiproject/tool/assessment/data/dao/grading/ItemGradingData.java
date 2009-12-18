@@ -71,14 +71,16 @@ public class ItemGradingData
   private ArrayList mediaArray;
   private Set itemGradingAttachmentSet;
   
+  
   public ItemGradingData() {
   }
+  
 
   public ItemGradingData(Long itemGradingId, Long assessmentGradingId) {
     this.itemGradingId = itemGradingId;
     this.assessmentGradingId = assessmentGradingId;
   }
-
+  
   public Long getItemGradingId() {
     return itemGradingId;
   }

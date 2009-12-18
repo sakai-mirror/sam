@@ -287,6 +287,14 @@ public class ItemModifyListener implements ActionListener
 	  Iterator iter = itemtextSet.iterator();
 	  while (iter.hasNext()){
 		  ItemTextIfc  itemText = (ItemTextIfc) iter.next();
+		  
+		  //gopalrc - 18 Dec 2009
+		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+			  if (!itemText.getSequence().equals(Long.valueOf(0))) {
+				  continue;
+			  }
+		  }
+		  
 		  bean.setItemText(itemText.getText());
 		  
 		  /////////////////////////////////////////////////////////////
@@ -472,9 +480,6 @@ public class ItemModifyListener implements ActionListener
 		  
 		  //gopalrc - added 26 November 2009
 		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-			  if (!itemText.getSequence().equals(Long.valueOf(0))) {
-				  continue;
-			  }
 			  Set answerobjlist = itemText.getAnswerSet();
 			  String afeedback =  "" ;
 			  Iterator iter1 = answerobjlist.iterator();

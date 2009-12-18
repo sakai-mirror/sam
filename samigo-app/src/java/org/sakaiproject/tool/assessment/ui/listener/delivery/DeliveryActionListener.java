@@ -1474,7 +1474,6 @@ public class DeliveryActionListener
     else if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) || 
     		item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
             item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
-            item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
             item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ) 
     {
       itemBean.setRationale(FormattedText.convertFormattedTextToPlaintext(itemBean.getRationale()));
@@ -1483,7 +1482,7 @@ public class DeliveryActionListener
     return itemBean;
   }
 
-  
+  //gopalrc - Dec 2009
   public void populateEMI(ItemDataIfc item, ItemContentsBean bean, HashMap publishedAnswerHash)
   {
     Iterator iter = item.getItemTextArraySorted().iterator();
@@ -1503,13 +1502,17 @@ public class DeliveryActionListener
       mbean.setItemContentsBean(bean);
 
       ArrayList choices = new ArrayList();
-      ArrayList shuffled = new ArrayList();
+//      ArrayList shuffled = new ArrayList();
       Iterator iter2 = text.getAnswerArraySorted().iterator();
+  
+     
+/*      
       while (iter2.hasNext())
       {
         shuffled.add(iter2.next());
 
       }
+*/  
   
       //gopalrc - inactivate shuffling of options until this is clarified
 /*      
@@ -1518,9 +1521,10 @@ public class DeliveryActionListener
                           getAgentString().hashCode()));
 */
 
-      iter2 = shuffled.iterator();
+//      iter2 = shuffled.iterator();
 
       int i = 0;
+
       ResourceLoader rb = null;
       if (rb == null) { 	 
   		rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.DeliveryMessages");

@@ -578,12 +578,19 @@ public class ItemData
      while (iter.hasNext())
      {
        ItemTextIfc itemText = (ItemTextIfc) iter.next();
-       text += "" + itemText.getText(); //each text add it in
        
-       //if EMI use only the first textItem's text for display
+       //if EMI use only the first textItem's text for display (seqence = 0)
        if (this.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
-    	   break;
+    	   if (!itemText.getSequence().equals(Long.valueOf(0))) {
+    		   continue;
+    	   }
+    	   else {
+    		   text = itemText.getText();
+    		   break;
+    	   }
        }
+       
+       text += "" + itemText.getText(); //each text add it in
 
        if (this.getTypeId().equals(TypeIfc.FILL_IN_BLANK))
        { //e.g. Roses are {}. Violets are {}. replace as

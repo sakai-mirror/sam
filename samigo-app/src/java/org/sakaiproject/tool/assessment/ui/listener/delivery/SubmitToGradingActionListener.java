@@ -288,6 +288,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 			HashMap fibMap = getFIBMap(publishedAssessment);
 			HashMap finMap = getFINMap(publishedAssessment);
 			HashMap mcmrMap = getMCMRMap(publishedAssessment);
+			HashMap emiMap = getEMIMap(publishedAssessment);
 			Set itemGradingSet = adata.getItemGradingSet();
 			log.debug("*** 2a. before removal & addition " + (new Date()));
 			if (itemGradingSet != null) {
@@ -318,7 +319,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 						+ adds.size());
 
 				HashSet updateItemGradingSet = getUpdateItemGradingSet(
-						itemGradingSet, adds, fibMap, finMap, mcmrMap, adata);
+						itemGradingSet, adds, fibMap, finMap, mcmrMap, emiMap, adata);
 				adata.setItemGradingSet(updateItemGradingSet);
 			}
 		}
@@ -384,8 +385,16 @@ public class SubmitToGradingActionListener implements ActionListener {
 		return s.prepareMCMRItemHash(publishedAssessment);
 	}
 
+	//gopalrc - added 18 Dec 2009
+	private HashMap getEMIMap(PublishedAssessmentIfc publishedAssessment) {
+		PublishedAssessmentService s = new PublishedAssessmentService();
+		return s.prepareEMIItemHash(publishedAssessment);
+	}
+	
+	
 	private HashSet getUpdateItemGradingSet(Set oldItemGradingSet,
 			Set newItemGradingSet, HashMap fibMap, HashMap finMap, HashMap mcmrMap,
+			HashMap emiMap, //gopalrc - added 18 Dec
 			AssessmentGradingData adata) {
 		log.debug("Submitforgrading: oldItemGradingSet.size = "
 				+ oldItemGradingSet.size());
@@ -431,6 +440,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 						|| (newAnswerText != null && !newAnswerText
 								.equals(oldAnswerText))
 						|| fibMap.get(oldItem.getPublishedItemId()) != null
+						|| emiMap.get(oldItem.getPublishedItemId()) != null //gopalrc - 18 Dec 2009
 						|| finMap.get(oldItem.getPublishedItemId())!=null
 						|| mcmrMap.get(oldItem.getPublishedItemId()) != null) {
 					oldItem.setReview(newItem.getReview());
@@ -616,6 +626,33 @@ public class SubmitToGradingActionListener implements ActionListener {
 			}
 			break;
 		case 2: // MCMR
+			for (int m = 0; m < grading.size(); m++) {
+				ItemGradingData itemgrading = (ItemGradingData) grading.get(m);
+				if (itemgrading.getItemGradingId() != null
+						&& itemgrading.getItemGradingId().intValue() > 0) {
+					// old answer, check which one to keep, not keeping null  answer
+					if (itemgrading.getPublishedAnswerId() != null || 
+						(itemgrading.getRationale() != null && !itemgrading.getRationale().trim().equals(""))) {
+						itemgrading.setAgentId(AgentFacade.getAgentString());
+						itemgrading.setSubmittedDate(new Date());
+						adds.add(itemgrading);
+					} else {
+						removes.add(itemgrading);
+					}
+				} else { 
+					 // new answer
+					if (itemgrading.getPublishedAnswerId() != null ||
+							(itemgrading.getRationale() != null && !itemgrading.getRationale().trim().equals(""))) {
+						// new  addition  not accepting any new answer with null for MCMR
+						itemgrading.setAgentId(AgentFacade.getAgentString());
+						itemgrading.setSubmittedDate(new Date());
+						adds.add(itemgrading);
+					}
+				}
+			}
+			break;
+		//gopalrc - 18 Dec 2007 - TODO - correct code
+		case 13: // EMI 
 			for (int m = 0; m < grading.size(); m++) {
 				ItemGradingData itemgrading = (ItemGradingData) grading.get(m);
 				if (itemgrading.getItemGradingId() != null

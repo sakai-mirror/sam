@@ -523,6 +523,24 @@ public class PublishedAssessmentService extends AssessmentService{
     }
     return map;
   }
+  
+
+  //gopalrc - added 18 Dec 2009
+  public HashMap prepareEMIItemHash(PublishedAssessmentIfc publishedAssessment){
+	    HashMap map = new HashMap();
+	    ArrayList sectionArray = publishedAssessment.getSectionArray();
+	    for (int i=0;i<sectionArray.size(); i++){
+	      SectionDataIfc section = (SectionDataIfc)sectionArray.get(i);
+	      ArrayList itemArray = section.getItemArray();
+	      for (int j=0;j<itemArray.size(); j++){
+	        ItemDataIfc item = (ItemDataIfc)itemArray.get(j);
+	        if (item.getTypeId().equals( Long.valueOf(13))) // EMI question
+	          map.put(item.getItemId(), item);
+	      }
+	    }
+	    return map;
+  }
+  
 
   public HashSet getSectionSetForAssessment(Long publishedAssessmentId){
 	    return PersistenceService.getInstance().getPublishedAssessmentFacadeQueries().
