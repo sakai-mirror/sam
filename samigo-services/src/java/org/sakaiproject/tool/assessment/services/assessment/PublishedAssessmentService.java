@@ -46,6 +46,7 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.PublishedAssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacadeQueriesAPI;
@@ -54,6 +55,8 @@ import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacadeQueriesA
 import org.sakaiproject.tool.assessment.facade.PublishedSectionFacade;
 import org.sakaiproject.tool.assessment.facade.SectionFacade;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
+
+
 
 /**
  * The QuestionPoolService calls the service locator to reach the
@@ -462,6 +465,16 @@ public class PublishedAssessmentService extends AssessmentService{
         ArrayList itemTextArray = item.getItemTextArray();
         for (int k=0;k<itemTextArray.size(); k++){
           ItemTextIfc itemText = (ItemTextIfc)itemTextArray.get(k);
+          
+          //gopalrc - 21 December 2009 - Eliminate first ItemText's Answers from published EMI questions
+          //as these contain only the components for contructing the actual answers in subsequent ItemTexts
+          //TODO - implement this after bugfixes related to publishing 
+          /*
+          if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) && itemText.getSequence().equals(Long.valueOf(0))) { // EMI question
+        	  continue;
+          }
+          */
+          
           ArrayList answerArray = itemText.getAnswerArraySorted();
           for (int m=0;m<answerArray.size(); m++){
             AnswerIfc answer = (AnswerIfc)answerArray.get(m);
@@ -534,7 +547,7 @@ public class PublishedAssessmentService extends AssessmentService{
 	      ArrayList itemArray = section.getItemArray();
 	      for (int j=0;j<itemArray.size(); j++){
 	        ItemDataIfc item = (ItemDataIfc)itemArray.get(j);
-	        if (item.getTypeId().equals( Long.valueOf(13))) // EMI question
+	        if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) // EMI question
 	          map.put(item.getItemId(), item);
 	      }
 	    }

@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PublishedAnswer
-    implements Serializable, AnswerIfc, Comparable, Cloneable {
+    implements Serializable, AnswerIfc, Comparable, Cloneable { //gopalrc - added cloneable 27 Nov 2009
   static Category errorLogger = Category.getInstance("errorLogger");
 
   private static final long serialVersionUID = 7526471155622776147L;
