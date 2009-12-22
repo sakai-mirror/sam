@@ -131,6 +131,8 @@ public class ItemText
   
   
   //gopalrc - added 26 Nov 2009
+  //TODO - For elegance this should probably be moved up to [Published]ItemData
+  // as it applies only to the first (seq=0) ItemText
   public ArrayList getEmiAnswerOptions() {
 	  if (emiAnswerOptions != null) {
 		  return emiAnswerOptions;
@@ -154,6 +156,8 @@ public class ItemText
   }
   
   //gopalrc - added 26 Nov 2009
+  //TODO - For elegance this should probably be moved up to [Published]ItemData
+  // as it applies only to the first (seq=0) ItemText
   public ArrayList getEmiQuestionAnswerCombinations() {
 	  if (emiQuestionAnswerCombinations != null) {
 		  return emiQuestionAnswerCombinations;

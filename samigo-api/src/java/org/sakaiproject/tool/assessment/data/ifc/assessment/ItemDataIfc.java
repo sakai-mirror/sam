@@ -178,5 +178,6 @@ public interface ItemDataIfc extends java.io.Serializable {
   String getThemeText();
   void setThemeAndLeadInText();
   public ArrayList getFirstSortedTextItemArray();
+  public int getNumberOfCorrectEmiOptions();
   
 }

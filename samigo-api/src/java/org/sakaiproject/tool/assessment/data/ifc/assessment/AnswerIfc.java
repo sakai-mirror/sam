@@ -92,6 +92,6 @@ public  interface AnswerIfc
   boolean isEmiOptionCorrect(String optionLabel);
   ArrayList getEmiSelectionOptions();
   void setEmiSelectionOptions(ArrayList emiSelectionOptions);
-  int getNumberOfCorrectOptions();
+  int getNumberOfCorrectEmiOptions();
 
 }

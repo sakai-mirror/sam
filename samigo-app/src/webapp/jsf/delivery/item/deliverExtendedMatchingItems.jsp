@@ -24,6 +24,10 @@ should be included in file importing DeliveryMessages
 **********************************************************************************/
 --%>
 -->
+
+***** GOPAL TEST/TEMP - /jsf/delivery/item/deliverExtendedMatchingItem.jsp (question = ItemContentsBean) ************************
+
+
   <h:outputText value="#{question.themeText}"  escape="false"/>
   <f:verbatim><br /><br /></f:verbatim>
   <h:outputText value="#{question.leadInText}"  escape="false"/>
@@ -44,18 +48,6 @@ should be included in file importing DeliveryMessages
 
   
   <h:dataTable value="#{question.matchingArray}" var="matching">
-    <h:column rendered="#{delivery.feedback eq 'true' &&
-       delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
-      <h:graphicImage id="image"
-        rendered="#{matching.isCorrect}"
-        alt="#{deliveryMessages.alt_correct}" url="/images/checkmark.gif" >
-      </h:graphicImage>
-      <h:graphicImage id="image2"
-        rendered="#{matching.isCorrect}"
-        width="16" height="16"
-        alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
-      </h:graphicImage>
-   </h:column>
    
    <h:column>
      <h:outputText value="#{matching.text}" escape="false"/>
@@ -71,6 +63,20 @@ should be included in file importing DeliveryMessages
 
    <h:column>
   <h:dataTable value="#{matching.choices}" var="selection">
+
+    <h:column rendered="#{delivery.feedback eq 'true' &&
+       delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
+      <h:graphicImage id="image"
+        rendered="#{selection.answer.isCorrect eq 'true' && selection.response}"
+        alt="#{deliveryMessages.alt_correct}" url="/images/checkmark.gif" >
+      </h:graphicImage>
+      <h:graphicImage id="image2"
+        rendered="#{selection.answer.isCorrect ne 'true' && selection.response}"
+        width="16" height="16"
+        alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
+      </h:graphicImage>
+   </h:column>
+
    <h:column>
      <h:selectBooleanCheckbox value="#{selection.response}"
         disabled="#{delivery.actionString=='reviewAssessment'

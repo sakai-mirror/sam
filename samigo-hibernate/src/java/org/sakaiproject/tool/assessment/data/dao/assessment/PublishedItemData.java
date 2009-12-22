@@ -754,5 +754,17 @@ public class PublishedItemData
   }
   
     
+  //gopalrc - total number of correct EMI answers
+	public int getNumberOfCorrectEmiOptions() {
+		int count=0;
+		PublishedItemText firstText = (PublishedItemText) getItemTextArraySorted().get(0);
+		Iterator iter = firstText.getEmiQuestionAnswerCombinations().iterator();
+		while (iter.hasNext()) {
+			PublishedAnswer answer = (PublishedAnswer) iter.next();
+			count += answer.getNumberOfCorrectEmiOptions();
+		}
+		return count;
+	}
+  
 
 }

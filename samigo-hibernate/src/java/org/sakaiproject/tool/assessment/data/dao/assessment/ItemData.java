@@ -834,5 +834,21 @@ public class ItemData
 	  firstTextItem.add(this.getItemTextArraySorted().get(0));
 	  return firstTextItem;
   }
+  
+  
+  //gopalrc - total number of correct EMI answers
+	public int getNumberOfCorrectEmiOptions() {
+		int count=0;
+		ItemText firstText = (ItemText) getItemTextArraySorted().get(0);
+		Iterator iter = firstText.getEmiQuestionAnswerCombinations().iterator();
+		while (iter.hasNext()) {
+			Answer answer = (Answer) iter.next();
+			count += answer.getNumberOfCorrectEmiOptions();
+		}
+		return count;
+	}
+	
+	
+  
 
 }

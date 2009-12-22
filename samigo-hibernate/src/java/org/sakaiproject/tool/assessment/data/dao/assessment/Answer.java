@@ -57,7 +57,7 @@ public class Answer
   private ItemData dat=new ItemData();
   
   //gopalrc - added 27 Nov 2008
-  //set of possible selection options indicating correct and incorrect options
+  //set of possible EMI selection options indicating correct and incorrect options
   private ArrayList emiSelectionOptions;
   
   
@@ -268,11 +268,11 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
  
 	//gopalrc added 16 Nov 2009
 	public String getEmiCorrectOptionLabelsAsString() {
-		String optionString = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]")).trim().toUpperCase();
+		String optionString = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]"));
 		if (optionString == null) {
 			return "";
 		}
-		return optionString;
+		return optionString.trim().toUpperCase();
 	}
 	
 	
@@ -314,7 +314,7 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
 	
 
 	//gopalrc - added 30 Nov 2009
-	public int getNumberOfCorrectOptions() {
+	public int getNumberOfCorrectEmiOptions() {
 		int count = 0;
 		Iterator iter = emiSelectionOptions.iterator();
 		while (iter.hasNext()) {

@@ -24,6 +24,7 @@
 package org.sakaiproject.tool.assessment.ui.listener.author;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -516,6 +517,9 @@ public class ItemModifyListener implements ActionListener
 				  }
 			  }
 
+			  Collections.sort(answerOptionsList);
+			  Collections.sort(qaComboList);
+			  
 			  bean.setEmiAnswerOptions(answerOptionsList);
 			  bean.setEmiQuestionAnswerCombinations(qaComboList);
 			  

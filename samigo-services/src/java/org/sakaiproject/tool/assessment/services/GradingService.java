@@ -1004,6 +1004,11 @@ public class GradingService
           }
           break;
 
+      case 13: // EMI
+          autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
+          break;
+          
+          
       case 5: // SAQ
       case 6: // file upload
       case 7: // audio recording
@@ -1044,7 +1049,8 @@ public class GradingService
     {
     	// return (float) 0;
     	// Para que descuente (For discount)
-    	if ((TypeIfc.MULTIPLE_CHOICE).equals(itemType)||(TypeIfc.TRUE_FALSE).equals(itemType)){
+    	//gopalrc - added EMI
+    	if ((TypeIfc.EXTENDED_MATCHING_ITEM).equals(itemType)||(TypeIfc.MULTIPLE_CHOICE).equals(itemType)||(TypeIfc.TRUE_FALSE).equals(itemType)){
     		return (Math.abs(answer.getDiscount().floatValue()) * ((float) -1));
     	}else{
     		return (float) 0;

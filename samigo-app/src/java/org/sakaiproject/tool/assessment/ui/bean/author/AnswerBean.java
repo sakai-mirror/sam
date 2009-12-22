@@ -26,7 +26,7 @@ import java.io.Serializable;
 import org.sakaiproject.util.ResourceLoader;
  
 
-public class AnswerBean implements Serializable{
+public class AnswerBean implements Serializable, Comparable{
 
   private static final long serialVersionUID = 7526471155622776147L;
 
@@ -93,5 +93,17 @@ public class AnswerBean implements Serializable{
 	  String[] lables = choiceLabels.split(":");
 	  return lables;
   }
+
+
+  //gopalrc - Added Dec 22, 2009 
+	public int compareTo(Object o) {
+		// TODO Auto-generated method stub
+		if (o==null || getSequence()==null || ((AnswerBean)o).getSequence()==null) {
+			return -1;
+		}
+		else {
+			return getSequence().compareTo(((AnswerBean)o).getSequence());
+		}
+	}
 
 }

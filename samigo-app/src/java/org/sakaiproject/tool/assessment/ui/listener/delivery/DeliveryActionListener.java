@@ -1250,6 +1250,13 @@ public class DeliveryActionListener
               {
                 addition = Integer.toString(j++) + ":";
               }
+
+              if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS))
+              {
+                addition = text.getSequence() + ":";
+              }
+
+              
               if ("".equals(key))
               {
                 key += addition + answer.getLabel();
@@ -1483,16 +1490,27 @@ public class DeliveryActionListener
   }
 
   //gopalrc - Dec 2009
+  // This method treats EMI as multiple MCMR questions
   public void populateEMI(ItemDataIfc item, ItemContentsBean bean, HashMap publishedAnswerHash)
   {
-    Iterator iter = item.getItemTextArraySorted().iterator();
+    Iterator itemTextIter = item.getItemTextArraySorted().iterator();
     //int j = 1;
     ArrayList beans = new ArrayList();
     ArrayList newAnswers = null;
-    while (iter.hasNext())
+    
+    // Iterate through the PublishedItemTexts
+    // Each ItemText represents a MCMR question
+    // and is used to populate a MatchingBean
+    while (itemTextIter.hasNext())
     {
-      ItemTextIfc text = (ItemTextIfc) iter.next();
+      ItemTextIfc text = (ItemTextIfc) itemTextIter.next();
+      
+      
+      //Don't use the first ItemText (seq = 0)
+      //This is contains the question components
       if (text.getSequence().equals(Long.valueOf(0))) continue;
+      
+      
       MatchingBean mbean = new MatchingBean();
       newAnswers = new ArrayList();
       //mbean.setText(Integer.toString(j++) + ". " + text.getText());
@@ -1503,7 +1521,7 @@ public class DeliveryActionListener
 
       ArrayList choices = new ArrayList();
 //      ArrayList shuffled = new ArrayList();
-      Iterator iter2 = text.getAnswerArraySorted().iterator();
+      Iterator itemTextAnwersIter = text.getAnswerArraySorted().iterator();
   
      
 /*      
@@ -1531,10 +1549,11 @@ public class DeliveryActionListener
   	  }
       
       
-      //choices.add(new SelectItem("0", rb.getString("matching_select"), "")); // default value for choice
-      while (iter2.hasNext())
+      //Now populate the choices for each MCMR question
+      //Each choice is represented by a SelectionBean
+      while (itemTextAnwersIter.hasNext())
       {
-        AnswerIfc answer = (AnswerIfc) iter2.next();
+        AnswerIfc answer = (AnswerIfc) itemTextAnwersIter.next();
         newAnswers.add(Character.toString(alphabet.charAt(i)) +
                        ". " + answer.getText());
         
@@ -1549,46 +1568,54 @@ public class DeliveryActionListener
                                    ""));
 */
 
-        choices.add(selectionBean);
-
         
-      }
-
-      mbean.setChoices(choices); // Set the A/B/C... choices
-
-      iter2 = bean.getItemGradingDataArray().iterator();
-      while (iter2.hasNext())
-      {
-
-        ItemGradingData data = (ItemGradingData) iter2.next();
-
-        if (data.getPublishedItemTextId().equals(text.getId()))
+        // Now add the user responses
+        Iterator itemGradingIter = bean.getItemGradingDataArray().iterator();
+        while (itemGradingIter.hasNext())
         {
-          // We found an existing grading data for this itemtext
-          mbean.setItemGradingData(data);
-          AnswerIfc pubAnswer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId()); 
-          if (pubAnswer != null)
-          {
-            mbean.setAnswer(pubAnswer);
-            mbean.setResponse(data.getPublishedAnswerId().toString());
-            if (pubAnswer.getIsCorrect() != null &&
-                pubAnswer.getIsCorrect().booleanValue())
-            {
-              mbean.setFeedback(pubAnswer.getCorrectAnswerFeedback());
-              mbean.setIsCorrect(true);
-            }
-            else
-            {
-              mbean.setFeedback(pubAnswer.getInCorrectAnswerFeedback());
-              mbean.setIsCorrect(false);
-            }
-          }
-          break;
-        }
-      }
 
+          ItemGradingData data = (ItemGradingData) itemGradingIter.next();
+
+          if (data.getPublishedAnswerId().equals(answer.getId()))
+          {
+            // We found an existing grading data for this Answer
+        	selectionBean.setItemGradingData(data);
+            selectionBean.setResponse(true);
+        	
+        	
+        	
+        	
+        	//gopalrc - TODO - tighten up
+        	//I think this is redundant in this case, as "answer" already contains the published answer
+            /*
+            AnswerIfc pubAnswer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId()); 
+            if (pubAnswer != null)
+            {
+              //mbean.setAnswer(pubAnswer);
+              //mbean.setResponse(data.getPublishedAnswerId().toString());
+              if (pubAnswer.getIsCorrect() != null &&
+                  pubAnswer.getIsCorrect().booleanValue())
+              {
+                mbean.setFeedback(pubAnswer.getCorrectAnswerFeedback());
+                mbean.setIsCorrect(true);
+              }
+              else
+              {
+                mbean.setFeedback(pubAnswer.getInCorrectAnswerFeedback());
+                mbean.setIsCorrect(false);
+              }
+            }
+            */
+          }
+        }
+
+        choices.add(selectionBean);
+       
+      }
+      mbean.setChoices(choices); // Set the A/B/C... choices
       beans.add(mbean);
     }
+    
     bean.setMatchingArray(beans);
     bean.setAnswers(newAnswers); // Change the answers to just text
   }

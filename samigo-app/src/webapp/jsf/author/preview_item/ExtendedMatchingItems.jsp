@@ -23,11 +23,7 @@ should be included in file importing DeliveryMessages
 **********************************************************************************/
 --%>
 -->
-
-******************************************************************************************
-***** GOPAL TEST/TEMP - /jsf/author/preview_item/ExtendedMatchingItem.jsp ****************
-******************************************************************************************
-
+  ***** GOPAL TEST/TEMP - /jsf/author/preview_item/ExtendedMatchingItem.jsp *****
 
 
   <h:outputText escape="false" value="#{question.itemData.themeText}" />
@@ -51,7 +47,7 @@ should be included in file importing DeliveryMessages
 
         <h:column> 
       <h:dataTable value="#{answer.emiSelectionOptions}" var="answerOption">
-        <h:column> 
+        <h:column>
          <h:panelGroup rendered="#{answerOption.text != null && answerOption.text ne ''}">
           <h:graphicImage id="image1" rendered="#{answerOption.isCorrect}"
              alt="#{authorMessages.correct}" url="/images/checked.gif" />         
