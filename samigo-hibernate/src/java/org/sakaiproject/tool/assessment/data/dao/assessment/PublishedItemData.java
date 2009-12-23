@@ -735,7 +735,7 @@ public class PublishedItemData
   }
 
   //gopalrc - added 30 Nov 2009
-  public void setThemeAndLeadInText() {
+  private void setThemeAndLeadInText() {
 	String text = getText();  
 	if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId()) &&
 			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {

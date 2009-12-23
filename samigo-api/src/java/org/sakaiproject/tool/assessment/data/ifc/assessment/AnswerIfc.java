@@ -89,6 +89,7 @@ public  interface AnswerIfc
   
   //gopalrc added 30 Nov 2009
   String getEmiCorrectOptionLabelsAsString();
+  public String getEmiTextWithoutCorrectOptionLabels();
   boolean isEmiOptionCorrect(String optionLabel);
   ArrayList getEmiSelectionOptions();
   void setEmiSelectionOptions(ArrayList emiSelectionOptions);

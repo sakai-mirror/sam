@@ -922,7 +922,7 @@ public class ItemAddListener
 	  
 	  	// ///////////////////////////////////////////////////////////
 		//
-		// 1. save Theme and Lead-In Text in first ItemText 
+		// 1. save Theme and Lead-In Text in first ItemText (seq=0)
 		//  
 		// ///////////////////////////////////////////////////////////
 		ItemText text1 = new ItemText();
@@ -935,7 +935,7 @@ public class ItemAddListener
 		//
 		// 2. save Answer construction components 
 		// (emiAnswerOptions and emiQuestionAnswerCombinations)
-		// with first ItemText.
+		// with first ItemText  (seq=0).
 		// These will be used to construct the actual answers.
 		// ///////////////////////////////////////////////////////////
 		Iterator iter = bean.getEmiAnswerOptions().iterator();
@@ -945,7 +945,7 @@ public class ItemAddListener
 			answer = new Answer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+					Boolean.FALSE, null, null, null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new AnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -962,7 +962,7 @@ public class ItemAddListener
 			answer = new Answer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+					Boolean.FALSE, null, null, null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new AnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -983,39 +983,8 @@ public class ItemAddListener
 		// 3. Prepare and save actual answers from answer components 
 		// (emiAnswerOptions and emiQuestionAnswerCombinations)
 		// ///////////////////////////////////////////////////////////
-/*				
-		iter = bean.getEmiQuestionAnswerCombinations().iterator();
-		answer = null;
-		int seq = 1;
-		while (iter.hasNext()) {
-			AnswerBean answerbean = (AnswerBean) iter.next();
-			ItemText itemText = new ItemText();
-			itemText.setItem(text1.getItem());
-			itemText.setSequence(Long.valueOf(seq++));
-			itemText.setText(answerbean.getText());
-
-			HashSet answerSet = new HashSet();
-			Iterator selectionOptions = qaCombo.getEmiSelectionOptions().iterator();
-			while (selectionOptions.hasNext()) {
-				answer = new Answer(itemText,
-						stripPtags(answerbean.getText()), answerbean
-						.getSequence(), answerbean.getLabel(),
-						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
-				HashSet answerFeedbackSet1 = new HashSet();
-				answerFeedbackSet1.add(new AnswerFeedback(answer,
-						AnswerFeedbackIfc.GENERAL_FEEDBACK,
-						stripPtags(answerbean.getFeedback())));
-				answer.setAnswerFeedbackSet(answerFeedbackSet1);
-			}
-			
-			
-			answerSet.add(answer);
-		}			
-
-		text1.setAnswerSet(answerSet1);
-		textSet.add(text1);
-*/
-		
+		int numberOfCorrectAnswers = 0;
+		float correctAnswerScore = 0;
 		
 		iter = text1.getEmiQuestionAnswerCombinations().iterator();
 		Answer qaCombo = null;
@@ -1033,11 +1002,20 @@ public class ItemAddListener
 			Iterator selectionOptions = qaCombo.getEmiSelectionOptions().iterator();
 			while (selectionOptions.hasNext()) {
 				Answer selectOption = (Answer) selectionOptions.next();
+			
+				
+				if (selectOption.getIsCorrect()==null || selectOption.getIsCorrect().equals(Boolean.FALSE)) {
+					//ignore
+				}
+				else {
+					numberOfCorrectAnswers++;
+				}
+				
 				Answer actualAnswer = new Answer(itemText,
 						selectOption.getText(), selectOption
 						.getSequence(), selectOption.getLabel(),
-						selectOption.getIsCorrect(), null, selectOption.getScore(), 
-						selectOption.getDiscount());
+						selectOption.getIsCorrect(), null, null, 
+						Float.valueOf(bean.getItemDiscount()));
 				
 //				actualAnswer.setItemText(itemText);
 //				actualAnswer.setItem(item.getData());
@@ -1055,12 +1033,34 @@ public class ItemAddListener
 			itemText.setAnswerSet(answerSet);
 			textSet.add(itemText);
 		}
-		
-					
-					
+
+		//now calculate and save the answer scores
+		if (numberOfCorrectAnswers != 0) {
+			correctAnswerScore = Float.valueOf(bean.getItemScore()) / (float)numberOfCorrectAnswers;
+		}
+		float answerScore = 0;
+		Iterator textSetIter = textSet.iterator();
+		while (textSetIter.hasNext()) {
+			ItemText itemText = (ItemText)textSetIter.next();
+			if (itemText.getSequence()==0) continue;
+			Iterator answerSetIter = itemText.getAnswerSet().iterator();
+			Answer actualAnswer = null;
+			while (answerSetIter.hasNext()) {
+				actualAnswer = (Answer)answerSetIter.next();
+				if (actualAnswer.getIsCorrect()==null || !actualAnswer.getIsCorrect()) {
+					answerScore = 0;
+				}
+				else {
+					answerScore = correctAnswerScore;
+				}
+				actualAnswer.setScore(Float.valueOf(answerScore));
+			}
+		}
 					
 		return textSet;
 	}
+  
+  
   
   
 
@@ -1290,6 +1290,8 @@ public class ItemAddListener
 
 		return textSet;
 	} 
+	
+	
 
   private Set preparePublishedText(ItemFacade item, ItemBean bean, ItemService delegate) {
 
@@ -1321,6 +1323,10 @@ public class ItemAddListener
 	  else if (item.getTypeId().equals(TypeFacade.MATCHING)) {
 		  preparePublishedTextForMatching(item, bean, delegate);
 	  }
+	  else if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+		  preparePublishedTextForEMI(item, bean, delegate);		  
+	  }
+	  
 	  // for file Upload and audio recording
 	  else {
 		  // no answers need to be added
@@ -1688,6 +1694,167 @@ public class ItemAddListener
   }
 
 
+  
+  /**
+   * gopalrc - added 4 Dec 2009
+   * Prepare Text for Extended Matching Item Questions
+   * @param item
+   * @param bean
+   * @param itemauthor
+   * @return
+   */
+  private void preparePublishedTextForEMI(ItemFacade item,
+			ItemBean bean, ItemService delegate) {
+
+		HashSet textSet = new HashSet();
+		HashSet answerSet1 = new HashSet();
+	  
+	  
+	  	// ///////////////////////////////////////////////////////////
+		//
+		// 1. save Theme and Lead-In Text in first ItemText (seq=0)
+		//  
+		// ///////////////////////////////////////////////////////////
+		PublishedItemText text1 = new PublishedItemText();
+		text1.setItem(item.getData());
+		text1.setSequence(Long.valueOf(0));
+		text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
+		
+		
+		// ///////////////////////////////////////////////////////////
+		//
+		// 2. save Answer construction components 
+		// (emiAnswerOptions and emiQuestionAnswerCombinations)
+		// with first ItemText  (seq=0).
+		// These will be used to construct the actual answers.
+		// ///////////////////////////////////////////////////////////
+		Iterator iter = bean.getEmiAnswerOptions().iterator();
+		PublishedAnswer answer = null;
+		while (iter.hasNext()) {
+			AnswerBean answerbean = (AnswerBean) iter.next();
+			answer = new PublishedAnswer(text1,
+					stripPtags(answerbean.getText()), answerbean
+					.getSequence(), answerbean.getLabel(),
+					Boolean.FALSE, null, null, null);
+			HashSet answerFeedbackSet1 = new HashSet();
+			answerFeedbackSet1.add(new PublishedAnswerFeedback(answer,
+					AnswerFeedbackIfc.GENERAL_FEEDBACK,
+					stripPtags(answerbean.getFeedback())));
+			answer.setAnswerFeedbackSet(answerFeedbackSet1);
+
+			answerSet1.add(answer);
+		}
+
+		iter = bean.getEmiQuestionAnswerCombinations().iterator();
+		//answer = null;
+		while (iter.hasNext()) {
+			AnswerBean answerbean = (AnswerBean) iter.next();
+			answer = new PublishedAnswer(text1,
+					stripPtags(answerbean.getText()), answerbean
+					.getSequence(), answerbean.getLabel(),
+					Boolean.FALSE, null, null, null);
+			HashSet answerFeedbackSet1 = new HashSet();
+			answerFeedbackSet1.add(new PublishedAnswerFeedback(answer,
+					AnswerFeedbackIfc.GENERAL_FEEDBACK,
+					stripPtags(answerbean.getFeedback())));
+			answer.setAnswerFeedbackSet(answerFeedbackSet1);
+
+			answerSet1.add(answer);
+		}			
+
+		text1.setAnswerSet(answerSet1);
+		textSet.add(text1);
+
+		
+		
+		
+		// ///////////////////////////////////////////////////////////
+		//
+		// 3. Prepare and save actual answers from answer components 
+		// (emiAnswerOptions and emiQuestionAnswerCombinations)
+		// ///////////////////////////////////////////////////////////
+		int numberOfCorrectAnswers = 0;
+		float correctAnswerScore = 0;
+		
+		iter = text1.getEmiQuestionAnswerCombinations().iterator();
+		PublishedAnswer qaCombo = null;
+//		int seq = 1;
+		while (iter.hasNext()) {
+			qaCombo = (PublishedAnswer) iter.next();
+			
+			PublishedItemText itemText = new PublishedItemText();
+			itemText.setItem(text1.getItem());
+			itemText.setSequence(Long.valueOf(qaCombo.getLabel()));
+//			itemText.setSequence(Long.valueOf(seq++));
+			itemText.setText(qaCombo.getEmiTextWithoutCorrectOptionLabels());
+			
+			HashSet answerSet = new HashSet();
+			Iterator selectionOptions = qaCombo.getEmiSelectionOptions().iterator();
+			while (selectionOptions.hasNext()) {
+				PublishedAnswer selectOption = (PublishedAnswer) selectionOptions.next();
+			
+				
+				if (selectOption.getIsCorrect()==null || selectOption.getIsCorrect().equals(Boolean.FALSE)) {
+					//ignore
+				}
+				else {
+					numberOfCorrectAnswers++;
+				}
+				
+				PublishedAnswer actualAnswer = new PublishedAnswer(itemText,
+						selectOption.getText(), selectOption
+						.getSequence(), selectOption.getLabel(),
+						selectOption.getIsCorrect(), null, null, 
+						Float.valueOf(bean.getItemDiscount()));
+				
+//				actualAnswer.setItemText(itemText);
+//				actualAnswer.setItem(item.getData());
+//				actualAnswer.setAnswerFeedbackSet(qaCombo.getAnswerFeedbackSet());
+
+				HashSet answerFeedbackSet1 = new HashSet();
+				answerFeedbackSet1.add(new PublishedAnswerFeedback(actualAnswer,
+						AnswerFeedbackIfc.GENERAL_FEEDBACK,
+						stripPtags(qaCombo.getAnswerFeedback(AnswerFeedbackIfc.GENERAL_FEEDBACK))));
+				actualAnswer.setAnswerFeedbackSet(answerFeedbackSet1);
+				
+				
+				answerSet.add(actualAnswer);
+			}
+			itemText.setAnswerSet(answerSet);
+			textSet.add(itemText);
+		}
+
+		//now calculate and save the answer scores
+		if (numberOfCorrectAnswers != 0) {
+			correctAnswerScore = Float.valueOf(bean.getItemScore()) / (float)numberOfCorrectAnswers;
+		}
+		float answerScore = 0;
+		Iterator textSetIter = textSet.iterator();
+		while (textSetIter.hasNext()) {
+			PublishedItemText itemText = (PublishedItemText)textSetIter.next();
+			if (itemText.getSequence()==0) continue;
+			Iterator answerSetIter = itemText.getAnswerSet().iterator();
+			PublishedAnswer actualAnswer = null;
+			while (answerSetIter.hasNext()) {
+				actualAnswer = (PublishedAnswer)answerSetIter.next();
+				if (actualAnswer.getIsCorrect()==null || !actualAnswer.getIsCorrect()) {
+					answerScore = 0;
+				}
+				else {
+					answerScore = correctAnswerScore;
+				}
+				actualAnswer.setScore(Float.valueOf(answerScore));
+			}
+		}
+					
+	  item.setItemTextSet(textSet);
+	}
+  
+  
+  
+  
+  
+  
   private void preparePublishedTextForOthers(ItemFacade item, ItemBean bean) {
 	  ItemTextIfc text = null;
 	  Set textSet = item.getItemTextSet();

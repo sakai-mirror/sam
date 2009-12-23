@@ -176,7 +176,7 @@ public interface ItemDataIfc extends java.io.Serializable {
   //gopalrc - added 1 Dec 2009
   String getLeadInText();
   String getThemeText();
-  void setThemeAndLeadInText();
+  //void setThemeAndLeadInText();
   public ArrayList getFirstSortedTextItemArray();
   public int getNumberOfCorrectEmiOptions();
   

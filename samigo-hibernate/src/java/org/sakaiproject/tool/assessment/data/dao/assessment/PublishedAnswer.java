@@ -297,6 +297,16 @@ public class PublishedAnswer
 	}
 
 	
+	//gopalrc added 4 Dec 2009
+	public String getEmiTextWithoutCorrectOptionLabels() {
+		String textWithoutLabels = text.substring(0, text.lastIndexOf("[")).trim();
+		if (textWithoutLabels == null) {
+			return "";
+		}
+		return textWithoutLabels;
+	}
+
+	
 	//gopalrc added 16 Nov 2009
 	public boolean isEmiOptionCorrect(String optionLabel) {
 		String correctOptionLabels = getEmiCorrectOptionLabelsAsString();

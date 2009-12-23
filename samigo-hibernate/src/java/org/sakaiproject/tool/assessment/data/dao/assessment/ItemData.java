@@ -817,7 +817,7 @@ public class ItemData
   }
 
   //gopalrc - added 30 Nov 2009
-  public void setThemeAndLeadInText() {
+  private void setThemeAndLeadInText() {
 	String text = getText();  
 	if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId()) &&
 			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
@@ -849,6 +849,18 @@ public class ItemData
 	}
 	
 	
-  
+/*	  
+  //gopalrc - total number of incorrect EMI answers
+	public int getNumberOfIncorrectEmiOptions() {
+		int count=0;
+		ItemText firstText = (ItemText) getItemTextArraySorted().get(0);
+		Iterator iter = firstText.getEmiQuestionAnswerCombinations().iterator();
+		while (iter.hasNext()) {
+			Answer answer = (Answer) iter.next();
+			count += answer.getNumberOfCorrectEmiOptions();
+		}
+		return count;
+	}
+*/
 
 }

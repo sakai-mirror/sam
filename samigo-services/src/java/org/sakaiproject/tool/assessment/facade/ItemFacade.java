@@ -1087,21 +1087,30 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 
   //gopalrc - added 30 Nov 2009
   public String getLeadInText() {
-	if (leadInText == null) {
-		setThemeAndLeadInText();
-	}
+    try {
+        this.data = (ItemDataIfc) item.getData();
+    }
+    catch (AssessmentException ex) {
+        throw new DataFacadeException(ex.getMessage());
+    }
+    this.leadInText = data.getLeadInText();
 	return leadInText;
   }
 
 
   //gopalrc - added 30 Nov 2009
   public String getThemeText() {
-	if (themeText == null) {
-		setThemeAndLeadInText();
-	}
+    try {
+        this.data = (ItemDataIfc) item.getData();
+    }
+    catch (AssessmentException ex) {
+        throw new DataFacadeException(ex.getMessage());
+    }
+	this.themeText = data.getThemeText();
 	return themeText;
   }
 
+/*  
   //gopalrc - added 30 Nov 2009
   public void setThemeAndLeadInText() {
 	String text = getText();  
@@ -1112,15 +1121,32 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 		leadInText = itemTextElements[1];
 	}
   }
-  
+*/  
   
   //gopalrc - for EMI - the first textItem contains the components 
   // from which the actual answers are constructed 
   public ArrayList getFirstSortedTextItemArray() {
-	  ArrayList firstTextItem = new ArrayList();
-	  firstTextItem.add(this.getItemTextArraySorted().get(0));
-	  return firstTextItem;
+    try {
+        this.data = (ItemDataIfc) item.getData();
+    }
+    catch (AssessmentException ex) {
+        throw new DataFacadeException(ex.getMessage());
+    }
+	  
+	return data.getFirstSortedTextItemArray();
   }
+  
+  
+  //gopalrc - total number of correct EMI answers
+	public int getNumberOfCorrectEmiOptions() {
+	   try {
+	        this.data = (ItemDataIfc) item.getData();
+	    }
+	    catch (AssessmentException ex) {
+	        throw new DataFacadeException(ex.getMessage());
+	   }
+ 	   return data.getNumberOfCorrectEmiOptions();
+	}  
   
 
     

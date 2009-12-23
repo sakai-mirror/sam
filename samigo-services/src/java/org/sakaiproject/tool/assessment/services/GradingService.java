@@ -1050,7 +1050,7 @@ public class GradingService
     	// return (float) 0;
     	// Para que descuente (For discount)
     	//gopalrc - added EMI
-    	if ((TypeIfc.EXTENDED_MATCHING_ITEM).equals(itemType)||(TypeIfc.MULTIPLE_CHOICE).equals(itemType)||(TypeIfc.TRUE_FALSE).equals(itemType)){
+    	if ((TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType)||(TypeIfc.MULTIPLE_CHOICE).equals(itemType)||(TypeIfc.TRUE_FALSE).equals(itemType)){
     		return (Math.abs(answer.getDiscount().floatValue()) * ((float) -1));
     	}else{
     		return (float) 0;
