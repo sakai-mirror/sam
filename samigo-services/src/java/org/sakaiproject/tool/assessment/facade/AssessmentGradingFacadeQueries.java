@@ -1899,6 +1899,12 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    			   maintext = fileUploadMessage;
 	    			   //isAudioFileUpload = true;
 	    		   }
+			   else if (typeId.equals(TypeIfc.ESSAY_QUESTION) ) {
+			       log.debug("ESSAY_QUESTION");
+			       if (grade.getAnswerText() != null) {
+				   maintext = grade.getAnswerText();
+			       }
+			   }
 	    		   else {
 	    			   log.debug("other type");
 	    			   String thistext = "";
@@ -1911,10 +1917,6 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		    			   if (temptext != null)
 		    				   thistext = temptext;
 		    		   }
-
-		    		   String temp2text = grade.getAnswerText();
-		    		   if (temp2text != null)
-		    			   thistext = temp2text;
 
 		    		   if (count == 0)
 		    			   maintext = thistext;
