@@ -523,12 +523,6 @@ public class ItemModifyListener implements ActionListener
 			  bean.setEmiAnswerOptions(answerOptionsList);
 			  bean.setEmiQuestionAnswerCombinations(qaComboList);
 			  
-			  System.out.println("***************ItemModifyListener********************************");
-			  System.out.println("bean.getEmiAnswerOptions().size() = " + bean.getEmiAnswerOptions().size());
-			  System.out.println("bean.getEmiQuestionAnswerCombinations().size() = " + bean.getEmiQuestionAnswerCombinations().size());
-			  System.out.println("***************ItemModifyListener********************************");
-
-
 		  } // EMI
 		  
 		  

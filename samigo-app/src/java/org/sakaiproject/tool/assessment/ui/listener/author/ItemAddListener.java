@@ -1295,11 +1295,6 @@ public class ItemAddListener
 
   private Set preparePublishedText(ItemFacade item, ItemBean bean, ItemService delegate) {
 
-		System.out.println("*********************************************");
-		System.out.println("*****ItemAddListener.preparePublishedText()**");
-		System.out.println("*********************************************");
-
-	  
 	  if (item.getTypeId().equals(TypeFacade.TRUE_FALSE)) {
 		  preparePublishedTextForTF(item, bean);
 	  }
@@ -1772,7 +1767,7 @@ public class ItemAddListener
 		//
 		// 3. Prepare and save actual answers from answer components 
 		// (emiAnswerOptions and emiQuestionAnswerCombinations)
-		// ///////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////
 		int numberOfCorrectAnswers = 0;
 		float correctAnswerScore = 0;
 		
@@ -1846,8 +1841,30 @@ public class ItemAddListener
 				actualAnswer.setScore(Float.valueOf(answerScore));
 			}
 		}
-					
+
+		
+      Set oldTextSet = item.getItemTextSet();
 	  item.setItemTextSet(textSet);
+	  
+
+		// ///////////////////////////////////////////////////////////
+		//
+        // Remove Old Items and Answers
+		//
+		/////////////////////////////////////////////////////////////
+	    /*
+		Iterator textIter = oldTextSet.iterator();
+		HashMap itemTextMap = new HashMap();
+		while (textIter.hasNext()) {
+			ItemTextIfc itemText = (ItemTextIfc) textIter.next();
+			Set oldAnswerSet = itemText.getAnswerSet();
+			if (oldAnswerSet != null) {
+				delegate.deleteSet(oldAnswerSet);
+			}
+		}
+		*/
+		delegate.deleteSet(oldTextSet);
+	  
 	}
   
   

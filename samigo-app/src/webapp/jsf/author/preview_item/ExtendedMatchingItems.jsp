@@ -1,5 +1,5 @@
-<%-- $Id: MultipleChoiceMultipleCorrect.jsp 59352 2009-03-31 16:59:41Z arwhyte@umich.edu $
-include file for delivering multiple choice questions
+<%-- $Id: ExtendedMatchingItem.jsp 2009-12-10 gopalrc $
+include file for delivering extended matching items
 should be included in file importing DeliveryMessages
 --%>
 <!--
@@ -24,6 +24,11 @@ should be included in file importing DeliveryMessages
 --%>
 -->
   ***** GOPAL TEST/TEMP - /jsf/author/preview_item/ExtendedMatchingItem.jsp *****
+  ***** Included In /jsf/author/previewAssessment.jsp ************
+  <h:outputText escape="false" value="#{question.class.name}" />
+  
+  
+  
 
 
   <h:outputText escape="false" value="#{question.itemData.themeText}" />

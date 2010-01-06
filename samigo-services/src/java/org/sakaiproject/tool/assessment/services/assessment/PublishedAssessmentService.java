@@ -480,8 +480,11 @@ public class PublishedAssessmentService extends AssessmentService{
             AnswerIfc answer = (AnswerIfc)answerArray.get(m);
             // SAK-14820: Sync with the scores from item. 
             if (answer != null) {
-            	answer.setScore(item.getScore());
-            	answer.setDiscount(item.getDiscount());
+            	//gopalrc - added following condition as this doesn't make sense for EMI questions
+            	if (!item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
+                	answer.setScore(item.getScore());
+                	answer.setDiscount(item.getDiscount());
+            	}
             	map.put(answer.getId(), answer);
             }
             

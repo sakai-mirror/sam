@@ -1006,6 +1006,10 @@ public class GradingService
 
       case 13: // EMI
           autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
+          //overridescore
+          if (itemGrading.getOverrideScore() != null)
+            autoScore += itemGrading.getOverrideScore().floatValue();
+          totalItems.put(itemId,  Float.valueOf(autoScore));
           break;
           
           
@@ -1056,6 +1060,13 @@ public class GradingService
     		return (float) 0;
     	}
     }
+    
+System.out.println("*******************GradingService.getAnswerScore()********");
+System.out.println("************answer.getScore().floatValue() = " + answer.getScore().floatValue());
+System.out.println("**********************************************************");
+
+    
+    
     return answer.getScore().floatValue();
   }
 
