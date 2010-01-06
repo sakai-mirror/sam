@@ -28,6 +28,10 @@
 **********************************************************************************/
 --%>
 -->
+
+**************** GOPALRC - TEST/TEMP - reviewAssessment.jsp  (includes the deliverXXXX.jsp files for different question types) ***************
+
+
   <f:view>
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head><%= request.getAttribute("html.head") %>

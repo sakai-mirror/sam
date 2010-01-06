@@ -340,7 +340,15 @@ public class HistogramListener
 					  questionScores.setQuestionNumber( item.getSequence().toString());
 					  questionScores.setTitle(title + item.getSequence().toString()
 							  + " (" + type + ")");
-					  questionScores.setQuestionText(item.getText());
+					  
+					  //gopalrc - Jan 2010 - added condition
+					  if (item.getTypeId().intValue() == 13) { // emi question
+						  questionScores.setQuestionText(item.getLeadInText());
+					  }
+					  else {
+						  questionScores.setQuestionText(item.getText());
+					  }
+					  
 					  questionScores.setQuestionType(item.getTypeId().toString());
 					  //totalpossible = totalpossible + item.getScore().doubleValue();
 					  //ArrayList responses = null;
@@ -580,6 +588,7 @@ public class HistogramListener
         qbean.getQuestionType().equals("4") || // tf
         qbean.getQuestionType().equals("9") || // matching
         qbean.getQuestionType().equals("8") || // Fill in the blank
+        qbean.getQuestionType().equals("13") || // Extended Matching Items
     	qbean.getQuestionType().equals("11"))  //  Numeric Response
       doAnswerStatistics(pub, qbean, itemScores);
     if (qbean.getQuestionType().equals("5") || // essay
@@ -611,7 +620,16 @@ public class HistogramListener
     ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(((ItemGradingData) scores.toArray()[0]).getPublishedItemId());
     ArrayList text = item.getItemTextArraySorted();
     ArrayList answers = null;
-    if (!qbean.getQuestionType().equals("9")) // matching
+    
+    //gopalrc - added Jan 2010
+    if (qbean.getQuestionType().equals("13")) { //EMI
+    	answers = new ArrayList();
+    	for (int i=1; i<text.size(); i++) { // all except for the first (seq=0) itemText
+    	      ItemTextIfc iText = (ItemTextIfc) publishedItemTextHash.get(((ItemTextIfc) text.toArray()[i]).getId());
+    	      answers.addAll(iText.getAnswerArraySorted());
+    	}
+    }
+    else if (!qbean.getQuestionType().equals("9")) // matching
     {
       ItemTextIfc firstText = (ItemTextIfc) publishedItemTextHash.get(((ItemTextIfc) text.toArray()[0]).getId());
       answers = firstText.getAnswerArraySorted();
@@ -633,8 +651,239 @@ public class HistogramListener
     //    getFINMCMCScores(publishedItemHash, publishedAnswerHash, scores, qbean, answers);
     else if (qbean.getQuestionType().equals("9"))
       getMatchingScores(publishedItemTextHash, publishedAnswerHash, scores, qbean, text);
+    
+    //gopalrc - added Jan 2010
+    else if (qbean.getQuestionType().equals("13"))
+        getEMIScores(publishedItemHash, publishedAnswerHash, scores, qbean, answers);
   }
 
+  
+  
+
+  //gopalrc - added Jan 2010
+  private void getEMIScores(HashMap publishedItemHash,
+			HashMap publishedAnswerHash, ArrayList scores,
+			HistogramQuestionScoresBean qbean, ArrayList answers) {
+		ResourceLoader rb = new ResourceLoader(
+				"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
+		HashMap texts = new HashMap();
+		Iterator iter = answers.iterator();
+		HashMap results = new HashMap();
+		HashMap numStudentRespondedMap = new HashMap();
+		HashMap sequenceMap = new HashMap();
+		//int sequence = 1;
+		while (iter.hasNext()) {
+			AnswerIfc answer = (AnswerIfc) iter.next();
+			texts.put(answer.getId(), answer);
+			results.put(answer.getId(), Integer.valueOf(0));
+			//sequenceMap.put(answer.getSequence(), answer.getId());
+			sequenceMap.put(answer.getItemText().getSequence() + "-" + answer.getSequence(), answer.getId());
+		}
+		iter = scores.iterator();
+		while (iter.hasNext()) {
+			ItemGradingData data = (ItemGradingData) iter.next();
+			AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data
+					.getPublishedAnswerId());
+			if (answer != null) {
+				// log.info("Rachel: looking for " + answer.getId());
+				// found a response
+				Integer num = null;
+				// num is a counter
+				try {
+					// we found a response, now get existing count from the
+					// hashmap
+					num = (Integer) results.get(answer.getId());
+
+				} catch (Exception e) {
+					log.warn("No results for " + answer.getId());
+				}
+				if (num == null)
+					num = Integer.valueOf(0);
+
+				ArrayList studentResponseList = (ArrayList) numStudentRespondedMap
+						.get(data.getAssessmentGradingId());
+				if (studentResponseList == null) {
+					studentResponseList = new ArrayList();
+				}
+				studentResponseList.add(data);
+				numStudentRespondedMap.put(data.getAssessmentGradingId(),
+						studentResponseList);
+				// we found a response, and got the existing num , now update
+				// one
+//				if ((qbean.getQuestionType().equals("8"))
+//						|| (qbean.getQuestionType().equals("11"))) {
+					// for fib we only count the number of correct responses
+					Float autoscore = data.getAutoScore();
+					if (!(Float.valueOf(0)).equals(autoscore)) {
+						results.put(answer.getId(), Integer.valueOf(
+								num.intValue() + 1));
+					}
+//				} else {
+//					// for mc, we count the number of all responses
+//					results
+//							.put(answer.getId(),
+//									Integer.valueOf(num.intValue() + 1));
+//				}
+			}
+		}
+		
+		
+		
+		HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
+		int[] numarray = new int[results.keySet().size()];
+		ArrayList sequenceList = new ArrayList();
+		iter = answers.iterator();
+		while (iter.hasNext()) {
+			AnswerIfc answer = (AnswerIfc) iter.next();
+			sequenceList.add(answer.getItemText().getSequence() + "-" + answer.getSequence());
+		}
+
+		Collections.sort(sequenceList);
+		// iter = results.keySet().iterator();
+		iter = sequenceList.iterator();
+		int i = 0;
+		int responses = 0;
+		int correctresponses = 0;
+		while (iter.hasNext()) {
+			String sequenceId = (String) iter.next();
+			Long answerId = (Long) sequenceMap.get(sequenceId);
+			AnswerIfc answer = (AnswerIfc) texts.get(answerId);
+			int num = ((Integer) results.get(answerId)).intValue();
+			numarray[i] = num;
+			bars[i] = new HistogramBarBean();
+			if (answer != null)
+				bars[i].setLabel(answer.getItemText().getSequence() + ". " + answer.getLabel() + "  " + answer.getText());
+
+			// this doens't not apply to fib , do not show checkmarks for FIB
+			if (!(qbean.getQuestionType().equals("8"))
+					&& !(qbean.getQuestionType().equals("11"))
+					&& answer != null) {
+				bars[i].setIsCorrect(answer.getIsCorrect());
+			}
+
+			if ((num > 1) || (num == 0)) {
+				bars[i].setNumStudentsText(num + " "
+						+ rb.getString("responses"));
+			} else {
+				bars[i]
+						.setNumStudentsText(num + " "
+								+ rb.getString("response"));
+
+			}
+			bars[i].setNumStudents(num);
+			i++;
+		}
+
+		responses = numStudentRespondedMap.size();
+		
+		for (Iterator it = numStudentRespondedMap.entrySet().iterator(); it.hasNext();) {
+			Map.Entry entry = (Map.Entry) it.next();
+			ArrayList resultsForOneStudent = (ArrayList) entry.getValue();
+
+			boolean hasIncorrect = false;
+			Iterator listiter = resultsForOneStudent.iterator();
+
+			// iterate through the results for one student
+			// for this question (qbean)
+			while (listiter.hasNext()) {
+				ItemGradingData item = (ItemGradingData) listiter.next();
+				
+				if ((qbean.getQuestionType().equals("8"))
+						|| (qbean.getQuestionType().equals("11"))) {
+					// TODO: we are checking to see if the score is > 0, this
+					// will not work if the question is worth 0 points.
+					// will need to verify each answer individually.
+					Float autoscore = item.getAutoScore();
+					if ((Float.valueOf(0)).equals(autoscore)) {
+						hasIncorrect = true;
+						break;
+					}
+				} else if (qbean.getQuestionType().equals("2")) { // mcmc
+
+					// only answered choices are created in the
+					// ItemGradingData_T, so we need to check
+					// if # of checkboxes the student checked is == the number
+					// of correct answers
+					// otherwise if a student only checked one of the multiple
+					// correct answers,
+					// it would count as a correct response
+
+					try {
+						ArrayList itemTextArray = ((ItemDataIfc) publishedItemHash
+								.get(item.getPublishedItemId()))
+								.getItemTextArraySorted();
+						ArrayList answerArray = ((ItemTextIfc) itemTextArray
+								.get(0)).getAnswerArraySorted();
+
+						int corranswers = 0;
+						Iterator answeriter = answerArray.iterator();
+						while (answeriter.hasNext()) {
+							AnswerIfc answerchoice = (AnswerIfc) answeriter
+									.next();
+							if (answerchoice.getIsCorrect().booleanValue()) {
+								corranswers++;
+							}
+						}
+						if (resultsForOneStudent.size() != corranswers) {
+							hasIncorrect = true;
+							break;
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new RuntimeException(
+								"error calculating mcmc question.");
+					}
+
+					// now check each answer in MCMC
+
+					AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(item
+							.getPublishedAnswerId());
+					if (answer != null
+							&& (answer.getIsCorrect() == null || (!answer
+									.getIsCorrect().booleanValue()))) {
+						hasIncorrect = true;
+						break;
+					}
+				}
+			}
+
+			
+			if (!hasIncorrect) {
+				correctresponses = correctresponses + 1;
+				
+				// gopalrc - Nov 2007
+				qbean.addStudentWithAllCorrect(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
+			}
+			// gopalrc - Dec 2007
+			qbean.addStudentResponded(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
+		}
+		// NEW
+		int[] heights = calColumnHeight(numarray, responses);
+		// int[] heights = calColumnHeight(numarray);
+		for (i = 0; i < bars.length; i++)
+		{
+			try
+			{
+				bars[i].setColumnHeight(Integer.toString(heights[i]));
+			}
+			catch(NullPointerException npe)
+			{
+				log.warn("null column height " + npe);
+			}
+		}
+
+		qbean.setHistogramBars(bars);
+		qbean.setNumResponses(responses);
+		if (responses > 0)
+			qbean
+					.setPercentCorrect(Integer
+							.toString((int) (((float) correctresponses / (float) responses) * 100)));
+	}
+  
+  
+  
+  
+  
 
   private void getFIBMCMCScores(HashMap publishedItemHash,
 			HashMap publishedAnswerHash, ArrayList scores,
@@ -1891,6 +2140,9 @@ public class HistogramListener
 	  }
 	  if (typeId == 11) {
 		  return rb.getString("q_fin");
+	  }
+	  if (typeId == 13) {
+		  return rb.getString("q_emi");
 	  }
 	  return "";
   }

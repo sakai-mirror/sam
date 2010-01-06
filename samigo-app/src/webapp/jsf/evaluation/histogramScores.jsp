@@ -36,6 +36,9 @@ $Id$
 --%>
 -->
 <!-- content... -->
+
+***************** GOPALRC - TEST/TEMP - histogramScores.jsp *****************
+
  <div class="portletBody">
 <h:form id="histogram">
 
@@ -207,6 +210,12 @@ $Id$
 
     <h:column rendered="#{histogramScores.randomType =='false'}">
       <h:panelGroup>
+
+<!-- GOPALRC - TEST/TEMP  -->
+ <h:outputText value="#{item.class.name}" escape="false" />
+      
+      
+      
         <f:verbatim><h4></f:verbatim>
           <h:outputText value="#{item.title}" escape="false" />
         <f:verbatim></h4></f:verbatim>
@@ -237,7 +246,7 @@ $Id$
           </h:column>
         </h:dataTable>
 
-        <!-- 1-2=mcmc 3=mcsc 4=tf 5=essay 6=file 7=audio 8=FIB 9=matching -->
+        <!-- 1-2=mcmc 3=mcsc 4=tf 5=essay 6=file 7=audio 8=FIB 9=matching 13=emi -->
 
         <h:panelGrid columns="2" rendered="#{item.questionType == '5' or item.questionType == '6' or item.questionType == '7'}">
 
@@ -252,11 +261,11 @@ $Id$
           <h:outputLabel value="#{evaluationMessages.mode}" />
           <h:outputText id="mode" value="#{item.mode}" />
         </h:panelGrid>
-       <h:panelGrid columns="2" rendered="#{item.questionType == '3'}">
+        <h:panelGrid columns="2" rendered="#{item.questionType == '3'}">
           <h:outputLabel for="responses1" value="#{evaluationMessages.responses}" />
           <h:outputText id="responses1" value="#{item.numResponses}" />
-        </h:panelGrid>
-         <h:panelGrid columns="2" rendered="#{item.questionType == '1' or  item.questionType == '2' or  item.questionType == '4' or  item.questionType == '8' or item.questionType == '9' or item.questionType == '11' or item.questionType == '12'}" columnClasses="alignLeft,aligntRight">
+         </h:panelGrid>
+         <h:panelGrid columns="2" rendered="#{item.questionType == '1' or  item.questionType == '2' or  item.questionType == '4' or  item.questionType == '8' or item.questionType == '9' or item.questionType == '11' or item.questionType == '12'  or item.questionType == '13'}" columnClasses="alignLeft,aligntRight">
              <h:outputLabel for="responses2" value="#{evaluationMessages.responses}" />
           <h:outputText id="responses2" value="#{item.numResponses}" />
           <h:outputLabel for="percentCorrect" value="#{evaluationMessages.percentCorrect}" />

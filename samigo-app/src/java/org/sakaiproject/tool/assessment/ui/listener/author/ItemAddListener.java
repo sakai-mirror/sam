@@ -1863,7 +1863,10 @@ public class ItemAddListener
 			}
 		}
 		*/
-		delegate.deleteSet(oldTextSet);
+
+	  // gopalrc - TODO - Check that the following PublishedItemText deletions 
+	  // are cascaded to the associated answers
+	  delegate.deleteSet(oldTextSet);
 	  
 	}
   

@@ -142,6 +142,9 @@ String.prototype.endsWith = function(txt)
 </script>
 
 
+**************** GOPALRC - TEST/TEMP - deliverAssessment.jsp  (includes the deliverXXXX.jsp files for different question types) ***************
+
+
 <h:inputHidden id="partIndex" value="#{delivery.partIndex}"/>
 <h:inputHidden id="questionIndex" value="#{delivery.questionIndex}"/>
 <h:inputHidden id="formatByPart" value="#{delivery.settings.formatByPart}"/>

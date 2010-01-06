@@ -83,6 +83,10 @@ document.location='../evaluation/gradeStudentResult';
 
 </script>
 
+
+**************** GOPALRC - TEST/TEMP - gradeStudentResults.jsp  (includes the displayXXXX.jsp files for different question types) ***************
+
+
  <div class="portletBody">
 <h:form id="editStudentResults">
   <h:inputHidden id="publishedIdd" value="#{studentScores.publishedId}" />
