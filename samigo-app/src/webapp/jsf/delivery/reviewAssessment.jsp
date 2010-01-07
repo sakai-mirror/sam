@@ -29,8 +29,6 @@
 --%>
 -->
 
-**************** GOPALRC - TEST/TEMP - reviewAssessment.jsp  (includes the deliverXXXX.jsp files for different question types) ***************
-
 
   <f:view>
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -38,6 +36,10 @@
       <title><h:outputText value="#{deliveryMessages.item_display_author}"/></title>
       </head>
       <body onload="<%= request.getAttribute("html.body.onload") %>">
+
+
+******** GOPAL TEST/TEMP detailedStatistics.jsp *****************
+
 
 <div class="portletBody">
 <!-- content... -->

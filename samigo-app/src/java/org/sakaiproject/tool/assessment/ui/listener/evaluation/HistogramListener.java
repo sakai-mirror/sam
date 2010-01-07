@@ -661,6 +661,7 @@ public class HistogramListener
   
 
   //gopalrc - added Jan 2010
+  // XXX - start
   private void getEMIScores(HashMap publishedItemHash,
 			HashMap publishedAnswerHash, ArrayList scores,
 			HistogramQuestionScoresBean qbean, ArrayList answers) {
@@ -708,22 +709,11 @@ public class HistogramListener
 				studentResponseList.add(data);
 				numStudentRespondedMap.put(data.getAssessmentGradingId(),
 						studentResponseList);
-				// we found a response, and got the existing num , now update
-				// one
-//				if ((qbean.getQuestionType().equals("8"))
-//						|| (qbean.getQuestionType().equals("11"))) {
-					// for fib we only count the number of correct responses
-					Float autoscore = data.getAutoScore();
-					if (!(Float.valueOf(0)).equals(autoscore)) {
-						results.put(answer.getId(), Integer.valueOf(
-								num.intValue() + 1));
-					}
-//				} else {
-//					// for mc, we count the number of all responses
-//					results
-//							.put(answer.getId(),
-//									Integer.valueOf(num.intValue() + 1));
-//				}
+				Float autoscore = data.getAutoScore();
+				if (!(Float.valueOf(0)).equals(autoscore)) {
+					results.put(answer.getId(), Integer.valueOf(
+							num.intValue() + 1));
+				}
 			}
 		}
 		
@@ -754,10 +744,7 @@ public class HistogramListener
 			if (answer != null)
 				bars[i].setLabel(answer.getItemText().getSequence() + ". " + answer.getLabel() + "  " + answer.getText());
 
-			// this doens't not apply to fib , do not show checkmarks for FIB
-			if (!(qbean.getQuestionType().equals("8"))
-					&& !(qbean.getQuestionType().equals("11"))
-					&& answer != null) {
+			if (answer != null) {
 				bars[i].setIsCorrect(answer.getIsCorrect());
 			}
 
@@ -788,63 +775,46 @@ public class HistogramListener
 			while (listiter.hasNext()) {
 				ItemGradingData item = (ItemGradingData) listiter.next();
 				
-				if ((qbean.getQuestionType().equals("8"))
-						|| (qbean.getQuestionType().equals("11"))) {
-					// TODO: we are checking to see if the score is > 0, this
-					// will not work if the question is worth 0 points.
-					// will need to verify each answer individually.
-					Float autoscore = item.getAutoScore();
-					if ((Float.valueOf(0)).equals(autoscore)) {
+				// only answered choices are created in the
+				// ItemGradingData_T, so we need to check
+				// if # of checkboxes the student checked is == the number
+				// of correct answers
+				// otherwise if a student only checked one of the multiple
+				// correct answers,
+				// it would count as a correct response
+
+				try {
+					int corranswers = 0;
+					Iterator answeriter = answers.iterator();
+					while (answeriter.hasNext()) {
+						AnswerIfc answerchoice = (AnswerIfc) answeriter
+								.next();
+						if (answerchoice.getIsCorrect().booleanValue()) {
+							corranswers++;
+						}
+					}
+					if (resultsForOneStudent.size() != corranswers) {
 						hasIncorrect = true;
 						break;
 					}
-				} else if (qbean.getQuestionType().equals("2")) { // mcmc
-
-					// only answered choices are created in the
-					// ItemGradingData_T, so we need to check
-					// if # of checkboxes the student checked is == the number
-					// of correct answers
-					// otherwise if a student only checked one of the multiple
-					// correct answers,
-					// it would count as a correct response
-
-					try {
-						ArrayList itemTextArray = ((ItemDataIfc) publishedItemHash
-								.get(item.getPublishedItemId()))
-								.getItemTextArraySorted();
-						ArrayList answerArray = ((ItemTextIfc) itemTextArray
-								.get(0)).getAnswerArraySorted();
-
-						int corranswers = 0;
-						Iterator answeriter = answerArray.iterator();
-						while (answeriter.hasNext()) {
-							AnswerIfc answerchoice = (AnswerIfc) answeriter
-									.next();
-							if (answerchoice.getIsCorrect().booleanValue()) {
-								corranswers++;
-							}
-						}
-						if (resultsForOneStudent.size() != corranswers) {
-							hasIncorrect = true;
-							break;
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-						throw new RuntimeException(
-								"error calculating mcmc question.");
-					}
-
-					// now check each answer in MCMC
-
-					AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(item
-							.getPublishedAnswerId());
-					if (answer != null
-							&& (answer.getIsCorrect() == null || (!answer
-									.getIsCorrect().booleanValue()))) {
-						hasIncorrect = true;
-						break;
-					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new RuntimeException(
+							"error calculating mcmc question.");
 				}
+
+				// now check each answer
+
+				AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(item
+						.getPublishedAnswerId());
+				if (answer != null
+						&& (answer.getIsCorrect() == null || (!answer
+								.getIsCorrect().booleanValue()))) {
+					hasIncorrect = true;
+					break;
+				}
+				
+				
 			}
 
 			
@@ -875,11 +845,8 @@ public class HistogramListener
 		qbean.setHistogramBars(bars);
 		qbean.setNumResponses(responses);
 		if (responses > 0)
-			qbean
-					.setPercentCorrect(Integer
-							.toString((int) (((float) correctresponses / (float) responses) * 100)));
+			qbean.setPercentCorrect(Integer.toString((int) (((float) correctresponses / (float) responses) * 100)));
 	}
-  
   
   
   

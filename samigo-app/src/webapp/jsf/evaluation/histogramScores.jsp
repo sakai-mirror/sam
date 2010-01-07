@@ -241,6 +241,8 @@ $Id$
                <h:panelGroup>
                <h:graphicImage width="12" height="12" url="/images/delivery/spacer.gif" />
               <h:outputText value="#{bar.label}" escape="false" />
+              <f:verbatim><br/></f:verbatim> 
+              
 </h:panelGroup>
             </h:panelGrid>
           </h:column>

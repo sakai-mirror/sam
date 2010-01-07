@@ -19,6 +19,10 @@
 **********************************************************************************/
 --%>
 -->
+
+******** GOPAL TEST/TEMP questionTreeTable.jsp *****************
+
+
 <STYLE type="text/css">
 <!-- 
 table.checkall td {padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bottom:0px}
@@ -67,7 +71,10 @@ table.checkall td {padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bott
       </f:facet>
 
 <h:commandLink title="#{questionPoolMessages.t_editQuestion}" id="modify" action="#{itemauthor.doit}">
-    <h:outputText escape="false" value="#{question.textHtmlStripped}" />
+
+    <h:outputText escape="false" value="#{question.themeText}" rendered="#{question.typeId == 13}"/>
+
+    <h:outputText escape="false" value="#{question.textHtmlStripped}" rendered="#{question.typeId ne 13}"/>
     <f:actionListener
       type="org.sakaiproject.tool.assessment.ui.listener.author.ItemModifyListener" />
     <f:param name="itemid" value="#{question.itemId}"/>
@@ -157,6 +164,7 @@ onkeypress=
      <h:outputText rendered="#{question.typeId== 9}" value="#{authorMessages.matching}"/>
      <h:outputText rendered="#{question.typeId== 11}" value="#{authorMessages.fill_in_numeric}"/>
      <h:outputText rendered="#{question.typeId== 12}" value="#{authorMessages.multiple_choice_type}"/>
+     <h:outputText rendered="#{question.typeId== 13}" value="#{authorMessages.extended_matching_items}"/>
 
     </h:column>
 

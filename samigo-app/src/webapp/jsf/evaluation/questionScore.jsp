@@ -205,9 +205,13 @@ document.location='../evaluation/questionScore';
      <h:panelGroup rendered="#{questionScores.typeId == '1'}">
     <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_mult_sing}"/>
       </h:panelGroup>
-     <h:panelGroup rendered="#{questionScores.typeId == '12'}">
-    <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_mult_mult_ss}"/>
-      </h:panelGroup>
+    <h:panelGroup rendered="#{questionScores.typeId == '12'}">
+      <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_mult_mult_ss}"/>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{questionScores.typeId == '13'}">
+      <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_emi}"/>
+    </h:panelGroup>
+    
  </h:column>
 
   <!-- following columns are for formatting -->
@@ -271,6 +275,12 @@ document.location='../evaluation/questionScore';
     <%@ include file="/jsf/evaluation/item/displayTrueFalse.jsp" %>
     </f:subview>
   </h:panelGroup>
+  <h:panelGroup rendered="#{questionScores.typeId == '13'}">
+    <f:subview id="displayTrueFalse">
+    <%@ include file="/jsf/evaluation/item/displayExtendedMatchingItems.jsp" %>
+    </f:subview>
+  </h:panelGroup>
+
   </h:column>
   </h:dataTable>
 

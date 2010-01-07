@@ -39,6 +39,8 @@
 </script>
       </head>
 <body onload="collapseAllRows();flagRows();;<%= request.getAttribute("html.body.onload") %>;disabledButton()">
+ 
+ 
  <div class="portletBody">
 <!-- content... -->
 <h:form id="questionpool">

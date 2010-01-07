@@ -75,16 +75,16 @@
  </h:commandButton>
 </p>
 
-  <!-- NOTE:  Had to call this.form.onsubmit(); when toggling between single  -->
+  <!-- NOTE:  Had to call this.form.onsubmit(); -->
   <!-- and multiple choice, or adding additional answer choices.  -->
   <!-- to invoke the onsubmit() function for htmlarea to save the htmlarea contents to bean -->
   <!-- otherwise, when toggleing or adding more choices, all contents in wywisyg editor are lost -->
 
   <!-- QUESTION PROPERTIES -->
-  <!-- this is for creating multiple choice questions -->
+  <!-- this is for creating emi questions -->
+  
   <!-- 1 POINTS -->
 <div class="tier2">
-
      <div class="shorttext"> <h:outputLabel value="#{authorMessages.answer_point_value}" />
     <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}"required="true" size="6" >
 <f:validateDoubleRange /></h:inputText>
@@ -92,25 +92,6 @@
 <h:message for="answerptr" styleClass="validate"/>
 </div>
 <br/>
-
-<!-- DISCOUNT -->
-<div class="longtext">
-<h:panelGrid columns="2" border="0" rendered="#{itemauthor.currentItem.itemType == 13}">
-  <h:panelGrid border="0">
-    <h:outputLabel value="#{authorMessages.negative_point_value}"/>
-    <h:outputText value="&nbsp;" escape="false"/>
-  </h:panelGrid>
-  <h:panelGrid border="0">
-    <h:panelGroup>
-    <h:inputText id="answerdsc" value="#{itemauthor.currentItem.itemDiscount}" required="true" >
-  	  <f:validateDoubleRange />
-    </h:inputText>
-    <h:message for="answerdsc" styleClass="validate"/>
-    </h:panelGroup>
-    <h:outputText value="#{authorMessages.note_negative_point_value_question}" />
-  </h:panelGrid>
-</h:panelGrid>
-</div>
 
 
   <!-- 2 QUESTION THEME TEXT -->
@@ -152,21 +133,14 @@
 
   </h:panelGroup>
   
-        <!-- WYSIWYG -->
+  <!-- WYSIWYG -->
   <h:panelGrid>
     <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes" >
       <f:validateLength maximum="4000"/>
     </samigo:wysiwyg>
   </h:panelGrid>
-			
-         <h:outputText value="#{authorMessages.feedback_optional}" rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}" />
-
-        <!-- WYSIWYG -->
-  <h:panelGrid rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}">
-         <samigo:wysiwyg rows="140" value="#{answer.feedback}" hasToggle="yes" >
-           <f:validateLength maximum="4000"/>
-         </samigo:wysiwyg>
-  </h:panelGrid>
+  
+  
 </h:panelGrid>
         
 </h:column>
@@ -244,14 +218,7 @@
     </samigo:wysiwyg>
   </h:panelGrid>
 			
-         <h:outputText value="#{authorMessages.feedback_optional}" rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}" />
-
-        <!-- WYSIWYG -->
-  <h:panelGrid rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}">
-         <samigo:wysiwyg rows="140" value="#{answer.feedback}" hasToggle="yes" >
-           <f:validateLength maximum="4000"/>
-         </samigo:wysiwyg>
-  </h:panelGrid>
+  
 </h:panelGrid>
         
 </h:column>
@@ -316,36 +283,9 @@
      <f:selectItem itemValue="" itemLabel="#{authorMessages.select_a_pool_name}" />
      <f:selectItems value="#{itemauthor.poolSelectList}" />
   </h:selectOneMenu>
-
 </h:panelGrid>
 
 
- <!-- 8 FEEDBACK -->
-<h:panelGroup rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '2') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '2'))}">
- <h:outputText value=" " escape="false"/>
- <f:verbatim> <div class="longtext"></f:verbatim>
-  <h:outputLabel value="#{authorMessages.correct_incorrect_an}" />
- <f:verbatim></div> </f:verbatim>
- <f:verbatim><div class="tier2"> </f:verbatim>
-  <h:outputText value="#{authorMessages.correct_answer_opti}" />
-<br/>
-  <!-- WYSIWYG --> 
-<h:panelGrid>
-   <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.corrFeedback}" hasToggle="yes" >
-     <f:validateLength maximum="4000"/>
-   </samigo:wysiwyg>
-</h:panelGrid>
- <f:verbatim><br/> </f:verbatim>
- <h:outputText value="#{authorMessages.incorrect_answer_op}" />
-
-  <!-- WYSIWYG -->
-   <h:panelGrid>
-   <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.incorrFeedback}"  hasToggle="yes" >
-     <f:validateLength maximum="4000"/>
-   </samigo:wysiwyg>
-</h:panelGrid>
- <f:verbatim></div> </f:verbatim>
-</h:panelGroup>
 
  <!-- METADATA -->
 <h:panelGroup rendered="#{itemauthor.showMetadata == 'true'}" styleClass="longtext">
