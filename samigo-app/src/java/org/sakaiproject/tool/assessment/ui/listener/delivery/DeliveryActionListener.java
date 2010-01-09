@@ -1189,20 +1189,6 @@ public class DeliveryActionListener
 
         Collections.shuffle(shuffled, 
         		new Random( (long) item.getText().hashCode() + agentString.hashCode()));
-        /*
-        if (item.getTypeId().equals(TypeIfc.MATCHING))
-        {
-          Collections.shuffle(shuffled,
-                              new Random( (long) item.getText().hashCode() +
-                getAgentString().hashCode()));
-        }
-        else
-        {
-          Collections.shuffle(shuffled,
-                              new Random( (long) item.getText().hashCode() +
-                                         getAgentString().hashCode()));
-        }
-        */
         key2 = shuffled.iterator();
       }
       else
@@ -1455,7 +1441,7 @@ public class DeliveryActionListener
       }
       Collections.shuffle(shuffled,
                           new Random( (long) item.getText().hashCode() +
-                          getAgentString().hashCode()));
+			  (getAgentString() + "_" + item.getItemId().toString()).hashCode()));
 
 /*
       Collections.shuffle
@@ -2123,7 +2109,7 @@ public class DeliveryActionListener
         int timeElapsed  = Math.round((float)((new Date()).getTime() - timedAG.getBeginDate().getTime())/1000.0f); //in sec
         // this is to cover the scenerio when user took an assessment, Save & Exit, Then returned at a
         // later time, we need to account for the time taht he used before
-        int timeTakenBefore = Math.round(timedAG.getTimeLimit() - timedAG.getTimeLeft()); // in sec
+        int timeTakenBefore = timedAG.getTimeLimit() - timedAG.getTimeLeft(); // in sec
         //log.debug("***time passed before reload next page="+timeElapsed+timeTakenBefore);
 	    ag.setTimeElapsed(Integer.valueOf(timeElapsed+timeTakenBefore));
 
