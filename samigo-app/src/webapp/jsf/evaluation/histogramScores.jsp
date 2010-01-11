@@ -37,7 +37,8 @@ $Id$
 -->
 <!-- content... -->
 
-***************** GOPALRC - TEST/TEMP - histogramScores.jsp *****************
+***************** GOPALRC - TEST/TEMP - histogramScores.jsp *****************<br/>
+    <h:outputText value="#{histogramScores.class.name}"/>
 
  <div class="portletBody">
 <h:form id="histogram">

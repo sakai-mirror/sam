@@ -276,7 +276,7 @@ document.location='../evaluation/questionScore';
     </f:subview>
   </h:panelGroup>
   <h:panelGroup rendered="#{questionScores.typeId == '13'}">
-    <f:subview id="displayTrueFalse">
+    <f:subview id="displayExtendedMatchingItems">
     <%@ include file="/jsf/evaluation/item/displayExtendedMatchingItems.jsp" %>
     </f:subview>
   </h:panelGroup>
