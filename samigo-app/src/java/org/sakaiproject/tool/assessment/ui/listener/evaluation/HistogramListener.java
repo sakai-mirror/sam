@@ -483,22 +483,24 @@ public class HistogramListener
 				  // gopalrc Jan 2010 - EMI XXXX
 				  else if (questionScores.getQuestionType().equals("13") // gopalrc Jan 2010 - EMI XXXX
 				  ) {
-					  for (int i=0; i<questionScores.) {
-						  detailedStatistics.add(questionScores);
-						  if (questionScores.getHistogramBars() != null) {
-							  maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
-						  }
-						  
-						  Object numberOfStudentsWithZeroAnswers = numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId());
-						  if (numberOfStudentsWithZeroAnswers == null) {
-							  questionScores.setNumberOfStudentsWithZeroAnswers(0);
-						  }
-						  else {
-							  questionScores.setNumberOfStudentsWithZeroAnswers( ((Integer) numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId())).intValue() );
+					  detailedStatistics.addAll(questionScores.getInfo());
+					  
+					  Iterator subInfoIter = questionScores.getInfo().iterator();
+					  while (subInfoIter.hasNext()) {
+						  HistogramQuestionScoresBean subQuestionScores = (HistogramQuestionScoresBean) subInfoIter.next();
+						  if (subQuestionScores.getHistogramBars() != null) {
+							  maxNumOfAnswers = subQuestionScores.getHistogramBars().length >maxNumOfAnswers ? subQuestionScores.getHistogramBars().length : maxNumOfAnswers;
 						  }
 					  }
+					  
+					  Object numberOfStudentsWithZeroAnswers = numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId());
+					  if (numberOfStudentsWithZeroAnswers == null) {
+						  questionScores.setNumberOfStudentsWithZeroAnswers(0);
+					  }
+					  else {
+						  questionScores.setNumberOfStudentsWithZeroAnswers( ((Integer) numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId())).intValue() );
+					  }
 				  }
-				  
 				  
 				  
 			  }
@@ -696,8 +698,8 @@ public class HistogramListener
 		HashMap sequenceMap = new HashMap();
 		
 		//gopalrc - sub Questions for EMI - Jan 2010
-		ArrayList subQuestionInfo = null; //List of sub-question HistogramQuestionScoresBeans - for EMI sub-questions
-		HistogramQuestionScoresBean subqbean = null;
+		ArrayList subQuestionAnswers = null;
+		HashMap subQuestionAnswerMap = new HashMap();
 		
 		//int sequence = 1;
 		while (iter.hasNext()) {
@@ -706,6 +708,19 @@ public class HistogramListener
 			results.put(answer.getId(), Integer.valueOf(0));
 			//sequenceMap.put(answer.getSequence(), answer.getId());
 			sequenceMap.put(answer.getItemText().getSequence() + "-" + answer.getSequence(), answer.getId());
+			
+		
+			Long subQuestionSequence = answer.getItemText().getSequence();
+			Object subSeqAns = subQuestionAnswerMap.get(subQuestionSequence);
+			if (subSeqAns == null) {
+				subQuestionAnswers = new ArrayList();
+				subQuestionAnswerMap.put(subQuestionSequence, subQuestionAnswers);
+			}
+			else {
+				subQuestionAnswers = (ArrayList) subSeqAns;
+			}
+			subQuestionAnswers.add(answer);
+			
 		}
 				
 		iter = scores.iterator();
@@ -745,6 +760,10 @@ public class HistogramListener
 			}
 		}
 		
+
+		
+		
+		
 		
 		
 		HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
@@ -769,10 +788,9 @@ public class HistogramListener
 			int num = ((Integer) results.get(answerId)).intValue();
 			numarray[i] = num;
 			bars[i] = new HistogramBarBean();
-			if (answer != null)
-				bars[i].setLabel(answer.getItemText().getSequence() + ". " + answer.getLabel() + "  " + answer.getText());
-
 			if (answer != null) {
+				bars[i].setSubQuestionSequence(answer.getItemText().getSequence());
+				bars[i].setLabel(answer.getItemText().getSequence() + ". " + answer.getLabel() + "  " + answer.getText());
 				bars[i].setIsCorrect(answer.getIsCorrect());
 			}
 
@@ -874,6 +892,146 @@ public class HistogramListener
 		qbean.setNumResponses(responses);
 		if (responses > 0)
 			qbean.setPercentCorrect(Integer.toString((int) (((float) correctresponses / (float) responses) * 100)));
+		
+		
+		
+		//YYYYYYYYY		
+		Set subQuestionKeySet = subQuestionAnswerMap.keySet();
+		Iterator subQuestionIter = subQuestionKeySet.iterator();
+		ArrayList subQuestionInfo = new ArrayList(); //List of sub-question HistogramQuestionScoresBeans - for EMI sub-questions
+		  // Iterate through the assessment questions (items)
+		  while (subQuestionIter.hasNext()) {
+			  Long subQuestionSequence = (Long)subQuestionIter.next();
+			  
+			  HistogramQuestionScoresBean questionScores = new HistogramQuestionScoresBean();
+			  questionScores.setSubQuestionSequence(subQuestionSequence);
+			  
+			  int numBars = 0;
+			  for (int j=0; j<bars.length; j++) {
+				  if (bars[j].getSubQuestionSequence().equals(subQuestionSequence)) {
+					  numBars++;
+				  }
+			  }
+			  HistogramBarBean[] subQuestionBars = new HistogramBarBean[numBars];
+			  int subBar = 0;
+			  for (int j=0; j<bars.length; j++) {
+				  if (bars[j].getSubQuestionSequence().equals(subQuestionSequence)) {
+					  subQuestionBars[subBar++]=bars[j];
+				  }
+			  }
+			  questionScores.setHistogramBars(subQuestionBars);
+			  
+			  
+			  questionScores.setNumberOfParts(qbean.getNumberOfParts()); // gopalrc
+			  //if this part is a randompart , then set randompart = true
+			  questionScores.setRandomType(qbean.getRandomType());
+			  subQuestionAnswers = (ArrayList) subQuestionAnswerMap.get(subQuestionSequence);
+
+			  questionScores.setPartNumber(qbean.getPartNumber());
+			  questionScores.setQuestionNumber(qbean.getQuestionNumber()+"-"+subQuestionSequence);
+			  
+			  
+//			  questionScores.setTitle(title + item.getSequence().toString()
+//					  + " (" + type + ")");
+			  
+			  
+			  questionScores.setQuestionText(qbean.getQuestionText());
+			  
+			  questionScores.setQuestionType(qbean.getQuestionType());
+			  //totalpossible = totalpossible + item.getScore().doubleValue();
+			  //ArrayList responses = null;
+			  
+//			  determineResults(pub, questionScores, (ArrayList) itemScores
+//					  .get(item.getItemId()));
+	
+/*			  
+			  Iterator answerIter = subQuestionAnswers.iterator();
+			  Float totalScore = new Float(0);
+			  while (answerIter.hasNext()) {
+				  AnswerIfc subQuestionAnswer = (AnswerIfc) answerIter.hasNext();
+				  totalScore += subQuestionAnswer.getScore();
+				  
+			  }
+			  questionScores.setTotalScore(totalScore.toString());
+
+
+			  // below - gopalrc Nov 2007
+			  questionScores.setN(""+numSubmissions);
+			  questionScores.setItemId(item.getItemId());
+			  Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
+			  Set studentsResponded = questionScores.getStudentsResponded();
+			  if (studentsWithAllCorrect == null || studentsResponded == null || 
+					  studentsWithAllCorrect.isEmpty() || studentsResponded.isEmpty()) {
+				  questionScores.setPercentCorrectFromUpperQuartileStudents("0");
+				  questionScores.setPercentCorrectFromLowerQuartileStudents("0");
+				  questionScores.setDiscrimination("0.0");
+			  }
+			  else {
+				  int numStudentsWithAllCorrectFromUpperQuartile = 0;
+				  int numStudentsWithAllCorrectFromLowerQuartile = 0;
+				  Iterator studentsIter = studentsWithAllCorrect.iterator();
+				  while (studentsIter.hasNext()) {
+					  String agentId = (String) studentsIter.next();
+					  if (histogramScores.isUpperQuartileStudent(agentId)) {
+						  numStudentsWithAllCorrectFromUpperQuartile++;
+					  }
+					  if (histogramScores.isLowerQuartileStudent(agentId)) {
+						  numStudentsWithAllCorrectFromLowerQuartile++;
+					  }
+				  }
+				  int numStudentsRespondedFromUpperQuartile = 0;
+				  int numStudentsRespondedFromLowerQuartile = 0;
+				  studentsIter = studentsResponded.iterator();
+				  while (studentsIter.hasNext()) {
+					  String agentId = (String) studentsIter.next();
+					  if (histogramScores.isUpperQuartileStudent(agentId)) {
+						  numStudentsRespondedFromUpperQuartile++;
+					  }
+					  if (histogramScores.isLowerQuartileStudent(agentId)) {
+						  numStudentsRespondedFromLowerQuartile++;
+					  }
+				  }
+				  
+				  float percentCorrectFromUpperQuartileStudents = 
+					  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
+							  (float) percent27) * 100f;
+
+				  float percentCorrectFromLowerQuartileStudents = 
+					  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
+							  (float) percent27) * 100f;
+
+				  questionScores.setPercentCorrectFromUpperQuartileStudents(
+						  Integer.toString((int) percentCorrectFromUpperQuartileStudents));
+				  questionScores.setPercentCorrectFromLowerQuartileStudents(
+						  Integer.toString((int) percentCorrectFromLowerQuartileStudents));
+
+				  float numResponses = (float)questionScores.getNumResponses();
+
+				  float discrimination = ((float)numStudentsWithAllCorrectFromUpperQuartile -								  
+						  (float)numStudentsWithAllCorrectFromLowerQuartile)/(float)percent27 ;
+				  
+				  
+
+				  // round to 2 decimals
+				  if (discrimination > 999999 || discrimination < -999999) {
+					  questionScores.setDiscrimination("NaN");
+				  }
+				  else {
+					  discrimination = ((int) (discrimination*100.00f)) / 100.00f;
+					  questionScores.setDiscrimination(Float.toString(discrimination));
+				  }
+
+			  }
+			  // above - gopalrc Nov 2007
+*/
+
+			  subQuestionInfo.add(questionScores);
+		  } // end-while - items
+		qbean.setInfo(subQuestionInfo);
+//YYYYYYYYYY		
+		
+		
+		
 	}
   //XXXXX
   

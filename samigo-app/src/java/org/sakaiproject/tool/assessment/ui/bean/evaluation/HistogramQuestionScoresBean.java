@@ -102,6 +102,12 @@ public class HistogramQuestionScoresBean
   private boolean randomType;   // this part is a random draw part
 
   private static Log log = LogFactory.getLog(HistogramQuestionScoresBean.class);
+  
+  
+  //gopalrc - Jan 2010 - for EMI
+  private Long subQuestionSequence;
+
+
 
   /**
    * Creates a new HistogramQuestionScoresBean object.
@@ -1095,6 +1101,20 @@ public class HistogramQuestionScoresBean
 		  return responses;
 	  }
   }
+
+  
+  
+  //gopalrc - Jan 2010 - for EMI
+  public Long getSubQuestionSequence() {
+	return subQuestionSequence;
+  }
+
+
+  //gopalrc - Jan 2010 - for EMI
+  public void setSubQuestionSequence(Long subQuestionSequence) {
+	this.subQuestionSequence = subQuestionSequence;
+  }
+  
   
   
 }

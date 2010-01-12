@@ -44,8 +44,13 @@ private int numStudents;
   private String rangeInfo;
   private String label;
   private Boolean isCorrect;
+  
+  //gopalrc - Jan 2010 - for EMI
+  private Long subQuestionSequence;
 
-  /**
+
+
+/**
     *
     * @param numStudents int
     */
@@ -152,4 +157,17 @@ private int numStudents;
    }
 
 
+   //gopalrc - Jan 2010 - for EMI
+   public Long getSubQuestionSequence() {
+ 	return subQuestionSequence;
+   }
+
+
+   //gopalrc - Jan 2010 - for EMI
+   public void setSubQuestionSequence(Long subQuestionSequence) {
+ 	this.subQuestionSequence = subQuestionSequence;
+   }
+
+   
+   
 }
