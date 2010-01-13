@@ -291,6 +291,7 @@ public class ItemModifyListener implements ActionListener
 		  
 		  //gopalrc - 18 Dec 2009
 		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+			  //only want ItemText with sequence = 0
 			  if (!itemText.getSequence().equals(Long.valueOf(0))) {
 				  continue;
 			  }
@@ -513,6 +514,7 @@ public class ItemModifyListener implements ActionListener
 					  qaComboList.add(answerbean);
 				  }
 				  else {
+					  answerbean.setCorrectOptionLabels(answerArray[i].getCorrectOptionLabels());
 					  answerOptionsList.add(answerbean);
 				  }
 			  }

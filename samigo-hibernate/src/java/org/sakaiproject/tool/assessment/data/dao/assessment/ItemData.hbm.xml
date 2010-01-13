@@ -116,6 +116,7 @@
     <property name="grade" type="string" length="80" column="GRADE" not-null="false" />
     <property name="score" type="float" column="SCORE" not-null="false" />
     <property name="discount" type="float" column="DISCOUNT" not-null="false" />
+    <property name="correctOptionLabels" type="string" length="52" column="CORRECTOPTIONLABELS" not-null="false" />
    
     <set name="answerFeedbackSet" table="SAM_ANSWERFEEDBACK_T" cascade="all" inverse="true" lazy="false">
       <key column="ANSWERID" />

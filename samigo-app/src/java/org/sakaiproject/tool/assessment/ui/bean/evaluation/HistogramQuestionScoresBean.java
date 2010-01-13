@@ -106,6 +106,7 @@ public class HistogramQuestionScoresBean
   
   //gopalrc - Jan 2010 - for EMI
   private Long subQuestionSequence;
+  private boolean showIndividualAnswersInDetailedStatistics;
 
 
 
@@ -1115,6 +1116,18 @@ public class HistogramQuestionScoresBean
 	this.subQuestionSequence = subQuestionSequence;
   }
   
+
+  //gopalrc - Jan 2010 - for EMI
+  public boolean getShowIndividualAnswersInDetailedStatistics() {
+	return showIndividualAnswersInDetailedStatistics;
+  }
+
+  //gopalrc - Jan 2010 - for EMI
+  public void setShowIndividualAnswersInDetailedStatistics(
+		boolean showIndividualAnswersInDetailedStatistics) {
+	this.showIndividualAnswersInDetailedStatistics = showIndividualAnswersInDetailedStatistics;
+  }
+
   
   
 }

@@ -35,7 +35,14 @@ public class AnswerBean implements Serializable, Comparable{
   private String label;
   private String feedback;
   private Boolean isCorrect;
-  private static ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
+  
+  //gopalrc Jan 2010 - for EMI questions
+  private String correctOptionLabels;
+  
+  
+
+
+private static ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
 
   public static final String choiceLabels = rb.getString("choice_labels"); 
   public AnswerBean() {}
@@ -105,5 +112,16 @@ public class AnswerBean implements Serializable, Comparable{
 			return getSequence().compareTo(((AnswerBean)o).getSequence());
 		}
 	}
+	
+  //gopalrc Jan 2010 - for EMI questions
+  public String getCorrectOptionLabels() {
+    return correctOptionLabels;
+  }
+
+  //gopalrc Jan 2010 - for EMI questions
+  public void setCorrectOptionLabels(String correctOptionLabels) {
+    this.correctOptionLabels = correctOptionLabels;
+  }
+
 
 }

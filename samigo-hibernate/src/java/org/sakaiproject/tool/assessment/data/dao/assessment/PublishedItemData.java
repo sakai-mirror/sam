@@ -588,7 +588,7 @@ public class PublishedItemData
 			for (int k = 0; k < answerArray.size(); k++) {
 				AnswerIfc a = (AnswerIfc) answerArray.get(k);
 				if (a.getLabel().matches("[0-9]+")) {
-					answerKey += a.getLabel() + ":" + a.getEmiCorrectOptionLabelsAsString();
+					answerKey += a.getLabel() + ":" + a.getCorrectOptionLabels();
 					if (k < answerArray.size()-1) answerKey += " ; ";  
 				}
 			}

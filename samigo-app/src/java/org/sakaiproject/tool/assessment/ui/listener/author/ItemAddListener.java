@@ -963,6 +963,7 @@ public class ItemAddListener
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
 					Boolean.FALSE, null, null, null);
+			answer.setCorrectOptionLabels(answerbean.getCorrectOptionLabels());
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new AnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -988,15 +989,13 @@ public class ItemAddListener
 		
 		iter = text1.getEmiQuestionAnswerCombinations().iterator();
 		Answer qaCombo = null;
-//		int seq = 1;
 		while (iter.hasNext()) {
 			qaCombo = (Answer) iter.next();
 			
 			ItemText itemText = new ItemText();
 			itemText.setItem(text1.getItem());
 			itemText.setSequence(Long.valueOf(qaCombo.getLabel()));
-//			itemText.setSequence(Long.valueOf(seq++));
-			itemText.setText(qaCombo.getEmiTextWithoutCorrectOptionLabels());
+			itemText.setText(qaCombo.getText());
 			
 			HashSet answerSet = new HashSet();
 			Iterator selectionOptions = qaCombo.getEmiSelectionOptions().iterator();
@@ -1748,6 +1747,7 @@ public class ItemAddListener
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
 					Boolean.FALSE, null, null, null);
+			answer.setCorrectOptionLabels(answerbean.getCorrectOptionLabels());
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new PublishedAnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1773,15 +1773,13 @@ public class ItemAddListener
 		
 		iter = text1.getEmiQuestionAnswerCombinations().iterator();
 		PublishedAnswer qaCombo = null;
-//		int seq = 1;
 		while (iter.hasNext()) {
 			qaCombo = (PublishedAnswer) iter.next();
 			
 			PublishedItemText itemText = new PublishedItemText();
 			itemText.setItem(text1.getItem());
 			itemText.setSequence(Long.valueOf(qaCombo.getLabel()));
-//			itemText.setSequence(Long.valueOf(seq++));
-			itemText.setText(qaCombo.getEmiTextWithoutCorrectOptionLabels());
+			itemText.setText(qaCombo.getText());
 			
 			HashSet answerSet = new HashSet();
 			Iterator selectionOptions = qaCombo.getEmiSelectionOptions().iterator();

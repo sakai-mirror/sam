@@ -199,16 +199,14 @@
  <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinations}" var="answer" headerClass="navView longtext">
  <h:column>
 
- <h:panelGrid columns="2">
+ <h:panelGrid columns="3">
   <h:panelGroup>
-	
     <h:outputText value="#{answer.label}"  />
     <f:verbatim><br/></f:verbatim>
     <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiQuestionAnswerCombinations}" rendered="#{itemauthor.currentItem.itemType == 13}">
       <h:outputText id="text" value="#{authorMessages.button_remove}"/>
       <f:param name="emiQuestionAnswerComboId" value="#{answer.label}"/>
     </h:commandLink>		 
-
   </h:panelGroup>
   
         <!-- WYSIWYG -->
@@ -216,7 +214,14 @@
     <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes" >
       <f:validateLength maximum="4000"/>
     </samigo:wysiwyg>
+    
   </h:panelGrid>
+			
+  <h:panelGroup>
+    <h:outputLabel value="#{authorMessages.correct_option_labels}" />
+    <f:verbatim><br/></f:verbatim>
+    <h:inputText id="correctOptionLabels" value="#{answer.correctOptionLabels}"required="true" size="6" />
+  </h:panelGroup>
 			
   
 </h:panelGrid>

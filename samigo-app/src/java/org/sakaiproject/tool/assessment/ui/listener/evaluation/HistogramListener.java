@@ -466,9 +466,11 @@ public class HistogramListener
 						  || questionScores.getQuestionType().equals("2")
 						  || questionScores.getQuestionType().equals("3")
 						  || questionScores.getQuestionType().equals("4")
+						  || questionScores.getQuestionType().equals("13") //gopalrc - Jan 2010 - EMI
 				  ) {
+					  questionScores.setShowIndividualAnswersInDetailedStatistics(true);
 					  detailedStatistics.add(questionScores);
-					  if (questionScores.getHistogramBars() != null) {
+					  if (questionScores.getHistogramBars() != null && !questionScores.getQuestionType().equals("13")) {
 						  maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
 					  }
 					  
@@ -481,8 +483,9 @@ public class HistogramListener
 					  }
 				  }
 				  // gopalrc Jan 2010 - EMI XXXX
-				  else if (questionScores.getQuestionType().equals("13") // gopalrc Jan 2010 - EMI XXXX
+				  if (questionScores.getQuestionType().equals("13") // gopalrc Jan 2010 - EMI XXXX
 				  ) {
+					  questionScores.setShowIndividualAnswersInDetailedStatistics(false);
 					  detailedStatistics.addAll(questionScores.getInfo());
 					  
 					  Iterator subInfoIter = questionScores.getInfo().iterator();
@@ -492,7 +495,7 @@ public class HistogramListener
 							  maxNumOfAnswers = subQuestionScores.getHistogramBars().length >maxNumOfAnswers ? subQuestionScores.getHistogramBars().length : maxNumOfAnswers;
 						  }
 					  }
-					  
+/*					  
 					  Object numberOfStudentsWithZeroAnswers = numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId());
 					  if (numberOfStudentsWithZeroAnswers == null) {
 						  questionScores.setNumberOfStudentsWithZeroAnswers(0);
@@ -500,6 +503,7 @@ public class HistogramListener
 					  else {
 						  questionScores.setNumberOfStudentsWithZeroAnswers( ((Integer) numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId())).intValue() );
 					  }
+*/					  
 				  }
 				  
 				  
@@ -897,7 +901,10 @@ public class HistogramListener
 		
 		//YYYYYYYYY		
 		Set subQuestionKeySet = subQuestionAnswerMap.keySet();
-		Iterator subQuestionIter = subQuestionKeySet.iterator();
+		ArrayList subQuestionKeyList = new ArrayList();
+		subQuestionKeyList.addAll(subQuestionKeySet);
+		Collections.sort(subQuestionKeyList);
+		Iterator subQuestionIter = subQuestionKeyList.iterator();
 		ArrayList subQuestionInfo = new ArrayList(); //List of sub-question HistogramQuestionScoresBeans - for EMI sub-questions
 		  // Iterate through the assessment questions (items)
 		  while (subQuestionIter.hasNext()) {
@@ -906,6 +913,7 @@ public class HistogramListener
 			  HistogramQuestionScoresBean questionScores = new HistogramQuestionScoresBean();
 			  questionScores.setSubQuestionSequence(subQuestionSequence);
 			  
+			  // Determine the number of bars (possible answers) for this sub-question
 			  int numBars = 0;
 			  for (int j=0; j<bars.length; j++) {
 				  if (bars[j].getSubQuestionSequence().equals(subQuestionSequence)) {
@@ -919,9 +927,9 @@ public class HistogramListener
 					  subQuestionBars[subBar++]=bars[j];
 				  }
 			  }
+			  
+			  questionScores.setShowIndividualAnswersInDetailedStatistics(true);
 			  questionScores.setHistogramBars(subQuestionBars);
-			  
-			  
 			  questionScores.setNumberOfParts(qbean.getNumberOfParts()); // gopalrc
 			  //if this part is a randompart , then set randompart = true
 			  questionScores.setRandomType(qbean.getRandomType());
@@ -938,6 +946,12 @@ public class HistogramListener
 			  questionScores.setQuestionText(qbean.getQuestionText());
 			  
 			  questionScores.setQuestionType(qbean.getQuestionType());
+			  
+			  questionScores.setN(qbean.getN());
+			  questionScores.setItemId(qbean.getItemId());
+			  
+			  
+			  
 			  //totalpossible = totalpossible + item.getScore().doubleValue();
 			  //ArrayList responses = null;
 			  
@@ -956,8 +970,6 @@ public class HistogramListener
 
 
 			  // below - gopalrc Nov 2007
-			  questionScores.setN(""+numSubmissions);
-			  questionScores.setItemId(item.getItemId());
 			  Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
 			  Set studentsResponded = questionScores.getStudentsResponded();
 			  if (studentsWithAllCorrect == null || studentsResponded == null || 
@@ -1034,204 +1046,6 @@ public class HistogramListener
 		
 	}
   //XXXXX
-  
-  
-  
-  //gopalrc - added Jan 2010
-  //XXXX 
-  private void getEMISubQuestionScores(HashMap publishedItemHash,
-			HashMap publishedAnswerHash, ArrayList scores,
-			HistogramQuestionScoresBean qbean, ArrayList answers) {
-		ResourceLoader rb = new ResourceLoader(
-				"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
-		HashMap texts = new HashMap();
-		Iterator iter = answers.iterator();
-		HashMap results = new HashMap();
-		HashMap numStudentRespondedMap = new HashMap();
-		HashMap sequenceMap = new HashMap();
-		
-		//gopalrc - sub Questions for EMI - Jan 2010
-		ArrayList subQuestionInfo = null; //List of sub-question HistogramQuestionScoresBeans - for EMI sub-questions
-		HistogramQuestionScoresBean subqbean = null;
-		
-		//int sequence = 1;
-		while (iter.hasNext()) {
-			AnswerIfc answer = (AnswerIfc) iter.next();
-			texts.put(answer.getId(), answer);
-			results.put(answer.getId(), Integer.valueOf(0));
-			//sequenceMap.put(answer.getSequence(), answer.getId());
-			sequenceMap.put(answer.getItemText().getSequence() + "-" + answer.getSequence(), answer.getId());
-		}
-				
-		iter = scores.iterator();
-		while (iter.hasNext()) {
-			ItemGradingData data = (ItemGradingData) iter.next();
-			AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data
-					.getPublishedAnswerId());
-			if (answer != null) {
-				// log.info("Rachel: looking for " + answer.getId());
-				// found a response
-				Integer num = null;
-				// num is a counter
-				try {
-					// we found a response, now get existing count from the
-					// hashmap
-					num = (Integer) results.get(answer.getId());
-
-				} catch (Exception e) {
-					log.warn("No results for " + answer.getId());
-				}
-				if (num == null)
-					num = Integer.valueOf(0);
-
-				ArrayList studentResponseList = (ArrayList) numStudentRespondedMap
-						.get(data.getAssessmentGradingId());
-				if (studentResponseList == null) {
-					studentResponseList = new ArrayList();
-				}
-				studentResponseList.add(data);
-				numStudentRespondedMap.put(data.getAssessmentGradingId(),
-						studentResponseList);
-				Float autoscore = data.getAutoScore();
-				if (!(Float.valueOf(0)).equals(autoscore)) {
-					results.put(answer.getId(), Integer.valueOf(
-							num.intValue() + 1));
-				}
-			}
-		}
-		
-		
-		
-		HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
-		int[] numarray = new int[results.keySet().size()];
-		ArrayList sequenceList = new ArrayList();
-		iter = answers.iterator();
-		while (iter.hasNext()) {
-			AnswerIfc answer = (AnswerIfc) iter.next();
-			sequenceList.add(answer.getItemText().getSequence() + "-" + answer.getSequence());
-		}
-
-		Collections.sort(sequenceList);
-		// iter = results.keySet().iterator();
-		iter = sequenceList.iterator();
-		int i = 0;
-		int responses = 0;
-		int correctresponses = 0;
-		while (iter.hasNext()) {
-			String sequenceId = (String) iter.next();
-			Long answerId = (Long) sequenceMap.get(sequenceId);
-			AnswerIfc answer = (AnswerIfc) texts.get(answerId);
-			int num = ((Integer) results.get(answerId)).intValue();
-			numarray[i] = num;
-			bars[i] = new HistogramBarBean();
-			if (answer != null)
-				bars[i].setLabel(answer.getItemText().getSequence() + ". " + answer.getLabel() + "  " + answer.getText());
-
-			if (answer != null) {
-				bars[i].setIsCorrect(answer.getIsCorrect());
-			}
-
-			if ((num > 1) || (num == 0)) {
-				bars[i].setNumStudentsText(num + " "
-						+ rb.getString("responses"));
-			} else {
-				bars[i]
-						.setNumStudentsText(num + " "
-								+ rb.getString("response"));
-
-			}
-			bars[i].setNumStudents(num);
-			i++;
-		}
-
-		responses = numStudentRespondedMap.size();
-		
-		for (Iterator it = numStudentRespondedMap.entrySet().iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
-			ArrayList resultsForOneStudent = (ArrayList) entry.getValue();
-
-			boolean hasIncorrect = false;
-			Iterator listiter = resultsForOneStudent.iterator();
-
-			// iterate through the results for one student
-			// for this question (qbean)
-			while (listiter.hasNext()) {
-				ItemGradingData item = (ItemGradingData) listiter.next();
-				
-				// only answered choices are created in the
-				// ItemGradingData_T, so we need to check
-				// if # of checkboxes the student checked is == the number
-				// of correct answers
-				// otherwise if a student only checked one of the multiple
-				// correct answers,
-				// it would count as a correct response
-
-				try {
-					int corranswers = 0;
-					Iterator answeriter = answers.iterator();
-					while (answeriter.hasNext()) {
-						AnswerIfc answerchoice = (AnswerIfc) answeriter
-								.next();
-						if (answerchoice.getIsCorrect().booleanValue()) {
-							corranswers++;
-						}
-					}
-					if (resultsForOneStudent.size() != corranswers) {
-						hasIncorrect = true;
-						break;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					throw new RuntimeException(
-							"error calculating mcmc question.");
-				}
-
-				// now check each answer
-
-				AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(item
-						.getPublishedAnswerId());
-				if (answer != null
-						&& (answer.getIsCorrect() == null || (!answer
-								.getIsCorrect().booleanValue()))) {
-					hasIncorrect = true;
-					break;
-				}
-				
-				
-			}
-
-			
-			if (!hasIncorrect) {
-				correctresponses = correctresponses + 1;
-				
-				// gopalrc - Nov 2007
-				qbean.addStudentWithAllCorrect(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
-			}
-			// gopalrc - Dec 2007
-			qbean.addStudentResponded(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
-		}
-		// NEW
-		int[] heights = calColumnHeight(numarray, responses);
-		// int[] heights = calColumnHeight(numarray);
-		for (i = 0; i < bars.length; i++)
-		{
-			try
-			{
-				bars[i].setColumnHeight(Integer.toString(heights[i]));
-			}
-			catch(NullPointerException npe)
-			{
-				log.warn("null column height " + npe);
-			}
-		}
-
-		qbean.setHistogramBars(bars);
-		qbean.setNumResponses(responses);
-		if (responses > 0)
-			qbean.setPercentCorrect(Integer.toString((int) (((float) correctresponses / (float) responses) * 100)));
-	}
-  //XXXXX
-  
   
   
   

@@ -56,7 +56,12 @@ public class Answer
   private HashMap answerFeedbackMap;
   private ItemData dat=new ItemData();
   
-  //gopalrc - added 27 Nov 2008
+  
+  //gopalrc Jan 2010 - for EMI questions
+  private String correctOptionLabels;
+  
+  
+  //gopalrc - added 27 Nov 2009
   //set of possible EMI selection options indicating correct and incorrect options
   private ArrayList emiSelectionOptions;
   
@@ -267,6 +272,7 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
 
  
 	//gopalrc added 16 Nov 2009
+ /*
 	public String getEmiCorrectOptionLabelsAsString() {
 		String optionString = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]"));
 		if (optionString == null) {
@@ -274,9 +280,10 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
 		}
 		return optionString.trim().toUpperCase();
 	}
-	
+*/	
 	
 	//gopalrc added 4 Dec 2009
+ /*
 	public String getEmiTextWithoutCorrectOptionLabels() {
 		String textWithoutLabels = text.substring(0, text.lastIndexOf("[")).trim();
 		if (textWithoutLabels == null) {
@@ -284,11 +291,12 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
 		}
 		return textWithoutLabels;
 	}
-
+*/
+ 
 	
 	//gopalrc added 16 Nov 2009
 	public boolean isEmiOptionCorrect(String optionLabel) {
-		String correctOptionLabels = getEmiCorrectOptionLabelsAsString();
+		String correctOptionLabels = getCorrectOptionLabels();
 		if (correctOptionLabels.indexOf(optionLabel) > -1) {
 			return true;
 		}
@@ -325,5 +333,18 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
 		}
 		return count;
 	}
+	
+	
+	
+  //gopalrc Jan 2010 - for EMI questions
+  public String getCorrectOptionLabels() {
+    return correctOptionLabels;
+  }
+
+  //gopalrc Jan 2010 - for EMI questions
+  public void setCorrectOptionLabels(String correctOptionLabels) {
+    this.correctOptionLabels = correctOptionLabels;
+  }
+
 	
 }
