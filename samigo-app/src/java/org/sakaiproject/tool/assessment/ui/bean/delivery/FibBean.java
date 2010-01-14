@@ -24,9 +24,13 @@
 package org.sakaiproject.tool.assessment.ui.bean.delivery;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
 
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
+import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
+
 
 /**
  * @author rgollub@stanford.edu
@@ -42,6 +46,12 @@ public class FibBean
   private String text;
   private boolean isCorrect;
   private boolean hasInput;
+  
+  //gopalrc - added for EMI - Jan 2010
+  //contains the set of FibBeans for each sub-question in choices list
+  private MatchingBean subQuestionContainer;
+  
+
 
   public ItemContentsBean getItemContentsBean()
   {
@@ -82,18 +92,44 @@ public class FibBean
 
   public void setResponse(String newresp)
   {
-    response = newresp;
-    if (data == null)
-    {
-      data = new ItemGradingData();
-      data.setPublishedItemId(parent.getItemData().getItemId());
-      data.setPublishedItemTextId(answer.getItemText().getId());
-      data.setPublishedAnswerId(answer.getId());
-      ArrayList items = parent.getItemGradingDataArray();
-      items.add(data);
-      parent.setItemGradingDataArray(items);
+    
+    //gopalrc - Jan 2010
+    if (parent.getItemData().getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
+        response = newresp.toUpperCase();
+	    if (data == null || !data.getPublishedAnswer().getLabel().equals(response))
+	    {
+	      data = new ItemGradingData();
+	      data.setPublishedItemId(parent.getItemData().getItemId());
+	      Iterator iter = subQuestionContainer.getItemText().getAnswerSet().iterator();
+	      while (iter.hasNext()) {
+	    	  AnswerIfc selectedAnswer = (AnswerIfc) iter.next();
+	    	  if (selectedAnswer.getLabel().equals(response)) {
+	    		  answer = selectedAnswer;
+	    	      data.setPublishedItemTextId(answer.getItemText().getId());
+	    	      data.setPublishedAnswerId(answer.getId());
+	    	      ArrayList items = parent.getItemGradingDataArray();
+	    	      items.add(data);
+	    	      parent.setItemGradingDataArray(items);
+	    	  }
+	      }
+	    }
+	    //data.setAnswerText(newresp);
     }
-    data.setAnswerText(newresp);
+    else {
+        response = newresp;
+	    if (data == null)
+	    {
+	      data = new ItemGradingData();
+	      data.setPublishedItemId(parent.getItemData().getItemId());
+	      data.setPublishedItemTextId(answer.getItemText().getId());
+	      data.setPublishedAnswerId(answer.getId());
+	      ArrayList items = parent.getItemGradingDataArray();
+	      items.add(data);
+	      parent.setItemGradingDataArray(items);
+	    }
+	    data.setAnswerText(newresp);
+    }
+    
   }
 
   public String getText()
@@ -125,4 +161,18 @@ public class FibBean
   {
     hasInput = newin;
   }
+  
+  
+  //gopalrc - added for EMI - Jan 2010
+  public MatchingBean getSubQuestionContainer() {
+	return subQuestionContainer;
+  }
+
+  //gopalrc - added for EMI - Jan 2010
+	public void setSubQuestionContainer(MatchingBean subQuestionContainer) {
+		this.subQuestionContainer = subQuestionContainer;
+	}
+
+  
+  
 }

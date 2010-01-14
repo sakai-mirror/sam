@@ -30,6 +30,25 @@ should be included in file importing DeliveryMessages
 
   <h:outputText value="#{question.themeText}"  escape="false"/>
   <f:verbatim><br /><br /></f:verbatim>
+  
+  
+   <h:dataTable value="#{question.itemData.firstSortedTextItemArray}" var="itemText">
+    <h:column>
+      
+      <h:dataTable value="#{itemText.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
+        <h:column> 
+          <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
+            <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
+          </h:panelGroup>
+        </h:column>
+      </h:dataTable>
+      
+     </h:column>
+   </h:dataTable>
+      
+  
+  
+  <f:verbatim><br /><br /></f:verbatim>
   <h:outputText value="#{question.leadInText}"  escape="false"/>
   <f:verbatim><br /><br /></f:verbatim>
   <!-- ATTACHMENTS -->
@@ -78,12 +97,11 @@ should be included in file importing DeliveryMessages
    </h:column>
 
    <h:column>
-     <h:selectBooleanCheckbox value="#{selection.response}"
+   
+     <h:inputText id="responseAnswer" value="#{selection.response}"required="true" size="1" 
         disabled="#{delivery.actionString=='reviewAssessment'
                  || delivery.actionString=='gradeAssessment'}" />
-     <h:outputText value=" #{selection.answer.label}" escape="false" />
-     <h:outputText value="#{deliveryMessages.dot}" rendered="#{selection.answer.label ne ''}" />
-     <h:outputText value=" #{selection.answer.text}" escape="false" />
+                 
    </h:column>
   </h:dataTable>
   <f:verbatim><br /><br /></f:verbatim>

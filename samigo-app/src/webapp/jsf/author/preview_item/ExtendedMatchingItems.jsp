@@ -31,15 +31,29 @@ should be included in file importing DeliveryMessages
   
 
 
-  <h:outputText escape="false" value="#{question.itemData.themeText}" />
-  <f:verbatim><br/><br/></f:verbatim>
-  <h:outputText escape="false" value="#{question.itemData.leadInText}" />
-  <f:verbatim><br/><br/></f:verbatim>
   <!-- ATTACHMENTS -->
   <%@ include file="/jsf/author/preview_item/attachment.jsp" %>
 
   <h:dataTable value="#{question.itemData.firstSortedTextItemArray}" var="itemText">
     <h:column>
+      
+      <h:outputText escape="false" value="#{question.itemData.themeText}" />
+      <f:verbatim><br/><br/></f:verbatim>
+
+
+      <h:dataTable value="#{itemText.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
+        <h:column> 
+          <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
+            <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
+          </h:panelGroup>
+        </h:column>
+      </h:dataTable>
+      
+      
+      <f:verbatim><br/><br/></f:verbatim>
+      <h:outputText escape="false" value="#{question.itemData.leadInText}" />
+      <f:verbatim><br/><br/></f:verbatim>
+      
       
 
       <h:dataTable value="#{itemText.emiQuestionAnswerCombinations}" var="answer" border="1" style="border-style:solid">
@@ -53,12 +67,8 @@ should be included in file importing DeliveryMessages
         <h:column> 
       <h:dataTable value="#{answer.emiSelectionOptions}" var="answerOption">
         <h:column>
-         <h:panelGroup rendered="#{answerOption.text != null && answerOption.text ne ''}">
-          <h:graphicImage id="image1" rendered="#{answerOption.isCorrect}"
-             alt="#{authorMessages.correct}" url="/images/checked.gif" />         
-          <h:graphicImage id="image2" rendered="#{!answerOption.isCorrect}"
-             alt="#{authorMessages.not_correct}" url="/images/unchecked.gif"/>      
-          <h:outputText escape="false" value="#{answerOption.label}. #{answerOption.text}" /> 
+         <h:panelGroup rendered="#{answerOption.text != null && answerOption.text ne '' && answerOption.isCorrect}">
+          <h:outputText escape="false" value="#{answerOption.label}" /> 
         </h:panelGroup>
         </h:column><h:column>
         <h:panelGroup rendered="#{answerOption.text ne null && answerOption.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answerOption.generalAnswerFbIsNotEmpty}">    

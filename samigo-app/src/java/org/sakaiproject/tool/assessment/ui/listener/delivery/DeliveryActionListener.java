@@ -1165,13 +1165,6 @@ public class DeliveryActionListener
       ItemTextIfc text = (ItemTextIfc) key1.next();
       Iterator key2 = null;
       
-      //gopalrc - to populate the Answer.emiSelectionOptions
-/*      
-      if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
-    	  text.getEmiQuestionAnswerCombinations();
-      }
-*/
-      
       // Never randomize Fill-in-the-blank or Numeric Response, always randomize matching
       if (randomize && !(item.getTypeId().equals(TypeIfc.FILL_IN_BLANK)||item.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC)) || item.getTypeId().equals(TypeIfc.MATCHING))
           {
@@ -1238,7 +1231,6 @@ public class DeliveryActionListener
           if (item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
               item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
               item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
-              item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
               item.getTypeId().equals(TypeIfc.MATCHING))
           {
             answer.setLabel(Character.toString(alphabet.charAt(k++)));
@@ -1332,35 +1324,9 @@ public class DeliveryActionListener
       {
         AnswerIfc answer = (AnswerIfc) iter.next();
 
-        //gopalrc - added condition - 1 Dec 2009
-/*        
-        ArrayList subSelectionOptions = null;
-        if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
-        	if (!answer.getLabel().matches("[0-9]+")) {
-        		continue;
-        	}
-        	else {
-        		subSelectionOptions = new ArrayList();
-        		Iterator answerOptions = answer.getEmiSelectionOptions().iterator();
-        		while (answerOptions.hasNext()) {
-        			AnswerIfc option = (AnswerIfc) answerOptions.next();
-        			SelectionBean subSelection = new SelectionBean();
-        			subSelection.setAnswer(option);
-        			subSelectionOptions.add(subSelection);
-        		}
-        	}
-        }
-*/
-        
     	selectionBean = new SelectionBean();
         selectionBean.setItemContentsBean(itemBean);
         selectionBean.setAnswer(answer);
-        
-        //gopalrc - added condition - 1 Dec 2009
-/*        
-        if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) 
-        	selectionBean.setSubSelectionOptions(subSelectionOptions);
-*/
         
         // It's saved lower case in the db -- this is a kludge
         if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) && // True/False
@@ -1499,7 +1465,7 @@ public class DeliveryActionListener
     ArrayList newAnswers = null;
     
     // Iterate through the PublishedItemTexts
-    // Each ItemText represents a MCMR question
+    // Each ItemText represents a sub-question question
     // and is used to populate a MatchingBean
     while (itemTextIter.hasNext())
     {
@@ -1520,27 +1486,8 @@ public class DeliveryActionListener
       mbean.setItemContentsBean(bean);
 
       ArrayList choices = new ArrayList();
-//      ArrayList shuffled = new ArrayList();
       Iterator itemTextAnwersIter = text.getAnswerArraySorted().iterator();
-  
      
-/*      
-      while (iter2.hasNext())
-      {
-        shuffled.add(iter2.next());
-
-      }
-*/  
-  
-      //gopalrc - inactivate shuffling of options until this is clarified
-/*      
-      Collections.shuffle(shuffled,
-                          new Random( (long) item.getText().hashCode() +
-                          getAgentString().hashCode()));
-*/
-
-//      iter2 = shuffled.iterator();
-
       int i = 0;
 
       ResourceLoader rb = null;
@@ -1549,69 +1496,45 @@ public class DeliveryActionListener
   	  }
       
       
-      //Now populate the choices for each MCMR question
+      //Now populate the choices (anwers) for each sub-question
       //Each choice is represented by a SelectionBean
+      FibBean fibBean = null;
       while (itemTextAnwersIter.hasNext())
       {
         AnswerIfc answer = (AnswerIfc) itemTextAnwersIter.next();
         newAnswers.add(Character.toString(alphabet.charAt(i)) +
                        ". " + answer.getText());
-        
-        SelectionBean selectionBean = null;
-        selectionBean = new SelectionBean();
-        selectionBean.setItemContentsBean(bean);
-        selectionBean.setAnswer(answer);
+ 
+        if (answer.getIsCorrect()) {
+        	fibBean = new FibBean();
+        	fibBean.setItemContentsBean(bean);
+        	fibBean.setSubQuestionContainer(mbean);
+        	//fibBean.setAnswer(answer); - for EMI the fibBean is not associated with any specific answer until the user enters a value
 
-/*        
-        choices.add(new SelectItem(answer.getId().toString(),
-                                   Character.toString(alphabet.charAt(i++)),
-                                   ""));
-*/
-
-        
-        // Now add the user responses
-        Iterator itemGradingIter = bean.getItemGradingDataArray().iterator();
-        while (itemGradingIter.hasNext())
-        {
-
-          ItemGradingData data = (ItemGradingData) itemGradingIter.next();
-
-          if (data.getPublishedAnswerId().equals(answer.getId()))
-          {
-            // We found an existing grading data for this Answer
-        	selectionBean.setItemGradingData(data);
-            selectionBean.setResponse(true);
-        	
-        	
-        	
-        	
-        	//gopalrc - TODO - tighten up
-        	//I think this is redundant in this case, as "answer" already contains the published answer
-            /*
-            AnswerIfc pubAnswer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId()); 
-            if (pubAnswer != null)
-            {
-              //mbean.setAnswer(pubAnswer);
-              //mbean.setResponse(data.getPublishedAnswerId().toString());
-              if (pubAnswer.getIsCorrect() != null &&
-                  pubAnswer.getIsCorrect().booleanValue())
-              {
-                mbean.setFeedback(pubAnswer.getCorrectAnswerFeedback());
-                mbean.setIsCorrect(true);
-              }
-              else
-              {
-                mbean.setFeedback(pubAnswer.getInCorrectAnswerFeedback());
-                mbean.setIsCorrect(false);
-              }
-            }
-            */
-          }
-        }
-
-        choices.add(selectionBean);
-       
+	        choices.add(fibBean);
+        } // end if answer.isCorrect()       
       }
+
+      
+      // Now add the user responses
+      int responseCount = 0;
+      Iterator itemGradingIter = bean.getItemGradingDataArray().iterator();
+      while (itemGradingIter.hasNext())
+      {
+        ItemGradingData data = (ItemGradingData) itemGradingIter.next();
+        AnswerIfc responseAnswer = data.getPublishedAnswer();
+        // if the response answer is from the same ItemText (subgroup)
+        if (responseAnswer.getItemText().getId().equals(text.getId()))
+        {
+        	fibBean = ((FibBean)choices.get(responseCount++));
+          	fibBean.setItemGradingData(data);
+        	fibBean.setAnswer(responseAnswer);
+            // We found an existing grading data for this Answer
+            fibBean.setResponse(responseAnswer.getLabel());
+        }
+      }
+      
+      
       mbean.setChoices(choices); // Set the A/B/C... choices
       beans.add(mbean);
     }

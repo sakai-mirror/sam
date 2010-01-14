@@ -314,6 +314,7 @@ public class PublishedAnswer
 	
 	//gopalrc added 16 Nov 2009
 	public boolean isEmiOptionCorrect(String optionLabel) {
+		optionLabel = optionLabel.trim().toUpperCase();
 		String correctOptionLabels = getCorrectOptionLabels();
 		if (correctOptionLabels.indexOf(optionLabel) > -1) {
 			return true;
@@ -360,6 +361,7 @@ public class PublishedAnswer
 
 	  //gopalrc Jan 2010 - for EMI questions
 	  public void setCorrectOptionLabels(String correctOptionLabels) {
+		if (correctOptionLabels != null) correctOptionLabels = correctOptionLabels.trim().toUpperCase();  
 	    this.correctOptionLabels = correctOptionLabels;
 	  }
 

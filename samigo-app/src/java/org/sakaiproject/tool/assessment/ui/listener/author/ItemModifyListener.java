@@ -291,7 +291,7 @@ public class ItemModifyListener implements ActionListener
 		  
 		  //gopalrc - 18 Dec 2009
 		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-			  //only want ItemText with sequence = 0
+			  //for EMI only want ItemText with sequence = 0
 			  if (!itemText.getSequence().equals(Long.valueOf(0))) {
 				  continue;
 			  }
@@ -511,10 +511,10 @@ public class ItemModifyListener implements ActionListener
 				  answerbean.setIsCorrect(answerArray[i].getIsCorrect());
 				  if (answerbean.getLabel() != null &&
 						  answerbean.getLabel().matches("[0-9]+")) {
+					  answerbean.setCorrectOptionLabels(answerArray[i].getCorrectOptionLabels());
 					  qaComboList.add(answerbean);
 				  }
 				  else {
-					  answerbean.setCorrectOptionLabels(answerArray[i].getCorrectOptionLabels());
 					  answerOptionsList.add(answerbean);
 				  }
 			  }
