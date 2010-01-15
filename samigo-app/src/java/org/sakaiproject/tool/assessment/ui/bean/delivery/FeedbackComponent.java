@@ -265,6 +265,7 @@ public class FeedbackComponent implements Serializable
     this.showStudentQuestionScore = showStudentQuestionScore;
   }
 
+  
   public void setAssessmentFeedback(AssessmentFeedbackIfc feedback){
     setShowCorrectResponse(feedback.getShowCorrectResponse().booleanValue());
     setShowGraderComment(feedback.getShowGraderComments().booleanValue());
@@ -284,5 +285,5 @@ public class FeedbackComponent implements Serializable
     setShowOnSubmission(AssessmentFeedbackIfc.FEEDBACK_ON_SUBMISSION.equals(feedbackDelivery));
     setShowNoFeedback(AssessmentFeedbackIfc.NO_FEEDBACK.equals(feedbackDelivery));
   }
-
+  
 }

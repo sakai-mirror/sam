@@ -86,11 +86,11 @@ should be included in file importing DeliveryMessages
     <h:column rendered="#{delivery.feedback eq 'true' &&
        delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
       <h:graphicImage id="image"
-        rendered="#{selection.answer.isCorrect eq 'true' && selection.response}"
+        rendered="#{selection.answer.isCorrect eq 'true' && selection.response eq selection.answer.label}"
         alt="#{deliveryMessages.alt_correct}" url="/images/checkmark.gif" >
       </h:graphicImage>
       <h:graphicImage id="image2"
-        rendered="#{selection.answer.isCorrect ne 'true' && selection.response}"
+        rendered="#{selection.answer.isCorrect ne 'true' && selection.response eq selection.answer.label}"
         width="16" height="16"
         alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
       </h:graphicImage>
@@ -130,8 +130,9 @@ should be included in file importing DeliveryMessages
      <f:verbatim></b></f:verbatim>
     <h:outputText id="answerKeyMC"
        value="#{question.key}" escape="false" />
-
   </h:panelGroup>
+  
+  
   <h:panelGroup rendered="#{delivery.feedbackComponent.showItemLevel && !delivery.noFeedback=='true' && question.feedbackIsNotEmpty}">
     <f:verbatim><br /></f:verbatim>
     <f:verbatim><b></f:verbatim>

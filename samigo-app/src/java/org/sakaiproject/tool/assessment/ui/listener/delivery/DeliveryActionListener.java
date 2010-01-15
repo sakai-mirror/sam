@@ -1522,15 +1522,19 @@ public class DeliveryActionListener
       while (itemGradingIter.hasNext())
       {
         ItemGradingData data = (ItemGradingData) itemGradingIter.next();
-        AnswerIfc responseAnswer = data.getPublishedAnswer();
-        // if the response answer is from the same ItemText (subgroup)
-        if (responseAnswer.getItemText().getId().equals(text.getId()))
+        if (data.getPublishedItemTextId().equals(text.getId()))
         {
-        	fibBean = ((FibBean)choices.get(responseCount++));
-          	fibBean.setItemGradingData(data);
-        	fibBean.setAnswer(responseAnswer);
-            // We found an existing grading data for this Answer
-            fibBean.setResponse(responseAnswer.getLabel());
+            // We found an existing grading data for this itemtext (sub-question)
+            mbean.setItemGradingData(data);
+            AnswerIfc pubAnswer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId()); 
+            if (pubAnswer != null) {
+            	data.setPublishedAnswer(pubAnswer);
+	        	fibBean = ((FibBean)choices.get(responseCount++));
+	          	fibBean.setItemGradingData(data);
+	        	fibBean.setAnswer(pubAnswer);
+	            // We found an existing grading data for this Answer
+	            fibBean.setResponse(pubAnswer.getLabel());
+            }
         }
       }
       
