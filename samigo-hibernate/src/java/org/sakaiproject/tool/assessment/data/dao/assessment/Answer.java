@@ -69,8 +69,14 @@ public class Answer
 
 public Answer() {}
 
+
+/*
+  *gopalrc - Jan 2010 
+  *Removed this constructor and refactored calls 
+  *Overloading was difficult to manage because of null values in calls
+  *
   public Answer(ItemTextIfc itemText, String text, Long sequence, String label,
-                Boolean isCorrect, String grade, Float score, Float discount) {
+                Boolean isCorrect, String grade, Float score, Float discount, String correctOptionLabels) {
     this.itemText = itemText;
     this.item = itemText.getItem();
     this.text = text;
@@ -80,10 +86,13 @@ public Answer() {}
     this.grade = grade;
     this.score = score;
     this.discount=discount;
+    this.correctOptionLabels = correctOptionLabels;
   }
+*/
+
 
   public Answer(ItemTextIfc itemText, String text, Long sequence, String label,
-                Boolean isCorrect, String grade, Float score, Float discount,
+                Boolean isCorrect, String grade, Float score, Float discount, String correctOptionLabels,
                 Set answerFeedbackSet) {
     this.itemText = itemText;
     this.item = itemText.getItem();
@@ -94,6 +103,7 @@ public Answer() {}
     this.grade = grade;
     this.score = score;
     this.discount=discount;
+    this.correctOptionLabels = correctOptionLabels;
     this.answerFeedbackSet = answerFeedbackSet;
   }
 

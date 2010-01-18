@@ -2272,7 +2272,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			Answer answer = (Answer) l.next();
 			Answer newAnswer = new Answer(newItemText, answer.getText(), answer
 					.getSequence(), answer.getLabel(), answer.getIsCorrect(),
-					answer.getGrade(), answer.getScore(), answer.getDiscount(), null);
+					answer.getGrade(), answer.getScore(), answer.getDiscount(), answer.getCorrectOptionLabels(), null);
 			Set newAnswerFeedbackSet = prepareAnswerFeedbackSet(newAnswer,
 					answer.getAnswerFeedbackSet());
 			newAnswer.setAnswerFeedbackSet(newAnswerFeedbackSet);

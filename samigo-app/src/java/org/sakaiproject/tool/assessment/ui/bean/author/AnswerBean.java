@@ -104,7 +104,6 @@ private static ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.ass
 
   //gopalrc - Added Dec 22, 2009 
 	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
 		if (o==null || getSequence()==null || ((AnswerBean)o).getSequence()==null) {
 			return -1;
 		}

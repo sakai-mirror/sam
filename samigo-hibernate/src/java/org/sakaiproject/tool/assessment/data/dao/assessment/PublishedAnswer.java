@@ -63,34 +63,45 @@ public class PublishedAnswer
 
   public PublishedAnswer() {}
 
-  public PublishedAnswer(ItemTextIfc itemText, String text, Long sequence, String label,
-                Boolean isCorrect, String grade, Float score, Float discount) {
-    this.itemText = itemText;
-    this.item = itemText.getItem();
-    this.text = text;
-    this.sequence = sequence;
-    this.label = label;
-    this.isCorrect = isCorrect;
-    this.grade = grade;
-    this.score = score;
-    this.discount = discount;
-  }
+  /*
+   *gopalrc - Jan 2010 
+   *Removed this constructor and refactored calls 
+   *Overloading was difficult to manage because of null values in calls
+   *
+   public PublishedAnswer(ItemTextIfc itemText, String text, Long sequence, String label,
+                 Boolean isCorrect, String grade, Float score, Float discount, String correctOptionLabels) {
+     this.itemText = itemText;
+     this.item = itemText.getItem();
+     this.text = text;
+     this.sequence = sequence;
+     this.label = label;
+     this.isCorrect = isCorrect;
+     this.grade = grade;
+     this.score = score;
+     this.discount=discount;
+     this.correctOptionLabels = correctOptionLabels;
+   }
+ */
+  
 
   public PublishedAnswer(ItemTextIfc itemText, String text, Long sequence, String label,
-                Boolean isCorrect, String grade, Float score, Float discount,
-                Set answerFeedbackSet) {
-    this.itemText = itemText;
-    this.item = itemText.getItem();
-    this.text = text;
-    this.sequence = sequence;
-    this.label = label;
-    this.isCorrect = isCorrect;
-    this.grade = grade;
-    this.score = score;
-    this.discount = discount;
-    this.answerFeedbackSet = answerFeedbackSet;
+          Boolean isCorrect, String grade, Float score, Float discount, String correctOptionLabels,
+          Set answerFeedbackSet) {
+	this.itemText = itemText;
+	this.item = itemText.getItem();
+	this.text = text;
+	this.sequence = sequence;
+	this.label = label;
+	this.isCorrect = isCorrect;
+	this.grade = grade;
+	this.score = score;
+	this.discount=discount;
+	this.correctOptionLabels = correctOptionLabels;
+	this.answerFeedbackSet = answerFeedbackSet;
   }
-
+  
+  
+  
   public Long getId() {
     return id;
   }

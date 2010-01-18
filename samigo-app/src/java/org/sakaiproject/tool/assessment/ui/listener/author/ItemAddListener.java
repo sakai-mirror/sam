@@ -862,7 +862,7 @@ public class ItemAddListener
 							.getMatch()), answerbean.getSequence(), AnswerBean
 							.getChoiceLabels()[answerbean.getSequence()
 							.intValue() - 1], Boolean.TRUE, null, Float.valueOf(
-							bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+							bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 
 					// only add feedback for correct pairs
 					HashSet answerFeedbackSet = new HashSet();
@@ -879,7 +879,7 @@ public class ItemAddListener
 							.getMatch()), answerbean.getSequence(), AnswerBean
 							.getChoiceLabels()[answerbean.getSequence()
 							.intValue() - 1], Boolean.FALSE, null,  Float.valueOf(
-							bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+							bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				}
 
 				// record answers for all combination of pairs
@@ -945,7 +945,7 @@ public class ItemAddListener
 			answer = new Answer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, null, null);
+					Boolean.FALSE, null, null, null, null, null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new AnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -962,8 +962,7 @@ public class ItemAddListener
 			answer = new Answer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, null, null);
-			answer.setCorrectOptionLabels(answerbean.getCorrectOptionLabels());
+					Boolean.FALSE, null, null, null, answerbean.getCorrectOptionLabels(), null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new AnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1014,12 +1013,8 @@ public class ItemAddListener
 						selectOption.getText(), selectOption
 						.getSequence(), selectOption.getLabel(),
 						selectOption.getIsCorrect(), null, null, 
-						Float.valueOf(bean.getItemDiscount()));
+						Float.valueOf(bean.getItemDiscount()), null, null);
 				
-//				actualAnswer.setItemText(itemText);
-//				actualAnswer.setItem(item.getData());
-//				actualAnswer.setAnswerFeedbackSet(qaCombo.getAnswerFeedbackSet());
-
 				HashSet answerFeedbackSet1 = new HashSet();
 				answerFeedbackSet1.add(new AnswerFeedback(actualAnswer,
 						AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1105,11 +1100,11 @@ public class ItemAddListener
 
 					newanswer = new Answer(text1, theanswer, Long.valueOf(i + 1),
 							"", Boolean.TRUE, null, Float.valueOf(bean
-									.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+									.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				} else {
 					newanswer = new Answer(text1, theanswer, Long.valueOf(i + 1),
 							"", Boolean.FALSE, null, Float.valueOf(bean
-									.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+									.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				}
 				answerSet1.add(newanswer);
 			}
@@ -1129,7 +1124,7 @@ public class ItemAddListener
 			// label is null because we don't use labels in essay questions
 			// theanswer is the model answer used as a sample for student
 			Answer modelanswer = new Answer(text1, theanswer, Long.valueOf(1),
-					null, Boolean.TRUE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+					null, Boolean.TRUE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 
 			HashSet answerFeedbackSet1 = new HashSet();
 
@@ -1149,7 +1144,7 @@ public class ItemAddListener
 
 			for (int i = 0; i < choices.length; i++) {
 				Answer answer1 = new Answer(text1, choices[i], Long.valueOf(i + 1),
-						null, null, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+						null, null, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				answerSet1.add(answer1);
 			}
 			text1.setAnswerSet(answerSet1);
@@ -1169,7 +1164,7 @@ public class ItemAddListener
 				String oneanswer = (String) fibanswers[i];
 				Answer answer1 = new Answer(text1, oneanswer, Long.valueOf(i + 1),
 						null, Boolean.TRUE, null,
-						Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+						Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				answerSet1.add(answer1);
 			}
 
@@ -1189,7 +1184,7 @@ public class ItemAddListener
 				String oneanswer = (String) finanswers[i];
 				Answer answer1 = new Answer(text1, oneanswer, Long.valueOf(i + 1),
 						null, Boolean.TRUE, null,
-						Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+						Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				answerSet1.add(answer1);
 			}
 
@@ -1213,12 +1208,12 @@ public class ItemAddListener
 					answer = new Answer(text1,
 							stripPtags(answerbean.getText()), answerbean
 									.getSequence(), answerbean.getLabel(),
-							Boolean.TRUE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+							Boolean.TRUE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				} else {
 					answer = new Answer(text1,
 							stripPtags(answerbean.getText()), answerbean
 									.getSequence(), answerbean.getLabel(),
-							Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+							Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				}
 				HashSet answerFeedbackSet1 = new HashSet();
 				answerFeedbackSet1.add(new AnswerFeedback(answer,
@@ -1244,7 +1239,7 @@ public class ItemAddListener
 				answer = new Answer(text1,
 						stripPtags(answerbean.getText()), answerbean
 						.getSequence(), answerbean.getLabel(),
-						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				HashSet answerFeedbackSet1 = new HashSet();
 				answerFeedbackSet1.add(new AnswerFeedback(answer,
 						AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1261,7 +1256,7 @@ public class ItemAddListener
 				answer = new Answer(text1,
 						stripPtags(answerbean.getText()), answerbean
 						.getSequence(), answerbean.getLabel(),
-						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 				HashSet answerFeedbackSet1 = new HashSet();
 				answerFeedbackSet1.add(new AnswerFeedback(answer,
 						AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1401,7 +1396,7 @@ public class ItemAddListener
 		  
 		  for (int i = 0; i < choices.length; i++) {
 			  AnswerIfc answer = new PublishedAnswer(text, choices[i], Long.valueOf(i + 1),
-					null, null, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+					null, null, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 			  answerSet.add(answer);
 		  }
 		  text.setAnswerSet(answerSet);
@@ -1448,7 +1443,7 @@ public class ItemAddListener
 					String oneanswer = (String) answers[j];
 					AnswerIfc answer = new PublishedAnswer(text, oneanswer,
 							Long.valueOf(j + 1), null, Boolean.TRUE, null,
-							Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+							Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 					answerSet.add(answer);
 				}
 			}
@@ -1518,12 +1513,12 @@ public class ItemAddListener
 					if (isCorrectChoice(bean, answerBean.getLabel().trim())) {
 						answer = new PublishedAnswer(text, oneAnswer,
 							Long.valueOf(j), oneLabel, Boolean.TRUE, null,
-							Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+							Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 					}
 					else {
 						answer = new PublishedAnswer(text, oneAnswer,
 								Long.valueOf(j), oneLabel, Boolean.FALSE, null,
-								Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+								Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
 					}
 					HashSet answerFeedbackSet = new HashSet();
 				    answerFeedbackSet.add(new PublishedAnswerFeedback(answer,
@@ -1601,7 +1596,8 @@ public class ItemAddListener
 										.getChoiceLabels()[matchBean
 										.getSequence().intValue() - 1],
 								Boolean.TRUE, null, new Float(bean
-										.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+										.getItemScore()), Float.valueOf(bean.getItemDiscount()),
+										null, null);
 					} else {
 						answer = new PublishedAnswer(itemText,
 								stripPtags(matchBean.getMatch()), matchBean
@@ -1609,7 +1605,8 @@ public class ItemAddListener
 										.getChoiceLabels()[matchBean
 										.getSequence().intValue() - 1],
 								Boolean.FALSE, null, new Float(bean
-										.getItemScore()), Float.valueOf(bean.getItemDiscount()));
+										.getItemScore()), Float.valueOf(bean.getItemDiscount()),
+										null, null);
 					}
 
 					// record answers for all combination of pairs
@@ -1729,7 +1726,7 @@ public class ItemAddListener
 			answer = new PublishedAnswer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, null, null);
+					Boolean.FALSE, null, null, null, null, null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new PublishedAnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1746,8 +1743,7 @@ public class ItemAddListener
 			answer = new PublishedAnswer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, null, null);
-			answer.setCorrectOptionLabels(answerbean.getCorrectOptionLabels());
+					Boolean.FALSE, null, null, null, answerbean.getCorrectOptionLabels(), null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new PublishedAnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1798,12 +1794,9 @@ public class ItemAddListener
 						selectOption.getText(), selectOption
 						.getSequence(), selectOption.getLabel(),
 						selectOption.getIsCorrect(), null, null, 
-						Float.valueOf(bean.getItemDiscount()));
+						Float.valueOf(bean.getItemDiscount()),
+						null, null);
 				
-//				actualAnswer.setItemText(itemText);
-//				actualAnswer.setItem(item.getData());
-//				actualAnswer.setAnswerFeedbackSet(qaCombo.getAnswerFeedbackSet());
-
 				HashSet answerFeedbackSet1 = new HashSet();
 				answerFeedbackSet1.add(new PublishedAnswerFeedback(actualAnswer,
 						AnswerFeedbackIfc.GENERAL_FEEDBACK,
