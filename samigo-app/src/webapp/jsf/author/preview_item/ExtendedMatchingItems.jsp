@@ -57,12 +57,6 @@ should be included in file importing DeliveryMessages
       
 
       <h:dataTable value="#{itemText.emiQuestionAnswerCombinations}" var="answer" border="1" style="border-style:solid">
-        <h:column> 
-         <h:panelGroup rendered="#{answer.text != null && answer.text ne ''}">
-          <h:outputText escape="false" value="#{answer.label}. #{answer.text}" /> 
-        </h:panelGroup>
-        </h:column>
-
 
         <h:column> 
       <h:dataTable value="#{answer.emiSelectionOptions}" var="answerOption">
@@ -83,18 +77,12 @@ should be included in file importing DeliveryMessages
       </h:dataTable>
         </h:column>
 
-
-        <h:column>
-        <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">    
-         <h:outputLabel value=" #{authorMessages.feedback}: " />
-         <h:outputText escape="false" value="#{answer.generalAnswerFeedback}" />
-		</h:panelGroup>
-        <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && !author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">    
-         <h:outputLabel value=" #{authorMessages.feedback}: " />
-         <h:outputText escape="false" value="#{answer.generalAnswerFeedback}" />
-		</h:panelGroup>
-
+        <h:column> 
+         <h:panelGroup rendered="#{answer.text != null && answer.text ne ''}">
+          <h:outputText escape="false" value="#{answer.label}. #{answer.text}" /> 
+         </h:panelGroup>
         </h:column>
+
       </h:dataTable>
       
       <f:verbatim><br/><br/><br/></f:verbatim>

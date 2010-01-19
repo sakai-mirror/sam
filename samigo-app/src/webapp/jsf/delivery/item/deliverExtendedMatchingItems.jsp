@@ -68,17 +68,6 @@ should be included in file importing DeliveryMessages
   
   <h:dataTable value="#{question.matchingArray}" var="matching">
    
-   <h:column>
-     <h:outputText value="#{matching.text}" escape="false"/>
-     <h:panelGroup rendered="#{delivery.feedback eq 'true' &&
-       delivery.feedbackComponent.showSelectionLevel && 
-	   matching.feedback ne '' && matching.feedback != 'null' && matching.feedback != null}" >
-	   <!-- The above != 'null' is for SAK-5475. Once it gets fixed, we can remove this condition -->
-       <f:verbatim><br /></f:verbatim>
-       <h:outputText value="#{deliveryMessages.feedback}#{deliveryMessages.column} " />
-       <h:outputText value="#{matching.feedback}" escape="false" />
-     </h:panelGroup>
-  </h:column>
 
    <h:column>
   <h:dataTable value="#{matching.choices}" var="selection">
@@ -98,7 +87,7 @@ should be included in file importing DeliveryMessages
 
    <h:column>
    
-     <h:inputText id="responseAnswer" value="#{selection.response}"required="true" size="1" 
+     <h:inputText id="responseAnswer" value="#{selection.response}" size="1" 
         disabled="#{delivery.actionString=='reviewAssessment'
                  || delivery.actionString=='gradeAssessment'}" />
                  
@@ -106,6 +95,19 @@ should be included in file importing DeliveryMessages
   </h:dataTable>
   <f:verbatim><br /><br /></f:verbatim>
    </h:column>
+
+
+   <h:column>
+     <h:outputText value="#{matching.text}" escape="false"/>
+     <h:panelGroup rendered="#{delivery.feedback eq 'true' &&
+       delivery.feedbackComponent.showSelectionLevel && 
+	   matching.feedback ne '' && matching.feedback != 'null' && matching.feedback != null}" >
+	   <!-- The above != 'null' is for SAK-5475. Once it gets fixed, we can remove this condition -->
+       <f:verbatim><br /></f:verbatim>
+       <h:outputText value="#{deliveryMessages.feedback}#{deliveryMessages.column} " />
+       <h:outputText value="#{matching.feedback}" escape="false" />
+     </h:panelGroup>
+  </h:column>
 
   
   </h:dataTable>

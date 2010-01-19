@@ -248,19 +248,7 @@
 <br/>
 
 
-  <!-- 4 RANDOMIZE -->
-  <div class="longtext">
-    <h:outputLabel value="#{authorMessages.randomize_answers}" />    </div>
-<div class="tier3">
-    <h:selectOneRadio value="#{itemauthor.currentItem.randomized}" >
-     <f:selectItem itemValue="true"
-       itemLabel="#{authorMessages.yes}" />
-     <f:selectItem itemValue="false"
-       itemLabel="#{authorMessages.no}" />
-    </h:selectOneRadio>
-  </div>
-
-    <!-- 5 RATIONALE -->
+    <!-- 4 RATIONALE -->
    <div class="longtext">
  <h:outputLabel value="#{authorMessages.require_rationale}" /></div>
 <div class="tier3">
@@ -269,7 +257,9 @@
      <f:selectItem itemValue="false" itemLabel="#{authorMessages.no}" />
     </h:selectOneRadio>
 </div>
-    <!-- 6 PART -->
+
+
+    <!-- 5 PART -->
 <h:panelGrid columns="3"  columnClasses="shorttext" rendered="#{itemauthor.target == 'assessment'}">
 <f:verbatim>&nbsp;</f:verbatim>
 <h:outputLabel value="#{authorMessages.assign_to_p} " />
@@ -279,7 +269,7 @@
 </h:panelGrid>
 
 
-    <!-- 7 POOL -->
+    <!-- 6 POOL -->
 
 <h:panelGrid columns="3" columnClasses="shorttext" rendered="#{itemauthor.target == 'assessment' && author.isEditPendingAssessmentFlow}">
 <f:verbatim>&nbsp;</f:verbatim>
