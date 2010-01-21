@@ -66,7 +66,7 @@ import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.PublishedAssessmentSettingsBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
-import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.tool.assessment.util.TextFormat;
 
 /**
  * <p>Title: Samigo</p>2
@@ -156,7 +156,7 @@ implements ActionListener
 			error=true;
 		}
 
-		assessmentName = FormattedText.convertPlaintextToFormattedText(assessmentName.trim());
+		assessmentName = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, assessmentName.trim());
 		// check if name is unique 
 		if(!assessmentService.publishedAssessmentTitleIsUnique(assessmentSettings.getAssessmentId().toString(), assessmentName)){
 			String nameUnique_err = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages","assessmentName_error");
@@ -242,7 +242,7 @@ implements ActionListener
 	// Check if title has been changed. If yes, update it.
 	private boolean isTitleChanged(PublishedAssessmentSettingsBean assessmentSettings, PublishedAssessmentFacade assessment) {
 	    if (assessment.getTitle() != null && assessmentSettings.getTitle() != null) {
-		String assessmentTitle = FormattedText.convertPlaintextToFormattedText(assessmentSettings.getTitle().trim());
+		String assessmentTitle = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, assessmentSettings.getTitle().trim());
 		if (!assessment.getTitle().trim().equals(assessmentTitle)) {
 		    assessment.setTitle(assessmentTitle);
 		    return true; 

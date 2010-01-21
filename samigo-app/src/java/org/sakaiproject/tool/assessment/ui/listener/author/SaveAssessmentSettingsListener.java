@@ -40,6 +40,7 @@ import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentSettingsBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.util.FormattedText;
 
 /**
@@ -70,7 +71,7 @@ public class SaveAssessmentSettingsListener
     String assessmentId=String.valueOf(assessmentSettings.getAssessmentId()); 
     AssessmentService assessmentService = new AssessmentService();
     SaveAssessmentSettings s = new SaveAssessmentSettings();
-    String assessmentName = FormattedText.convertPlaintextToFormattedText(assessmentSettings.getTitle());
+    String assessmentName = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, assessmentSettings.getTitle());
  
     // check if name is empty
     if(assessmentName!=null &&(assessmentName.trim()).equals("")){

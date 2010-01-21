@@ -55,7 +55,7 @@ import org.sakaiproject.service.gradebook.shared.GradebookService;
 import org.sakaiproject.service.gradebook.shared.AssignmentHasIllegalPointsException;
 import org.sakaiproject.spring.SpringBeanLocator;
 import org.sakaiproject.tool.assessment.util.SamigoEmailService;
-import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.util.ResourceLoader;
 
 /**
@@ -183,7 +183,7 @@ public class PublishAssessmentListener
       error=true;
     }
     
-    if (!assessmentService.assessmentTitleIsUnique(assessmentId, FormattedText.convertPlaintextToFormattedText(assessmentName), false)){
+    if (!assessmentService.assessmentTitleIsUnique(assessmentId, TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, assessmentName), false)){
       error=true;
       String nameUnique_err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages","assessmentName_error");
       FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(nameUnique_err));

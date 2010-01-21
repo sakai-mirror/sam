@@ -45,6 +45,7 @@ import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.ItemAuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.authz.AuthorizationBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.util.FormattedText;
 
 /**
@@ -90,7 +91,7 @@ AssessmentSettingsBean assessmentSettings = (AssessmentSettingsBean) ContextUtil
     // create an assessment based on the title entered and the assessment
     // template selected
     // #1 - read from form authorIndex.jsp
-    String assessmentTitle = FormattedText.convertPlaintextToFormattedText(author.getAssessTitle());
+    String assessmentTitle = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, author.getAssessTitle());
 
     //HUONG's EDIT
     //check assessmentTitle and see if it is duplicated, if is not then proceed, else throw error

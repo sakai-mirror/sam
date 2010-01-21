@@ -217,6 +217,7 @@ public class SamigoEmailService {
 		return "send";
 	}
 
+
 	private File getAttachedFile(String resourceId) throws PermissionException, IdUnusedException, TypeException, ServerOverloadException, IOException {
 		ContentResource cr = AssessmentService.getContentHostingService().getResource(resourceId);
 		log.debug("getAttachedFile(): resourceId = " + resourceId);

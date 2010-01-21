@@ -48,7 +48,7 @@ import org.sakaiproject.tool.assessment.ui.bean.delivery.SectionContentsBean;
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.StudentScoresBean;
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.TotalScoresBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
-import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.tool.assessment.util.TextFormat;
 
 /**
  * <p>
@@ -150,7 +150,7 @@ public class StudentScoreUpdateListener
             if (data.getAutoScore() !=null) {
               oldAutoScore=data.getAutoScore().floatValue();
             }
-            String newComments = FormattedText.convertPlaintextToFormattedText(question.getGradingComment());
+            String newComments = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, question.getGradingComment());
             if (newComments != null) {
       		  newComments = newComments.trim();
             }
@@ -194,7 +194,7 @@ public class StudentScoreUpdateListener
               log.debug("****4 itemGradingId="+data.getItemGradingId());
               log.debug("****5 set points = " + data.getAutoScore() + ", comments to " + data.getComments());
             }
-            data.setAnswerText(FormattedText.convertPlaintextToFormattedText(data.getAnswerText()));
+            data.setAnswerText(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, data.getAnswerText()));
             itemGradingSet.add(data);
           }
         }
@@ -210,7 +210,7 @@ public class StudentScoreUpdateListener
       if (adata == null)
         return true; // Nothing to save.
 
-      String newComments = FormattedText.convertPlaintextToFormattedText(bean.getComments());
+      String newComments = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, bean.getComments());
       if (newComments != null) {
     	  newComments = newComments.trim();
       }
