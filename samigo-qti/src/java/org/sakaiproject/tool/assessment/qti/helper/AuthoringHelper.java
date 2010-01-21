@@ -75,6 +75,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.sakaiproject.util.FormattedText;
 
 /**
  * <p>Copyright: Copyright (c) 2004</p>
@@ -154,7 +155,7 @@ public class AuthoringHelper
         factory.getAssessmentHelperInstance(this.qtiVersion);
       Assessment assessmentXml = assessmentHelper.readXMLDocument(is);
       assessmentXml.setIdent(assessmentId);
-      assessmentXml.setTitle(assessment.getTitle());
+      assessmentXml.setTitle(FormattedText.convertFormattedTextToPlaintext(assessment.getTitle()));
       assessmentHelper.setDescriptiveText(assessment.getDescription(),
                                           assessmentXml);
 
