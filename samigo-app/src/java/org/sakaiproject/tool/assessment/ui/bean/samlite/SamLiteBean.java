@@ -11,6 +11,7 @@ import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacadeQueries;
 import org.sakaiproject.tool.assessment.facade.AssessmentTemplateFacade;
+import org.sakaiproject.tool.assessment.samlite.api.Question;
 import org.sakaiproject.tool.assessment.samlite.api.QuestionGroup;
 import org.sakaiproject.tool.assessment.samlite.api.SamLiteService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
@@ -18,6 +19,7 @@ import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.util.ResourceLoader;
 import org.w3c.dom.Document;
 
 public class SamLiteBean implements Serializable {
@@ -33,6 +35,8 @@ public class SamLiteBean implements Serializable {
 	private boolean isVisible = true;
 	
 	private AuthorBean authorBean;
+
+	private ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.SamLite");
 	
 	public void setAuthorBean(AuthorBean authorBean) {
 		this.authorBean = authorBean;
@@ -79,7 +83,13 @@ public class SamLiteBean implements Serializable {
 	}
 	
 	public List getQuestions() {
-		return questionGroup.getQuestions();
+		List<Question> list = questionGroup.getQuestions();
+		for (Question question: list) {
+			question.setQuestionTypeAsString(getQuestionTypeAsString(question));
+		}
+		
+		return list;
+
 	}
 	
 	public QuestionGroup getQuestionGroup() {
@@ -129,4 +139,21 @@ public class SamLiteBean implements Serializable {
 	public void setVisible(boolean isVisible) {
 		this.isVisible = isVisible;
 	}
+
+	private String getQuestionTypeAsString(Question question) {
+		switch (question.getQuestionType()) {
+		case Question.MULTIPLE_CHOICE_QUESTION:
+			return rb.getString("sam_lite_multiple_choice");
+		case Question.MULTIPLE_CHOICE_MULTIPLE_ANSWER_QUESTION:
+			return rb.getString("sam_lite_multiple_choice_multiple");
+		case Question.FILL_IN_THE_BLANK_QUESTION:
+			return rb.getString("sam_lite_fill_in_the_blank");
+		case Question.TRUE_FALSE_QUESTION:
+			return rb.getString("sam_lite_true_false");
+		case Question.SHORT_ESSAY_QUESTION:
+			return rb.getString("sam_lite_short_essay");
+		};
+		return "Unrecognized Type";
+	}
+
 }
