@@ -1,0 +1,31 @@
+<projectDescription>
+  <name>sakai-samigo-qti</name>
+  <comment/>
+  <projects>
+    <project>sakai-authz-api</project>
+    <project>sakai-component-api</project>
+    <project>sakai-content-api</project>
+    <project>sakai-entity-api</project>
+    <project>sakai-event-api</project>
+    <project>sakai-jsf-app</project>
+    <project>sakai-jsf-tool</project>
+    <project>sakai-samigo-api</project>
+    <project>sakai-samigo-hibernate</project>
+    <project>sakai-samigo-services</project>
+    <project>sakai-sections-impl</project>
+    <project>sakai-sections-impl-standalone</project>
+    <project>sakai-sections-model</project>
+    <project>sakai-tool-api</project>
+    <project>sakai-user-api</project>
+    <project>sakai-util</project>
+    <project>sakai-util-api</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
