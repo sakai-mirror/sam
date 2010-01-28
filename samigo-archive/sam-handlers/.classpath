@@ -39,8 +39,8 @@
   <classpathentry kind="src" path="/sakai-import-impl"/>
   <classpathentry kind="src" path="/sakai-jsf-app"/>
   <classpathentry kind="src" path="/sakai-jsf-tool"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.0.12/sakai-kernel-api-1.0.12.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.0.12/sakai-kernel-util-1.0.12.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.0.13/sakai-kernel-api-1.0.13.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.0.13/sakai-kernel-util-1.0.13.jar"/>
   <classpathentry kind="src" path="/sakai-samigo-api"/>
   <classpathentry kind="src" path="/sakai-samigo-hibernate"/>
   <classpathentry kind="src" path="/sakai-samigo-qti"/>
