@@ -52,6 +52,7 @@ public class Answer
   private String grade;
   private Float score;
   private Float discount;
+  private Float  partialCredit; //partial credit
   private Set answerFeedbackSet;
   private HashMap answerFeedbackMap;
   private ItemData dat=new ItemData();
@@ -69,30 +70,8 @@ public class Answer
 
 public Answer() {}
 
-
-/*
-  *gopalrc - Jan 2010 
-  *Removed this constructor and refactored calls 
-  *Overloading was difficult to manage because of null values in calls
-  *
   public Answer(ItemTextIfc itemText, String text, Long sequence, String label,
-                Boolean isCorrect, String grade, Float score, Float discount, String correctOptionLabels) {
-    this.itemText = itemText;
-    this.item = itemText.getItem();
-    this.text = text;
-    this.sequence = sequence;
-    this.label = label;
-    this.isCorrect = isCorrect;
-    this.grade = grade;
-    this.score = score;
-    this.discount=discount;
-    this.correctOptionLabels = correctOptionLabels;
-  }
-*/
-
-
-  public Answer(ItemTextIfc itemText, String text, Long sequence, String label,
-                Boolean isCorrect, String grade, Float score, Float discount, String correctOptionLabels,
+                Boolean isCorrect, String grade, Float score, Float partialCredit, Float discount, String correctOptionLabels,
                 Set answerFeedbackSet) {
     this.itemText = itemText;
     this.item = itemText.getItem();
@@ -105,6 +84,7 @@ public Answer() {}
     this.discount=discount;
     this.correctOptionLabels = correctOptionLabels;
     this.answerFeedbackSet = answerFeedbackSet;
+    this.partialCredit=partialCredit;
   }
 
   public Long getId() {
@@ -257,52 +237,29 @@ public Answer() {}
       return sequence.compareTo(a.sequence);
   }
 
-    //Huong's adding for checking not empty feedback
- public boolean getGeneralAnswerFbIsNotEmpty(){
+  //Huong's adding for checking not empty feedback
+  public boolean getGeneralAnswerFbIsNotEmpty(){
 
-   return dat.isNotEmpty(getGeneralAnswerFeedback());
-     
+	  return dat.isNotEmpty(getGeneralAnswerFeedback());
+
   }
 
-public boolean getCorrectAnswerFbIsNotEmpty(){
+  public boolean getCorrectAnswerFbIsNotEmpty(){
 
-   return dat.isNotEmpty(getCorrectAnswerFeedback());
-     
+	  return dat.isNotEmpty(getCorrectAnswerFeedback());
+
   }
-public boolean getIncorrectAnswerFbIsNotEmpty(){
+  public boolean getIncorrectAnswerFbIsNotEmpty(){
 
-   return dat.isNotEmpty(getInCorrectAnswerFeedback());
-     
-  }
+	  return dat.isNotEmpty(getInCorrectAnswerFeedback());
 
- public boolean getTextIsNotEmpty(){
-  
-    return dat.isNotEmpty(getText());
   }
 
- 
-	//gopalrc added 16 Nov 2009
- /*
-	public String getEmiCorrectOptionLabelsAsString() {
-		String optionString = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]"));
-		if (optionString == null) {
-			return "";
-		}
-		return optionString.trim().toUpperCase();
-	}
-*/	
-	
-	//gopalrc added 4 Dec 2009
- /*
-	public String getEmiTextWithoutCorrectOptionLabels() {
-		String textWithoutLabels = text.substring(0, text.lastIndexOf("[")).trim();
-		if (textWithoutLabels == null) {
-			return "";
-		}
-		return textWithoutLabels;
-	}
-*/
- 
+  public boolean getTextIsNotEmpty(){
+
+	  return dat.isNotEmpty(getText());
+  }
+
 	
 	//gopalrc added 16 Nov 2009
 	public boolean isEmiOptionCorrect(String optionLabel) {
@@ -320,8 +277,15 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
 	public ArrayList getEmiSelectionOptions() {
 		return emiSelectionOptions;
 	}
+  
+	
+  //--mustansar for partial credit
+  public Float getPartialCredit(){
+	  return partialCredit;
+  }
 
-	//gopalrc added 27 Nov 2009
+  
+  //gopalrc added 27 Nov 2009
 	public void setEmiSelectionOptions(ArrayList emiSelectionOptions) {
 		this.emiSelectionOptions = emiSelectionOptions;
 	}
@@ -359,4 +323,7 @@ public boolean getIncorrectAnswerFbIsNotEmpty(){
   }
 
 	
+  public void setPartialCredit(Float pCredit ){
+	  this.partialCredit=pCredit;
+  } 
 }

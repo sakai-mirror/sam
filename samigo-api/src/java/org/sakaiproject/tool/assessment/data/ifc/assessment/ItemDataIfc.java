@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 
+
 public interface ItemDataIfc extends java.io.Serializable {
 
   public static Integer ACTIVE_STATUS = Integer.valueOf(1);
@@ -90,6 +91,10 @@ public interface ItemDataIfc extends java.io.Serializable {
   Boolean getHasRationale();
 
   void setHasRationale(Boolean hasRationale);
+  
+  void setPartialCreditFlag(Boolean particalCreditFlag);
+  
+  Boolean getPartialCreditFlag();
 
   Integer getStatus();
 
@@ -176,8 +181,10 @@ public interface ItemDataIfc extends java.io.Serializable {
   //gopalrc - added 1 Dec 2009
   String getLeadInText();
   String getThemeText();
-  //void setThemeAndLeadInText();
-  public ArrayList getFirstSortedTextItemArray();
+  public ItemTextIfc getEmiAnswerComponentsItemText();
   public int getNumberOfCorrectEmiOptions();
+  public String getEmiAnswerOptionLabels();
+  public boolean isValidEmiAnswerOptionLabel(String label);
+
   
 }

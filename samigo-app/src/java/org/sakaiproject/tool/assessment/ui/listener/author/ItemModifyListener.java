@@ -159,6 +159,14 @@ public class ItemModifyListener implements ActionListener
       }
       bean.setItemDiscount(discount);
 
+      // partical credit flag
+      String partialCreditFlag= "FALSE";
+      Boolean hasPartialCredit = itemfacade.getPartialCreditFlag();
+      if (hasPartialCredit != null) {
+    	  partialCreditFlag = hasPartialCredit.toString();
+      } 
+      bean.setPartialCreditFlag(partialCreditFlag);
+           
       if (itemfacade.getHasRationale() !=null) {
         bean.setRationale(itemfacade.getHasRationale().toString());
       }
@@ -291,8 +299,11 @@ public class ItemModifyListener implements ActionListener
 		  
 		  //gopalrc - 18 Dec 2009
 		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+			  if (itemText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) {
+				  bean.setLeadInStatement(itemText.getText());
+			  }
 			  //for EMI only want ItemText with sequence = 0
-			  if (!itemText.getSequence().equals(Long.valueOf(0))) {
+			  if (!itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
 				  continue;
 			  }
 		  }
@@ -409,8 +420,47 @@ public class ItemModifyListener implements ActionListener
 		  } //fin
 
 
+	if ((Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CHOICE)) ||(Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CORRECT)) || (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CORRECT_SINGLE_SELECTION)) ) {
+	 Set answerobjlist = itemText.getAnswerSet();
+         String afeedback =  "" ;
+	 Iterator iter1 = answerobjlist.iterator();
+	 ArrayList answerbeanlist = new ArrayList();
+	 ArrayList correctlist = new ArrayList();
+       //need to check sequence no, since this answerSet returns answers in random order
+         int count = answerobjlist.size();
+         AnswerIfc[] answerArray = new AnswerIfc[count];
+         while(iter1.hasNext())
+         {
+           AnswerIfc answerobj = (AnswerIfc) iter1.next();
+           Long seq = answerobj.getSequence();
+           answerArray[seq.intValue()-1] = answerobj;
+         }
+         for (int i=0; i<answerArray.length; i++) {
+           Set feedbackSet = answerArray[i].getAnswerFeedbackSet();
+	   // contains only one element in the Set
+	   if (feedbackSet.size() == 1) {
+	     AnswerFeedbackIfc afbobj=(AnswerFeedbackIfc) feedbackSet.iterator().next();
+             afeedback = afbobj.getText();
+           }
+	   AnswerBean answerbean = new AnswerBean();
+                answerbean.setText(answerArray[i].getText());
+                answerbean.setSequence(answerArray[i].getSequence());
+                answerbean.setLabel(answerArray[i].getLabel());
+                answerbean.setFeedback(afeedback);
+                answerbean.setIsCorrect(answerArray[i].getIsCorrect());
+		if (answerbean.getIsCorrect() != null &&
+                    answerbean.getIsCorrect().booleanValue()) {
+		  correctlist.add(answerbean);
+		}
+		// making sure if there is any partial credit in place we account for that --mustansar
+		if  (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CHOICE)) {
+			answerbean.setPartialCredit(answerArray[i].getPartialCredit()); 
+		}
+		answerbeanlist.add(answerbean);
+         }
 
-
+         
+/*         
 		  if ((Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CHOICE)) ||(Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CORRECT)) || (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CORRECT_SINGLE_SELECTION)) ) {
 			  Set answerobjlist = itemText.getAnswerSet();
 			  String afeedback =  "" ;
@@ -445,6 +495,7 @@ public class ItemModifyListener implements ActionListener
 				  }
 				  answerbeanlist.add(answerbean);
 			  }
+*/
 
 			  // set correct choice for single correct
 			  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.MULTIPLE_CHOICE)) {
@@ -477,7 +528,6 @@ public class ItemModifyListener implements ActionListener
 
 
 		  } // mc
-
 		  
 		  
 		  //gopalrc - added 26 November 2009

@@ -34,8 +34,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
 import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
+import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.tool.assessment.facade.TypeFacade;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+
 
 
 /**
@@ -50,6 +52,8 @@ public class ItemBean
   // internal use
   private static final String answerNumbers =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  private static boolean partialCreditEnabledChecked = false;
+  private static boolean partialCreditEnabled = false;
   /** Use serialVersionUID for interoperability. */
   private final static long serialVersionUID = 8266438770394956874L;
 
@@ -58,7 +62,8 @@ public class ItemBean
   private String itemId;
   private String itemType;
   private String itemScore= "0";
-  private String itemDiscount= "0";
+  private String itemDiscount = "0";
+  private String partialCreditFlag = "Defualt";
   private String[] answers;
   private String[] answerLabels;  //  such as A, B, C
   private String[] corrAnswers;  // store checkbox values(labels) for multiple correct answers, as in mcmc type
@@ -74,6 +79,8 @@ public class ItemBean
   private String additionalEmiQuestionAnswerCombinations = "0";  // additonal options for an EMI question's anwers
 
 
+  private int totalMCAsnwers;
+  
   private boolean[] choiceCorrectArray;
   private String maxRecordingTime;
   private String maxNumberRecordings;
@@ -140,14 +147,17 @@ public class ItemBean
     {
 	return outcome;
     }
+ 
     public void setOutcome(String outcome)
     {
 	this.outcome=outcome;
     }
+    
  public String getPoolOutcome()
     {
 	return poolOutcome;
     }
+ 
     public void setPoolOutcome(String poolOutcome)
     {
 	this.poolOutcome=poolOutcome;
@@ -171,6 +181,7 @@ public class ItemBean
   {
     return itemType;
   }
+  
   public void setItemType(String param)
   {
     this.itemType= param;
@@ -184,15 +195,7 @@ public class ItemBean
   
   public void setItemText(String itemText)
   {
-	if (this.getItemType().equals(TypeFacade.EXTENDED_MATCHING_ITEMS.toString()) &&
-			itemText.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
-		String[] itemTextElements = itemText.split(LEAD_IN_STATEMENT_DEMARCATOR);
-		this.itemText = itemTextElements[0];
-		this.leadInStatement = itemTextElements[1];
-	}
-	else {
-	    this.itemText = itemText;
-	}
+    this.itemText = itemText;
   }
 
   /**
@@ -298,6 +301,7 @@ public class ItemBean
   {
     return corrAnswer;
   }
+  
   /**
    * set correct answer for True/False
    * @param answers ordered array of correct answers
@@ -439,6 +443,7 @@ public class ItemBean
   {
     this.choiceCorrectArray[n] = correctChoice;
   }
+  
   /**
    * for audio recording
    * @return maximum time for recording
@@ -447,6 +452,7 @@ public class ItemBean
   {
     return maxRecordingTime;
   }
+  
   /**
    * for audio recording
    * @param maxRecordingTime maximum time for recording
@@ -455,6 +461,7 @@ public class ItemBean
   {
     this.maxRecordingTime = maxRecordingTime;
   }
+  
   /**
    * for audio recording
    * @return maximum attempts
@@ -604,6 +611,7 @@ public class ItemBean
   {
     return timeAllowed;
   }
+  
   public void setTimeAllowed(String param)
   {
     this.timeAllowed= param;
@@ -613,6 +621,7 @@ public class ItemBean
   {
     return numAttempts;
   }
+  
   public void setNumAttempts(String param)
   {
     this.numAttempts= param;
@@ -702,6 +711,7 @@ public class ItemBean
   public String getInstruction() {
     return instruction;
   }
+  
   public void setInstruction(String param) {
     this.instruction= param;
   }
@@ -969,6 +979,7 @@ public class ItemBean
 	}
 
   }
+
 /*  
 //  this doesn't seem to be used
   public void addChoices(ValueChangeEvent event) {
@@ -1386,6 +1397,25 @@ public class ItemBean
       this.showMutuallyExclusiveForFinCheckbox= param;
     }
 
+    /**@author Mustansar Mehmood 
+     * 
+     */
+    public void  setPartialCreditFlag(String partialCreditFlag){
+    		   this.partialCreditFlag=partialCreditFlag;
+    }
+    
+    /**
+	 * @author Mustansar Mehmood
+	 * 
+	 * @return
+	 */
+	public String getPartialCreditFlag() {
+		if (this.isPartialCreditEnabled()) {
+			return partialCreditFlag;
+		} else {
+			return "false";
+		}
+	}
 
     //************ EMI Answer Options******************
     
@@ -1413,11 +1443,39 @@ public class ItemBean
         	}
     		setEmiAnswerOptions(list);
     	}// else
-
         return list;
-      }
-
+    }
+    	
+    	
+	public boolean isPartialCreditEnabled() {
+		if (partialCreditEnabledChecked) {
+			return partialCreditEnabled;
+		}
+		partialCreditEnabledChecked = true;
+		String partialCreditEnabledString = ServerConfigurationService.getString("samigo.partialCreditEnabled");
+		if (partialCreditEnabledString.equalsIgnoreCase("true")){
+			partialCreditEnabled = true;
+		}
+		else {
+			partialCreditEnabled = false;
+		}
+		return partialCreditEnabled;
+	}
     
+	public void togglePartialCredit(ValueChangeEvent event) {
+		String switchEvent = (String) event.getNewValue();
+	    
+		if (Boolean.parseBoolean(switchEvent)) {
+			setPartialCreditFlag("true");
+		}
+		else if ("False".equalsIgnoreCase(switchEvent)) {
+			setPartialCreditFlag("false");
+		} else {
+			setPartialCreditFlag("Default");
+		}
+	}
+
+		
     //gopalrc - added 23 Nov 2009
     public String removeEmiAnswerOptions() {
 		String labelToRemove = ContextUtil.lookupParam("emiAnswerOptionId");
@@ -1628,6 +1686,61 @@ public class ItemBean
     
     
     
-    
 
+
+	public void resetPartialCreditValues() {
+
+		ArrayList answersList = this.getMultipleChoiceAnswers();
+		Iterator iter = answersList.iterator();
+		// information about the correct answer is not available here so
+		// checking whether the answer is correct simply leads to NPE.
+		while (iter.hasNext()) {
+			AnswerBean answerBean = (AnswerBean) iter.next();
+			if (answerBean.getPartialCredit().floatValue() < 100.00) {
+				answerBean.setPartialCredit(0f);
+			}
+		}
+		this.setMultipleChoiceAnswers(answersList);
+	}
+
+	public String resetToDefaultGradingLogic() {
+		// String switchEvent = (String) event.getNewValue();
+		partialCreditFlag = "Default";
+		ArrayList answersList = this.getMultipleChoiceAnswers();
+		Iterator iter = answersList.iterator();
+		// information about about the correct answer is not available here so
+		// checking whether the answer is correct
+		// simply leads to NPE.
+		while (iter.hasNext()) {
+			AnswerBean answerBean = (AnswerBean) iter.next();
+			answerBean.setPartialCredit(0f);
+		}
+		this.setMultipleChoiceAnswers(answersList);
+		return null;
+	}
+
+	public int gettotalMCAnswers() {
+		return this.multipleChoiceAnswers.size();
+	}
+
+	public void settotalMCAnswers() {
+		this.totalMCAsnwers = this.multipleChoiceAnswers.size();
+	}
+	
+	
+	
+	//gopalrc - Jan 2010
+	public boolean isValidEmiAnswerOptionLabel(String label) {
+		if (label == null) return false;
+		Iterator iter = emiAnswerOptions.iterator();
+		while (iter.hasNext()) {
+			AnswerBean answerBean = (AnswerBean) iter.next();
+			if (answerBean.getLabel().equals(label)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	
 }

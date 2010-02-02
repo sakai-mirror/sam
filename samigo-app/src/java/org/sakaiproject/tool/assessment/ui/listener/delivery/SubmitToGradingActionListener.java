@@ -59,7 +59,7 @@ import org.sakaiproject.tool.assessment.ui.bean.delivery.ItemContentsBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.SectionContentsBean;
 import org.sakaiproject.tool.assessment.ui.bean.shared.PersonBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
-import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.tool.assessment.util.TextFormat;
 
 /**
  * <p>
@@ -422,9 +422,9 @@ public class SubmitToGradingActionListener implements ActionListener {
 				Long oldAnswerId = oldItem.getPublishedAnswerId();
 				Long newAnswerId = newItem.getPublishedAnswerId();
 				String oldRationale = oldItem.getRationale();
-				String newRationale = FormattedText.convertPlaintextToFormattedText(newItem.getRationale());
+				String newRationale = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, newItem.getRationale());
 				String oldAnswerText = oldItem.getAnswerText();
-				String newAnswerText = FormattedText.convertPlaintextToFormattedText(newItem.getAnswerText());
+				String newAnswerText = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, newItem.getAnswerText());
 				if ((oldReview != null && !oldReview.equals(newReview))
 				    || (newReview!=null && !newReview.equals(oldReview))
 						|| (oldAnswerId != null && !oldAnswerId
@@ -550,7 +550,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 							itemgrading.setAgentId(AgentFacade.getAgentString());
 							itemgrading.setSubmittedDate(new Date());
 							if (itemgrading.getRationale() != null && itemgrading.getRationale().length() > 0) {
-								itemgrading.setRationale(FormattedText.convertPlaintextToFormattedText(itemgrading.getRationale()));
+								itemgrading.setRationale(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, itemgrading.getRationale()));
 							}
 							// the rest of the info is collected by
 							// ItemContentsBean via JSF form
@@ -593,7 +593,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 					adds.addAll(grading);
 					break;
 				} else if (itemgrading.getAnswerText() != null && !itemgrading.getAnswerText().equals("")) {
-					itemgrading.setAnswerText(FormattedText.convertPlaintextToFormattedText(itemgrading.getAnswerText()));
+					itemgrading.setAnswerText(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, itemgrading.getAnswerText()));
 					adds.addAll(grading);
 					break;
 				}
@@ -616,7 +616,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 				} else if (itemgrading.getAnswerText() != null && !itemgrading.getAnswerText().equals("")) {
 					String s = itemgrading.getAnswerText();
 					log.debug("s = " + s);
-					itemgrading.setAnswerText(FormattedText.convertPlaintextToFormattedText(s));
+					itemgrading.setAnswerText(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, s));
 					adds.addAll(grading);
 					if (!addedToAdds) {
 						adds.addAll(grading);
@@ -651,15 +651,14 @@ public class SubmitToGradingActionListener implements ActionListener {
 				}
 			}
 			break;
-		//gopalrc - 18 Dec 2007 - TODO - correct code
+		//gopalrc - 18 Dec 2009 - TODO - correct code
 		case 13: // EMI 
 			for (int m = 0; m < grading.size(); m++) {
 				ItemGradingData itemgrading = (ItemGradingData) grading.get(m);
 				if (itemgrading.getItemGradingId() != null
 						&& itemgrading.getItemGradingId().intValue() > 0) {
 					// old answer, check which one to keep, not keeping null  answer
-					if (itemgrading.getPublishedAnswerId() != null || 
-						(itemgrading.getRationale() != null && !itemgrading.getRationale().trim().equals(""))) {
+					if (itemgrading.getPublishedAnswerId() != null) {
 						itemgrading.setAgentId(AgentFacade.getAgentString());
 						itemgrading.setSubmittedDate(new Date());
 						adds.add(itemgrading);
@@ -668,9 +667,8 @@ public class SubmitToGradingActionListener implements ActionListener {
 					}
 				} else { 
 					 // new answer
-					if (itemgrading.getPublishedAnswerId() != null ||
-							(itemgrading.getRationale() != null && !itemgrading.getRationale().trim().equals(""))) {
-						// new  addition  not accepting any new answer with null for MCMR
+					if (itemgrading.getPublishedAnswerId() != null) {
+						// new  addition  not accepting any new answer with null for EMI
 						itemgrading.setAgentId(AgentFacade.getAgentString());
 						itemgrading.setSubmittedDate(new Date());
 						adds.add(itemgrading);

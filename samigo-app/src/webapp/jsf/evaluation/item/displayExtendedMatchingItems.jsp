@@ -25,33 +25,38 @@ include file for displaying Extended Matching Items questions
 
 ******** GOPALRC - TEST/TEMP - displayExtendedMatchingItems.jsp ************
 
-  <h:outputText value="#{question.text}"  escape="false"/>
-  <h:dataTable value="#{question.itemTextArray}" var="itemText">
-   <h:column>
-   <h:dataTable value="#{itemText.answerArraySorted}" var="answer">
-    <h:column rendered="#{answer.text!=null && answer.text!=''}">
-      <h:graphicImage id="image6" rendered="#{answer.isCorrect}"
-        alt="#{evaluationMessages.alt_correct}" url="/images/delivery/checkmark.gif" >
-       </h:graphicImage>
-      <h:graphicImage id="image7" rendered="#{!answer.isCorrect}"
-        alt=" " url="/images/delivery/spacer.gif" >
-       </h:graphicImage>
-    </h:column>
-    <h:column rendered="#{answer.text!=null && answer.text!=''}">
-      <h:outputText value="#{answer.label}" escape="false"
-        rendered="#{question.hint == '***'}" />
-    </h:column>
-    <h:column rendered="#{answer.text!=null && answer.text!=''}"><%-- checkbox or radio button, select answer --%>
-      <h:selectManyCheckbox value="#{question.hint}" disabled="true"
-          rendered="#{question.hint != '***'}">
-        <f:selectItem itemLabel="#{answer.label}"
-          itemValue="#{answer.sequence}"/>
-      </h:selectManyCheckbox>
-    </h:column>
-    <h:column rendered="#{answer.text!=null && answer.text!=''}">
-      <h:outputText value="#{answer.text}" escape="false" />
-    </h:column>
-   </h:dataTable>
-   </h:column>
-  </h:dataTable>
 
+  <h:outputText value="#{question.class.name}"  escape="false"/>
+      <f:verbatim><br/><br/></f:verbatim>
+
+  <h:outputText value="#{question.text}"  escape="false"/>
+  
+  
+      <f:verbatim><br/><br/></f:verbatim>
+
+
+      <h:dataTable value="#{question.emiAnswerComponentsItemText.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
+        <h:column> 
+          <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
+            <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
+          </h:panelGroup>
+        </h:column>
+      </h:dataTable>
+  
+  
+        
+      <f:verbatim><br/><br/></f:verbatim>
+      <h:outputText escape="false" value="#{question.leadInText}" />
+      <f:verbatim><br/><br/></f:verbatim>
+      
+
+      
+      <h:dataTable value="#{question.emiAnswerComponentsItemText.emiQuestionAnswerCombinations}" var="option" border="1" style="border-style:solid">
+        <h:column> 
+          <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
+            <h:outputText escape="false" value="#{option.label}. #{option.text}  Correct:#{option.correctOptionLabels}" /> 
+          </h:panelGroup>
+        </h:column>
+      </h:dataTable>
+      
+  

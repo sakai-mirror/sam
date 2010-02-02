@@ -25,26 +25,21 @@ should be included in file importing DeliveryMessages
 --%>
 -->
 
-***** GOPAL TEST/TEMP - /jsf/delivery/item/deliverExtendedMatchingItem.jsp (question = ItemContentsBean) ************************
+***** GOPAL TEST/TEMP - /jsf/delivery/item/deliverExtendedMatchingItem.jsp (question = ItemContentsBean) XX************************
 
 
   <h:outputText value="#{question.themeText}"  escape="false"/>
   <f:verbatim><br /><br /></f:verbatim>
   
   
-   <h:dataTable value="#{question.itemData.firstSortedTextItemArray}" var="itemText">
-    <h:column>
-      
-      <h:dataTable value="#{itemText.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
-        <h:column> 
-          <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
-            <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
-          </h:panelGroup>
-        </h:column>
-      </h:dataTable>
-      
+  <h:dataTable value="#{question.itemData.emiAnswerComponentsItemText.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
+     <h:column> 
+       <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
+         <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
+       </h:panelGroup>
      </h:column>
-   </h:dataTable>
+  </h:dataTable>
+      
       
   
   
@@ -70,45 +65,34 @@ should be included in file importing DeliveryMessages
    
 
    <h:column>
-  <h:dataTable value="#{matching.choices}" var="selection">
+     <h:dataTable value="#{matching.choices}" var="selection">
+       <h:column rendered="#{delivery.feedback eq 'true' &&
+           delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
+           <h:graphicImage id="image"
+             rendered="#{selection.answer.isCorrect eq 'true' && selection.response eq selection.answer.label}"
+             alt="#{deliveryMessages.alt_correct}" url="/images/checkmark.gif" >
+           </h:graphicImage>
+           <h:graphicImage id="image2"
+             rendered="#{selection.answer.isCorrect ne 'true' && selection.response eq selection.answer.label}"
+             width="16" height="16"
+             alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
+           </h:graphicImage>
+       </h:column>
 
-    <h:column rendered="#{delivery.feedback eq 'true' &&
-       delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
-      <h:graphicImage id="image"
-        rendered="#{selection.answer.isCorrect eq 'true' && selection.response eq selection.answer.label}"
-        alt="#{deliveryMessages.alt_correct}" url="/images/checkmark.gif" >
-      </h:graphicImage>
-      <h:graphicImage id="image2"
-        rendered="#{selection.answer.isCorrect ne 'true' && selection.response eq selection.answer.label}"
-        width="16" height="16"
-        alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
-      </h:graphicImage>
+       <h:column>
+          <h:inputText id="responseAnswer" value="#{selection.response}" size="1" style="text-transform:uppercase;"
+           disabled="#{delivery.actionString=='reviewAssessment'
+                 || delivery.actionString=='gradeAssessment'}"
+                 validator="#{selection.validateEmiResponse}"> 
+          </h:inputText>
+       </h:column>
+       
+     </h:dataTable>
    </h:column>
 
    <h:column>
-   
-     <h:inputText id="responseAnswer" value="#{selection.response}" size="1" 
-        disabled="#{delivery.actionString=='reviewAssessment'
-                 || delivery.actionString=='gradeAssessment'}" />
-                 
+     <h:outputText value="#{matching.text}" escape="false" />
    </h:column>
-  </h:dataTable>
-  <f:verbatim><br /><br /></f:verbatim>
-   </h:column>
-
-
-   <h:column>
-     <h:outputText value="#{matching.text}" escape="false"/>
-     <h:panelGroup rendered="#{delivery.feedback eq 'true' &&
-       delivery.feedbackComponent.showSelectionLevel && 
-	   matching.feedback ne '' && matching.feedback != 'null' && matching.feedback != null}" >
-	   <!-- The above != 'null' is for SAK-5475. Once it gets fixed, we can remove this condition -->
-       <f:verbatim><br /></f:verbatim>
-       <h:outputText value="#{deliveryMessages.feedback}#{deliveryMessages.column} " />
-       <h:outputText value="#{matching.feedback}" escape="false" />
-     </h:panelGroup>
-  </h:column>
-
   
   </h:dataTable>
 
@@ -123,7 +107,7 @@ should be included in file importing DeliveryMessages
 		<h:outputText  value=" #{assessmentSettingsMessages.whats_this_link}"/>
 	</h:outputLink>
 </h:panelGroup>
-
+	
 <h:panelGroup rendered="#{delivery.feedback eq 'true'}">
   <f:verbatim><br /></f:verbatim>
   <h:panelGroup rendered="#{delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}" >

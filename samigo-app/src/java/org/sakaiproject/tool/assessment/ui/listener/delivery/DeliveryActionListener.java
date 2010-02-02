@@ -1442,14 +1442,16 @@ public class DeliveryActionListener
     }
     else if (item.getTypeId().equals(TypeIfc.ESSAY_QUESTION)) 
     {
-      itemBean.setResponseText(FormattedText.convertFormattedTextToPlaintext(itemBean.getResponseText()));
+      String responseText = itemBean.getResponseText();
+      itemBean.setResponseText(FormattedText.convertFormattedTextToPlaintext(responseText));
     }
     else if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) || 
     		item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
             item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
             item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ) 
     {
-      itemBean.setRationale(FormattedText.convertFormattedTextToPlaintext(itemBean.getRationale()));
+      String rationale = itemBean.getRationale();
+      itemBean.setRationale(FormattedText.convertFormattedTextToPlaintext(rationale));
     }
 
     return itemBean;
@@ -1474,7 +1476,7 @@ public class DeliveryActionListener
       
       //Don't use the first ItemText (seq = 0)
       //This is contains the question components
-      if (text.getSequence().equals(Long.valueOf(0))) continue;
+ 	  if (text.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || text.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) continue;
       
       
       MatchingBean mbean = new MatchingBean();
@@ -1516,7 +1518,7 @@ public class DeliveryActionListener
       }
 
       
-      // Now add the user responses
+      // Now add the user responses (ItemGrading)
       int responseCount = 0;
       Iterator itemGradingIter = bean.getItemGradingDataArray().iterator();
       while (itemGradingIter.hasNext())
@@ -1525,7 +1527,7 @@ public class DeliveryActionListener
         if (data.getPublishedItemTextId().equals(text.getId()))
         {
             // We found an existing grading data for this itemtext (sub-question)
-            mbean.setItemGradingData(data);
+            // mbean.setItemGradingData(data);
             AnswerIfc pubAnswer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId()); 
             if (pubAnswer != null) {
             	data.setPublishedAnswer(pubAnswer);
@@ -1536,6 +1538,29 @@ public class DeliveryActionListener
 	            fibBean.setResponse(pubAnswer.getLabel());
             }
         }
+      }
+      
+      
+      //Now Sort the choices according to answer-options selected
+      HashMap choicesMap = new HashMap();
+      Iterator choicesIter = choices.iterator();
+      int z = 0;
+      while (choicesIter.hasNext()) {
+    	  fibBean = (FibBean)choicesIter.next();
+    	  if (fibBean.getAnswer() == null) {
+    		  choicesMap.put("zz" + z++, fibBean);
+    	  }
+    	  else {
+    		  choicesMap.put(fibBean.getAnswer().getLabel() + z++, fibBean);
+    	  }
+      }
+      ArrayList choicesSorted = new ArrayList();
+      choicesSorted.addAll(choicesMap.keySet());
+      Collections.sort(choicesSorted);
+      choices.clear();
+      choicesIter = choicesSorted.iterator();
+      while (choicesIter.hasNext()) {
+    	  choices.add(choicesMap.get(choicesIter.next()));
       }
       
       
@@ -1574,7 +1599,7 @@ public class DeliveryActionListener
       }
       Collections.shuffle(shuffled,
                           new Random( (long) item.getText().hashCode() +
-                          getAgentString().hashCode()));
+                          (getAgentString() + "_" + item.getItemId().toString()).hashCode()));
 
 /*
       Collections.shuffle
@@ -1984,7 +2009,7 @@ public class DeliveryActionListener
 
   public String getPublishedAssessmentId(DeliveryBean delivery){
     String id = ContextUtil.lookupParam("publishedId");
-    if (id == null){
+    if (id == null || id.equals("")){
       id = delivery.getAssessmentId();
     }
     return id;
@@ -2242,7 +2267,7 @@ public class DeliveryActionListener
         int timeElapsed  = Math.round((float)((new Date()).getTime() - timedAG.getBeginDate().getTime())/1000.0f); //in sec
         // this is to cover the scenerio when user took an assessment, Save & Exit, Then returned at a
         // later time, we need to account for the time taht he used before
-        int timeTakenBefore = Math.round(timedAG.getTimeLimit() - timedAG.getTimeLeft()); // in sec
+        int timeTakenBefore = timedAG.getTimeLimit() - timedAG.getTimeLeft(); // in sec
         //log.debug("***time passed before reload next page="+timeElapsed+timeTakenBefore);
 	    ag.setTimeElapsed(Integer.valueOf(timeElapsed+timeTakenBefore));
 

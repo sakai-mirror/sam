@@ -29,6 +29,12 @@ import java.util.Set;
 public interface ItemTextIfc
     extends java.io.Serializable
 {
+	
+	
+  public static Long EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE = Long.valueOf(0);
+  public static Long EMI_LEAD_IN_TEXT_SEQUENCE = Long.valueOf(-1);
+	  
+	
   Long getId();
 
   void setId(Long id);

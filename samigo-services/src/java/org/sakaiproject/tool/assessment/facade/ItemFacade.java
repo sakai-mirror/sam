@@ -39,6 +39,7 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.ItemData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemMetaData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemText;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
@@ -81,6 +82,7 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
   protected Float score;
   protected Float discount;
   protected String hint;
+  protected Boolean partialCreditFlag;
   protected Boolean hasRationale;
   protected Integer status;
   protected String createdBy;
@@ -1082,8 +1084,6 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 	  return itemAttachmentMetaData;
   }
   
-  
-  
 
   //gopalrc - added 30 Nov 2009
   public String getLeadInText() {
@@ -1110,22 +1110,10 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 	return themeText;
   }
 
-/*  
-  //gopalrc - added 30 Nov 2009
-  public void setThemeAndLeadInText() {
-	String text = getText();  
-	if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId()) &&
-			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
-		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
-		themeText = itemTextElements[0];
-		leadInText = itemTextElements[1];
-	}
-  }
-*/  
   
-  //gopalrc - for EMI - the first textItem contains the components 
+  //gopalrc - for EMI - the textItem contains the components 
   // from which the actual answers are constructed 
-  public ArrayList getFirstSortedTextItemArray() {
+  public ItemTextIfc getEmiAnswerComponentsItemText() {
     try {
         this.data = (ItemDataIfc) item.getData();
     }
@@ -1133,7 +1121,7 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
         throw new DataFacadeException(ex.getMessage());
     }
 	  
-	return data.getFirstSortedTextItemArray();
+	return data.getEmiAnswerComponentsItemText();
   }
   
   
@@ -1148,6 +1136,47 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
  	   return data.getNumberOfCorrectEmiOptions();
 	}  
   
+	
+	
+	
+	//gopalrc - available option labels for EMI answers
+	public String getEmiAnswerOptionLabels() {
+		   try {
+		        this.data = (ItemDataIfc) item.getData();
+		    }
+		    catch (AssessmentException ex) {
+		        throw new DataFacadeException(ex.getMessage());
+		   }
+	 	   return data.getEmiAnswerOptionLabels();
+	}
+	
+	//gopalrc - Jan 2010
+	public boolean isValidEmiAnswerOptionLabel(String label) {
+		   try {
+		        this.data = (ItemDataIfc) item.getData();
+		    }
+		    catch (AssessmentException ex) {
+		        throw new DataFacadeException(ex.getMessage());
+		   }
+	 	   return data.isValidEmiAnswerOptionLabel(label);
+	}
+	
+	
 
-    
+  
+  public void setPartialCreditFlag(Boolean partialCreditFlag){
+	  this.partialCreditFlag=partialCreditFlag;
+	  this.data.setPartialCreditFlag(partialCreditFlag);
+
+  }
+
+  public Boolean getPartialCreditFlag(){
+	  try {
+		  this.data = (ItemDataIfc) item.getData();
+	  }
+	  catch (AssessmentException ex) {
+		  throw new DataFacadeException(ex.getMessage());
+	  }
+	  return this.data.getPartialCreditFlag();
+  }
 }

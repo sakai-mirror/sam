@@ -44,6 +44,7 @@ public class ItemData
   private String hint;
   private Boolean hasRationale;
   private Integer status;
+  private Boolean partialCreditFlag;
   private String createdBy;
   private Date createdDate;
   private String lastModifiedBy;
@@ -58,11 +59,13 @@ public class ItemData
   //gopalrc - added 30 Nov 2009 - for EMI question
   private String themeText;
   private String leadInText;
+  //gopalrc - All available answer options for EMI question
+  private String emiAnswerOptionLabels;
 
 
   
   
-  public ItemData() {}
+public ItemData() {}
 
   // this constructor should be deprecated, it is missing triesAllowed
   public ItemData(SectionDataIfc section, Integer sequence,
@@ -71,7 +74,7 @@ public class ItemData
                   Boolean hasRationale, Integer status, String createdBy,
                   Date createdDate, String lastModifiedBy,
                   Date lastModifiedDate,
-                  Set itemTextSet, Set itemMetaDataSet, Set itemFeedbackSet) {
+                  Set itemTextSet, Set itemMetaDataSet, Set itemFeedbackSet, Boolean partialCreditFlag ) {
     this.section = section;
     this.sequence = sequence;
     this.duration = duration;
@@ -91,6 +94,7 @@ public class ItemData
     this.itemTextSet = itemTextSet;
     this.itemMetaDataSet = itemMetaDataSet;
     this.itemFeedbackSet = itemFeedbackSet;
+    this.partialCreditFlag=partialCreditFlag;
   }
 
   public ItemData(SectionDataIfc section, Integer sequence,
@@ -100,7 +104,7 @@ public class ItemData
                   Date createdDate, String lastModifiedBy,
                   Date lastModifiedDate,
                   Set itemTextSet, Set itemMetaDataSet, Set itemFeedbackSet,
-                  Integer triesAllowed) {
+                  Integer triesAllowed, Boolean partialCreditFlag) {
     this.section = section;
     this.sequence = sequence;
     this.duration = duration;
@@ -121,6 +125,7 @@ public class ItemData
     this.itemMetaDataSet = itemMetaDataSet;
     this.itemFeedbackSet = itemFeedbackSet;
     this.triesAllowed = triesAllowed;
+    this.partialCreditFlag=partialCreditFlag;
   }
 
     /*
@@ -798,6 +803,12 @@ public class ItemData
     return list;
   }
 
+  public Boolean getPartialCreditFlag() {
+	  if (partialCreditFlag == null) {
+		  return Boolean.FALSE;
+	  }
+	  return partialCreditFlag;
+  }
 
   //gopalrc - added 30 Nov 2009
   public String getLeadInText() {
@@ -805,6 +816,10 @@ public class ItemData
 		setThemeAndLeadInText();
 	}
 	return leadInText;
+  }
+
+  public void setPartialCreditFlag(Boolean particalCreditFlag) {
+	  this.partialCreditFlag = particalCreditFlag;	
   }
 
 
@@ -818,21 +833,41 @@ public class ItemData
 
   //gopalrc - added 30 Nov 2009
   private void setThemeAndLeadInText() {
-	String text = getText();  
-	if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId()) &&
-			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
-		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
-		themeText = itemTextElements[0];
-		leadInText = itemTextElements[1];
+	if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId())) {
+		boolean themeTextIsSet = false, leadInTextIsSet = false;
+		Iterator iter = itemTextSet.iterator();
+		while (iter.hasNext()) {
+			ItemTextIfc itemText= (ItemTextIfc) iter.next();
+			if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
+				themeText = itemText.getText();
+				themeTextIsSet = true;
+			}
+			if (itemText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) {
+				leadInText = itemText.getText();
+				leadInTextIsSet = true;
+			}
+			
+			if (themeTextIsSet && leadInTextIsSet) {
+				return;
+			}
+		}
 	}
   }
   
-  //gopalrc - for EMI - the first textItem contains the components 
+  
+  //gopalrc - for EMI - the textItem contains the components 
   // from which the actual answers are constructed 
-  public ArrayList getFirstSortedTextItemArray() {
-	  ArrayList firstTextItem = new ArrayList();
-	  firstTextItem.add(this.getItemTextArraySorted().get(0));
-	  return firstTextItem;
+  public ItemTextIfc getEmiAnswerComponentsItemText() {
+	  ItemTextIfc itemText = null;
+	  Iterator iter = itemTextSet.iterator();
+	  while (iter.hasNext()) {
+		  ItemTextIfc text = (ItemTextIfc) iter.next();
+		  if (text.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
+			  itemText = text;
+			  break;
+		  }
+	  }
+	  return itemText;
   }
   
   
@@ -862,5 +897,32 @@ public class ItemData
 		return count;
 	}
 */
+	
+	//gopalrc - available option labels for EMI answers
+	public String getEmiAnswerOptionLabels() {
+		if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId())) {
+			if (emiAnswerOptionLabels == null) {
+				emiAnswerOptionLabels = "";
+				Iterator iter = getEmiAnswerComponentsItemText().getEmiAnswerOptions().iterator();
+				while (iter.hasNext()) {
+					Answer answer = (Answer) iter.next();
+					emiAnswerOptionLabels += answer.getLabel();
+				}
+			}
+		}
+		return emiAnswerOptionLabels;
+	}
+	
+	//gopalrc - Jan 2010
+	public boolean isValidEmiAnswerOptionLabel(String label) {
+		if (label == null) return false;
+		String validOptionLabels = getEmiAnswerOptionLabels();
+		if (label.length()==1 && validOptionLabels.indexOf(label) != -1) {
+			return true;
+		}
+		return false;
+	}
 
+	
+	
 }

@@ -11,14 +11,13 @@
 	<name>Sakai Samigo Project (base POM)</name>
 	<groupId>org.sakaiproject.samigo</groupId>
 	<artifactId>samigo</artifactId>
-	<version>2.7.0-SNAPSHOT</version>
+	<version>2.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
 	 <properties>
+        <sakai.edu-services.version>1.1-SNAPSHOT</sakai.edu-services.version>
+        <sakai.jsf.version>2.7.0-SNAPSHOT</sakai.jsf.version>
         <url.localsite>scp://source.sakaiproject.org/var/www/html/release/samigo/${project.version}</url.localsite>
-        <!--
-            <url.localsite>dav:http://source.sakaiproject.org/release/samigo/${project.version}</url.localsite>
-        -->
     </properties>
 	
 	<modules>
@@ -34,7 +33,6 @@
 		<module>samigo-cp</module>
 		<module>samigo-archive/sam-handlers</module>
 		<module>samlite-impl</module>
-		<module>samigo-shared-deploy</module>
 	</modules>
 	
 	<scm>
@@ -44,27 +42,27 @@
 	</scm>
 	
 	<distributionManagement>
-		<downloadUrl>http://source.sakaiproject.org/maven2/</downloadUrl>
-		<snapshotRepository>
-			<uniqueVersion>false</uniqueVersion>
-			<id>sakai-maven-snapshots</id>
-			<name>Sakai snapshot Repo</name>
-			<url>dav:http://source.sakaiproject.org/maven2-snapshots</url>
-			<layout>default</layout>
-		</snapshotRepository>
-		<repository>
-			<uniqueVersion>false</uniqueVersion>
-			<id>sakai-maven2</id>
-			<name>Sakai maven2 repository</name>
-			<url>dav:https://source.sakaiproject.org/maven2</url>
-			<layout>default</layout>
-		</repository>
-		<site>
-			<id>sakai-site</id>
-			<name>Sakai release Site</name>
-			<url>${url.localsite}</url>
-		</site>
-	</distributionManagement>
+        <downloadUrl>http://source.sakaiproject.org/maven2/</downloadUrl>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>sakai-maven-snapshots-scp</id>
+            <name>Sakai snapshot Repo</name>
+            <url>scp://source.sakaiproject.org/var/www/html/maven2-snapshots</url>
+            <layout>default</layout>
+        </snapshotRepository>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>sakai-maven2-scp</id>
+            <name>Sakai maven2 repository</name>
+            <url>scp://source.sakaiproject.org/var/www/html/maven2</url>
+            <layout>default</layout>
+        </repository>
+        <site>
+            <id>sakai-site</id>
+            <name>Sakai release Site</name>
+            <url>${url.localsite}</url>
+        </site>
+    </distributionManagement>
     
     <repositories>
         <repository>
@@ -72,24 +70,33 @@
             <name>Sakai Maven Repository</name>
             <layout>default</layout>
             <url>http://source.sakaiproject.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
-        <id>sakai-maven2-snapshots</id>
-        <name>Sakai Maven Repo Snapshots</name>
-        <layout>default</layout>
+            <id>sakai-maven2-snapshots</id>
+            <name>Sakai Maven Repo Snapshots</name>
+            <layout>default</layout>
             <url>http://source.sakaiproject.org/maven2-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
             <snapshots>
-        <enabled>true</enabled>
-        </snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>default</id>
             <name>Maven Repository Switchboard</name>
             <layout>default</layout>
             <url>http://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -107,7 +114,7 @@
     </pluginRepositories>
 	
 	<dependencyManagement>
-		<dependencies>
+        <dependencies>
             <dependency>
                 <groupId>org.sakaiproject.samigo</groupId>
                 <artifactId>samigo-api</artifactId>
@@ -128,19 +135,19 @@
                 <version>${project.version}</version>
                 <type>jar</type>
             </dependency>
-			<dependency>
-				<groupId>org.sakaiproject.samigo</groupId>
-				<artifactId>samigo-hibernate</artifactId>
-				<version>${project.version}</version>
+            <dependency>
+                <groupId>org.sakaiproject.samigo</groupId>
+                <artifactId>samigo-hibernate</artifactId>
+                <version>${project.version}</version>
                 <type>jar</type>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.sakaiproject.samigo</groupId>
-				<artifactId>samigo-qti</artifactId>
-				<version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.sakaiproject.samigo</groupId>
+                <artifactId>samigo-qti</artifactId>
+                <version>${project.version}</version>
                 <type>jar</type>
-			</dependency>
+            </dependency>
             <dependency>
                 <groupId>org.sakaiproject.samigo</groupId>
                 <artifactId>samigo-services</artifactId>
@@ -148,50 +155,81 @@
                 <type>jar</type>
                 <scope>provided</scope>
             </dependency>
-			<!-- Samigo Lite -->
-			<dependency>
-				<groupId>org.sakaiproject.samigo</groupId>
-				<artifactId>samlite-impl</artifactId>
-				<version>${project.version}</version>
+            <!-- Samigo Lite -->
+            <dependency>
+                <groupId>org.sakaiproject.samigo</groupId>
+                <artifactId>samlite-impl</artifactId>
+                <version>${project.version}</version>
                 <type>jar</type>
-			</dependency>
-			<dependency>
-				<groupId>org.sakaiproject.edu-services.sections</groupId>
-				<artifactId>sections-impl-standalone</artifactId>
-				<version>1.0-SNAPSHOT</version>
-				<scope>provided</scope>
-			</dependency>
-			<!-- Sakai-embedded version -->
-			<dependency>
-				<groupId>org.sakaiproject.edu-services.sections</groupId>
-				<artifactId>sections-impl</artifactId>
-				<version>1.0-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.sakaiproject.jsf</groupId>
-				<artifactId>jsf-tool</artifactId>
-				<version>2.7.0-SNAPSHOT</version>
-			</dependency>
-			<!--
-				these (jsf-app and util-web) are options to get full Sakai JSF
-				integration
-			-->
-			<dependency>
-				<groupId>org.sakaiproject.jsf</groupId>
-				<artifactId>jsf-app</artifactId>
-				<version>2.7.0-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.sakaiproject.jsf</groupId>
-				<artifactId>jsf-widgets-sun-depend</artifactId>
-				<version>2.7.0-SNAPSHOT</version>
-				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>org.sakaiproject.jsf</groupId>
-				<artifactId>jsf-spreadsheet</artifactId>
-				<version>2.7.0-SNAPSHOT</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+            </dependency>
+            <dependency>
+                <groupId>org.sakaiproject.edu-services.sections</groupId>
+                <artifactId>sections-impl-standalone</artifactId>
+                <version>[1.0.0-beta01,1.1)</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- Sakai-embedded version -->
+            <dependency>
+                <groupId>org.sakaiproject.edu-services.sections</groupId>
+                <artifactId>sections-impl</artifactId>
+                <version>[1.0.0-beta01,1.1)</version>
+            </dependency>
+            <dependency>
+                <groupId>org.sakaiproject.jsf</groupId>
+                <artifactId>jsf-tool</artifactId>
+                <version>[2.7.0-M1,2.8)</version>
+            </dependency>
+            <dependency>
+                <groupId>org.sakaiproject.jsf</groupId>
+                <artifactId>jsf-app</artifactId>
+                <version>[2.7.0-M1,2.8)</version>
+            </dependency>
+            <dependency>
+                <groupId>org.sakaiproject.jsf</groupId>
+                <artifactId>jsf-widgets-sun-depend</artifactId>
+                <version>[2.7.0-M1,2.8)</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.sakaiproject.jsf</groupId>
+                <artifactId>jsf-spreadsheet</artifactId>
+                <version>[2.7.0-M1,2.8)</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.6.1</version>
+                <configuration>
+                    <debug>true</debug>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+                    </links>
+                    <breakiterator>true</breakiterator>
+                    <verbose>false</verbose>
+                    <aggregate>true</aggregate>
+                    <maxmemory>512m</maxmemory>
+                    <additionalJOption>-J-Xms168m -J-Xmx512m -J-XX:PermSize=128m -J-XX:NewSize=64m</additionalJOption>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>1.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>dependency-updates-report</report>
+                            <report>plugin-updates-report</report>
+                            <report>property-updates-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

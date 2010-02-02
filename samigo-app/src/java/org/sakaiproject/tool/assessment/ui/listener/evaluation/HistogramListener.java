@@ -482,8 +482,8 @@ public class HistogramListener
 						  questionScores.setNumberOfStudentsWithZeroAnswers( ((Integer) numberOfStudentsWithZeroAnswersForQuestion.get(questionScores.getItemId())).intValue() );
 					  }
 				  }
-				  // gopalrc Jan 2010 - EMI XXXX
-				  if (questionScores.getQuestionType().equals("13") // gopalrc Jan 2010 - EMI XXXX
+				  // gopalrc Jan 2010 - EMI (NB. apply this AS WELL AS above)
+				  if (questionScores.getQuestionType().equals("13") 
 				  ) {
 					  questionScores.setShowIndividualAnswersInDetailedStatistics(false);
 					  detailedStatistics.addAll(questionScores.getInfo());
@@ -492,6 +492,7 @@ public class HistogramListener
 					  while (subInfoIter.hasNext()) {
 						  HistogramQuestionScoresBean subQuestionScores = (HistogramQuestionScoresBean) subInfoIter.next();
 						  if (subQuestionScores.getHistogramBars() != null) {
+							  subQuestionScores.setN(questionScores.getN());
 							  maxNumOfAnswers = subQuestionScores.getHistogramBars().length >maxNumOfAnswers ? subQuestionScores.getHistogramBars().length : maxNumOfAnswers;
 						  }
 					  }
@@ -652,9 +653,12 @@ public class HistogramListener
     //gopalrc - added Jan 2010
     if (qbean.getQuestionType().equals("13")) { //EMI
     	answers = new ArrayList();
-    	for (int i=1; i<text.size(); i++) { // all except for the first (seq=0) itemText
-    	      ItemTextIfc iText = (ItemTextIfc) publishedItemTextHash.get(((ItemTextIfc) text.toArray()[i]).getId());
-    	      answers.addAll(iText.getAnswerArraySorted());
+    	for (int i=0; i<text.size(); i++) { 
+    		// all except for the first (seq=0) itemText
+    	    ItemTextIfc iText = (ItemTextIfc) publishedItemTextHash.get(((ItemTextIfc) text.toArray()[i]).getId());
+    	    if (!(iText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || iText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE))) {
+    	    	answers.addAll(iText.getAnswerArraySorted());
+    	    }
     	}
     }
     else if (!qbean.getQuestionType().equals("9")) // matching
@@ -705,7 +709,8 @@ public class HistogramListener
 		ArrayList subQuestionAnswers = null;
 		HashMap subQuestionAnswerMap = new HashMap();
 		
-		//int sequence = 1;
+		//Create a Map where each Sub-Question's Answers-ArrayList 
+		//is keyed by sub-question and answer sequence 
 		while (iter.hasNext()) {
 			AnswerIfc answer = (AnswerIfc) iter.next();
 			texts.put(answer.getId(), answer);
@@ -757,18 +762,10 @@ public class HistogramListener
 				numStudentRespondedMap.put(data.getAssessmentGradingId(),
 						studentResponseList);
 				Float autoscore = data.getAutoScore();
-				if (!(Float.valueOf(0)).equals(autoscore)) {
-					results.put(answer.getId(), Integer.valueOf(
+				results.put(answer.getId(), Integer.valueOf(
 							num.intValue() + 1));
-				}
 			}
 		}
-		
-
-		
-		
-		
-		
 		
 		HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
 		int[] numarray = new int[results.keySet().size()];

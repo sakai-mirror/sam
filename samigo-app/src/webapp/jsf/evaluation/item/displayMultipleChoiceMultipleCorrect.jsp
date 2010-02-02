@@ -23,7 +23,6 @@ include file for displaying multiple choice questions
 --%>
 -->
 
-******** GOPALRC - TEST/TEMP - displayMultipleChoiceMultipleCorrect.jsp ************
 
   <h:outputText value="#{question.text}"  escape="false"/>
   <h:dataTable value="#{question.itemTextArray}" var="itemText">

@@ -86,7 +86,7 @@ document.links[newindex].onclick();
 </script>
 
 <script type="text/javascript" language="JavaScript" src="/library/js/jquery-1.1.2.js"></script>
-<script type="text/javascript" language="JavaScript" src="/samigo/js/info.js"></script>
+<script type="text/javascript" language="JavaScript" src="/samigo-app/js/info.js"></script>
 
 <!-- content... -->
 
@@ -159,11 +159,11 @@ document.links[newindex].onclick();
       <f:verbatim></span></f:verbatim>
 	</h:panelGroup>
     <h:outputText value=" "/>
-	<h:commandButton id="import" value="#{authorFrontDoorMessages.button_import}" immediate="true" type="submit" 
+    <h:commandButton id="import" value="#{authorFrontDoorMessages.button_import}" immediate="true" type="submit" 
       rendered="#{authorization.createAssessment}" accesskey="#{authorFrontDoorMessages.a_import}"
       action="importAssessment">
     </h:commandButton>
- </h:panelGrid>
+  </h:panelGrid>
 
  <h:outputText escape="false" rendered="#{authorization.createAssessment}" value="</div>"/>
  <!-- CORE ASSESSMENTS-->

@@ -49,6 +49,7 @@ public class PublishedAnswer
   private String grade;
   private Float score;
   private Float discount;
+  private Float  partialCredit; //partial credit
   private Set answerFeedbackSet;
   private HashMap answerFeedbackMap;
   private PublishedItemData publishedItemData = new PublishedItemData();
@@ -63,29 +64,8 @@ public class PublishedAnswer
 
   public PublishedAnswer() {}
 
-  /*
-   *gopalrc - Jan 2010 
-   *Removed this constructor and refactored calls 
-   *Overloading was difficult to manage because of null values in calls
-   *
-   public PublishedAnswer(ItemTextIfc itemText, String text, Long sequence, String label,
-                 Boolean isCorrect, String grade, Float score, Float discount, String correctOptionLabels) {
-     this.itemText = itemText;
-     this.item = itemText.getItem();
-     this.text = text;
-     this.sequence = sequence;
-     this.label = label;
-     this.isCorrect = isCorrect;
-     this.grade = grade;
-     this.score = score;
-     this.discount=discount;
-     this.correctOptionLabels = correctOptionLabels;
-   }
- */
-  
-
   public PublishedAnswer(ItemTextIfc itemText, String text, Long sequence, String label,
-          Boolean isCorrect, String grade, Float score, Float discount, String correctOptionLabels,
+          Boolean isCorrect, String grade, Float score, Float partialCredit, Float discount, String correctOptionLabels,
           Set answerFeedbackSet) {
 	this.itemText = itemText;
 	this.item = itemText.getItem();
@@ -98,8 +78,8 @@ public class PublishedAnswer
 	this.discount=discount;
 	this.correctOptionLabels = correctOptionLabels;
 	this.answerFeedbackSet = answerFeedbackSet;
+	this.partialCredit=partialCredit;
   }
-  
   
   
   public Long getId() {
@@ -377,4 +357,13 @@ public class PublishedAnswer
 	  }
 
 	
+	
+	//--mustansar for partial credit
+	public Float getPartialCredit(){
+		return partialCredit;
+	}
+	
+	public void setPartialCredit(Float pCredit ){
+		this.partialCredit=pCredit;
+	} 
 }

@@ -34,14 +34,12 @@ should be included in file importing DeliveryMessages
   <!-- ATTACHMENTS -->
   <%@ include file="/jsf/author/preview_item/attachment.jsp" %>
 
-  <h:dataTable value="#{question.itemData.firstSortedTextItemArray}" var="itemText">
-    <h:column>
       
       <h:outputText escape="false" value="#{question.itemData.themeText}" />
       <f:verbatim><br/><br/></f:verbatim>
 
 
-      <h:dataTable value="#{itemText.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
+      <h:dataTable value="#{question.itemData.emiAnswerComponentsItemText.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
         <h:column> 
           <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
             <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
@@ -56,7 +54,7 @@ should be included in file importing DeliveryMessages
       
       
 
-      <h:dataTable value="#{itemText.emiQuestionAnswerCombinations}" var="answer" border="1" style="border-style:solid">
+      <h:dataTable value="#{question.itemData.emiAnswerComponentsItemText.emiQuestionAnswerCombinations}" var="answer" border="1" style="border-style:solid">
 
         <h:column> 
       <h:dataTable value="#{answer.emiSelectionOptions}" var="answerOption">
@@ -87,8 +85,6 @@ should be included in file importing DeliveryMessages
       
       <f:verbatim><br/><br/><br/></f:verbatim>
 
-    </h:column>
-  </h:dataTable>
 
 
 <h:panelGroup>

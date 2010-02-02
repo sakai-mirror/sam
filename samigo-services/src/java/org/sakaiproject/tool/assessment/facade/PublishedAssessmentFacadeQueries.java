@@ -407,7 +407,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 							.getLastModifiedBy(), item.getLastModifiedDate(),
 					null, null, null, // set ItemTextSet, itemMetaDataSet and
 					// itemFeedbackSet later
-					item.getTriesAllowed());
+					item.getTriesAllowed(), item.getPartialCreditFlag());
 			Set publishedItemTextSet = preparePublishedItemTextSet(
 					publishedItem, item.getItemTextSet());
 			Set publishedItemMetaDataSet = preparePublishedItemMetaDataSet(
@@ -608,7 +608,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			PublishedAnswer publishedAnswer = new PublishedAnswer(
 					publishedItemText, answer.getText(), answer.getSequence(),
 					answer.getLabel(), answer.getIsCorrect(),
-					answer.getGrade(), answer.getScore(), answer.getDiscount(), answer.getCorrectOptionLabels(), null);
+					answer.getGrade(), answer.getScore(), answer.getPartialCredit(), answer.getDiscount(), answer.getCorrectOptionLabels(), null);
 			Set publishedAnswerFeedbackSet = preparePublishedAnswerFeedbackSet(
 					publishedAnswer, answer.getAnswerFeedbackSet());
 			publishedAnswer.setAnswerFeedbackSet(publishedAnswerFeedbackSet);
@@ -1460,7 +1460,6 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	// This is for instructors view (author index page)
 	public ArrayList getBasicInfoOfAllPublishedAssessments2(
 			String sortString, boolean ascending, final String siteAgentId) {
-		Date currentDate = new Date();
 		String orderBy = getOrderBy(sortString);
 		
 		String query = "select new PublishedAssessmentData(p.publishedAssessmentId, p.title, "
@@ -2958,4 +2957,21 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		  PublishedAssessmentFacade f = new PublishedAssessmentFacade(a.getAssessmentId(), a.getTitle(), a.getCreatedBy());
 		  return f;
 	  }  
+
+	  public HashMap getToGradebookPublishedAssessmentSiteIdMap() {
+		  String query = "select em.assessment.publishedAssessmentId, a.agentIdString " +
+		  "from PublishedEvaluationModel em, AuthorizationData a " +
+		  "where a.functionId = 'OWN_PUBLISHED_ASSESSMENT' " +
+		  "and em.assessment.publishedAssessmentId = a.qualifierId " +
+		  "and em.toGradeBook = ?";
+
+		  List l = getHibernateTemplate().find(query, "1");
+		  HashMap toGradebookPublishedAssessmentSiteIdMap = new HashMap();
+		  Iterator iter = l.iterator();
+		  while (iter.hasNext()) {
+			  Object o[] = (Object[]) iter.next(); 
+			  toGradebookPublishedAssessmentSiteIdMap.put(o[0], o[1]);
+		  }
+		  return toGradebookPublishedAssessmentSiteIdMap;
+	  }	  
 }

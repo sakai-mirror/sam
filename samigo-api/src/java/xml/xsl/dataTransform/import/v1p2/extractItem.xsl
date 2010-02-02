@@ -128,14 +128,14 @@
       <itemAnswer type="list"><xsl:apply-templates mode="itemRichText" /></itemAnswer>
   </xsl:for-each>
   <xsl:for-each select="//respcondition/conditionvar/or/varequal" >
-  <xsl:choose>
-    <xsl:when test="./*">
-      <itemFibAnswer type="list"><xsl:copy-of select="./*"/></itemFibAnswer>
-    </xsl:when>
-    <xsl:when test="string-length(.)">
-     <itemFibAnswer type="list"><xsl:value-of select="."/></itemFibAnswer>
-    </xsl:when>
-  </xsl:choose>
+	<xsl:choose>
+    	<xsl:when test="./*">
+      		<itemFibAnswer type="list"><xsl:copy-of select="./*"/></itemFibAnswer>
+    	</xsl:when>
+    	<xsl:when test="string-length(.)">
+     		<itemFibAnswer type="list"><xsl:value-of select="."/></itemFibAnswer>
+    	</xsl:when>
+  	</xsl:choose>
   </xsl:for-each>
   <!-- feedback -->
 
@@ -254,6 +254,12 @@
         <xsl:otherwise>Short Answers/Essay</xsl:otherwise>
       </xsl:choose>
     </itemIntrospect>
+  </xsl:for-each>
+  <!-- for partial credit in  Multiple choice we need to import values for other answers as well in addition to the correct -mustansar -->
+  <xsl:for-each select="//respcondition">
+         <xsl:if test="//itemmetadata/qtimetadata/qtimetadatafield/fieldentry='Multiple Choice'"> 
+      <answerScore type="list"><xsl:value-of select="setvar"/></answerScore>
+      </xsl:if>
   </xsl:for-each>
 </itemData>
 </xsl:template>

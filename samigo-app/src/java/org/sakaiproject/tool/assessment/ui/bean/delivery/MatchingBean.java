@@ -155,6 +155,8 @@ public class MatchingBean
   public void setIsCorrect(boolean isCorrect){
     this.isCorrect = isCorrect;
   }
+  
+  
   public boolean getIsCorrect()
   {
       /*

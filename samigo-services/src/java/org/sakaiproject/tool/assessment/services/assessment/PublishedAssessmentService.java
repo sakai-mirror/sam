@@ -465,16 +465,6 @@ public class PublishedAssessmentService extends AssessmentService{
         ArrayList itemTextArray = item.getItemTextArray();
         for (int k=0;k<itemTextArray.size(); k++){
           ItemTextIfc itemText = (ItemTextIfc)itemTextArray.get(k);
-          
-          //gopalrc - 21 December 2009 - Eliminate first ItemText's Answers from published EMI questions
-          //as these contain only the components for contructing the actual answers in subsequent ItemTexts
-          //TODO - implement this after bugfixes related to publishing 
-          /*
-          if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) && itemText.getSequence().equals(Long.valueOf(0))) { // EMI question
-        	  continue;
-          }
-          */
-          
           ArrayList answerArray = itemText.getAnswerArraySorted();
           for (int m=0;m<answerArray.size(); m++){
             AnswerIfc answer = (AnswerIfc)answerArray.get(m);
@@ -729,4 +719,8 @@ public class PublishedAssessmentService extends AssessmentService{
 	   .getPublishedAssessmentInfoForRemove(publishedAssessmentId);
    }
    
+   public HashMap getToGradebookPublishedAssessmentSiteIdMap() {
+	   return PersistenceService.getInstance().getPublishedAssessmentFacadeQueries()
+	   .getToGradebookPublishedAssessmentSiteIdMap();
+   }
 }

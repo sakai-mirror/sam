@@ -742,6 +742,10 @@
       <from-outcome>importAssessment</from-outcome>
       <to-view-id>/jsf/qti/importAssessment.jsp</to-view-id>
     </navigation-case>
+	<navigation-case>
+      <from-outcome>importAssessmentFromRespondus</from-outcome>
+      <to-view-id>/jsf/qti/importAssessmentFromRespondus.jsp</to-view-id>
+    </navigation-case>
     <navigation-case>
       <from-outcome>samLiteEntry</from-outcome>
       <to-view-id>/jsf/samlite/samLiteEntry.jsp</to-view-id>
@@ -797,10 +801,6 @@
     <navigation-case>
       <from-outcome>authorSettings</from-outcome>
       <to-view-id>/jsf/author/authorSettings.jsp</to-view-id>
-    </navigation-case>
-    <navigation-case>
-      <from-outcome>previewItem</from-outcome>
-      <to-view-id>/jsf/author/item/preview/previewItem.jsp</to-view-id>
     </navigation-case>
     <navigation-case>
       <from-outcome>editPublishedAssessmentError</from-outcome>
@@ -983,14 +983,6 @@
     <navigation-case>
       <from-outcome>exportPool</from-outcome>
       <to-view-id>/jsf/questionpool/exportPool.jsp</to-view-id>
-    </navigation-case>
-    <navigation-case>
-      <from-outcome>previewQuestion</from-outcome>
-      <to-view-id>/jsf/author/previewQuestion.jsp</to-view-id>
-    </navigation-case>
-    <navigation-case>
-      <from-outcome>previewQuestionInPool</from-outcome>
-      <to-view-id>/jsf/questionpool/preview/previewItem.jsp</to-view-id>
     </navigation-case>
     <navigation-case>
       <from-outcome>importQuestion</from-outcome>

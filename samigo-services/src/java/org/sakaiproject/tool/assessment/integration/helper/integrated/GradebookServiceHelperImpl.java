@@ -22,6 +22,7 @@
 package org.sakaiproject.tool.assessment.integration.helper.integrated;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
@@ -111,7 +112,10 @@ public class GradebookServiceHelperImpl implements GradebookServiceHelper
 				toolId = ((ToolConfiguration) pageToolList.get(0)).getTool().getId();
 				if (toolId.equalsIgnoreCase("sakai.gradebook.tool")) {
 					return true;
+				} else if (toolId.equalsIgnoreCase("sakai.gradebook.gwt.rpc")) {
+					return true;
 				}
+
 			}
 		} catch (Exception e) {
 			log.warn(e.getMessage());
@@ -269,6 +273,23 @@ public void removeExternalAssessment(String gradebookUId,
     if (testErrorHandling){
       throw new Exception("Encountered an error in update ExternalAssessmentScore.");
     }
+  }
+  
+  public void updateExternalAssessmentScores(Long publishedAssessmentId, final Map studentUidsToScores,
+		  GradebookService g) throws Exception {
+	  boolean testErrorHandling=false;
+	  PublishedAssessmentService pubService = new PublishedAssessmentService();
+	  String gradebookUId = pubService.getPublishedAssessmentOwner(publishedAssessmentId);
+	  if (gradebookUId == null) {
+		  return;
+	  }
+	  g.updateExternalAssessmentScores(gradebookUId,
+			  publishedAssessmentId.toString(),
+			  studentUidsToScores);
+
+	  if (testErrorHandling){
+		  throw new Exception("Encountered an error in update ExternalAssessmentScore.");
+	  }
   }
 
 }

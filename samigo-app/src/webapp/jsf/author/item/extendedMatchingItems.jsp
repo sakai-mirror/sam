@@ -127,7 +127,7 @@
     <h:outputText value="#{answer.label}"  />
     <f:verbatim><br/></f:verbatim>
     <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiAnswerOptions}" rendered="#{itemauthor.currentItem.itemType == 13}">
-      <h:outputText id="text" value="#{authorMessages.button_remove}"/>
+      <h:outputText id="text" value="#{authorMessages.button_remove}" />
       <f:param name="emiAnswerOptionId" value="#{answer.label}"/>
     </h:commandLink>		 
 
@@ -135,7 +135,7 @@
   
   <!-- WYSIWYG -->
   <h:panelGrid>
-    <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes" >
+    <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes">
       <f:validateLength maximum="4000"/>
     </samigo:wysiwyg>
   </h:panelGrid>
@@ -189,12 +189,6 @@
 
 <!-- dynamicaly generate rows of question-answer combos -->
 <div class="tier2">
-  <h:outputText value="#{authorMessages.note_emi_correct_options}" />
-  <br/>
-  <h:outputText value="#{authorMessages.note_emi_separate}" />
-  <br/>
-  <h:outputText value="#{authorMessages.note_emi_example}" />
-  <br/>
 
  <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinations}" var="answer" headerClass="navView longtext">
  <h:column>
@@ -220,7 +214,8 @@
   <h:panelGroup>
     <h:outputLabel value="#{authorMessages.correct_option_labels}" />
     <f:verbatim><br/></f:verbatim>
-    <h:inputText id="correctOptionLabels" value="#{answer.correctOptionLabels}"required="true" size="6" />
+    <h:inputText id="correctOptionLabels" value="#{answer.correctOptionLabels}" size="6" style="text-transform:uppercase;"
+       validator="#{answer.validateCorrectOptionLabels}"/>
   </h:panelGroup>
 			
   

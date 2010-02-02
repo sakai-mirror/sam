@@ -7,7 +7,6 @@ import java.util.Iterator;
 
 //import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
 import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
-//import org.sakaiproject.tool.assessment.ui.bean.author.AnswerBean;
 
 public class Question implements AssessmentConstantsIfc{
 	public static final int UNDEFINED_QUESTION = 0;
@@ -36,6 +35,7 @@ public class Question implements AssessmentConstantsIfc{
 	private String correctAnswer;
 	private List answers;
 	private boolean hasPoints;
+	private String questionTypeAsString;
 	
 
 	
@@ -47,6 +47,7 @@ public class Question implements AssessmentConstantsIfc{
 		this.correctAnswer = "";
 		this.answers = new LinkedList();
 		this.hasPoints = false;
+		this.questionTypeAsString = "";
 	}
 
 
@@ -116,6 +117,8 @@ public class Question implements AssessmentConstantsIfc{
 		return hasPoints;
 	}
 
+/*	
+ * gopalrg
 	public String getQuestionTypeAsString() {
 		switch (questionType) {
 		case MULTIPLE_CHOICE_QUESTION:
@@ -135,11 +138,12 @@ public class Question implements AssessmentConstantsIfc{
 		};
 		return "Unrecognized Type";
 	}
+*/	
+	
 	
 	public int getQuestionType() {
 		return questionType;
 	}
-
 
 	public void setQuestionType(int questionType) {
 		this.questionType = questionType;
@@ -147,17 +151,7 @@ public class Question implements AssessmentConstantsIfc{
 	
 	//gopalrc added 12 Nov 2009
 	public void postProcessing() {
-		
 		if (getQuestionType() == EXTENDED_MATCHING_ITEMS_QUESTION) {
-			
-			/*
-			if (!questionLines.get(2).toString().startsWith(LEAD_IN_STATEMENT_DEMARCATOR)) {
-				questionLines.set(2, LEAD_IN_STATEMENT_DEMARCATOR+questionLines.get(2).toString());
-			}
-			*/
-			
-			
-						
 			int themeLineIndex = 1;
 			int optionLine = 2;
 			questionLines.set(themeLineIndex, questionLines.get(themeLineIndex).toString() + "<br /><br />");
@@ -188,12 +182,18 @@ public class Question implements AssessmentConstantsIfc{
 					answer.postProcessing(questionType);
 				}
 			}
-			
 		}
-
-		
 	}
+
 	
+	public String getQuestionTypeAsString() {
+		return questionTypeAsString;
+	}
+
+	public void setQuestionTypeAsString(String questionTypeAsString) {
+		this.questionTypeAsString = questionTypeAsString;
+	}
+
 	
 //************ Theme and Lead-In Text ******************
 
@@ -216,13 +216,18 @@ public class Question implements AssessmentConstantsIfc{
 
   //gopalrc - added 3 Dec 2009
   public void setThemeAndLeadInText() {
-	String text = (String)questionLines.get(1).toString() + (String)questionLines.get(2);  
+	//String text = (String)questionLines.get(1) + (String)questionLines.get(2);  
+	/*
 	if (getQuestionType() == EXTENDED_MATCHING_ITEMS_QUESTION &&
 			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
 		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
 		themeText = itemTextElements[0];
 		leadInText = itemTextElements[1];
 	}
+	*/
+	themeText = (String)questionLines.get(1);
+	leadInText = (String)questionLines.get(2);
+
   }
 	  
 	  	

@@ -74,6 +74,7 @@ import org.sakaiproject.tool.assessment.ui.bean.author.MatchItemBean;
 import org.sakaiproject.tool.assessment.ui.bean.questionpool.QuestionPoolBean;
 import org.sakaiproject.tool.assessment.ui.bean.questionpool.QuestionPoolDataBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.util.FormattedText;
 
 /**
@@ -593,6 +594,8 @@ public class ItemAddListener
         item.setHasRationale(Boolean.FALSE);
       }
 
+      item.setPartialCreditFlag(Boolean.valueOf(bean.getPartialCreditFlag()));
+      
       // update maxNumAttempts for audio
       if (bean.getNumAttempts() != null) {
         item.setTriesAllowed(Integer.valueOf(bean.getNumAttempts()));
@@ -862,7 +865,7 @@ public class ItemAddListener
 							.getMatch()), answerbean.getSequence(), AnswerBean
 							.getChoiceLabels()[answerbean.getSequence()
 							.intValue() - 1], Boolean.TRUE, null, Float.valueOf(
-							bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+							bean.getItemScore()), Float.valueOf(0f), Float.valueOf(bean.getItemDiscount()), null, null);
 
 					// only add feedback for correct pairs
 					HashSet answerFeedbackSet = new HashSet();
@@ -879,7 +882,7 @@ public class ItemAddListener
 							.getMatch()), answerbean.getSequence(), AnswerBean
 							.getChoiceLabels()[answerbean.getSequence()
 							.intValue() - 1], Boolean.FALSE, null,  Float.valueOf(
-							bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+							bean.getItemScore()), Float.valueOf(0f), Float.valueOf(bean.getItemDiscount()), null, null);
 				}
 
 				// record answers for all combination of pairs
@@ -927,9 +930,15 @@ public class ItemAddListener
 		// ///////////////////////////////////////////////////////////
 		ItemText text1 = new ItemText();
 		text1.setItem(item.getData());
-		text1.setSequence(Long.valueOf(0));
-		text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
+		text1.setSequence(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE);
+		text1.setText(bean.getItemText());
+		//text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
+
 		
+		ItemText textLeadIn = new ItemText();
+		textLeadIn.setItem(item.getData());
+		textLeadIn.setSequence(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE);
+		textLeadIn.setText(bean.getLeadInStatement());
 		
 		// ///////////////////////////////////////////////////////////
 		//
@@ -945,7 +954,7 @@ public class ItemAddListener
 			answer = new Answer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, null, null, null, null);
+					Boolean.FALSE, null, null, null, null, null, null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new AnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -962,7 +971,7 @@ public class ItemAddListener
 			answer = new Answer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, null, null, answerbean.getCorrectOptionLabels(), null);
+					Boolean.FALSE, null, null, null, null, answerbean.getCorrectOptionLabels(), null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new AnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -974,6 +983,7 @@ public class ItemAddListener
 
 		text1.setAnswerSet(answerSet1);
 		textSet.add(text1);
+		textSet.add(textLeadIn);
 
 		
 		
@@ -1008,11 +1018,11 @@ public class ItemAddListener
 				else {
 					numberOfCorrectAnswers++;
 				}
-				
+
 				Answer actualAnswer = new Answer(itemText,
 						selectOption.getText(), selectOption
 						.getSequence(), selectOption.getLabel(),
-						selectOption.getIsCorrect(), null, null, 
+						selectOption.getIsCorrect(), null, null, null,
 						Float.valueOf(bean.getItemDiscount()), null, null);
 				
 				HashSet answerFeedbackSet1 = new HashSet();
@@ -1036,7 +1046,7 @@ public class ItemAddListener
 		Iterator textSetIter = textSet.iterator();
 		while (textSetIter.hasNext()) {
 			ItemText itemText = (ItemText)textSetIter.next();
-			if (itemText.getSequence()==0) continue;
+			if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || itemText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) continue;
 			Iterator answerSetIter = itemText.getAnswerSet().iterator();
 			Answer actualAnswer = null;
 			while (answerSetIter.hasNext()) {
@@ -1071,12 +1081,7 @@ public class ItemAddListener
 		ItemText text1 = new ItemText();
 		text1.setItem(item.getData());
 		text1.setSequence(Long.valueOf(1));
-		if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-			text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
-		}
-		else {
-			text1.setText(bean.getItemText());
-		}
+		text1.setText(bean.getItemText());
 		
 		// ///////////////////////////////////////////////////////////
 		//
@@ -1100,11 +1105,11 @@ public class ItemAddListener
 
 					newanswer = new Answer(text1, theanswer, Long.valueOf(i + 1),
 							"", Boolean.TRUE, null, Float.valueOf(bean
-									.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+									.getItemScore()), Float.valueOf(0f), Float.valueOf(bean.getItemDiscount()), null, null);
 				} else {
 					newanswer = new Answer(text1, theanswer, Long.valueOf(i + 1),
 							"", Boolean.FALSE, null, Float.valueOf(bean
-									.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+									.getItemScore()), Float.valueOf(0f), Float.valueOf(bean.getItemDiscount()), null, null);
 				}
 				answerSet1.add(newanswer);
 			}
@@ -1124,7 +1129,7 @@ public class ItemAddListener
 			// label is null because we don't use labels in essay questions
 			// theanswer is the model answer used as a sample for student
 			Answer modelanswer = new Answer(text1, theanswer, Long.valueOf(1),
-					null, Boolean.TRUE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+					null, Boolean.TRUE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(0f), Float.valueOf(bean.getItemDiscount()), null, null);
 
 			HashSet answerFeedbackSet1 = new HashSet();
 
@@ -1144,7 +1149,7 @@ public class ItemAddListener
 
 			for (int i = 0; i < choices.length; i++) {
 				Answer answer1 = new Answer(text1, choices[i], Long.valueOf(i + 1),
-						null, null, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+						null, null, null, Float.valueOf(bean.getItemScore()), Float.valueOf(0f), Float.valueOf(bean.getItemDiscount()), null, null);
 				answerSet1.add(answer1);
 			}
 			text1.setAnswerSet(answerSet1);
@@ -1164,7 +1169,7 @@ public class ItemAddListener
 				String oneanswer = (String) fibanswers[i];
 				Answer answer1 = new Answer(text1, oneanswer, Long.valueOf(i + 1),
 						null, Boolean.TRUE, null,
-						Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+						Float.valueOf(bean.getItemScore()), Float.valueOf(0f), Float.valueOf(bean.getItemDiscount()), null, null);
 				answerSet1.add(answer1);
 			}
 
@@ -1184,7 +1189,7 @@ public class ItemAddListener
 				String oneanswer = (String) finanswers[i];
 				Answer answer1 = new Answer(text1, oneanswer, Long.valueOf(i + 1),
 						null, Boolean.TRUE, null,
-						Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+						Float.valueOf(bean.getItemScore()), Float.valueOf(0f), Float.valueOf(bean.getItemDiscount()), null, null);
 				answerSet1.add(answer1);
 			}
 
@@ -1208,12 +1213,29 @@ public class ItemAddListener
 					answer = new Answer(text1,
 							stripPtags(answerbean.getText()), answerbean
 									.getSequence(), answerbean.getLabel(),
-							Boolean.TRUE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+							Boolean.TRUE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(100f), Float.valueOf(bean.getItemDiscount()), null, null);
 				} else {
-					answer = new Answer(text1,
-							stripPtags(answerbean.getText()), answerbean
-									.getSequence(), answerbean.getLabel(),
-							Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+					if (item.getTypeId().equals(TypeFacade.MULTIPLE_CHOICE) && item.getPartialCreditFlag()){
+						Float pc =  answerbean.getPartialCredit(); //--mustansar
+						if (pc == null) {
+							pc = Float.valueOf(0f);
+						}
+						answer = new Answer(text1, 
+								stripPtags(answerbean.getText()), 
+								answerbean.getSequence(),
+								answerbean.getLabel(),
+								Boolean.FALSE, null, Float.valueOf(bean.getItemScore()) , 
+								pc,
+								Float.valueOf(bean.getItemDiscount()), null, null);}
+					else {
+						answer = new Answer(text1, 
+								stripPtags(answerbean.getText()), 
+								answerbean.getSequence(),
+								answerbean.getLabel(),
+								Boolean.FALSE, null, Float.valueOf(bean.getItemScore()) ,
+								Float.valueOf(0f), //No partial Credit since it is not enabled the column is not null 
+								Float.valueOf(bean.getItemDiscount()), null, null);
+					}
 				}
 				HashSet answerFeedbackSet1 = new HashSet();
 				answerFeedbackSet1.add(new AnswerFeedback(answer,
@@ -1239,7 +1261,7 @@ public class ItemAddListener
 				answer = new Answer(text1,
 						stripPtags(answerbean.getText()), answerbean
 						.getSequence(), answerbean.getLabel(),
-						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), null, Float.valueOf(bean.getItemDiscount()), null, null);
 				HashSet answerFeedbackSet1 = new HashSet();
 				answerFeedbackSet1.add(new AnswerFeedback(answer,
 						AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1256,7 +1278,7 @@ public class ItemAddListener
 				answer = new Answer(text1,
 						stripPtags(answerbean.getText()), answerbean
 						.getSequence(), answerbean.getLabel(),
-						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), null,Float.valueOf(bean.getItemDiscount()), null, null);
 				HashSet answerFeedbackSet1 = new HashSet();
 				answerFeedbackSet1.add(new AnswerFeedback(answer,
 						AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1396,7 +1418,7 @@ public class ItemAddListener
 		  
 		  for (int i = 0; i < choices.length; i++) {
 			  AnswerIfc answer = new PublishedAnswer(text, choices[i], Long.valueOf(i + 1),
-					null, null, null, Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+					null, null, null, Float.valueOf(bean.getItemScore()), null, Float.valueOf(bean.getItemDiscount()), null, null);
 			  answerSet.add(answer);
 		  }
 		  text.setAnswerSet(answerSet);
@@ -1443,7 +1465,7 @@ public class ItemAddListener
 					String oneanswer = (String) answers[j];
 					AnswerIfc answer = new PublishedAnswer(text, oneanswer,
 							Long.valueOf(j + 1), null, Boolean.TRUE, null,
-							Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+							Float.valueOf(bean.getItemScore()), null, Float.valueOf(bean.getItemDiscount()), null, null);
 					answerSet.add(answer);
 				}
 			}
@@ -1483,6 +1505,7 @@ public class ItemAddListener
 					answer.setScore(Float.valueOf(bean.getItemScore()));
 					answerBean = (AnswerBean) newAnswerMap.get(Long.valueOf(String.valueOf(i)));
 					String oneAnswer = stripPtags(answerBean.getText());
+					answer.setPartialCredit(answerBean.getPartialCredit());
 					String oneLabel = answerBean.getLabel();
 					log.debug("oneAnswer = " + oneAnswer);
 					log.debug("oneLabel = " + oneLabel);
@@ -1513,12 +1536,12 @@ public class ItemAddListener
 					if (isCorrectChoice(bean, answerBean.getLabel().trim())) {
 						answer = new PublishedAnswer(text, oneAnswer,
 							Long.valueOf(j), oneLabel, Boolean.TRUE, null,
-							Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+							Float.valueOf(bean.getItemScore()), Float.valueOf(100f), Float.valueOf(bean.getItemDiscount()), null, null);
 					}
 					else {
 						answer = new PublishedAnswer(text, oneAnswer,
 								Long.valueOf(j), oneLabel, Boolean.FALSE, null,
-								Float.valueOf(bean.getItemScore()), Float.valueOf(bean.getItemDiscount()), null, null);
+								Float.valueOf(bean.getItemScore()), answerBean.getPartialCredit(), Float.valueOf(bean.getItemDiscount()), null, null);
 					}
 					HashSet answerFeedbackSet = new HashSet();
 				    answerFeedbackSet.add(new PublishedAnswerFeedback(answer,
@@ -1595,18 +1618,14 @@ public class ItemAddListener
 										.getSequence(), AnswerBean
 										.getChoiceLabels()[matchBean
 										.getSequence().intValue() - 1],
-								Boolean.TRUE, null, new Float(bean
-										.getItemScore()), Float.valueOf(bean.getItemDiscount()),
-										null, null);
+								Boolean.TRUE, null, new Float(bean.getItemScore()), null, Float.valueOf(bean.getItemDiscount()), null, null);
 					} else {
 						answer = new PublishedAnswer(itemText,
 								stripPtags(matchBean.getMatch()), matchBean
 										.getSequence(), AnswerBean
 										.getChoiceLabels()[matchBean
 										.getSequence().intValue() - 1],
-								Boolean.FALSE, null, new Float(bean
-										.getItemScore()), Float.valueOf(bean.getItemDiscount()),
-										null, null);
+								Boolean.FALSE, null, new Float(bean.getItemScore()), null, Float.valueOf(bean.getItemDiscount()), null, null);
 					}
 
 					// record answers for all combination of pairs
@@ -1708,8 +1727,17 @@ public class ItemAddListener
 		// ///////////////////////////////////////////////////////////
 		PublishedItemText text1 = new PublishedItemText();
 		text1.setItem(item.getData());
-		text1.setSequence(Long.valueOf(0));
-		text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
+		text1.setSequence(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE);
+		text1.setText(bean.getItemText());
+		//text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
+
+		
+		PublishedItemText textLeadIn = new PublishedItemText();
+		textLeadIn.setItem(item.getData());
+		textLeadIn.setSequence(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE);
+		textLeadIn.setText(bean.getLeadInStatement());
+		
+		
 		
 		
 		// ///////////////////////////////////////////////////////////
@@ -1726,7 +1754,7 @@ public class ItemAddListener
 			answer = new PublishedAnswer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, null, null, null, null);
+					Boolean.FALSE, null, null, null, null, null, null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new PublishedAnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1743,7 +1771,7 @@ public class ItemAddListener
 			answer = new PublishedAnswer(text1,
 					stripPtags(answerbean.getText()), answerbean
 					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, null, null, answerbean.getCorrectOptionLabels(), null);
+					Boolean.FALSE, null, null, null, null, answerbean.getCorrectOptionLabels(), null);
 			HashSet answerFeedbackSet1 = new HashSet();
 			answerFeedbackSet1.add(new PublishedAnswerFeedback(answer,
 					AnswerFeedbackIfc.GENERAL_FEEDBACK,
@@ -1755,7 +1783,7 @@ public class ItemAddListener
 
 		text1.setAnswerSet(answerSet1);
 		textSet.add(text1);
-
+		textSet.add(textLeadIn);
 		
 		
 		
@@ -1793,7 +1821,7 @@ public class ItemAddListener
 				PublishedAnswer actualAnswer = new PublishedAnswer(itemText,
 						selectOption.getText(), selectOption
 						.getSequence(), selectOption.getLabel(),
-						selectOption.getIsCorrect(), null, null, 
+						selectOption.getIsCorrect(), null, null, null,
 						Float.valueOf(bean.getItemDiscount()),
 						null, null);
 				
@@ -1818,7 +1846,7 @@ public class ItemAddListener
 		Iterator textSetIter = textSet.iterator();
 		while (textSetIter.hasNext()) {
 			PublishedItemText itemText = (PublishedItemText)textSetIter.next();
-			if (itemText.getSequence()==0) continue;
+			if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || itemText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) continue;
 			Iterator answerSetIter = itemText.getAnswerSet().iterator();
 			PublishedAnswer actualAnswer = null;
 			while (answerSetIter.hasNext()) {
@@ -1878,18 +1906,20 @@ public class ItemAddListener
   
   protected HashSet prepareMetaData(ItemFacade item, ItemBean bean) {
 		HashSet set = new HashSet();
+		
 		if (bean.getKeyword() != null) {
 			set.add(new ItemMetaData(item.getData(),
-					ItemMetaDataIfc.KEYWORD, ContextUtil.processFormattedText(log, bean.getKeyword())));
+					ItemMetaDataIfc.KEYWORD, TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, bean.getKeyword())));
 		}
 		if (bean.getRubric() != null) {
 			set.add(new ItemMetaData(item.getData(),
-					ItemMetaDataIfc.RUBRIC, ContextUtil.processFormattedText(log, bean.getRubric())));
+					ItemMetaDataIfc.RUBRIC, TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, bean.getRubric())));
 		}
 		if (bean.getObjective() != null) {
 			set.add(new ItemMetaData(item.getData(),
-					ItemMetaDataIfc.OBJECTIVE, ContextUtil.processFormattedText(log, bean.getObjective())));
+					ItemMetaDataIfc.OBJECTIVE, TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, bean.getObjective())));
 		}
+		
 		// Randomize property got left out, added in metadata
 		if (bean.getRandomized() != null) {
 		set.add(new ItemMetaData(item.getData(),
@@ -1963,13 +1993,13 @@ public class ItemAddListener
 	  while (iter.hasNext()) {
 		  ItemMetaDataIfc itemMetaData = (ItemMetaDataIfc) iter.next();
 		  if (itemMetaData.getLabel().equals(ItemMetaDataIfc.KEYWORD)){
-			  itemMetaData.setEntry(ContextUtil.processFormattedText(log, bean.getKeyword()));
+			  itemMetaData.setEntry(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, bean.getKeyword()));
 		  }
 		  else if (itemMetaData.getLabel().equals(ItemMetaDataIfc.RUBRIC)){
-			  itemMetaData.setEntry(ContextUtil.processFormattedText(log, bean.getKeyword()));
+			  itemMetaData.setEntry(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, bean.getKeyword()));
 		  }
 		  else if (itemMetaData.getLabel().equals(ItemMetaDataIfc.OBJECTIVE)){
-			  itemMetaData.setEntry(ContextUtil.processFormattedText(log, bean.getObjective()));
+			  itemMetaData.setEntry(TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, bean.getObjective()));
 		  }
 		  else if (itemMetaData.getLabel().equals(ItemMetaDataIfc.RANDOMIZE)){
 			  itemMetaData.setEntry(bean.getRandomized());
@@ -2021,7 +2051,7 @@ public class ItemAddListener
         if (afteropen.length>1) {
 // must have text in between {}
           String[] lastpart = afteropen[1].split("\\}");
-          String answer = FormattedText.escapeHtml(FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("&lt;.*?&gt;", "")), false);
+          String answer = lastpart[0].replaceAll("&lt;.*?&gt;", "");
           list.add(answer);
         }
     }
@@ -2030,17 +2060,17 @@ public class ItemAddListener
       if (i == 0) {
         String[] firstpart = tokens[i].split("\\{");
 	  if (firstpart.length>1) {
-		String answer = FormattedText.escapeHtml(FormattedText.convertFormattedTextToPlaintext(firstpart[1].replaceAll("&lt;.*?&gt;", "")), false);
+		String answer = firstpart[1].replaceAll("&lt;.*?&gt;", "");
           list.add(answer);
         }
       }
       else if (i == (tokens.length - 1)) {
         String[] lastpart = tokens[i].split("\\}");
-        String answer = FormattedText.escapeHtml(FormattedText.convertFormattedTextToPlaintext(lastpart[0].replaceAll("&lt;.*?&gt;", "")), false);
+        String answer = lastpart[0].replaceAll("&lt;.*?&gt;", "");
         list.add(answer);
       }
       else {
-    	String answer = FormattedText.escapeHtml(FormattedText.convertFormattedTextToPlaintext(tokens[i].replaceAll("&lt;.*?&gt;", "")), false);
+    	String answer = tokens[i].replaceAll("&lt;.*?&gt;", "");
         list.add(answer);
       }
       }

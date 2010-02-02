@@ -180,4 +180,7 @@ public class PublishedItemFacade extends ItemFacade implements Serializable, Ite
 	    this.data.getItemFeedbackSet().add(new PublishedItemFeedback((PublishedItemData)this.data, feedbackTypeId, text));
 	    this.itemFeedbackSet = this.data.getItemFeedbackSet();
 	  }
+	  
+	  
+	  
 }

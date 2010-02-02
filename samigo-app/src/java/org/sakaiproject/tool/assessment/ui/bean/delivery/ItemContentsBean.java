@@ -69,6 +69,8 @@ import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.tool.assessment.util.AttachmentUtil;
 import org.sakaiproject.tool.cover.SessionManager;
 
+import org.sakaiproject.util.ResourceLoader;
+
 /**
  * <p>
  * This bean represents an item
@@ -82,6 +84,8 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 	private static final long serialVersionUID = 6270034338280029897L;
 
 	private static Log log = LogFactory.getLog(ItemContentsBean.class);
+
+	private static ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.DeliveryMessages");
 
 	// private static ContextUtil cu;
 
@@ -157,7 +161,7 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
     private String themeText;
     private String leadInText;
 	
-	
+    
 	
 	public ItemContentsBean() {
 	}
@@ -758,6 +762,23 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 			return responseText;
 		}
 	}
+	
+	public String getResponseTextForDisplay() {
+		log.debug("itemcontentbean.getResponseText");
+		try {
+			String response = responseText;
+			Iterator iter = getItemGradingDataArray().iterator();
+			if (iter.hasNext()) {
+				ItemGradingData data = (ItemGradingData) iter.next();
+				response = data.getAnswerText();
+			}
+			response = response.replaceAll("(\r\n|\r)", "<br/>");
+			return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseText;
+		}
+	}
 
 	public void setResponseText(String presponseId) {
 		log.debug("itemcontentbean.setResponseText");
@@ -895,15 +916,21 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 	}
 
 	public String getRationale() {
-		// Iterator iter = getItemGradingDataArray().iterator();
-		// if (iter.hasNext())
-		// {
 		int count = getItemGradingDataArray().size();
 		if (count > 0) {
 			ItemGradingData data = (ItemGradingData) getItemGradingDataArray()
 					.toArray()[count - 1];
-			// ItemGradingData data = (ItemGradingData) iter.next();
-			rationale = FormattedText.unEscapeHtml(data.getRationale());
+			rationale = data.getRationale();
+		}
+		return Validator.check(rationale, "");
+	}
+	
+	public String getRationaleForDisplay() {
+		int count = getItemGradingDataArray().size();
+		if (count > 0) {
+			ItemGradingData data = (ItemGradingData) getItemGradingDataArray()
+					.toArray()[count - 1];
+			rationale = data.getRationale().replaceAll("(\r\n|\r)", "<br/>");
 		}
 		return Validator.check(rationale, "");
 	}
@@ -1136,6 +1163,14 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
   public boolean getHasNoMedia() {
 	return getMediaArray().size() < 1;
   }
+
+  public String getAnswerKeyTF() {
+ 	String answerKey = itemData.getAnswerKey();
+	if ("true".equals(answerKey)) answerKey = rb.getString("true_msg"); 
+	if ("false".equals(answerKey)) answerKey = rb.getString("false_msg");
+	return answerKey;
+  }
+
   
   public void setAttachment(Long itemGradingId){
 	  List itemGradingAttachmentList = new ArrayList();
@@ -1202,6 +1237,7 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 
   //gopalrc - added 30 Nov 2009
   public void setThemeAndLeadInText() {
+	  /*
 	String text = getText();  
 	if ((TypeIfc.EXTENDED_MATCHING_ITEMS).equals(getItemData().getTypeId()) &&
 			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
@@ -1209,11 +1245,13 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 		themeText = itemTextElements[0];
 		leadInText = itemTextElements[1];
 	}
+	*/
+	  
+	themeText = itemData.getThemeText();
+	leadInText = itemData.getLeadInText();
+
   }
     
-	  
-  
-  
   
   
 }

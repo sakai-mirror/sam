@@ -44,6 +44,7 @@ import org.sakaiproject.tool.assessment.qti.asi.Item;
 import org.sakaiproject.tool.assessment.qti.constants.AuthoringConstantStrings;
 import org.sakaiproject.tool.assessment.qti.constants.QTIVersion;
 import org.sakaiproject.tool.assessment.qti.helper.AuthoringXml;
+import org.sakaiproject.tool.assessment.qti.util.XmlUtil;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerFeedbackIfc;
 
 /**
@@ -240,7 +241,7 @@ public class ItemHelper12Impl extends ItemHelperBase
       {
         value = "";
       }
-      value =  "<![CDATA[" + value + "]]>";
+      value =  XmlUtil.convertStrforCDATA(value);
       itemXml.update(xpath + "/response_label[" + responseNo +
                      "]/material/mattext",
                      value);
@@ -291,7 +292,7 @@ public class ItemHelper12Impl extends ItemHelperBase
       {
         value = "";
       }
-      value =  "<![CDATA[" + value + "]]>";
+      value =  XmlUtil.convertStrforCDATA(value);
       itemXml.update(xpath + "/itemfeedback[" + responseNo +
                      "]/flow_mat/material/mattext",
                      value);
@@ -411,7 +412,7 @@ public class ItemHelper12Impl extends ItemHelperBase
         String respIdent = "MT-" + randomNumber + "-" + label;
 
         String respCondNo = "" + respCondCount;
-        responseFeedback =  "<![CDATA[" + responseFeedback + "]]>";
+        responseFeedback =  XmlUtil.convertStrforCDATA(responseFeedback);
         // add source (addMatchingRespcondition())
         if (Boolean.TRUE.equals(correct))
         {
@@ -485,7 +486,7 @@ public class ItemHelper12Impl extends ItemHelperBase
           {
             mattext = (String) valueMap.get("text");
 //wrap mattext with cdata
-            mattext =  "<![CDATA[" + mattext + "]]>";
+            mattext = XmlUtil.convertStrforCDATA(mattext);
   
             if (mattext != null)
             {
@@ -597,7 +598,7 @@ public class ItemHelper12Impl extends ItemHelperBase
       updateItemXml(
         itemXml, varequal + "/@respident", respIdent);
       // need to wrap CDATA for responses[i]  .  
-      String wrapcdata_response =  "<![CDATA[" + responses[i] + "]]>";
+      String wrapcdata_response = XmlUtil.convertStrforCDATA(responses[i]);
       updateItemXml(itemXml, varequal, wrapcdata_response);
     }
 
@@ -796,7 +797,7 @@ public class ItemHelper12Impl extends ItemHelperBase
           {
             mattext = (String) valueMap.get("text");
 //          wrap mattext with cdata
-            mattext =  "<![CDATA[" + mattext + "]]>";
+            mattext = XmlUtil.convertStrforCDATA(mattext);
 
             if (mattext != null)
             {
@@ -908,7 +909,7 @@ public class ItemHelper12Impl extends ItemHelperBase
       updateItemXml(
         itemXml, varequal + "/@respident", respIdent);
       // need to wrap CDATA for responses[i]  .  
-      String wrapcdata_response =  "<![CDATA[" + responses[i] + "]]>";
+      String wrapcdata_response = XmlUtil.convertStrforCDATA(responses[i]);
 
       updateItemXml(itemXml, varequal, wrapcdata_response);
     }
@@ -1390,7 +1391,7 @@ public class ItemHelper12Impl extends ItemHelperBase
 
     List list = itemXml.selectNodes(xpath);
     log.debug("in ItemHelper12Impl.java: setItemText() text = " + itemText);
-    itemText =  "<![CDATA[" + itemText + "]]>";
+    itemText = XmlUtil.convertStrforCDATA(itemText);
     log.debug("in ItemHelperBase.java: setItemText() wrapped CDATA text is = " + itemText);
 
     try
@@ -1614,8 +1615,19 @@ public class ItemHelper12Impl extends ItemHelperBase
             isInsert = false;
           }
 
-          addAnswerFeedback(itemXml, value,
-                            isInsert, xpathIndex, "" + label);
+          if(itemXml.isMCSC()){
+        	  //MC Single Correct 
+        	  if(answer.getIsCorrect().booleanValue()){
+        		  answer.setPartialCredit(100f);
+        	  }
+       		  addAnswerFeedbackPartialCredit(itemXml, value,
+        				  isInsert, xpathIndex, "" + label, Float.valueOf(((answer.getItem().getScore().floatValue())*answer.getPartialCredit().floatValue())/100f)); //--mustansar
+          }
+          else 
+          { // for MC Mulitiple Correct
+        	  addAnswerFeedback(itemXml, value,
+        			  isInsert, xpathIndex, "" + label  ); 
+          }
           label++;
           xpathIndex++;
         }
@@ -1690,7 +1702,7 @@ public class ItemHelper12Impl extends ItemHelperBase
     	value = "<![CDATA[]]>";
     }
     else {
-    	value = "<![CDATA[" + value + "]]>";
+    	value = XmlUtil.convertStrforCDATA(value);
     }
     String respCond = "item/resprocessing/respcondition[" + responseNo + "]";
     updateItemXml(itemXml, respCond + "/setvar", "" + currentPerItemScore);
@@ -1769,7 +1781,7 @@ public class ItemHelper12Impl extends ItemHelperBase
     {
     	
     	log.debug("in ItemHelper12Impl.java: insertResponseLabelMattext() text = " + value);
-    	value =  "<![CDATA[" + value + "]]>";
+    	value =  XmlUtil.convertStrforCDATA(value);
     	log.debug("in ItemHelperBase.java: insertResponseLabelMattext() wrapped CDATA text is = " + value);
     	
       itemXml.update(
@@ -1935,4 +1947,33 @@ public class ItemHelper12Impl extends ItemHelperBase
     }
   }
 
+  /**
+   * Adds feedback with ident referencing answer ident.
+   *
+   * @param itemXml
+   * @param value
+   * @param isInsert
+   * @param responseNo
+   * @param responseLabel
+   */
+  private void addAnswerFeedbackPartialCredit(Item itemXml, String value,
+		  boolean isInsert, int responseNo,
+		  String responseLabel, Float partialCredit)
+  {
+	  log.debug("addAnswerFeedback()");
+	  log.debug("answer feedback value: " + value);
+	  if (value == null) {
+		  value = "<![CDATA[]]>";
+	  }
+	  else {
+		  value = XmlUtil.convertStrforCDATA(value);
+	  }
+	  String respCond = "item/resprocessing/respcondition[" + responseNo + "]";
+
+	  //  updateItemXml(itemXml, respCond + "/setvar", "" + currentPerItemScore);
+	  updateItemXml(itemXml, respCond + "/setvar", "" + partialCredit);
+	  updateItemXml(itemXml,
+			  respCond + "/displayfeedback[2]/@linkrefid", "AnswerFeedback");
+	  updateItemXml(itemXml, respCond + "/displayfeedback[2]", value);
+  }
 }
