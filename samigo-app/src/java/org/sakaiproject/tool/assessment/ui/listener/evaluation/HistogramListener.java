@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
@@ -353,6 +354,7 @@ public class HistogramListener
 					  //totalpossible = totalpossible + item.getScore().doubleValue();
 					  //ArrayList responses = null;
 					  
+					  //for each question (item) in the published assessment's current part/section
 					  determineResults(pub, questionScores, (ArrayList) itemScores
 							  .get(item.getItemId()));
 					  questionScores.setTotalScore(item.getScore().toString());
@@ -483,6 +485,8 @@ public class HistogramListener
 					  }
 				  }
 				  // gopalrc Jan 2010 - EMI (NB. apply this AS WELL AS above)
+				  //i.e. for EMI questions we add detailed stats for the whole
+				  //question as well as for the sub-questions
 				  if (questionScores.getQuestionType().equals("13") 
 				  ) {
 					  questionScores.setShowIndividualAnswersInDetailedStatistics(false);
@@ -605,6 +609,14 @@ public class HistogramListener
 
   }
 
+  /**
+   * For each question (item) in the published assessment's current part/section
+   * determine the results by calculating statistics for whole question or 
+   * individual answers depending on the question type
+   * @param pub
+   * @param qbean
+   * @param itemScores
+   */
   private void determineResults(PublishedAssessmentIfc pub, HistogramQuestionScoresBean qbean,
     ArrayList itemScores)
   {
@@ -627,6 +639,14 @@ public class HistogramListener
 
   }
 
+  /**
+   * For each question where statistics are required for seperate answers, 
+   * this method calculates the answer statistics by calling a different
+   * getXXXScores() method for each question type.
+   * @param pub
+   * @param qbean
+   * @param scores
+   */
   private void doAnswerStatistics(PublishedAssessmentIfc pub, HistogramQuestionScoresBean qbean,
     ArrayList scores)
   {
@@ -654,8 +674,8 @@ public class HistogramListener
     if (qbean.getQuestionType().equals("13")) { //EMI
     	answers = new ArrayList();
     	for (int i=0; i<text.size(); i++) { 
-    		// all except for the first (seq=0) itemText
     	    ItemTextIfc iText = (ItemTextIfc) publishedItemTextHash.get(((ItemTextIfc) text.toArray()[i]).getId());
+    		// all except for the EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE (seq=0) and EMI_LEAD_IN_TEXT_SEQUENCE (seq=-1)itemTexts
     	    if (!(iText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || iText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE))) {
     	    	answers.addAll(iText.getAnswerArraySorted());
     	    }
@@ -692,33 +712,40 @@ public class HistogramListener
   
   
 
-  //gopalrc - added Jan 2010
-  //XXXX 
+  /**
+   * gopalrc - added Jan 2010
+   * calculates statistics for EMI questions
+   */
   private void getEMIScores(HashMap publishedItemHash,
 			HashMap publishedAnswerHash, ArrayList scores,
 			HistogramQuestionScoresBean qbean, ArrayList answers) {
 		ResourceLoader rb = new ResourceLoader(
 				"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
 		HashMap texts = new HashMap();
-		Iterator iter = answers.iterator();
+		
+		//keys the number of student responses selecting a particular answer
+		//by the Answer ID
 		HashMap results = new HashMap();
-		HashMap numStudentRespondedMap = new HashMap();
+		
+		
+		
+		//keys Answer-IDs by subQuestion/ItemTextSequence-answerSequence (concatenated)
 		HashMap sequenceMap = new HashMap();
 		
-		//gopalrc - sub Questions for EMI - Jan 2010
+		//list of answers for each sub-question/ItemText
 		ArrayList subQuestionAnswers = null;
+		
+		//Map which keys above lists by the sub-question/ItemText sequence
 		HashMap subQuestionAnswerMap = new HashMap();
 		
 		//Create a Map where each Sub-Question's Answers-ArrayList 
 		//is keyed by sub-question and answer sequence 
+		Iterator iter = answers.iterator();
 		while (iter.hasNext()) {
 			AnswerIfc answer = (AnswerIfc) iter.next();
 			texts.put(answer.getId(), answer);
 			results.put(answer.getId(), Integer.valueOf(0));
-			//sequenceMap.put(answer.getSequence(), answer.getId());
 			sequenceMap.put(answer.getItemText().getSequence() + "-" + answer.getSequence(), answer.getId());
-			
-		
 			Long subQuestionSequence = answer.getItemText().getSequence();
 			Object subSeqAns = subQuestionAnswerMap.get(subQuestionSequence);
 			if (subSeqAns == null) {
@@ -729,19 +756,30 @@ public class HistogramListener
 				subQuestionAnswers = (ArrayList) subSeqAns;
 			}
 			subQuestionAnswers.add(answer);
-			
 		}
-				
+
+		
+		
+		//Iterate through the student answers (ItemGradingData)
 		iter = scores.iterator();
+		//Create a map that keys all the responses (ItemGradingData) 
+		//for this question from a specific student (or assessment)
+		//by the id of that assessment (AssessmentGradingData)
+		HashMap numStudentRespondedMap = new HashMap();
+		//and do the same for seperate sub-questions
+		HashMap numStudentRespondedPerSubQuestionMap = new HashMap();
 		while (iter.hasNext()) {
 			ItemGradingData data = (ItemGradingData) iter.next();
+			//Get the published answer that corresponds to the student's reponse
 			AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data
 					.getPublishedAnswerId());
+			//This should always be the case as only valid responses 
+			//from the list of available options are allowed 
 			if (answer != null) {
 				// log.info("Rachel: looking for " + answer.getId());
 				// found a response
 				Integer num = null;
-				// num is a counter
+				// num is a counter for the number of responses that select this published answer
 				try {
 					// we found a response, now get existing count from the
 					// hashmap
@@ -750,9 +788,14 @@ public class HistogramListener
 				} catch (Exception e) {
 					log.warn("No results for " + answer.getId());
 				}
+				
+				//If this published answer has not been selected before
 				if (num == null)
 					num = Integer.valueOf(0);
 
+				//Now create a map that keys all the responses (ItemGradingData) 
+				//for this question from a specific student (or assessment)
+				//by the id of that assessment (AssessmentGradingData)
 				ArrayList studentResponseList = (ArrayList) numStudentRespondedMap
 						.get(data.getAssessmentGradingId());
 				if (studentResponseList == null) {
@@ -761,11 +804,24 @@ public class HistogramListener
 				studentResponseList.add(data);
 				numStudentRespondedMap.put(data.getAssessmentGradingId(),
 						studentResponseList);
-				Float autoscore = data.getAutoScore();
+				
+				//Do the same for the sub-questions
+				String key = data.getAssessmentGradingId() + "-" + answer.getItemText().getId();
+				ArrayList studentResponseListForSubQuestion = (ArrayList) numStudentRespondedPerSubQuestionMap
+					.get(key);
+				if (studentResponseListForSubQuestion == null) {
+					studentResponseListForSubQuestion = new ArrayList();
+				}
+				studentResponseListForSubQuestion.add(data);
+				numStudentRespondedPerSubQuestionMap.put(key, studentResponseListForSubQuestion);
+				
+				
 				results.put(answer.getId(), Integer.valueOf(
 							num.intValue() + 1));
 			}
 		}
+		
+		
 		
 		HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
 		int[] numarray = new int[results.keySet().size()];
@@ -810,6 +866,7 @@ public class HistogramListener
 
 		responses = numStudentRespondedMap.size();
 		
+		//Determine the number of students with all correct responses for the whole question
 		for (Iterator it = numStudentRespondedMap.entrySet().iterator(); it.hasNext();) {
 			Map.Entry entry = (Map.Entry) it.next();
 			ArrayList resultsForOneStudent = (ArrayList) entry.getValue();
@@ -829,7 +886,6 @@ public class HistogramListener
 				// otherwise if a student only checked one of the multiple
 				// correct answers,
 				// it would count as a correct response
-
 				try {
 					int corranswers = 0;
 					Iterator answeriter = answers.iterator();
@@ -847,11 +903,10 @@ public class HistogramListener
 				} catch (Exception e) {
 					e.printStackTrace();
 					throw new RuntimeException(
-							"error calculating mcmc question.");
+							"error calculating emi question.");
 				}
 
 				// now check each answer
-
 				AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(item
 						.getPublishedAnswerId());
 				if (answer != null
@@ -860,14 +915,11 @@ public class HistogramListener
 					hasIncorrect = true;
 					break;
 				}
-				
-				
 			}
 
 			
 			if (!hasIncorrect) {
 				correctresponses = correctresponses + 1;
-				
 				// gopalrc - Nov 2007
 				qbean.addStudentWithAllCorrect(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
 			}
@@ -895,8 +947,101 @@ public class HistogramListener
 			qbean.setPercentCorrect(Integer.toString((int) (((float) correctresponses / (float) responses) * 100)));
 		
 		
+
+		//Determine the number of students with all correct reponses per sub-question
+		HashMap correctAnswersPerSubQuestion = new HashMap();
+		Integer numCorrectSubQuestionAnswers = null;
+		Iterator answeriter = answers.iterator();
+		while (answeriter.hasNext()) {
+			AnswerIfc answerchoice = (AnswerIfc) answeriter
+					.next();
+			if (answerchoice.getIsCorrect().booleanValue()) {
+				//store number of correct published answers per subquestion for easy lookup
+				numCorrectSubQuestionAnswers = (Integer)correctAnswersPerSubQuestion.get(answerchoice.getItemText().getId());
+				if (numCorrectSubQuestionAnswers == null) {
+					numCorrectSubQuestionAnswers = Integer.valueOf(0);
+				} 
+				numCorrectSubQuestionAnswers = Integer.valueOf(numCorrectSubQuestionAnswers.intValue() + 1);
+				correctAnswersPerSubQuestion.put(answerchoice.getItemText().getId(), numCorrectSubQuestionAnswers);
+			}
+		}
 		
-		//YYYYYYYYY		
+		HashMap numStudentsWithAllCorrectPerSubQuestion = new HashMap();
+		HashMap studentsWithAllCorrectPerSubQuestion = new HashMap();
+		HashMap studentsRespondedPerSubQuestion = new HashMap();
+		Iterator studentSubquestionResponseKeyIter = numStudentRespondedPerSubQuestionMap.keySet().iterator();
+		while (studentSubquestionResponseKeyIter.hasNext()) {
+			String key = (String)studentSubquestionResponseKeyIter.next();
+			ArrayList studentResponseListForSubQuestion = (ArrayList) numStudentRespondedPerSubQuestionMap
+			.get(key);
+			if (studentResponseListForSubQuestion != null && !studentResponseListForSubQuestion.isEmpty()) {
+				ItemGradingData response1 = (ItemGradingData)studentResponseListForSubQuestion.get(0);
+				Long subQuestionId = ((AnswerIfc)publishedAnswerHash.get(response1.getPublishedAnswerId())).getItemText().getId();
+				
+				Set studentsResponded = (Set)studentsRespondedPerSubQuestion.get(subQuestionId);
+				if (studentsResponded == null) studentsResponded = new TreeSet();
+				studentsResponded.add(response1.getAgentId());
+				studentsRespondedPerSubQuestion.put(subQuestionId, studentsResponded);
+				
+				
+				boolean hasIncorrect = false;
+				numCorrectSubQuestionAnswers = (Integer) correctAnswersPerSubQuestion.get(subQuestionId);
+				if (studentResponseListForSubQuestion.size() < numCorrectSubQuestionAnswers.intValue()) {
+					hasIncorrect = true;
+					continue;
+				}
+				//now check each answer
+				Iterator studentResponseIter = studentResponseListForSubQuestion.iterator();
+				while (studentResponseIter.hasNext()) {
+					ItemGradingData response = (ItemGradingData)studentResponseIter.next();
+					AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(response
+							.getPublishedAnswerId());
+					if (answer != null
+							&& (answer.getIsCorrect() == null || (!answer
+									.getIsCorrect().booleanValue()))) {
+						hasIncorrect = true;
+						break;
+					}
+				}
+				if (hasIncorrect) continue;	
+				Integer numWithAllCorrect = (Integer)numStudentsWithAllCorrectPerSubQuestion.get(subQuestionId);
+				if (numWithAllCorrect == null) {
+					numWithAllCorrect = Integer.valueOf(0);
+				}
+				numStudentsWithAllCorrectPerSubQuestion.put(subQuestionId, Integer.valueOf(numWithAllCorrect.intValue() + 1));
+				
+				Set studentsWithAllCorrect = (Set)studentsWithAllCorrectPerSubQuestion.get(subQuestionId);
+				if (studentsWithAllCorrect == null) studentsWithAllCorrect = new TreeSet();
+				studentsWithAllCorrect.add(response1.getAgentId());
+				studentsWithAllCorrectPerSubQuestion.put(subQuestionId, studentsWithAllCorrect);
+
+				/*
+				WWWWWWWWWWWW
+				if (!hasIncorrect) {
+					correctresponses = correctresponses + 1;
+					// gopalrc - Nov 2007
+					qbean.addStudentWithAllCorrect(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
+				}
+				// gopalrc - Dec 2007
+				qbean.addStudentResponded(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
+
+				*/
+				
+			}
+			
+		}
+		
+		
+		
+		//Map ItemText sequences to Ids
+		HashMap itemTextSequenceIdMap = new HashMap();
+		Iterator answersIter = answers.iterator();
+		while (answersIter.hasNext()) {
+			AnswerIfc answer = (AnswerIfc)answersIter.next();
+			itemTextSequenceIdMap.put(answer.getItemText().getSequence(), answer.getItemText().getId());
+		}
+		
+		//Now select the the bars for each sub-questions	
 		Set subQuestionKeySet = subQuestionAnswerMap.keySet();
 		ArrayList subQuestionKeyList = new ArrayList();
 		subQuestionKeyList.addAll(subQuestionKeySet);
@@ -907,6 +1052,8 @@ public class HistogramListener
 		  while (subQuestionIter.hasNext()) {
 			  Long subQuestionSequence = (Long)subQuestionIter.next();
 			  
+			  //While qbean is the HistogramQuestionScoresBean for the entire question
+			  //questionScores are the HistogramQuestionScoresBeans for each sub-question
 			  HistogramQuestionScoresBean questionScores = new HistogramQuestionScoresBean();
 			  questionScores.setSubQuestionSequence(subQuestionSequence);
 			  
@@ -917,6 +1064,8 @@ public class HistogramListener
 					  numBars++;
 				  }
 			  }
+			  //Now create an array of that size
+			  //and populate it with the bars for this sub-question
 			  HistogramBarBean[] subQuestionBars = new HistogramBarBean[numBars];
 			  int subBar = 0;
 			  for (int j=0; j<bars.length; j++) {
@@ -936,9 +1085,6 @@ public class HistogramListener
 			  questionScores.setQuestionNumber(qbean.getQuestionNumber()+"-"+subQuestionSequence);
 			  
 			  
-//			  questionScores.setTitle(title + item.getSequence().toString()
-//					  + " (" + type + ")");
-			  
 			  
 			  questionScores.setQuestionText(qbean.getQuestionText());
 			  
@@ -946,15 +1092,31 @@ public class HistogramListener
 			  
 			  questionScores.setN(qbean.getN());
 			  questionScores.setItemId(qbean.getItemId());
+			 
+			  //This boild down to the number of AssessmentGradingData
+			  //So should be the same for whole and sub questions
+			  questionScores.setNumResponses(qbean.getNumResponses());
+
+			  Long subQuestionId = (Long)itemTextSequenceIdMap.get(subQuestionSequence);
+			  if (questionScores.getNumResponses() > 0) { 
+ 				  Integer numWithAllCorrect = (Integer)numStudentsWithAllCorrectPerSubQuestion.get(subQuestionId);
+ 				  if (numWithAllCorrect != null) correctresponses = numWithAllCorrect.intValue();
+				  questionScores.setPercentCorrect(Integer.toString((int) (((float) correctresponses / (float) responses) * 100)));
+			  }
+			  Set studentsWithAllCorrect = (Set)studentsWithAllCorrectPerSubQuestion.get(subQuestionId);
+			  questionScores.setStudentsWithAllCorrect(studentsWithAllCorrect);
+			  
+			  Set studentsResponded = (Set)studentsRespondedPerSubQuestion.get(subQuestionId);
+			  questionScores.setStudentsResponded(studentsResponded);
 			  
 			  
-			  
+/*			  
 			  //totalpossible = totalpossible + item.getScore().doubleValue();
 			  //ArrayList responses = null;
 			  
 //			  determineResults(pub, questionScores, (ArrayList) itemScores
 //					  .get(item.getItemId()));
-	
+*/	
 /*			  
 			  Iterator answerIter = subQuestionAnswers.iterator();
 			  Float totalScore = new Float(0);
@@ -964,11 +1126,11 @@ public class HistogramListener
 				  
 			  }
 			  questionScores.setTotalScore(totalScore.toString());
-
-
+*/
+/*
 			  // below - gopalrc Nov 2007
-			  Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
-			  Set studentsResponded = questionScores.getStudentsResponded();
+			  studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
+			  studentsResponded = questionScores.getStudentsResponded();
 			  if (studentsWithAllCorrect == null || studentsResponded == null || 
 					  studentsWithAllCorrect.isEmpty() || studentsResponded.isEmpty()) {
 				  questionScores.setPercentCorrectFromUpperQuartileStudents("0");

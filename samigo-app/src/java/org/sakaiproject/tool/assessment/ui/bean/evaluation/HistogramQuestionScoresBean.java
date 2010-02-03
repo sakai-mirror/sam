@@ -892,14 +892,36 @@ public class HistogramQuestionScoresBean
    */
   private Set studentsWithAllCorrect;
 
+  
   /**
+   * gopalrc - Feb 2010
+   * @param studentsWithAllCorrect
+   */
+  public void setStudentsWithAllCorrect(Set studentsWithAllCorrect) {
+	this.studentsWithAllCorrect = studentsWithAllCorrect;
+  }
+
+
+
+/**
    * added by gopalrc Nov 2007
    * 
    * The set of students who responded to this question
    */
   private Set studentsResponded;
   
+  
   /**
+   * gopalrc - Feb 2010
+   * @param studentsResponded
+   */
+  public void setStudentsResponded(Set studentsResponded) {
+	this.studentsResponded = studentsResponded;
+  }
+
+
+
+/**
    * added by gopalrc Nov 2007
    * 
    * Percentage of students in the overall upper 25%
