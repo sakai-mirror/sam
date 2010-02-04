@@ -1015,18 +1015,6 @@ public class HistogramListener
 				studentsWithAllCorrect.add(response1.getAgentId());
 				studentsWithAllCorrectPerSubQuestion.put(subQuestionId, studentsWithAllCorrect);
 
-				/*
-				WWWWWWWWWWWW
-				if (!hasIncorrect) {
-					correctresponses = correctresponses + 1;
-					// gopalrc - Nov 2007
-					qbean.addStudentWithAllCorrect(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
-				}
-				// gopalrc - Dec 2007
-				qbean.addStudentResponded(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
-
-				*/
-				
 			}
 			
 		}
@@ -1079,7 +1067,6 @@ public class HistogramListener
 			  questionScores.setNumberOfParts(qbean.getNumberOfParts()); // gopalrc
 			  //if this part is a randompart , then set randompart = true
 			  questionScores.setRandomType(qbean.getRandomType());
-			  subQuestionAnswers = (ArrayList) subQuestionAnswerMap.get(subQuestionSequence);
 
 			  questionScores.setPartNumber(qbean.getPartNumber());
 			  questionScores.setQuestionNumber(qbean.getQuestionNumber()+"-"+subQuestionSequence);
@@ -1116,19 +1103,27 @@ public class HistogramListener
 			  
 //			  determineResults(pub, questionScores, (ArrayList) itemScores
 //					  .get(item.getItemId()));
-*/	
-/*			  
+ * 
+*/				  
+			  subQuestionAnswers = (ArrayList) subQuestionAnswerMap.get(subQuestionSequence);
 			  Iterator answerIter = subQuestionAnswers.iterator();
 			  Float totalScore = new Float(0);
 			  while (answerIter.hasNext()) {
-				  AnswerIfc subQuestionAnswer = (AnswerIfc) answerIter.hasNext();
+				  AnswerIfc subQuestionAnswer = (AnswerIfc) answerIter.next();
 				  totalScore += subQuestionAnswer.getScore();
 				  
 			  }
 			  questionScores.setTotalScore(totalScore.toString());
-*/
-/*
+			  
+			  HistogramScoresBean histogramScores = (HistogramScoresBean) ContextUtil.lookupBean(
+                "histogramScores");	
+			    
 			  // below - gopalrc Nov 2007
+			  int numSubmissions = scores.size();
+			  int percent27 = numSubmissions*27/100; // rounded down
+			  if (percent27 == 0) percent27 = 1; // gopalrc - check this - only relevant for very small samples
+
+			  
 			  studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
 			  studentsResponded = questionScores.getStudentsResponded();
 			  if (studentsWithAllCorrect == null || studentsResponded == null || 
@@ -1194,18 +1189,14 @@ public class HistogramListener
 
 			  }
 			  // above - gopalrc Nov 2007
-*/
 
 			  subQuestionInfo.add(questionScores);
 		  } // end-while - items
 		qbean.setInfo(subQuestionInfo);
-//YYYYYYYYYY		
 		
 		
 		
 	}
-  //XXXXX
-  
   
   
 
