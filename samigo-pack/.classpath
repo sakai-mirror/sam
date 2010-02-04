@@ -14,5 +14,7 @@
 	<classpathentry kind="src" path="/sakai-samlite-impl"/>
 	<classpathentry kind="var" path="M2_REPO/xmlbeans/xbean/2.2.0/xbean-2.2.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta04/sakai-kernel-api-1.1.0-beta04.jar" sourcepath="/M2_REPO/org/sakaiproject/kernel/1.1.0-beta04"/>
+	<classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta04/sakai-component-manager-1.1.0-beta04.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

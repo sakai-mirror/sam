@@ -13,5 +13,9 @@
 	<classpathentry kind="src" path="/sakai-samigo-api"/>
 	<classpathentry kind="var" path="M2_REPO/xmlbeans/xbean/2.2.0/xbean-2.2.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="/sakai-samigo-services"/>
+	<classpathentry kind="src" path="/sakai-samigo-hibernate"/>
+	<classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-util/1.1.0-beta04/sakai-kernel-util-1.1.0-beta04.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-component-manager/1.1.0-beta04/sakai-component-manager-1.1.0-beta04.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

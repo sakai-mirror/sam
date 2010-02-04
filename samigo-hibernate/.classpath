@@ -79,8 +79,6 @@
 	<classpathentry kind="var" path="M2_REPO/OKI/OkiSID/rc6.1/OkiSID-rc6.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/oro/oro/2.0.7/oro-2.0.7.jar"/>
 	<classpathentry kind="var" path="M2_REPO/relaxngDatatype/relaxngDatatype/20020414/relaxngDatatype-20020414.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/sakaiproject/sakai-jsf-app/2.7.0-SNAPSHOT/sakai-jsf-app-2.7.0-SNAPSHOT.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/sakaiproject/sakai-jsf-tool/2.7.0-SNAPSHOT/sakai-jsf-tool-2.7.0-SNAPSHOT.jar"/>
 	<classpathentry kind="src" path="/sakai-samigo-api"/>
 	<classpathentry kind="var" path="M2_REPO/navigo/SakaiBaseFramework/1.0.a1/SakaiBaseFramework-1.0.a1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/saxpath/saxpath/1.0-FCS/saxpath-1.0-FCS.jar"/>
@@ -94,5 +92,6 @@
 	<classpathentry kind="var" path="M2_REPO/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar" sourcepath="M2_REPO/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar" sourcepath="M2_REPO/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.1.0-beta04/sakai-kernel-api-1.1.0-beta04.jar" sourcepath="/M2_REPO/org/sakaiproject/kernel/1.1.0-beta04"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
