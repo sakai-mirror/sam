@@ -5,6 +5,7 @@
 		<echo message="project.basedir=${basedir}" />
 		<echo message="project.build.directory=${build.directory}" />
 		<echo message="project.version=${version}" />
+		<echo message="settings.localRepository=${localRepo}" />
 		
 		<echo message="CHECK FOR AUDIO JAR IN /TARGET" />
 		<condition property="target.jar.exists">
