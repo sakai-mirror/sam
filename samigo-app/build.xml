@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project name="copy-jar" default="check-target">
+
+	<target name="check-target">
+		<echo message="project.basedir=${basedir}" />
+		<echo message="project.build.directory=${build.directory}" />
+		<echo message="project.version=${version}" />
+		
+		<echo message="CHECK FOR AUDIO JAR IN /TARGET" />
+		<condition property="target.jar.exists">
+				<available type="file" file="${basedir}/../samigo-audio/target/samigo-audio-${version}.jar" />
+		</condition>
+		
+		<antcall target="copy-target" />
+		<antcall target="check-checkout" />
+	</target>
+
+	<target name="copy-target" if="target.jar.exists">
+		<echo message="COPY AUDIO JAR FROM TARGET" />
+		<copy file="${basedir}/../samigo-audio/target/samigo-audio-${version}.jar"
+			tofile="${build.directory}/samigo-app-${version}/applets/samigo-audio-dev.jar" />
+	</target>
+
+	<!-- Release plugin checks out tag into /target/checkout before deploying it to repo -->
+	<target name="check-checkout" unless="target.jar.exists">
+		<echo message="CHECK FOR AUDIO JAR IN /TARGET/CHECKOUT" />
+		<condition property="checkout.jar.exists">
+			<available type="file" file="${basedir}/../target/checkout/samigo-audio/target/samigo-audio-${version}.jar" />
+		</condition>
+		<antcall target="copy-checkout" />
+		<antcall target="copy-fail" />
+	</target>
+
+	<!-- ${basedir} = samigo-[branch version]/target/checkout -->
+	<!-- ${build.directory} = samigo-[branch version]/target/checkout/samigo-app/target -->
+	<!-- working directory remains samigo-[branch version]/target -->
+	<target name="copy-checkout" if="checkout.jar.exists">
+		<echo message="COPY AUDIO JAR FROM TARGET/CHECKOUT" />
+		<copy type="file" file="${basedir}/../../samigo-audio/target/samigo-audio-${version}.jar"
+					tofile="${build.directory}/samigo-app-${version}/applets/samigo-audio-dev.jar" />
+		<!--
+		<copy type="file" file="${basedir}/../target/checkout/samigo-audio/target/samigo-audio-${version}.jar"
+			tofile="${basedir}/../target/checkout/samigo-app/target/samigo-app-${version}/applets/samigo-audio-dev.jar" />
+		-->
+		<!--
+		<copy type="file" file="${basedir}/../target/checkout/samigo-audio/target/samigo-audio-${version}.jar"
+					tofile="${build.directory}/samigo-app-${version}/applets/samigo-audio-dev.jar" />
+		-->
+	</target>
+	
+	<target name="copy-fail" unless="checkout.jar.exists">
+		<fail message="AUDIO JAR NOT FOUND" />	
+	</target>
+
+</project>

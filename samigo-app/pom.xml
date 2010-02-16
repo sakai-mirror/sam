@@ -104,11 +104,11 @@
             <groupId>org.sakaiproject.kernel</groupId>
             <artifactId>sakai-component-manager</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.sakaiproject.kernel</groupId>
             <artifactId>sakai-kernel-util</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>com.lowagie</groupId>
             <artifactId>itext</artifactId>
             <version>2.0.7</version>
@@ -135,7 +135,7 @@
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
             <scope>provided</scope>
@@ -145,18 +145,18 @@
             <artifactId>mail</artifactId>
             <version>1.3.1</version>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jsp-api</artifactId>
             <version>2.0</version>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.1.2</version>
             <scope>compile</scope>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
         </dependency>
@@ -171,10 +171,10 @@
             <version>1.1.01</version>
         </dependency>
         <dependency>
-			<groupId>OKI</groupId>
-			<artifactId>OkiOSID</artifactId>
-			<version>2.0</version>
-		</dependency>
+            <groupId>OKI</groupId>
+            <artifactId>OkiOSID</artifactId>
+            <version>2.0</version>
+        </dependency>
         <dependency>
             <groupId>OKI</groupId>
             <artifactId>OkiSID</artifactId>
@@ -195,7 +195,7 @@
             <artifactId>poi-ooxml</artifactId>
             <version>3.5-FINAL</version>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate</artifactId>
         </dependency>
@@ -253,22 +253,24 @@
     </dependencies>
 
     <build>
+        <directory>target</directory>
+        <outputDirectory>target/classes</outputDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.0</version>
                 <configuration>
-                    <!-- the resources order is important the first take precidence -->
+                    <!-- the resources order is important the first take precEdence -->
                     <webResources>
                         <resource>
-                            <directory>${basedir}/sakai-samigo/webapp</directory>
+                            <directory>${project.basedir}/sakai-samigo/webapp</directory>
                             <includes>
                                 <include>**/*.*</include>
                             </includes>
                         </resource>
                         <resource>
-                            <directory>${basedir}/src/webapp</directory>
+                            <directory>${project.basedir}/src/webapp</directory>
                             <includes>
                                 <include>**/*.*</include>
                             </includes>
@@ -277,24 +279,19 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.3</version>
                 <executions>
                     <execution>
+                        <id>samigo-audio-copy-jar</id>
                         <phase>process-resources</phase>
                         <configuration>
                             <tasks>
-                                <echo
-                                    message="project.build.directory=${project.build.directory}" />
-                                <echo message="basedir=${basedir}" />
-                                <echo message="basedir=${project.version}" />
-                                <!--
-                                <copy
-                                    file="${project.build.directory}/../samigo-audio/target/samigo-audio-${project.version}.jar"
-                                    tofile="${project.build.directory}/samigo-app-${project.version}/applets/samigo-audio-dev.jar" />
-                                -->
-                                <copy
-	                                file="${basedir}/../samigo-audio/target/samigo-audio-${project.version}.jar"
-                                    tofile="${project.build.directory}/samigo-app-${project.version}/applets/samigo-audio-dev.jar" />   
+                                <property name="basedir" value="${project.basedir}"/>
+                                <property name="build.directory" value="${project.build.directory}"/>
+                                <property name="version" value="${project.version}"/>
+                                <ant antfile="${project.basedir}/build.xml" />
                             </tasks>
                         </configuration>
                         <goals>
