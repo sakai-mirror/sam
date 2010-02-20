@@ -41,9 +41,9 @@ should be included in file importing DeliveryMessages
             && delivery.actionString!='gradeAssessment'}" >
 <f:validateLength maximum="4000"/>
 </h:inputTextarea>
-<h:outputText value="#{question.responseText}" 
+<h:outputText value="#{question.responseTextForDisplay}" 
    rendered="#{delivery.actionString=='reviewAssessment'
-            || delivery.actionString=='gradeAssessment'}" />
+            || delivery.actionString=='gradeAssessment'}" escape="false"/>
 
 <f:verbatim><br /></f:verbatim>
 <h:panelGroup rendered="#{(delivery.actionString=='previewAssessment'
@@ -97,7 +97,7 @@ should be included in file importing DeliveryMessages
         </h:column>
         <h:column>
           <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
-          <h:outputText escape="false" value="(#{attach.fileSize}kb)" rendered="#{!attach.isLink}"/>
+          <h:outputText escape="false" value="(#{attach.fileSize} #{generalMessages.kb})" rendered="#{!attach.isLink}"/>
         </h:column>
       </h:dataTable>
     </h:panelGroup>

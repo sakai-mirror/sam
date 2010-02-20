@@ -67,6 +67,8 @@ import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.tool.assessment.util.AttachmentUtil;
 import org.sakaiproject.tool.cover.SessionManager;
 
+import org.sakaiproject.util.ResourceLoader;
+
 /**
  * <p>
  * This bean represents an item
@@ -80,6 +82,8 @@ public class ItemContentsBean implements Serializable {
 	private static final long serialVersionUID = 6270034338280029897L;
 
 	private static Log log = LogFactory.getLog(ItemContentsBean.class);
+
+	private static ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.DeliveryMessages");
 
 	// private static ContextUtil cu;
 
@@ -749,6 +753,23 @@ public class ItemContentsBean implements Serializable {
 			return responseText;
 		}
 	}
+	
+	public String getResponseTextForDisplay() {
+		log.debug("itemcontentbean.getResponseText");
+		try {
+			String response = responseText;
+			Iterator iter = getItemGradingDataArray().iterator();
+			if (iter.hasNext()) {
+				ItemGradingData data = (ItemGradingData) iter.next();
+				response = data.getAnswerText();
+			}
+			response = response.replaceAll("(\r\n|\r)", "<br/>");
+			return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return responseText;
+		}
+	}
 
 	public void setResponseText(String presponseId) {
 		log.debug("itemcontentbean.setResponseText");
@@ -860,7 +881,6 @@ public class ItemContentsBean implements Serializable {
 			// for MCSC
 			if (data.getItemGradingId() == null) {
 				// this is a new answer , now we just need to set the rationale
-
 				data.setRationale(newRationale);
 
 			} else {
@@ -886,15 +906,21 @@ public class ItemContentsBean implements Serializable {
 	}
 
 	public String getRationale() {
-		// Iterator iter = getItemGradingDataArray().iterator();
-		// if (iter.hasNext())
-		// {
 		int count = getItemGradingDataArray().size();
 		if (count > 0) {
 			ItemGradingData data = (ItemGradingData) getItemGradingDataArray()
 					.toArray()[count - 1];
-			// ItemGradingData data = (ItemGradingData) iter.next();
-			rationale = FormattedText.unEscapeHtml(data.getRationale());
+			rationale = FormattedText.convertFormattedTextToPlaintext(data.getRationale());
+		}
+		return Validator.check(rationale, "");
+	}
+	
+	public String getRationaleForDisplay() {
+		int count = getItemGradingDataArray().size();
+		if (count > 0) {
+			ItemGradingData data = (ItemGradingData) getItemGradingDataArray()
+					.toArray()[count - 1];
+			rationale = FormattedText.convertFormattedTextToPlaintext(data.getRationale()).replaceAll("(\r\n|\r)", "<br/>");
 		}
 		return Validator.check(rationale, "");
 	}
@@ -1127,6 +1153,14 @@ public class ItemContentsBean implements Serializable {
   public boolean getHasNoMedia() {
 	return getMediaArray().size() < 1;
   }
+
+  public String getAnswerKeyTF() {
+ 	String answerKey = itemData.getAnswerKey();
+	if ("true".equals(answerKey)) answerKey = rb.getString("true_msg"); 
+	if ("false".equals(answerKey)) answerKey = rb.getString("false_msg");
+	return answerKey;
+  }
+
   
   public void setAttachment(Long itemGradingId){
 	  List itemGradingAttachmentList = new ArrayList();

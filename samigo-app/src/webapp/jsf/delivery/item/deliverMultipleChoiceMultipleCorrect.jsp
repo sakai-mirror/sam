@@ -67,9 +67,9 @@ should be included in file importing DeliveryMessages
     <h:inputTextarea id="rationale" value="#{question.rationale}" rows="5" cols="40" 
         rendered="#{delivery.actionString!='reviewAssessment' 
                  && delivery.actionString!='gradeAssessment'}" />
-    <h:outputText id="rationale2" value="#{question.rationale}" 
+    <h:outputText id="rationale2" value="#{question.rationaleForDisplay}" 
         rendered="#{delivery.actionString=='reviewAssessment'
-                 || delivery.actionString=='gradeAssessment'}"/>
+                 || delivery.actionString=='gradeAssessment'}" escape="false"/>
   </h:panelGroup>
 
 <f:verbatim><br /></f:verbatim>
@@ -121,7 +121,7 @@ should be included in file importing DeliveryMessages
         </h:column>
         <h:column>
           <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
-          <h:outputText escape="false" value="(#{attach.fileSize}kb)" rendered="#{!attach.isLink}"/>
+          <h:outputText escape="false" value="(#{attach.fileSize} #{generalMessages.kb})" rendered="#{!attach.isLink}"/>
         </h:column>
       </h:dataTable>
     </h:panelGroup>

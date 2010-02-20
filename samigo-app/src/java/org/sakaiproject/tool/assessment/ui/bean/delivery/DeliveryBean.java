@@ -1295,16 +1295,16 @@ public class DeliveryBean
     SessionUtil.setSessionTimeout(FacesContext.getCurrentInstance(), this, false);
     
     SubmitToGradingActionListener listener = new SubmitToGradingActionListener();
+    // submission remaining and totalSubmissionPerAssessmentHash is updated inside 
+    // SubmitToGradingListener
+    listener.processAction(null);
+    
     // We don't need to call completeItemGradingData to create new ItemGradingData for linear access
     // because each ItemGradingData is created when it is viewed/answered 
     if (!"1".equals(navigation)) {
     	GradingService gradingService = new GradingService();
     	gradingService.completeItemGradingData(adata);
     }
-
-    // submission remaining and totalSubmissionPerAssessmentHash is updated inside 
-    // SubmitToGradingListener
-    listener.processAction(null);
     
     syncTimeElapsedWithServer();
 
@@ -2985,7 +2985,7 @@ public class DeliveryBean
 	  
 	  public String cleanRadioButton() {
 
-		  // Obtenemos el id de la pregunta
+		  // We get the id of the question
 		  String radioId = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("radioId");
 
 		  ArrayList parts = this.pageContents.getPartsContents();
@@ -2996,7 +2996,7 @@ public class DeliveryBean
 			  for (int j=0; j<items.size(); j++) {
 				  ItemContentsBean item = (ItemContentsBean)items.get(j);
 
-				  // Solamente borramos los checkbox de la pregunta actual
+				  //Just delete the checkbox of the current question
 				  if (!item.getItemData().getItemId().toString().equals(radioId)) continue;
 
 				  if (item.getItemData().getTypeId().longValue() == TypeIfc.MULTIPLE_CHOICE.longValue() || 
@@ -3016,10 +3016,12 @@ public class DeliveryBean
 						  ItemGradingData itemgrading = (ItemGradingData) iter.next();
 						  if (itemgrading.getItemGradingId() != null
 									&& itemgrading.getItemGradingId().intValue() > 0) {
-							  itemGradingData.add(itemgrading);
+							  //itemGradingData.add(itemgrading);
+							  itemgrading.setPublishedAnswerId(null);
+
 						  }
 					  }
-					  item.setItemGradingDataArray(itemGradingData);
+					  //item.setItemGradingDataArray(itemGradingData);
 				  }
 
 				  if (item.getItemData().getTypeId().longValue() == TypeIfc.TRUE_FALSE.longValue()) {

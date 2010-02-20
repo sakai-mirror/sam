@@ -69,11 +69,13 @@ import org.sakaiproject.tool.assessment.qti.util.XmlUtil;
 import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.QuestionPoolService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
+import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.sakaiproject.util.FormattedText;
 
 /**
  * <p>Copyright: Copyright (c) 2004</p>
@@ -153,7 +155,7 @@ public class AuthoringHelper
         factory.getAssessmentHelperInstance(this.qtiVersion);
       Assessment assessmentXml = assessmentHelper.readXMLDocument(is);
       assessmentXml.setIdent(assessmentId);
-      assessmentXml.setTitle(assessment.getTitle());
+      assessmentXml.setTitle(FormattedText.convertFormattedTextToPlaintext(assessment.getTitle()));
       assessmentHelper.setDescriptiveText(assessment.getDescription(),
                                           assessmentXml);
 
@@ -488,7 +490,7 @@ public class AuthoringHelper
       Assessment assessmentXml = new Assessment(document);
       Map assessmentMap = exHelper.mapAssessment(assessmentXml);
       String description = XmlUtil.processFormattedText(log, (String) assessmentMap.get("description"));
-      String title = XmlUtil.processFormattedText(log, (String) assessmentMap.get("title"));
+      String title = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, (String) assessmentMap.get("title"));
       assessment = assessmentService.createAssessmentWithoutDefaultSection(
         title, exHelper.makeFCKAttachment(description), null, templateId);
 
