@@ -522,7 +522,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 				answerModified = true;
 			}
 			
-			if (answerModified || item.getUnanswered()) {
+			if (answerModified) {
 				for (int m = 0; m < grading.size(); m++) {
 					ItemGradingData itemgrading = (ItemGradingData) grading
 					.get(m);

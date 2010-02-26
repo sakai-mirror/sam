@@ -91,6 +91,11 @@ public class SelectionBean {
 			data.setPublishedAnswerId(null);
 	}
 
+	public void setResponseFromCleanRadioButton() {
+		response = false;
+		data = null;
+	}
+		
 	public AnswerIfc getAnswer() {
 		return answer;
 	}
