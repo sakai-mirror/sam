@@ -120,10 +120,10 @@ public class XMLImportBean implements Serializable
     catch (Exception ex)
     {
       ResourceLoader rb =new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorImportExport");
-      FacesMessage message = new FacesMessage( rb.getString("import_err") + ex );
+      FacesMessage message = new FacesMessage( rb.getString("import_err"));
       FacesContext.getCurrentInstance().addMessage(null, message);
       // remove unsuccessful file
-      log.debug("****remove unsuccessful uplaodFile="+uploadFile);
+      log.debug("****Clean up file:"+uploadFile);
       File upload = new File(uploadFile);
       upload.delete();
     }
@@ -146,7 +146,7 @@ public class XMLImportBean implements Serializable
     catch (Exception ex)
     {
       ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorImportExport");
-      FacesMessage message = new FacesMessage( rb.getString("import_err") + ex );
+      FacesMessage message = new FacesMessage( rb.getString("import_err"));
       FacesContext.getCurrentInstance().addMessage(null, message);
       // remove unsuccessful file
       log.debug("****remove unsuccessful filename="+filename);
@@ -217,11 +217,11 @@ public class XMLImportBean implements Serializable
     this.importType = importType;
   }
 
-  private void processFile(String fileName)
+  private void processFile(String fileName) throws Exception
   {
 	  processFile(fileName, null, null);
   }
-  private void processFile(String fileName, String uploadFile, String unzipLocation)
+  private void processFile(String fileName, String uploadFile, String unzipLocation) throws Exception
   {
     itemAuthorBean.setTarget(ItemAuthorBean.FROM_ASSESSMENT); // save to assessment
 
@@ -309,10 +309,15 @@ public class XMLImportBean implements Serializable
    * @param qti QTI version
    * @return
    */
-  private AssessmentFacade createImportedAssessment(String fullFileName, int qti)
+  private AssessmentFacade createImportedAssessment(String fullFileName, int qti) throws Exception
   {
     //trim = true so that xml processing instruction at top line, even if not.
-    Document document = XmlUtil.readDocument(fullFileName, true);
+    Document document = null;
+    try {
+        document = XmlUtil.readDocument(fullFileName, true);
+    } catch (Exception e) {
+        throw(e);
+    }
     QTIService qtiService = new QTIService();
     if (isCP) {
     	return qtiService.createImportedAssessment(document, qti, fullFileName.substring(0, fullFileName.lastIndexOf("/")));
@@ -367,7 +372,7 @@ public class XMLImportBean implements Serializable
     catch (Exception ex)
     {
       ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorImportExport");
-      FacesMessage message = new FacesMessage( rb.getString("import_err") + ex );
+      FacesMessage message = new FacesMessage( rb.getString("import_err"));
       FacesContext.getCurrentInstance().addMessage(null, message);
     }
   }
@@ -377,7 +382,7 @@ public class XMLImportBean implements Serializable
    * Process uploaded QTI XML 
    * assessment as question pool
    */
-  private void processAsPoolFile(String uploadFile)
+  private void processAsPoolFile(String uploadFile) throws Exception
   {
     itemAuthorBean.setTarget(ItemAuthorBean.FROM_QUESTIONPOOL); // save to questionpool
 
@@ -404,10 +409,15 @@ public class XMLImportBean implements Serializable
    * @param qti QTI version
    * @return
    */
-  private QuestionPoolFacade createImportedQuestionPool(String fullFileName, int qti)
+  private QuestionPoolFacade createImportedQuestionPool(String fullFileName, int qti) throws Exception
   {
     //trim = true so that xml processing instruction at top line, even if not.
-    Document document = XmlUtil.readDocument(fullFileName, true);
+    Document document;
+    try {
+	document = XmlUtil.readDocument(fullFileName, true);
+    } catch (Exception e) {
+        throw(e);
+    }
     QTIService qtiService = new QTIService();
     return qtiService.createImportedQuestionPool(document, qti);
   }  
