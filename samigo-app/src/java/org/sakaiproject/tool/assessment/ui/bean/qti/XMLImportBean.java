@@ -399,7 +399,7 @@ public class XMLImportBean implements Serializable
       upload.delete();
     }
     catch(Exception e){
-      System.out.println(e.getMessage());
+	e.printStackTrace();
     }
   }
   
