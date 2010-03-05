@@ -1053,12 +1053,11 @@ public class AssessmentSettingsBean
       return date;
     }
 
-     try {
-    	 if (!dateValidation(dateString)) {
-    		 this.isValidDate = false;
-    		 return null;
-    	 }
-
+    if (!dateValidation(dateString)) {
+    	this.isValidDate = false;
+    	return null;
+    }
+    try {
       //Date date= (Date) displayFormat.parse(dateString);
 // dateString is in client timezone, change it to server time zone
       TimeUtil tu = new TimeUtil();
@@ -1066,16 +1065,9 @@ public class AssessmentSettingsBean
     }
     catch (Exception ex) {
       // we will leave it as a null date
-    	log.warn("Unable to format date.");
-    	FacesContext context=FacesContext.getCurrentInstance();
-    	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
-    	String err;
-
-    	err=rb.getString("deliveryDate_error");
-    	context.addMessage(null,new FacesMessage(err));
-
-    	error=true;
-      //ex.printStackTrace();
+      log.warn("Unable to format date.");
+      error=true;
+      ex.printStackTrace();
     }
     return date;
   }
