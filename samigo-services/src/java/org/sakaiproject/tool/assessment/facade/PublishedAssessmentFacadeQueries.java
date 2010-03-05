@@ -640,7 +640,12 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		a.setSectionSet(getSectionSetForAssessment(a));
 		String releaseToGroups = "";
 		if (withGroupsInfo) {
-			TreeMap groupsForSite = getGroupsForSite();
+			//TreeMap groupsForSite = getGroupsForSite();
+			
+			// SAM-799
+            String siteId = getPublishedAssessmentSiteId(assessmentId.toString());
+            TreeMap groupsForSite = getGroupsForSite(siteId);
+             
 			releaseToGroups = getReleaseToGroupsAsString(groupsForSite, assessmentId);
 		}
 		
@@ -1223,7 +1228,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			releaseToGroups = null;
 			if (p.getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
 				if (groupsForSite == null) {
-					groupsForSite = getGroupsForSite();
+					groupsForSite = getGroupsForSite(siteAgentId);
 				}
 				Long assessmentId = p.getPublishedAssessmentId();
 				releaseToGroups = getReleaseToGroupsAsString(groupsForSite, assessmentId);
@@ -1303,7 +1308,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			releaseToGroups = null;
 			if (p.getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
 				if (groupsForSite == null) {
-					groupsForSite = getGroupsForSite();
+					groupsForSite = getGroupsForSite(siteAgentId);
 				}
 				Long assessmentId = p.getPublishedAssessmentId();
 				releaseToGroups = getReleaseToGroupsAsString(groupsForSite, assessmentId);
@@ -1500,7 +1505,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			releaseToGroups = null;
 			if (p.getReleaseTo().equals(AssessmentAccessControl.RELEASE_TO_SELECTED_GROUPS)) {
 				if (groupsForSite == null) {
-					groupsForSite = getGroupsForSite();
+					groupsForSite = getGroupsForSite(siteAgentId);
 				}
 				Long assessmentId = p.getPublishedAssessmentId();
 				releaseToGroups = getReleaseToGroupsAsString(groupsForSite, assessmentId);
@@ -2739,6 +2744,33 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		 
 		 return releaseToGroupsAsString;
 	}
+	
+	/**
+	 * added by Sam Ottenhoff Feb 2010
+	 * Returns all groups for site
+	 * @param siteId
+	 * @return
+	 */
+	private TreeMap getGroupsForSite(String siteId){
+		TreeMap sortedGroups = new TreeMap();
+		Site site = null;
+		try {
+			site = SiteService.getSite(siteId);
+			Collection groups = site.getGroups();
+			if (groups != null && groups.size() > 0) {
+				Iterator groupIter = groups.iterator();
+				while (groupIter.hasNext()) {
+					Group group = (Group) groupIter.next();
+					sortedGroups.put(group.getId(), group.getTitle());
+				}
+			}
+		}
+		catch (IdUnusedException ex) {
+			// No site available
+		}
+		return sortedGroups;
+	}
+	
 
 	  /**
 	   * added by gopalrc Nov 2007
@@ -2746,23 +2778,8 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	   * @return
 	   */
 	  public TreeMap getGroupsForSite(){
-	      TreeMap sortedGroups = new TreeMap();
-		  Site site = null;
-		  try {
-			 site = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
-			 Collection groups = site.getGroups();
-		     if (groups != null && groups.size() > 0) {
-		    	 Iterator groupIter = groups.iterator();
-		    	 while (groupIter.hasNext()) {
-		    		 Group group = (Group) groupIter.next();
-		    		 sortedGroups.put(group.getId(), group.getTitle());
-		    	 }
-		     }
-		  }
-		  catch (IdUnusedException ex) {
-			  // No site available
-		  }
-		  return sortedGroups;
+		  String siteId = ToolManager.getCurrentPlacement().getContext();
+	      return getGroupsForSite(siteId);
 	  }
 
 	
