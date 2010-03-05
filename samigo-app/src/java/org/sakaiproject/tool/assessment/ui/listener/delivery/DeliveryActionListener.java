@@ -1390,15 +1390,7 @@ public class DeliveryActionListener
       String responseText = itemBean.getResponseText();
       itemBean.setResponseText(FormattedText.convertFormattedTextToPlaintext(responseText));
     }
-    else if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) || 
-    		item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
-            item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
-            item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ) 
-    {
-      String rationale = itemBean.getRationale();
-      itemBean.setRationale(FormattedText.convertFormattedTextToPlaintext(rationale));
-    }
-
+    
     return itemBean;
   }
 

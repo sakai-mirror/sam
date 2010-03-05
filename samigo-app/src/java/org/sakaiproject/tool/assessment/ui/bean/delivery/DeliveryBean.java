@@ -1294,15 +1294,15 @@ public class DeliveryBean
     SessionUtil.setSessionTimeout(FacesContext.getCurrentInstance(), this, false);
     
     SubmitToGradingActionListener listener = new SubmitToGradingActionListener();
+    // submission remaining and totalSubmissionPerAssessmentHash is updated inside 
+    // SubmitToGradingListener
+    listener.processAction(null);
+    
     // We don't need to call completeItemGradingData to create new ItemGradingData for linear access
     // because each ItemGradingData is created when it is viewed/answered 
     if (!navigation.equals("1")) {
     	listener.completeItemGradingData();
     }
-
-    // submission remaining and totalSubmissionPerAssessmentHash is updated inside 
-    // SubmitToGradingListener
-    listener.processAction(null);
     
     syncTimeElapsedWithServer();
 
@@ -2969,7 +2969,8 @@ public class DeliveryBean
 					  item.setUnanswered(true);
 					  for (int k=0; k<item.getSelectionArray().size(); k++) {
 						  SelectionBean selection = (SelectionBean)item.getSelectionArray().get(k);
-						  selection.setResponse(false);
+						  //selection.setResponse(false);
+						  selection.setResponseFromCleanRadioButton();
 					  }
 					  
 					  ArrayList itemGradingData = new ArrayList();
@@ -2979,12 +2980,12 @@ public class DeliveryBean
 						  ItemGradingData itemgrading = (ItemGradingData) iter.next();
 						  if (itemgrading.getItemGradingId() != null
 									&& itemgrading.getItemGradingId().intValue() > 0) {
-							  //itemGradingData.add(itemgrading);
+							  itemGradingData.add(itemgrading);
 							  itemgrading.setPublishedAnswerId(null);
 
 						  }
 					  }
-					  //item.setItemGradingDataArray(itemGradingData);
+					  item.setItemGradingDataArray(itemGradingData);
 				  }
 
 				  if (item.getItemData().getTypeId().longValue() == TypeIfc.TRUE_FALSE.longValue()) {

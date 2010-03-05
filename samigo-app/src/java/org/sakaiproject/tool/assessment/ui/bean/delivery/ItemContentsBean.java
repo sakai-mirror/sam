@@ -847,7 +847,6 @@ public class ItemContentsBean implements Serializable {
 			// for MCSC
 			if (data.getItemGradingId() == null) {
 				// this is a new answer , now we just need to set the rationale
-
 				data.setRationale(newRationale);
 
 			} else {
@@ -857,7 +856,6 @@ public class ItemContentsBean implements Serializable {
 				// SubmitForGradingListener doesn't recognize that this is a
 				// modified answer
 				// unless the itemgradingid = null
-
 				ItemGradingData newdata = new ItemGradingData();
 				newdata.setPublishedItemId(data.getPublishedItemId());
 				newdata.setPublishedItemTextId(data.getPublishedItemTextId());
@@ -868,8 +866,6 @@ public class ItemContentsBean implements Serializable {
 				setItemGradingDataArray(items);
 			}
 		}
-
-
 	}
 
 	public String getRationale() {
@@ -877,7 +873,7 @@ public class ItemContentsBean implements Serializable {
 		if (count > 0) {
 			ItemGradingData data = (ItemGradingData) getItemGradingDataArray()
 					.toArray()[count - 1];
-			rationale = data.getRationale();
+			rationale = FormattedText.convertFormattedTextToPlaintext(data.getRationale());
 		}
 		return Validator.check(rationale, "");
 	}
@@ -887,7 +883,7 @@ public class ItemContentsBean implements Serializable {
 		if (count > 0) {
 			ItemGradingData data = (ItemGradingData) getItemGradingDataArray()
 					.toArray()[count - 1];
-			rationale = data.getRationale().replaceAll("(\r\n|\r)", "<br/>");
+			rationale = FormattedText.convertFormattedTextToPlaintext(data.getRationale()).replaceAll("(\r\n|\r)", "<br/>");
 		}
 		return Validator.check(rationale, "");
 	}
