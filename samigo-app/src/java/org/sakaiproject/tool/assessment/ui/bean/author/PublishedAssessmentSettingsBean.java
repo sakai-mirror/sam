@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -1359,6 +1360,20 @@ public class PublishedAssessmentSettingsBean
 		return "editPublishedAssessmentSettings";
 	}
 
+  private String createUniqueKey(String key, Map map) {
+     if (!map.containsKey(key)) {
+        return key;
+     } else {
+        int index = 1;
+        String ukey = key + " (" + index + ")";
+        while (map.containsKey(ukey)) {
+           index++;
+           ukey = key + " (" + index + ")";
+        }
+        return ukey;
+     }
+  }
+
 	  /**
 	 * gopalrc Nov 2007
 	 * Returns all groups for site
@@ -1382,10 +1397,10 @@ public class PublishedAssessmentSettingsBean
 					String groupDescription = group.getDescription() == null
 							|| group.getDescription().equals("") ? "" : " : "
 							+ group.getDescription();
+					String selectDescription = createUniqueKey(groupDescription.toUpperCase(), sortedSelectItems);
 					String displayDescription = group.getTitle()
 							+ groupDescription;
-					sortedSelectItems.put(displayDescription.toUpperCase(),
-							new SelectItem(group.getId(), displayDescription));
+ 					sortedSelectItems.put(selectDescription, new SelectItem(group.getId(), displayDescription));
 				}
 				Set keySet = sortedSelectItems.keySet();
 				groupIter = keySet.iterator();
