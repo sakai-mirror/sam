@@ -136,6 +136,7 @@
           rendered="#{assessmentSettings.feedbackDelivery eq '2'}" >
          <f:convertDateTime pattern="#{generalMessages.output_date_picker}" />
        </h:outputText>
+       <h:outputText value="#{assessmentSettingsMessages.feedback_on_submission}" rendered="#{assessmentSettings.feedbackDelivery eq '4'}" />
      </h:panelGroup>
 
      <h:outputLabel value="#{assessmentSettingsMessages.released_to_2}" />
