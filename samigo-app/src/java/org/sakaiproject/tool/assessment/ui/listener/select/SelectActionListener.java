@@ -196,7 +196,13 @@ public class SelectActionListener
     ArrayList recentSubmittedList =
         publishedAssessmentService.getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(
               AgentFacade.getAgentString(), AgentFacade.getCurrentSiteId(), "2".equals(select.getDisplayAllAssessments()));
-
+    ArrayList recordedList = new ArrayList();
+    if ("2".equals(select.getDisplayAllAssessments())) {
+    	recordedList =
+    		publishedAssessmentService.getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(
+    				AgentFacade.getAgentString(), AgentFacade.getCurrentSiteId(), false);
+    }
+    
     HashMap publishedAssessmentHash = getPublishedAssessmentHash(publishedAssessmentList);
     ArrayList submittedAssessmentGradingList = new ArrayList();
     //log.info("recentSubmittedList size="+recentSubmittedList.size());
@@ -320,10 +326,6 @@ public class SelectActionListener
         // Check if this assessment is that is recorded
         delivery.setRecordedAssessment(false);
         if ("2".equals(select.getDisplayAllAssessments())) {
-        	ArrayList recordedList =
-        		publishedAssessmentService.getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(
-        				AgentFacade.getAgentString(), AgentFacade.getCurrentSiteId(), false);
-
         	for (int i = 0; i < recordedList.size() && recentSubmittedList.size() > 1; i++) {
         		AssessmentGradingFacade recordedAssessment = (AssessmentGradingFacade)recordedList.get(i);
         		if (recordedAssessment.getAssessmentGradingId().equals(delivery.getAssessmentGradingId())) {
