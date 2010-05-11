@@ -639,7 +639,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		PublishedAssessmentFacade f = new PublishedAssessmentFacade(a);
 		return f;
 	}
-
+	
 	public Long getPublishedAssessmentId(Long assessmentId) {
 		List list = getHibernateTemplate()
 				.find(

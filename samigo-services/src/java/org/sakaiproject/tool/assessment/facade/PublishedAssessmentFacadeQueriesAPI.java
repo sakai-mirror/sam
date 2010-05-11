@@ -109,6 +109,8 @@ public interface PublishedAssessmentFacadeQueriesAPI
       Set answerFeedbackSet);
 
   public PublishedAssessmentFacade getPublishedAssessment(Long assessmentId);
+  
+  public PublishedAssessmentFacade getPublishedAssessment(Long assessmentId, boolean withGroupsInfo);
 
   public Long getPublishedAssessmentId(Long assessmentId);
 
