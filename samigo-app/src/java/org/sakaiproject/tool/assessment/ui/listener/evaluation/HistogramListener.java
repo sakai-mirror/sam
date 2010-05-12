@@ -243,7 +243,7 @@ public class HistogramListener
 					  submissionsSortedForDiscrim.get(numSubmissions-1-i)).getAgentId());
 		  }
 		  
-		  PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService.getPublishedAssessment(publishedId, false);
+		  PublishedAssessmentIfc pub = (PublishedAssessmentIfc) pubService.getPublishedAssessment(publishedId.toString());
 		  
 		  if (pub != null) {
 			if (actionString != null && actionString.equals("reviewAssessment")){

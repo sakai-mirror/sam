@@ -110,8 +110,6 @@ public interface PublishedAssessmentFacadeQueriesAPI
 
   public PublishedAssessmentFacade getPublishedAssessment(Long assessmentId);
   
-  public PublishedAssessmentFacade getPublishedAssessment(Long assessmentId, boolean withGroupsInfo);
-
   public Long getPublishedAssessmentId(Long assessmentId);
 
   public PublishedAssessmentFacade publishAssessment(AssessmentFacade assessment) throws Exception;
