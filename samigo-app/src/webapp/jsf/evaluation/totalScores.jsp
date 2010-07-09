@@ -97,7 +97,7 @@ return;
   <h3>
     <h:outputText value="#{evaluationMessages.title_total}"/>
     <h:outputText value="#{evaluationMessages.column} "/>
-    <h:outputText value="#{totalScores.assessmentName} " escape="fasel"/> 
+    <h:outputText value="#{totalScores.assessmentName} " escape="false"/> 
   </h3>
 
   <div class="textBelowHeader">
@@ -194,6 +194,12 @@ return;
       <f:valueChangeListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
      </h:selectOneMenu>
+
+	 <h:selectOneMenu value="#{totalScores.allSubmissions}" id="averageSubmissionA1" required="true" onchange="document.forms[0].submit();" rendered="#{totalScores.scoringOption eq '4' && totalScores.multipleSubmissionsAllowed eq 'true' }">
+	   <f:selectItem itemValue="3" itemLabel="#{evaluationMessages.all_sub}" />
+	   <f:selectItem itemValue="4" itemLabel="#{evaluationMessages.average_sub}" />
+	   <f:valueChangeListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
+	   </h:selectOneMenu>
       </h:panelGroup>
 
 	  <h:panelGroup>
@@ -241,6 +247,12 @@ return;
           <f:valueChangeListener
            type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
         </h:selectOneMenu>
+
+		<h:selectOneMenu value="#{totalScores.allSubmissions}" id="allSubmissionsA2" required="true" onchange="document.forms[0].submit();" rendered="#{totalScores.scoringOption eq '4' && totalScores.multipleSubmissionsAllowed eq 'true' }">
+		  <f:selectItem itemValue="3" itemLabel="#{evaluationMessages.all_sub}" />
+		  <f:selectItem itemValue="4" itemLabel="#{evaluationMessages.average_sub}" />
+          <f:valueChangeListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
+		 </h:selectOneMenu>
       </h:panelGroup>
     </h:panelGrid>
   </h:panelGroup>
@@ -272,12 +284,12 @@ return;
        <h:outputText value="#{description.lastInitial}" />
        <h:outputText value="\"></a>" escape="false" />
 
-         <h:outputText value="#{description.lastName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null}" />
-         <h:outputText value=", " rendered="#{(description.assessmentGradingId eq '-1' || description.submittedDate==null) && description.lastInitial ne 'Anonymous'}"/>
-         <h:outputText value="#{description.firstName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null}" />
+         <h:outputText value="#{description.lastName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null || totalScores.allSubmissions eq'4'}" />
+         <h:outputText value=", " rendered="#{(description.assessmentGradingId eq '-1' || description.submittedDate==null) && description.lastInitial ne 'Anonymous' || totalScores.allSubmissions eq'4'}"/>
+         <h:outputText value="#{description.firstName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null  || totalScores.allSubmissions eq'4'}" />
          <h:outputText value="#{evaluationMessages.na}" rendered="#{description.lastInitial eq 'Anonymous' && (description.assessmentGradingId eq '-1' || description.submittedDate==null)}" />
        <h:commandLink title="#{evaluationMessages.t_student}" action="studentScores" immediate="true" 
-          rendered="#{description.submittedDate!=null &&  description.assessmentGradingId ne '-1'}" >
+          rendered="#{description.submittedDate!=null &&  description.assessmentGradingId ne '-1' && totalScores.allSubmissions!='4'}" >
          <h:outputText value="#{description.lastName}" />
          <h:outputText value=", " rendered="#{description.lastInitial ne 'Anonymous'}"/>
          <h:outputText value="#{description.firstName}" />
@@ -289,12 +301,11 @@ return;
          <f:param name="studentid" value="#{description.idString}" />
          <f:param name="publishedIdd" value="#{totalScores.publishedId}" />
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
-		 <f:param name="email" value="#{description.email}" />
        </h:commandLink>
      </h:panelGroup>
      <f:verbatim><br/></f:verbatim>
 	 <span class="itemAction">
-	   <h:outputLink id="createEmail1" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", '#{totalScores.graderEmailInfo}', \"#{description.firstName} #{description.lastName}\", '#{description.email}', '#{totalScores.assessmentName}');" value="#">
+	   <h:outputLink id="createEmail1" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
 	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
 	   </h:outputLink>
 	 </span>
@@ -321,12 +332,12 @@ return;
        <h:outputText value="#{description.lastInitial}" />
        <h:outputText value="\"></a>" escape="false" />
 
-         <h:outputText value="#{description.lastName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null}" />
-         <h:outputText value=", " rendered="#{(description.assessmentGradingId eq '-1' || description.submittedDate==null) && description.lastInitial ne 'Anonymous'}"/>
-         <h:outputText value="#{description.firstName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null}" />
+         <h:outputText value="#{description.lastName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null || totalScores.allSubmissions eq'4'}" />
+         <h:outputText value=", " rendered="#{(description.assessmentGradingId eq '-1' || description.submittedDate==null) && description.lastInitial ne 'Anonymous' || totalScores.allSubmissions eq'4'}"/>
+         <h:outputText value="#{description.firstName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null ||totalScores.allSubmissions eq '4'}" />
          <h:outputText value="#{evaluationMessages.na}" rendered="#{description.lastInitial eq 'Anonymous' && (description.assessmentGradingId eq '-1' || description.submittedDate==null)}" />
        <h:commandLink title="#{evaluationMessages.t_student}" action="studentScores" immediate="true" 
-          rendered="#{description.submittedDate!=null && description.assessmentGradingId ne '-1'}" >
+          rendered="#{description.submittedDate!=null && description.assessmentGradingId ne '-1' &&  totalScores.allSubmissions!='4'}" >
          <h:outputText value="#{description.lastName}" />
          <h:outputText value=", " rendered="#{description.lastInitial ne 'Anonymous'}"/>
          <h:outputText value="#{description.firstName}" />
@@ -338,12 +349,11 @@ return;
          <f:param name="studentid" value="#{description.idString}" />
          <f:param name="publishedIdd" value="#{totalScores.publishedId}" />
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
-		 <f:param name="email" value="#{description.email}" />
        </h:commandLink>
      </h:panelGroup>
      <f:verbatim><br/></f:verbatim>
 	 <span class="itemAction">
-	   <h:outputLink id="createEmail2" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", '#{totalScores.graderEmailInfo}', \"#{description.firstName} #{description.lastName}\",' #{description.email}', '#{totalScores.assessmentName}');" value="#">
+	   <h:outputLink id="createEmail2" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
 	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
 	   </h:outputLink>
 	 </span>
@@ -370,11 +380,11 @@ return;
        <h:outputText value="\"></a>" escape="false" />
 
          <h:outputText value="#{description.lastName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null}" />
-         <h:outputText value=", " rendered="#{(description.assessmentGradingId eq '-1' || description.submittedDate==null) && description.lastInitial ne 'Anonymous'}"/>
-         <h:outputText value="#{description.firstName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null}" />
+         <h:outputText value=", " rendered="#{(description.assessmentGradingId eq '-1' || description.submittedDate==null) && description.lastInitial ne 'Anonymous' || totalScores.allSubmissions eq'4'}"/>
+         <h:outputText value="#{description.firstName}" rendered="#{description.assessmentGradingId eq '-1' || description.submittedDate==null || totalScores.allSubmissions eq'4' || totalScores.allSubmissions eq'4'}" />
          <h:outputText value="#{evaluationMessages.na}" rendered="#{description.lastInitial eq 'Anonymous' && (description.assessmentGradingId eq '-1' || description.submittedDate==null)}" />
        <h:commandLink title="#{evaluationMessages.t_student}" action="studentScores" immediate="true" 
-          rendered="#{description.submittedDate!=null && description.assessmentGradingId ne '-1'}" >
+          rendered="#{description.submittedDate!=null && description.assessmentGradingId ne '-1' &&  totalScores.allSubmissions!='4'}" >
          <h:outputText value="#{description.lastName}" />
          <h:outputText value=", " rendered="#{description.lastInitial ne 'Anonymous'}"/>
          <h:outputText value="#{description.firstName}" />
@@ -386,13 +396,12 @@ return;
          <f:param name="studentid" value="#{description.idString}" />
          <f:param name="publishedIdd" value="#{totalScores.publishedId}" />
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
- 		 <f:param name="email" value="#{description.email}" />
        </h:commandLink>
      </h:panelGroup>
      <f:verbatim><br/></f:verbatim>
      <f:verbatim><br/></f:verbatim>
 	 <span class="itemAction">
-	   <h:outputLink id="createEmail3" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", '#{totalScores.graderEmailInfo}', \"#{description.firstName} #{description.lastName}\", '#{description.email}', '#{totalScores.assessmentName}');" value="#">
+	   <h:outputLink id="createEmail3" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
 	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
 	  </h:outputLink>
 	  </span>
@@ -417,7 +426,7 @@ return;
         </h:commandLink>
      </f:facet>
      <h:panelGroup >
-       <h:commandLink title="#{evaluationMessages.t_student}" action="studentScores">
+       <h:commandLink title="#{evaluationMessages.t_student}" action="studentScores" rendered="#{totalScores.allSubmissions != '4'}">
          <h:outputText value="#{description.assessmentGradingId}" />
          <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ResetTotalScoreListener" />
@@ -428,6 +437,7 @@ return;
          <f:param name="publishedIdd" value="#{totalScores.publishedId}" />
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
        </h:commandLink>
+       <h:outputText rendered="#{totalScores.allSubmissions eq '4'}"  value="#{description.assessmentGradingId}" />
      </h:panelGroup>
     </h:column>
 
@@ -442,7 +452,7 @@ return;
           </h:commandLink>    
       </f:facet>
      <h:panelGroup>
-       <h:commandLink title="#{evaluationMessages.t_student}" action="studentScores" immediate="true">
+       <h:commandLink title="#{evaluationMessages.t_student}" action="studentScores" immediate="true" rendered="#{totalScores.allSubmissions != '4'}">
          <h:outputText value="#{description.assessmentGradingId}" />
          <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ResetTotalScoreListener" />
@@ -453,6 +463,7 @@ return;
          <f:param name="publishedIdd" value="#{totalScores.publishedId}" />
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
        </h:commandLink>
+       <h:outputText rendered="#{totalScores.allSubmissions eq '4'}"  value="#{description.assessmentGradingId}" />
      </h:panelGroup>
     </h:column>
     
@@ -467,7 +478,7 @@ return;
       </h:commandLink> 
       </f:facet>
      <h:panelGroup>
-       <h:commandLink title="#{evaluationMessages.t_student}" action="studentScores" immediate="true">
+       <h:commandLink title="#{evaluationMessages.t_student}" action="studentScores" immediate="true" rendered="#{totalScores.allSubmissions != '4'}">
          <h:outputText value="#{description.assessmentGradingId}" />
          <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ResetTotalScoreListener" />
@@ -478,6 +489,7 @@ return;
          <f:param name="publishedIdd" value="#{totalScores.publishedId}" />
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
        </h:commandLink>
+       <h:outputText rendered="#{totalScores.allSubmissions eq '4'}" value="#{description.assessmentGradingId}" />
      </h:panelGroup>
     </h:column>
  
@@ -568,7 +580,7 @@ return;
     
 
     <!-- DATE -->
-    <h:column rendered="#{totalScores.sortType!='submittedDate'}">
+    <h:column rendered="#{totalScores.sortType!='submittedDate' && totalScores.allSubmissions!='4'}">
      <f:facet name="header">
         <h:commandLink title="#{evaluationMessages.t_sortSubmittedDate}" id="submittedDate" action="totalScores">
           <h:outputText value="#{evaluationMessages.submit_date}" />
@@ -695,7 +707,7 @@ return;
     </h:column>
 
     <!-- TOTAL -->
-    <h:column rendered="#{totalScores.sortType!='totalAutoScore'}">
+    <h:column rendered="#{totalScores.sortType!='totalAutoScore' && totalScores.allSubmissions!='4'}">
       <f:facet name="header">
         <h:commandLink title="#{evaluationMessages.t_sortScore}" id="totalAutoScore" action="totalScores">
           <h:outputText value="#{evaluationMessages.score}" />
@@ -735,7 +747,7 @@ return;
     </h:column>
     
     <!-- ADJUSTMENT -->
-    <h:column rendered="#{totalScores.sortType!='totalOverrideScore'}">
+    <h:column rendered="#{totalScores.sortType!='totalOverrideScore' && totalScores.allSubmissions!='4'}">
       <f:facet name="header">
         <h:commandLink title="#{evaluationMessages.t_sortAdjustScore}" id="totalOverrideScore" action="totalScores">
     	    <h:outputText value="#{evaluationMessages.adjustment}" />
@@ -746,9 +758,7 @@ return;
         </h:commandLink>
       </f:facet>
       <h:inputText value="#{description.totalOverrideScore}" size="5" id="adjustTotal" required="false" rendered="#{totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1'}"  onchange="toPoint(this.id);" >
-		<f:validateDoubleRange/>
 	 </h:inputText>
-     <h:message for="adjustTotal" style="color:red"/>
    </h:column>
 
 
@@ -763,9 +773,7 @@ return;
           </h:commandLink>    
       </f:facet>
       <h:inputText value="#{description.totalOverrideScore}" size="5" id="adjustTotal2" required="false" rendered="#{totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1'}"  onchange="toPoint(this.id);" >
-		<f:validateDoubleRange/>
 	 </h:inputText>
-     <h:message for="adjustTotal2" style="color:red"/>
    </h:column>
     
     <h:column rendered="#{totalScores.sortType=='totalOverrideScore'  && !totalScores.sortAscending}">
@@ -779,10 +787,8 @@ return;
       </h:commandLink> 
       </f:facet>
       <h:inputText value="#{description.totalOverrideScore}" size="5" id="adjustTotal3" required="false" rendered="#{totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1'}"  onchange="toPoint(this.id);" >
-		<f:validateDoubleRange/>
-	 </h:inputText>
-     <h:message for="adjustTotal3" style="color:red"/>
-   </h:column>
+      </h:inputText>
+    </h:column>
   
 
     <!-- FINAL SCORE -->
@@ -827,7 +833,7 @@ return;
 
 
     <!-- COMMENT -->
-    <h:column rendered="#{totalScores.sortType!='comments'}">
+    <h:column rendered="#{totalScores.sortType!='comments' && totalScores.allSubmissions!='4'}">
      <f:facet name="header">
       <h:panelGroup>
 	  <h:commandLink title="#{evaluationMessages.t_sortCommentsForStudent}" id="comments" action="totalScores">
@@ -897,6 +903,7 @@ return;
 
 <h:outputText value="#{evaluationMessages.mult_sub_highest}" rendered="#{totalScores.scoringOption eq '1'&& totalScores.multipleSubmissionsAllowed eq 'true' }"/>
 <h:outputText value="#{evaluationMessages.mult_sub_last}" rendered="#{totalScores.scoringOption eq '2' && totalScores.multipleSubmissionsAllowed eq 'true' }"/>
+<h:outputText value="#{evaluationMessages.mult_sub_average}" rendered="#{totalScores.scoringOption eq '4' && totalScores.multipleSubmissionsAllowed eq 'true' }"/>
 </div>
 <p class="act">
 

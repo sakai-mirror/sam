@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -154,6 +155,7 @@ public class PublishedAssessmentSettingsBean
 
   // properties of PublishedFeedback
   private String feedbackDelivery; // immediate, on specific date , no feedback
+  private String feedbackComponentOption; // 2 = select options, 1 = total scores only 
   private String feedbackAuthoring;
   private String editComponents; // 0 = cannot
   private boolean showQuestionText = false;
@@ -318,6 +320,9 @@ public class PublishedAssessmentSettingsBean
       if (feedback != null) {
         if (feedback.getFeedbackDelivery()!=null)
           this.feedbackDelivery = feedback.getFeedbackDelivery().toString();
+        if (feedback.getFeedbackComponentOption()!=null)
+            this.feedbackComponentOption = feedback.getFeedbackComponentOption().toString();
+
       if (feedback.getFeedbackAuthoring()!=null)
           this.feedbackAuthoring = feedback.getFeedbackAuthoring().toString();
       
@@ -711,6 +716,14 @@ public class PublishedAssessmentSettingsBean
 
   public void setFeedbackDelivery(String feedbackDelivery) {
     this.feedbackDelivery = feedbackDelivery;
+  }
+  
+  public String getFeedbackComponentOption() {
+		return feedbackComponentOption;
+  }
+
+public void setFeedbackComponentOption(String feedbackComponentOption) {
+		this.feedbackComponentOption = feedbackComponentOption;
   }
 
   public String getFeedbackAuthoring() {
@@ -1359,6 +1372,20 @@ public class PublishedAssessmentSettingsBean
 		return "editPublishedAssessmentSettings";
 	}
 
+  private String createUniqueKey(String key, Map map) {
+     if (!map.containsKey(key)) {
+        return key;
+     } else {
+        int index = 1;
+        String ukey = key + " (" + index + ")";
+        while (map.containsKey(ukey)) {
+           index++;
+           ukey = key + " (" + index + ")";
+        }
+        return ukey;
+     }
+  }
+
 	  /**
 	 * gopalrc Nov 2007
 	 * Returns all groups for site
@@ -1382,10 +1409,10 @@ public class PublishedAssessmentSettingsBean
 					String groupDescription = group.getDescription() == null
 							|| group.getDescription().equals("") ? "" : " : "
 							+ group.getDescription();
+					String selectDescription = createUniqueKey(groupDescription.toUpperCase(), sortedSelectItems);
 					String displayDescription = group.getTitle()
 							+ groupDescription;
-					sortedSelectItems.put(displayDescription.toUpperCase(),
-							new SelectItem(group.getId(), displayDescription));
+ 					sortedSelectItems.put(selectDescription, new SelectItem(group.getId(), displayDescription));
 				}
 				Set keySet = sortedSelectItems.keySet();
 				groupIter = keySet.iterator();
@@ -1571,6 +1598,7 @@ public class PublishedAssessmentSettingsBean
 	{
 		this.bgImageSelect=bgImageSelect;
 	}
+
 }
 
 

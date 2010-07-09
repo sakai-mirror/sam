@@ -29,9 +29,9 @@
 	
   <!-- score -->	
   <scoreList type="list">
-    <xsl:for-each select="//resprocessing/respcondition/setvar">
-      <xsl:if test="@varname='que_score' and @action='Set'">
-        <xsl:value-of select="."/>
+    <xsl:for-each select="//resprocessing/respcondition">
+      <xsl:if test="setvar &gt; 0 and setvar/@varname='que_score'">
+        <xsl:value-of select="setvar"/>
       </xsl:if>
     </xsl:for-each>
   </scoreList>	
@@ -43,25 +43,51 @@
 	
   <!-- item text -->
   <itemText type="list">
-	<xsl:for-each select="//presentation/material/mattext">
-	  <xsl:value-of select="."/>
-	</xsl:for-each>
-  </itemText>
-
-
   <xsl:for-each select="//presentation/material/*">
-    <itemTextRespondus type="list">
-	  <xsl:choose>
-		<xsl:when test="name()='mattext'">mattext:::<xsl:value-of select="." /></xsl:when>
-	    <xsl:when test="name()='matimage'">matimage:::<xsl:value-of select="@imagtype" />:::<xsl:value-of select="@uri" /></xsl:when>
-      </xsl:choose>
-    </itemTextRespondus>
+	<xsl:if test="name()='mattext'">
+		<xsl:value-of select="." />
+	</xsl:if>
+	<xsl:if test="name()='matimage'">
+		<xsl:variable name="mimage" select="@uri" />
+		<img alt="" src="{$mimage}"/>
+	</xsl:if>
+	<xsl:if test="name()='mataudio'">
+		<xsl:variable name="uri" select="@uri" />
+		<xsl:variable name="audiotype" select="@audiotype" />
+		<xsl:if test="$audiotype='audio/swf'">
+		  <embed src="{$uri}"/>
+		</xsl:if>
+		<xsl:if test="not($audiotype='audio/swf')">
+		  <a href="{$uri}"><xsl:value-of select="$uri" /></a>
+		</xsl:if>
+	</xsl:if>
   </xsl:for-each>
+  </itemText>
   
 
   <!-- answers -->
   <xsl:for-each select="//presentation/response_lid/render_choice/response_label" >
-    <itemAnswer type="list"><xsl:value-of select="@ident"/>:::<xsl:value-of select="material/mattext"/></itemAnswer>
+    <itemAnswer type="list">
+	  <xsl:value-of select="@ident"/>:::<xsl:for-each select="./material/*">
+		<xsl:if test="name()='mattext'">
+			<xsl:value-of select="." />
+		</xsl:if>
+		<xsl:if test="name()='matimage'">
+			<xsl:variable name="mimage" select="@uri" />
+			<img alt="" src="{$mimage}"/>
+		</xsl:if>
+		<xsl:if test="name()='mataudio'">
+			<xsl:variable name="uri" select="@uri" />
+			<xsl:variable name="audiotype" select="@audiotype" />
+			<xsl:if test="$audiotype='audio/swf'">
+			  <embed src="{$uri}"/>
+			</xsl:if>
+			<xsl:if test="not($audiotype='audio/swf')">
+			  <a href="{$uri}"><xsl:value-of select="$uri" /></a>
+			</xsl:if>
+		</xsl:if>
+	  </xsl:for-each>
+	</itemAnswer>
   </xsl:for-each>
 
   <xsl:for-each select="//resprocessing/respcondition/conditionvar/varequal" >
@@ -70,15 +96,33 @@
 
   <xsl:for-each select="//presentation/response_lid">
     <itemMatchSourceText type="list">
-	  <xsl:value-of select="@ident"/>:::<xsl:value-of select="material/mattext"/>
+	  <xsl:value-of select="@ident"/>:::<xsl:for-each select="./material/*">
+		<xsl:if test="name()='mattext'">
+			<xsl:value-of select="." />
+		</xsl:if>
+		<xsl:if test="name()='matimage'">
+			<xsl:variable name="mimage" select="@uri" />
+			<img alt="" src="{$mimage}"/>
+		</xsl:if>
+		<xsl:if test="name()='mataudio'">
+			<xsl:variable name="uri" select="@uri" />
+			<xsl:variable name="audiotype" select="@audiotype" />
+			<xsl:if test="$audiotype='audio/swf'">
+			  <embed src="{$uri}"/>
+			</xsl:if>
+			<xsl:if test="not($audiotype='audio/swf')">
+			  <a href="{$uri}"><xsl:value-of select="$uri" /></a>
+			</xsl:if>
+		</xsl:if>
+	  </xsl:for-each>
 	</itemMatchSourceText>
   </xsl:for-each>
 
   <!-- label(s) for correct answer(s), if any -->
-  <xsl:for-each select="//resprocessing/respcondition/displayfeedback">
-    <xsl:if test="contains(@linkrefid, '_C')">
+  <xsl:for-each select="//resprocessing/respcondition">
+    <xsl:if test="setvar &gt; 0 and setvar/@varname='que_score'">
 	  <itemAnswerCorrectLabel type="list">
-	    <xsl:value-of select="../conditionvar/varequal"/>
+        <xsl:value-of select="conditionvar/varequal"/>
 	  </itemAnswerCorrectLabel>
     </xsl:if>
   </xsl:for-each>
@@ -92,13 +136,28 @@
   </xsl:for-each>
 
   <!-- feedback -->
-  <xsl:for-each select="//itemfeedback/material/*">
+  <xsl:for-each select="//itemfeedback">
     <allFeedbacks type="list">
-		<xsl:choose>
-			<xsl:when test="name()='mattext'"><xsl:value-of select="../../@ident"/>:::mattext:::<xsl:value-of select="." /></xsl:when>
-		    <xsl:when test="name()='matimage'"><xsl:value-of select="../../@ident"/>:::matimage:::<xsl:value-of select="@imagtype" />:::<xsl:value-of select="@uri" /></xsl:when>
-	    </xsl:choose>
-	</allFeedbacks>
+      <xsl:value-of select="@ident"/>:::<xsl:for-each select="./material/*">
+        <xsl:if test="name()='mattext'">
+	      <xsl:value-of select="." />
+        </xsl:if>
+        <xsl:if test="name()='matimage'">
+		  <xsl:variable name="mimage" select="@uri" />
+		  <img alt="" src="{$mimage}"/>
+	    </xsl:if>
+	    <xsl:if test="name()='mataudio'">
+		  <xsl:variable name="uri" select="@uri" />
+  		  <xsl:variable name="audiotype" select="@audiotype" />
+		  <xsl:if test="$audiotype='audio/swf'">
+		    <embed src="{$uri}"/>
+		  </xsl:if>
+		  <xsl:if test="not($audiotype='audio/swf')">
+		    <a href="{$uri}"><xsl:value-of select="$uri" /></a>
+		  </xsl:if>
+	    </xsl:if>
+      </xsl:for-each>
+    </allFeedbacks>
   </xsl:for-each>
 
   <!-- varequal linkrefid mapping -->

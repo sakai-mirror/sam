@@ -37,6 +37,7 @@ import javax.faces.event.ActionListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.StudentGradingSummaryData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentFeedbackIfc;
@@ -186,17 +187,12 @@ public class SelectActionListener
 
     List containRandomPartAssessmentIds = publishedAssessmentService.getContainRandomPartAssessmentIds();
 
-    if (ae != null && "view".equals(ae.getComponent().getId())) {
-    	HtmlSelectOneMenu selectOne = (HtmlSelectOneMenu)ae.getComponent();
-    	String value = (String)selectOne.getValue();
-    	select.setDisplayAllAssessments(value);
-    }
+    processDisplayInfo(select);
     
     // 1. get the most recent submission, or the highest submissions of each assessment for a user, depending on grading option
-    ArrayList recentSubmittedList =
-        publishedAssessmentService.getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(
-              AgentFacade.getAgentString(), AgentFacade.getCurrentSiteId(), "2".equals(select.getDisplayAllAssessments()));
-
+    ArrayList recentSubmittedList = 
+    	publishedAssessmentService.getBasicInfoOfLastOrHighestOrAverageSubmittedAssessmentsByScoringOption( AgentFacade.getAgentString(), AgentFacade.getCurrentSiteId(),"2".equals(select.getDisplayAllAssessments()));
+   
     HashMap publishedAssessmentHash = getPublishedAssessmentHash(publishedAssessmentList);
     ArrayList submittedAssessmentGradingList = new ArrayList();
     //log.info("recentSubmittedList size="+recentSubmittedList.size());
@@ -236,64 +232,33 @@ public class SelectActionListener
         
         delivery.setScoringOption(getScoringType(g.getPublishedAssessmentId(), publishedAssessmentHash));
         
-        /*
-        PublishedAssessmentIfc pub = publishedAssessmentService.getPublishedAssessment(delivery.getAssessmentId());
-        AssessmentAccessControlIfc ac = pub.getAssessmentAccessControl();
-         
-        if (ac.getSubmissionsAllowed()!=null){
-          	if (ac.getSubmissionsAllowed().intValue()> 1){
-          		delivery.setMultipleSubmissions(true);
-          		hasMultipleSubmission=true;
-          	}
-          	else {
-          		delivery.setMultipleSubmissions(false);
-          	}
-          }
-          else {
-        	  delivery.setMultipleSubmissions(true);
-        	  hasMultipleSubmission=true;
-          }
-                
-        delivery.setScoringOption(pub.getEvaluationModel().getScoringType().toString());
-        */
-        
         if ((EvaluationModelIfc.HIGHEST_SCORE.toString()).equals(delivery.getScoringOption())){
         	hasHighest=true;
         }
         if (hasHighest && hasMultipleSubmission){
         	select.setHasHighestMultipleSubmission(true);
         }
+        
+        if(hasMultipleSubmission && ((EvaluationModelIfc.AVERAGE_SCORE.toString()).equals(delivery.getScoringOption()))){
+        	select.setHasAverageMultipleSubmissions(true);
+        }
         delivery.setAssessmentTitle(g.getPublishedAssessmentTitle());
         delivery.setFeedbackDelivery(getFeedbackDelivery(g.getPublishedAssessmentId(),
+                                                 publishedAssessmentHash));
+        delivery.setFeedbackComponentOption(getFeedbackComponentOption(g.getPublishedAssessmentId(),
                                                  publishedAssessmentHash));
         delivery.setFeedbackDate(getFeedbackDate(g.getPublishedAssessmentId(),
                                                  publishedAssessmentHash));
         if (g.getFinalScore() != null) {
+          delivery.setFinalScore(g.getFinalScore().toString());	
           delivery.setGrade(g.getFinalScore().toString());
           delivery.setRawScore(g.getFinalScore().toString()); // Bug 318 fix. It seems raw score should also be based on final score.
-	  delivery.setRaw(g.getFinalScore().longValue());
+          delivery.setRaw(g.getFinalScore().longValue());
         }
 
         delivery.setTimeElapse(getTimeElapsed(g.getTimeElapsed()));
         delivery.setSubmissionDate(g.getSubmittedDate());
         delivery.setHasAssessmentBeenModified(getHasAssessmentBeenModified(select, g, publishedAssessmentHash));
-	/*
-        if (g.getSubmittedDate() != null && g.getAttemptDate() != null) {
-          long time = g.getSubmittedDate().getTime() -
-              g.getAttemptDate().getTime();
-          //log.info("Time = " + time);
-          long hours = time / (1000 * 60 * 60);
-          long remainder = time - (hours * 1000 * 60 * 60);
-          long minutes = remainder / (1000 * 60);
-          delivery.setSubTime(time);
-          delivery.setSubmissionHours(Long.toString(hours));
-          delivery.setSubmissionMinutes(Long.toString(minutes));
-        }
-        else {
-          delivery.setSubmissionHours("n/a");
-          delivery.setSubmissionMinutes("n/a");
-        }
-	*/
 
         delivery.setSubmitted(true); // records are all submitted for grade
         PublishedAssessmentFacade p = (PublishedAssessmentFacade)publishedAssessmentHash.get(g.getPublishedAssessmentId());
@@ -315,82 +280,144 @@ public class SelectActionListener
         String hasStats = hasStats(g, feedbackHash);
         delivery.setStatistics(hasStats);
 
+        delivery.setIsRecordedAssessment(g.getIsRecorded());
+        
         // to do: set statistics and time for delivery here.
         submittedAssessmentGradingList.add(delivery);
-        // Check if this assessment is that is recorded
-        delivery.setRecordedAssessment(false);
-        if ("2".equals(select.getDisplayAllAssessments())) {
-        	ArrayList recordedList =
-        		publishedAssessmentService.getBasicInfoOfLastOrHighestSubmittedAssessmentsByScoringOption(
-        				AgentFacade.getAgentString(), AgentFacade.getCurrentSiteId(), false);
-
-        	for (int i = 0; i < recordedList.size() && recentSubmittedList.size() > 1; i++) {
-        		AssessmentGradingFacade recordedAssessment = (AssessmentGradingFacade)recordedList.get(i);
-        		if (recordedAssessment.getAssessmentGradingId().equals(delivery.getAssessmentGradingId())) {
-        			delivery.setRecordedAssessment(true);
-        			break;
-        		}
-        	}
-
-        	// Remove the flag that indicates recorded when the assessment is unique
-        	if (deliveryAnt != null) {
-        		if (deliveryAnt.getAssessmentId().equals(delivery.getAssessmentId())) {
-        			isUnique = false;
-        		}
-        		else {
-        			if (isUnique) deliveryAnt.setRecordedAssessment(false);
-        			else isUnique = true;
-        			if (k == recentSubmittedList.size()-1) {
-        				delivery.setRecordedAssessment(false);
-        			}
-        		}
-        	}
-        	deliveryAnt = delivery;
-        }
     }
-    // to do: set statistics and time for delivery here.
-
-    ArrayList scored = new ArrayList();
-    ArrayList notScored = new ArrayList();
+    
+    BeanSort bs = new BeanSort(submittedAssessmentGradingList, "assessmentTitle");
+    bs.toStringSort();
+    bs.sort();
+    
     Iterator iter = submittedAssessmentGradingList.iterator();
+    ArrayList averageScoreAssessmentGradingList = new ArrayList();
+    
     while (iter.hasNext())
     {
       DeliveryBeanie db = (DeliveryBeanie) iter.next();
-      if (getSubmittedOrderBy(select).equals("raw") &&
-           db.getShowScore().equals("true"))
-        scored.add(db);
-      else
-        notScored.add(db);
+      if (db.getScoringOption().equals(EvaluationModelIfc.AVERAGE_SCORE.toString()))
+    	  averageScoreAssessmentGradingList.add(db);
     }
+    
+    String lastPublishedAssessmentId = "";
+    HashMap averageScoreMap = new HashMap();
+    float totalScores= 0f;
+	int totalSubmissions= 0;
+	float averageScore = 0f;
+    
+	for (int i = 0; i < averageScoreAssessmentGradingList.size(); i++)
+	{
+		DeliveryBeanie db = (DeliveryBeanie) averageScoreAssessmentGradingList.get(i);
+		if ((lastPublishedAssessmentId != null && lastPublishedAssessmentId.equals(db.getAssessmentId())) || averageScoreAssessmentGradingList.size() == 1) {
+			totalScores += Float.parseFloat(db.getFinalScore());
+			totalSubmissions++;
+			if (i == averageScoreAssessmentGradingList.size() - 1) {
+				averageScore = totalScores/totalSubmissions;
+				averageScoreMap.put(db.getAssessmentId(), Float.valueOf(averageScore));
+			}
+		}
+		else {
+			if (i > 0) {
+				averageScore = totalScores/totalSubmissions;
+				averageScoreMap.put(lastPublishedAssessmentId, Float.valueOf(averageScore));
+			}
+			lastPublishedAssessmentId = db.getAssessmentId(); 
+			totalScores = Float.parseFloat(db.getFinalScore());
+			totalSubmissions = 1;
+		}
+	}
+    
+    /// --mustansar
+    GradingService service = new GradingService();
+    ArrayList reviewableList=new ArrayList();
+    ArrayList recordedList=new ArrayList();
+    Iterator it=submittedAssessmentGradingList.iterator();
+    String assessmentIdNew="";
+    while(it.hasNext()){
+    	DeliveryBeanie beanie=(DeliveryBeanie)it.next();
+    	String assessmentIdOld= beanie.getAssessmentId();
+    	if(beanie.getScoringOption().equals(EvaluationModelIfc.AVERAGE_SCORE.toString()) && !assessmentIdNew.equals(assessmentIdOld) ){
+    		assessmentIdNew= beanie.getAssessmentId();
+    		beanie.setIsRecordedAssessment(false);
+    		DeliveryBeanie recorded=new DeliveryBeanie();
+    		recorded.setStatistics(beanie.getStatistics());
+    		recorded.setHasRandomDrawPart(beanie.getHasRandomDrawPart());
+    		recorded.setDueDate(beanie.getDueDate());
+    		recorded.setHasAssessmentBeenModified(beanie.getHasAssessmentBeenModified());
+    		recorded.setIsAssessmentRetractForEdit(beanie.getIsAssessmentRetractForEdit());
+    		recorded.setPastDue(beanie.getPastDue());
+    		recorded.setShowScore(beanie.getShowScore());
+    		recorded.setSubTime(beanie.getSubTime());
+    		recorded.setAssessmentGradingId(beanie.getAssessmentGradingId());
+    		recorded.setAssessmentTitle(beanie.getAssessmentTitle());
+    		recorded.setAssessmentId(beanie.getAssessmentId());
+    		recorded.setFeedback(beanie.getFeedback());
+    		// recorded.setFeedback("-");
+    		recorded.setFeedbackDate(beanie.getFeedbackDate());
+    		recorded.setFeedbackDelivery(beanie.getFeedbackDelivery());
+    		recorded.setFeedbackComponentOption(beanie.getFeedbackComponentOption());
+    		recorded.setFinalScore(averageScoreMap.get(assessmentIdNew).toString());
+    		recorded.setGrade(averageScoreMap.get(assessmentIdNew).toString());
+    		recorded.setRawScore(averageScoreMap.get(assessmentIdNew).toString());
+    		recorded.setMultipleSubmissions(beanie.isMultipleSubmissions());
+    		recorded.setIsRecordedAssessment(true);
+    		recorded.setScoringOption(beanie.getScoringOption());
+    		recordedList.add(recorded);
+    		reviewableList.add(recorded);
+    		reviewableList.add(beanie);  
+    		// select.setHasAverageMultipleSubmissions(true); 
+    	}
+    	else if(
+    			( beanie.getScoringOption().equals(EvaluationModelIfc.HIGHEST_SCORE.toString()) ||
+    					beanie.getScoringOption().equals(EvaluationModelIfc.LAST_SCORE.toString()))&& 
+    					beanie.getIsRecordedAssessment()){
 
-    bs = new BeanSort(scored, getSubmittedOrderBy(select));
-    bs2 = new BeanSort(notScored, getSubmittedOrderBy(select));
+    		beanie.setIsRecordedAssessment(false);
+    		DeliveryBeanie recorded=new DeliveryBeanie();
+    		recorded.setStatistics(beanie.getStatistics());
+    		recorded.setHasRandomDrawPart(beanie.getHasRandomDrawPart());
+    		recorded.setDueDate(beanie.getDueDate());
+    		recorded.setHasAssessmentBeenModified(beanie.getHasAssessmentBeenModified());
+    		recorded.setIsAssessmentRetractForEdit(beanie.getIsAssessmentRetractForEdit());
+    		recorded.setPastDue(beanie.getPastDue());
+    		recorded.setShowScore(beanie.getShowScore());
+    		recorded.setSubTime(beanie.getSubTime()); 
+    		recorded.setAssessmentGradingId(beanie.getAssessmentGradingId());
+    		recorded.setAssessmentTitle(beanie.getAssessmentTitle());  
+    		recorded.setAssessmentId(beanie.getAssessmentId());
+    		recorded.setFeedback(beanie.getFeedback());
+    		// recorded.setFeedback("-");
+    		recorded.setFeedbackDate(beanie.getFeedbackDate());
+    		recorded.setFeedbackDelivery(beanie.getFeedbackDelivery());
+    		recorded.setFeedbackComponentOption(beanie.getFeedbackComponentOption());
+    		recorded.setFinalScore(beanie.getFinalScore());
+    		recorded.setGrade(beanie.getGrade());
+    		recorded.setRawScore(beanie.getRawScore());
+    		recorded.setMultipleSubmissions(beanie.isMultipleSubmissions());
+    		recorded.setIsRecordedAssessment(true);
+    		recorded.setScoringOption(beanie.getScoringOption());
+    		recordedList.add(recorded);
+    		reviewableList.add(recorded);
+    		reviewableList.add(beanie);  
 
-     if (getSubmittedOrderBy(select).equals("subTime")||getSubmittedOrderBy(select).equals("raw") )
-    {
-      bs.toNumericSort();
-      bs2.toNumericSort();
+    	}
+    	else if ("2".equals(select.getDisplayAllAssessments())) { 
+    		reviewableList.add(beanie);
+    	}  
     }
-    else if ( getSubmittedOrderBy(select).equals("submissionDate")||getSubmittedOrderBy(select).equals("feedbackDate"))
-    {
-         bs.toDateSort();
-         bs2.toDateSort();
+    
+    
+    if ("2".equals(select.getDisplayAllAssessments())){
+    	submittedAssessmentGradingList=reviewableList;    
     }
-    else
-    {
-         bs.toStringSort();
-         bs2.toStringSort();
+    else {
+    	submittedAssessmentGradingList = recordedList;
     }
-    bs.sort();
-    bs2.sort();
-
-    submittedAssessmentGradingList = new ArrayList();
-    submittedAssessmentGradingList.addAll(scored);
-    submittedAssessmentGradingList.addAll(notScored);
 
     if (!select.isReviewableAscending())
     {
-	Collections.reverse(submittedAssessmentGradingList);
+    	Collections.reverse(submittedAssessmentGradingList);
     }
 
     // set the managed beanlist properties that we need
@@ -451,6 +478,23 @@ public class SelectActionListener
     return returnType;
   }
 
+  /**@author Mutansar Mehmood 
+   * look at sort info from post and set bean accordingly
+   * @param bean the select index managed bean
+   */
+  private void processDisplayInfo(SelectAssessmentBean bean) {
+
+	  String displaySubmissions=ContextUtil.lookupParam("selectSubmissions");
+	  //String displayRecorded=ContextUtil.lookupParam("recordedSubmissions");
+	  if(displaySubmissions!=null && displaySubmissions.equalsIgnoreCase("1")){
+		  bean.setDisplayAllAssessments("1");
+	  }
+	  else{
+		  bean.setDisplayAllAssessments("2");
+	  }
+
+  }
+  
   /**
    * look at sort info from post and set bean accordingly
    * @param bean the select index managed bean
@@ -603,7 +647,7 @@ public class SelectActionListener
    * contains AssessmentGradingData with the PublishedAssessment Id and title.
    */
   private String hasFeedback(PublishedAssessmentFacade p){
-    String hasFeedback = "false";
+    String hasFeedback = "na";
     Date currentDate = new Date();
     
     if (p==null) {// published assessment may have been deleted
@@ -615,8 +659,14 @@ public class SelectActionListener
     	|| (AssessmentFeedbackIfc.FEEDBACK_ON_SUBMISSION).equals(p.getFeedbackDelivery())	
         || ((AssessmentFeedbackIfc.FEEDBACK_BY_DATE).equals(p.getFeedbackDelivery()) && p.getFeedbackDate()!= null && currentDate.after(p.getFeedbackDate())))
     {
-      hasFeedback="true";
+      hasFeedback="show";
     }
+    
+    if ((AssessmentFeedbackIfc.FEEDBACK_BY_DATE).equals(p.getFeedbackDelivery()) && (p.getFeedbackDate()!= null && currentDate.before((p.getFeedbackDate()))))
+    {
+      hasFeedback="blank";
+    }
+    
     return hasFeedback;
   }
 
@@ -649,13 +699,15 @@ public class SelectActionListener
 
   private String showScore(AssessmentGradingFacade a,
                            String hasFeedback, HashMap feedbackHash){
-    String showScore = "false";
+    String showScore = "na";
     // must meet 2 conditions: hasFeedback==true && feedback.getShowStudentScore()==true
     AssessmentFeedbackIfc f= (AssessmentFeedbackIfc)feedbackHash.get(a.getPublishedAssessmentId());
     if (f!=null){
-      if ( (Boolean.TRUE).equals(f.getShowStudentScore()) &&
-    		  "true".equals(hasFeedback))
-        showScore = "true";
+      boolean showScorecore = (Boolean.TRUE).equals(f.getShowStudentScore()) || f.getFeedbackComponentOption().equals(new Integer(1));
+      if (showScorecore && "show".equals(hasFeedback))
+        showScore = "show";
+      if (showScorecore && "blank".equals(hasFeedback))
+        showScore = "blank";
     }
     return showScore;
   }
@@ -700,6 +752,15 @@ public class SelectActionListener
     else
       return null;
   }
+  
+  private String getFeedbackComponentOption(Long publishedAssessmentId, HashMap publishedAssessmentHash){
+	    PublishedAssessmentFacade p = (PublishedAssessmentFacade)publishedAssessmentHash.
+	        get(publishedAssessmentId);
+	    if (p!=null)
+	      return p.getFeedbackComponentOption().toString();
+	    else
+	      return null;
+	  }
   
   private boolean getHasAssessmentBeenModified(SelectAssessmentBean select, AssessmentGradingFacade g, HashMap publishedAssessmentHash){
 	    PublishedAssessmentFacade p = (PublishedAssessmentFacade)publishedAssessmentHash.

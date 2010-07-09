@@ -128,6 +128,16 @@ public abstract class AssessmentHelperBase
     {
       assessmentXml.setFieldentry("FEEDBACK_DELIVERY", "NONE");
     }
+    
+    Integer feedbackComponentOption = feedback.getFeedbackComponentOption();
+    if (feedback.SELECT_COMPONENTS.equals(feedbackComponentOption))
+    {
+    	assessmentXml.setFieldentry("FEEDBACK_COMPONENT_OPTION", "SELECT_COMPONENTS");
+    }
+    else 
+    {
+    	assessmentXml.setFieldentry("FEEDBACK_COMPONENT_OPTION", "SHOW_TOTALSCORE_ONLY");
+    }
 
     Integer feedbackAuthoring = feedback.getFeedbackAuthoring();
     if (feedback.QUESTIONLEVEL_FEEDBACK.equals(feedbackAuthoring))
@@ -227,14 +237,12 @@ public abstract class AssessmentHelperBase
     {
       assessmentXml.setFieldentry("GRADE_SCORE", "HIGHEST_SCORE");
     }
-    /*
     // not implementing average for now
     else if (EvaluationModelIfc.AVERAGE_SCORE.equals(evaluationModel.
       getScoringType()))
     {
       assessmentXml.setFieldentry("GRADE_SCORE", "AVERAGE_SCORE");
     }
-    */
     else if (EvaluationModelIfc.LAST_SCORE.equals(evaluationModel.
       getScoringType()))
     {

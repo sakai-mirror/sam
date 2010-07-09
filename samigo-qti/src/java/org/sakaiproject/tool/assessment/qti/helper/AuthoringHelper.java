@@ -64,6 +64,7 @@ import org.sakaiproject.tool.assessment.qti.asi.Assessment;
 import org.sakaiproject.tool.assessment.qti.asi.Item;
 import org.sakaiproject.tool.assessment.qti.asi.Section;
 import org.sakaiproject.tool.assessment.qti.constants.QTIVersion;
+import org.sakaiproject.tool.assessment.qti.exception.RespondusMatchingException;
 import org.sakaiproject.tool.assessment.qti.helper.assessment.AssessmentHelperIfc;
 import org.sakaiproject.tool.assessment.qti.helper.item.ItemHelperIfc;
 import org.sakaiproject.tool.assessment.qti.helper.section.SectionHelperIfc;
@@ -78,6 +79,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.sakaiproject.util.FormattedText;
 
 /**
  * <p>Copyright: Copyright (c) 2004</p>
@@ -157,7 +159,7 @@ public class AuthoringHelper
         factory.getAssessmentHelperInstance(this.qtiVersion);
       Assessment assessmentXml = assessmentHelper.readXMLDocument(is);
       assessmentXml.setIdent(assessmentId);
-      assessmentXml.setTitle(assessment.getTitle());
+      assessmentXml.setTitle(FormattedText.convertFormattedTextToPlaintext(assessment.getTitle()));
       assessmentHelper.setDescriptiveText(assessment.getDescription(),
                                           assessmentXml);
 
@@ -467,12 +469,12 @@ public class AuthoringHelper
 
   public AssessmentFacade createImportedAssessment(Document document, String unzipLocation)
   {
-	  return createImportedAssessment(document, unzipLocation, false);
+	  return createImportedAssessment(document, unzipLocation, false, null);
   }
   
-  public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, boolean isRespondus)
+  public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, boolean isRespondus, ArrayList failedMatchingQuestions)
   {
-    return createImportedAssessment(document, unzipLocation, null, isRespondus);
+    return createImportedAssessment(document, unzipLocation, null, isRespondus, failedMatchingQuestions);
   }
 
 	  /**
@@ -486,6 +488,11 @@ public class AuthoringHelper
   }
   
   public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, String templateId, boolean isRespondus)
+  {
+	  return createImportedAssessment(document, unzipLocation, templateId, isRespondus, null);
+  }
+  
+  public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, String templateId, boolean isRespondus, ArrayList failedMatchingQuestions)
   {
 	AssessmentFacade assessment = null;
 
@@ -501,7 +508,7 @@ public class AuthoringHelper
       ItemService itemService = new ItemService();
       Assessment assessmentXml = new Assessment(document);
       Map assessmentMap = exHelper.mapAssessment(assessmentXml, isRespondus);
-      String description = XmlUtil.processFormattedText(log, (String) assessmentMap.get("description"));
+      String description = (String) assessmentMap.get("description");
       String title = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, (String) assessmentMap.get("title"));
       assessment = assessmentService.createAssessmentWithoutDefaultSection(
         title, exHelper.makeFCKAttachment(description), null, templateId);
@@ -597,26 +604,16 @@ public class AuthoringHelper
           Item itemXml = (Item) itemList.get(itm);
           Map itemMap = exHelper.mapItem(itemXml, isRespondus);
 
-          /* debugging
-          if (itemMap!=null && itemMap.keySet()!=null){
-              Iterator iter = itemMap.keySet().iterator();
-
-              while (iter.hasNext()) {
-                 
-                String label = (String) iter.next();
-                String value="";
-                if (itemMap.get(label)!=null){
-                  value = (String) itemMap.get(label).toString();
-                  log.debug("get Label: " + label + ", Value: " + value);
-                }
-                
-              }
-          }
-          */
-
           ItemFacade item = new ItemFacade();
           if (itemMap != null) {
-        	  exHelper.updateItem(item, itemMap, isRespondus);
+        	  try {
+        		  exHelper.updateItem(item, itemMap, isRespondus);
+        	  }
+        	  catch (RespondusMatchingException rme) {
+        		  if (failedMatchingQuestions != null) {
+        			  failedMatchingQuestions.add(itm + 1);
+        		  }
+        	  }
           }
           // make sure required fields are set
           item.setCreatedBy(me);
@@ -659,6 +656,12 @@ public class AuthoringHelper
 
       assessmentService.saveAssessment(assessment);
       return assessment;
+    }
+    catch (RespondusMatchingException rme)
+    {
+      log.error(rme.getMessage(), rme);
+      assessmentService.removeAssessment(assessment.getAssessmentId().toString());
+      throw new RespondusMatchingException(rme);
     }
     catch (Exception e)
     {
@@ -727,17 +730,13 @@ public class AuthoringHelper
       // process each section and each item within assessment each section
       List sectionList = exHelper.getSectionXmlList(assessmentXml);
       int sectionListSize = sectionList.size();
-      int sec = sectionListSize-1;
       log.debug("sections=" + sectionListSize);
              
       // initialize setQuestionPoolItems so items can be added
       Set itemSet = new HashSet();
       questionpool.setQuestionPoolItems(itemSet);
        
-      // use case for single section
-      // most common for Respondus & BB migrations
-      if (sectionListSize == 1)      
-      {
+      for (int sec = 0; sec < sectionListSize; sec++) {
            Section sectionXml = (Section) sectionList.get(sec);
            Map sectionMap = exHelper.mapSection(sectionXml);
            // for single section, do not create subpool
@@ -765,7 +764,6 @@ public class AuthoringHelper
                questionpool.addQuestionPoolItem((QuestionPoolItemIfc) questionPoolItem);
                
              } // ... end for each item
-   
       }
       // need error message if more than one section, for now
        

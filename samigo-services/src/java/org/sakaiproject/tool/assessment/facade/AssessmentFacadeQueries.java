@@ -1494,13 +1494,14 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			AssessmentFacade assessment) {
 		int retryCount = PersistenceService.getInstance().getRetryCount()
 				.intValue();
-		assessment.setLastModifiedBy(AgentFacade.getAgentString());
-		assessment.setLastModifiedDate(new Date());
+		AssessmentData data = (AssessmentData) assessment.getData();
+		data.setLastModifiedBy(AgentFacade.getAgentString());
+		data.setLastModifiedDate(new Date());
 		retryCount = PersistenceService.getInstance().getRetryCount()
 				.intValue();
 		while (retryCount > 0) {
 			try {
-				getHibernateTemplate().update(assessment);
+				getHibernateTemplate().update(data);
 				retryCount = 0;
 			} catch (Exception e) {
 				log.warn("problem update assessment: " + e.getMessage());
@@ -1914,7 +1915,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
     
 	public AssessmentData prepareAssessment(AssessmentData a, String protocol) {
 		AssessmentData newAssessment = new AssessmentData(new Long("0"), a
-				.getTitle(), a.getDescription(), a.getComments(), null,
+				.getTitle(), a.getDescription(), a.getComments(), a.getAssessmentTemplateId(),
 				TypeFacade.HOMEWORK, a.getInstructorNotification(), a
 						.getTesteeNotification(), a.getMultipartAllowed(), a
 						.getStatus(), AgentFacade.getAgentString(), new Date(), 
@@ -1975,7 +1976,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			return null;
 		}
 		AssessmentFeedback newFeedback = new AssessmentFeedback(a
-				.getFeedbackDelivery(), a.getFeedbackAuthoring(), a
+				.getFeedbackDelivery(), a.getFeedbackComponentOption(),a.getFeedbackAuthoring(), a
 				.getEditComponents(), a.getShowQuestionText(), a
 				.getShowStudentResponse(), a.getShowCorrectResponse(), a
 				.getShowStudentScore(), a.getShowStudentQuestionScore(), a

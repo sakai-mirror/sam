@@ -45,8 +45,8 @@
 <!-- content... -->
 <h:form id="questionpool">
 
-
-<p class="navIntraTool">
+<f:verbatim><ul class="navIntraTool actionToolbar" role="menu">
+<li role="menuitem" class="firstToolBarItem"><span></f:verbatim>
 
    <h:commandLink title="#{generalMessages.t_assessment}" rendered="#{questionpool.importToAuthoring == 'true'}" action="author" immediate="true">
    <h:outputText value="#{generalMessages.assessment}"/>
@@ -61,8 +61,9 @@
        <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.author.AuthorActionListener" />
    </h:commandLink>
-
-<h:outputText value=" #{generalMessages.separator} " />
+                                       
+<f:verbatim></span></li>
+<li role="menuitem" ><span></f:verbatim>
 
    <h:commandLink title="#{generalMessages.t_template}" rendered="#{questionpool.importToAuthoring == 'false'}" action="template" immediate="true">
         <h:outputText value="#{generalMessages.template}"/>
@@ -75,9 +76,14 @@
          type="org.sakaiproject.tool.assessment.ui.listener.questionpool.CancelImportToAssessmentListener" />
    </h:commandLink>
 
-<h:outputText value=" #{generalMessages.separator} " />
+<f:verbatim></span></li>
+<li role="menuitem" ><span></f:verbatim>
+
         <h:outputText value="#{questionPoolMessages.qps}"/>
-</p>
+
+<f:verbatim></span></li>
+</ul></f:verbatim>
+
 
 
  <h3><h:outputText value="#{generalMessages.questionPool}"/></h3>

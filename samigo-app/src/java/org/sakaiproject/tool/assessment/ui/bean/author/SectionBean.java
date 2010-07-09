@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.text.Collator;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -49,11 +50,9 @@ import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
-import org.sakaiproject.tool.assessment.data.model.Tree;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.QuestionPoolFacade;
 import org.sakaiproject.tool.assessment.facade.SectionFacade;
-import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.QuestionPoolService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
@@ -62,10 +61,6 @@ import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.util.ResourceLoader;
-
-/**
- * Used to be org.navigoproject.ui.web.asi.author.section.SectionActionForm.java
- */
 
 public class SectionBean implements Serializable
 {
@@ -107,7 +102,7 @@ private boolean hideRandom = false;
 private boolean hideOneByOne= false;
 
 private String outcome;
-private Tree tree;
+
 
 private List attachmentList;
 
@@ -277,7 +272,6 @@ private List attachmentList;
     ArrayList list = new ArrayList();
     // cannot disable only one radio button in a list, so am generating the list again
 
-    FacesContext context=FacesContext.getCurrentInstance();
     ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
 
     if (hideRandom){
@@ -341,7 +335,18 @@ private List attachmentList;
       allPoolsMap.put(apool.getQuestionPoolId().toString(), apool);
     }
 
-    AssessmentService assessdelegate = new AssessmentService();
+    AssessmentService assessdelegate = null;
+	  AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
+	  boolean isEditPendingAssessmentFlow =  author.getIsEditPendingAssessmentFlow();
+
+    if (isEditPendingAssessmentFlow) {
+    	assessdelegate = new AssessmentService();
+    }
+    else {
+    	assessdelegate = new PublishedAssessmentService();
+    }
+
+    
     List sectionList = assessmentBean.getSectionList();
     for (int i=0; i<sectionList.size();i++){
       SelectItem s = (SelectItem) sectionList.get(i);
@@ -396,7 +401,8 @@ private List attachmentList;
 	  public int compare(Object o1, Object o2) {
 		  SelectItem i1 = (SelectItem)o1;
 		  SelectItem i2 = (SelectItem)o2;
-		  return i1.getLabel().compareToIgnoreCase(i2.getLabel());
+		  return Collator.getInstance().compare(i1.getLabel(),i2.getLabel());
+
 	  }
   }
 
@@ -837,7 +843,6 @@ private List attachmentList;
 
 	    ArrayList list = new ArrayList();
 
-	    FacesContext context=FacesContext.getCurrentInstance();
 	    ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
 	    
 	    SelectItem selection = new SelectItem();

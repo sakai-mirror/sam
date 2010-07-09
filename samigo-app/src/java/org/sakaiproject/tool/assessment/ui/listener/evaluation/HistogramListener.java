@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
@@ -66,7 +67,6 @@ import org.sakaiproject.tool.assessment.ui.bean.delivery.DeliveryBean;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @author Ed Smiley
  * @version $Id$
  */
 
@@ -86,7 +86,7 @@ public class HistogramListener
   public void processAction(ActionEvent ae) throws
     AbortProcessingException
   {
-    log.debug("HistogramAggregate Statistics LISTENER.");
+    log.debug("HistogramListener.processAction()");
 
     TotalScoresBean totalBean = (TotalScoresBean) ContextUtil.lookupBean(
                                 "totalScores");
@@ -95,7 +95,18 @@ public class HistogramListener
     
     if (!histogramScores(bean, totalBean))
     {
-      throw new RuntimeException("failed to call histogramScores.");
+	String publishedId = totalBean.getPublishedId();
+        if (publishedId.equals("0"))
+        {
+                publishedId = (String) ContextUtil.lookupParam("publishedAssessmentId");
+        }
+        log.error("Error getting statistics for assessment with published id = " + publishedId);
+    	FacesContext context = FacesContext.getCurrentInstance();
+	// reset histogramScoresBean, otherwise the previous assessment viewed is displayed. 
+	// note that createValueBinding seems to be deprecated and replaced by a new method in 1.2.  Might need to modify this later
+	FacesContext.getCurrentInstance().getApplication().createValueBinding("#{histogramScores}").setValue(FacesContext.getCurrentInstance(), null );
+        return ;
+
     }
   }
 
@@ -104,7 +115,6 @@ public class HistogramListener
    */
   public void processValueChange(ValueChangeEvent event)
   {
-    //log.info("HistogramAggregate Statistics Value Change LISTENER.");
 
     TotalScoresBean totalBean = (TotalScoresBean) ContextUtil.lookupBean(
                                 "totalScores");
@@ -121,10 +131,17 @@ public class HistogramListener
         questionBean.setAllSubmissions(selectedvalue); // changed for Question score bean
     }
 
-    log.info("Calling histogramScores.");
     if (!histogramScores(bean, totalBean))
     {
-      throw new RuntimeException("failed to call histogramScores.");
+        String publishedId = totalBean.getPublishedId();
+        if (publishedId.equals("0"))
+        {
+                publishedId = (String) ContextUtil.lookupParam("publishedAssessmentId");
+        }
+        log.error("Error getting statistics for assessment with published id = " + publishedId);
+        FacesContext context = FacesContext.getCurrentInstance();
+        FacesContext.getCurrentInstance().getApplication().createValueBinding( "#{histogramScores}").setValue(FacesContext.getCurrentInstance(), null );
+        return ;
     }
   }
 
@@ -143,7 +160,6 @@ public class HistogramListener
    */
   public boolean histogramScores(HistogramScoresBean histogramScores, TotalScoresBean totalScores)
   {
-    try {
     	DeliveryBean delivery = (DeliveryBean) ContextUtil.lookupBean("delivery");
     	String publishedId = totalScores.getPublishedId();
         if (publishedId.equals("0"))
@@ -202,12 +218,12 @@ public class HistogramListener
 			  scores.addAll(allscores);
 		  }
 		  else {
+			  useridMap = totalScores.getUserIdMap(callerName);
 			  Iterator allscores_iter = allscores.iterator();
 			  while (allscores_iter.hasNext())
 			  {
 				  AssessmentGradingData data = (AssessmentGradingData) allscores_iter.next();
-				  String agentid =  data.getAgentId();
-				  useridMap = totalScores.getUserIdMap(callerName); 
+				  String agentid =  data.getAgentId();				   
 				  if (useridMap.containsKey(agentid)) {
 					  scores.add(data);
 				  }
@@ -215,8 +231,11 @@ public class HistogramListener
 		  }
 		  Iterator iter = scores.iterator();
 		  //log.info("Has this many agents: " + scores.size());
-		  if (!iter.hasNext())
+		  
+		  if (!iter.hasNext()){
+			  log.info("Students who have submitted may have been removed from this site");
 			  return false;
+		  }
 		  
 		  /*
 		   * gopalrc - moved up from (1)
@@ -279,7 +298,10 @@ public class HistogramListener
 				  itemScores.putAll(itemScoresMap);
 			  }
 			  else {
-				  
+				  if (useridMap == null) {
+					  useridMap = totalScores.getUserIdMap(callerName); 
+				  }
+
 				  for (Iterator it = itemScoresMap.entrySet().iterator(); it.hasNext();) {
 					  Map.Entry entry = (Map.Entry) it.next();
 					  Long itemId = (Long) entry.getKey();
@@ -289,12 +311,10 @@ public class HistogramListener
 					  Iterator itemScoresIter = itemScoresList.iterator();
 					  // get the Map of all users(keyed on userid) belong to the
 					  // selected sections
+					  
 					  while (itemScoresIter.hasNext()) {
 						  ItemGradingData idata = (ItemGradingData) itemScoresIter.next();
 						  String agentid = idata.getAgentId();
-						  if (useridMap == null) {
-							  useridMap = totalScores.getUserIdMap(callerName); 
-						  }
 						  if (useridMap.containsKey(agentid)) {
 							  filteredItemScoresList.add(idata);
 						  }
@@ -588,25 +608,17 @@ public class HistogramListener
 				  // END DEBUGGING CODE
 				  ///////////////////////////////////////////////////////////
 			  } catch (IllegalAccessException e) {
-				  e.printStackTrace();
-				  log.warn("unable to populate bean" + e);
+				  log.warn("IllegalAccessException:  unable to populate bean" + e);
 			  } catch (InvocationTargetException e) {
-				  e.printStackTrace();
-				  log.warn("unable to populate bean" + e);
+				  log.warn("InvocationTargetException: unable to populate bean" + e);
 			  }
 
 			  histogramScores.setAssessmentName(assessmentName);
 		  } else {
-			  return false;
+	        log.error("pub is null. publishedId = " + publishedId);
+			return false;
 		  }
-
-	  } catch (RuntimeException e) {
-		  e.printStackTrace();
-		  return false;
-	  }
-
 	  return true;
-
   }
 
   /**

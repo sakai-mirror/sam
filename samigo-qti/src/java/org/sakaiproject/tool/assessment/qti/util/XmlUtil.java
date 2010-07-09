@@ -236,8 +236,7 @@ public final class XmlUtil
     }
     catch (MalformedURLException e1)
     {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+    	log.debug(e1.getMessage(), e1);    
     }
     DocumentBuilderFactory builderFactory =
       DocumentBuilderFactory.newInstance();
@@ -284,8 +283,11 @@ public final class XmlUtil
    * @param path file path
    * @param trim trim blank lines true/false
    * @return
+ * @throws ParserConfigurationException 
+ * @throws SAXException 
+ * @throws IOException 
    */
- public static Document readDocument(String path, boolean trim)
+ public static Document readDocument(String path, boolean trim) throws ParserConfigurationException, SAXException, IOException
   {
     if(log.isDebugEnabled())
     {
@@ -328,15 +330,18 @@ public final class XmlUtil
     }
     catch(ParserConfigurationException e)
     {
-      log.error(e.getMessage(), e);
+    	log.debug(e.getMessage(), e);
+      throw(e);
     }
     catch(SAXException e)
     {
-      log.error(e.getMessage(), e);
+    	log.debug(e.getMessage(), e);
+    	throw(e);
     }
     catch(IOException e)
     {
-      log.error(e.getMessage(), e);
+      log.debug(e.getMessage(), e);
+      throw(e);
     }
     finally {
 
@@ -345,14 +350,14 @@ public final class XmlUtil
     			inputStream.close();
     		}
     		catch (IOException e) {
-    			// tried
+    			log.debug(e.getMessage(), e);// tried
     		}
     	}
     	if (in !=null){
     		try {
     			in.close();
     		} catch (Exception e1) {
-    			e1.printStackTrace();
+    			log.debug(e1.getMessage(), e1);
     		}
     	} 
 

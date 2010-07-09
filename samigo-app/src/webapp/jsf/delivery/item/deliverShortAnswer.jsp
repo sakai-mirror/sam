@@ -36,10 +36,21 @@ should be included in file importing DeliveryMessages
 <h:outputText value="#{deliveryMessages.maxSAText}"/>
 </h:panelGroup> 
 <f:verbatim><br/></f:verbatim>
+
+<%-- If studentRichText is true, show the rich text answer option --%>
+<h:panelGrid rendered="#{delivery.actionString!='reviewAssessment'
+            && delivery.actionString!='gradeAssessment' && delivery.studentRichText}">
+	<samigo:wysiwyg rows="140" value="#{question.responseText}" hasToggle="yes">
+	    <f:validateLength maximum="60000"/>
+	</samigo:wysiwyg>
+</h:panelGrid>
+
+<%-- Otherwise, show old-style non-rich text answer input --%>
+
 <h:inputTextarea rows="20" cols="80" value="#{question.responseText}" 
    rendered="#{delivery.actionString!='reviewAssessment'
-            && delivery.actionString!='gradeAssessment'}" >
-<f:validateLength maximum="4000"/>
+            && delivery.actionString!='gradeAssessment' && !delivery.studentRichText}">
+<f:validateLength maximum="60000"/>
 </h:inputTextarea>
 <h:outputText value="#{question.responseTextForDisplay}" 
    rendered="#{delivery.actionString=='reviewAssessment'
@@ -97,7 +108,7 @@ should be included in file importing DeliveryMessages
         </h:column>
         <h:column>
           <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
-          <h:outputText escape="false" value="(#{attach.fileSize}kb)" rendered="#{!attach.isLink}"/>
+          <h:outputText escape="false" value="(#{attach.fileSize} #{generalMessages.kb})" rendered="#{!attach.isLink}"/>
         </h:column>
       </h:dataTable>
     </h:panelGroup>

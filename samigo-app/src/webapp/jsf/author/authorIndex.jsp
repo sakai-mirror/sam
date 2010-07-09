@@ -85,7 +85,7 @@ document.links[newindex].onclick();
 
 </script>
 
-<script type="text/javascript" language="JavaScript" src="/library/js/jquery-1.1.2.js"></script>
+<script type="text/javascript" language="JavaScript" src="/library/js/jquery-latest.min.js"></script>
 <script type="text/javascript" language="JavaScript" src="/samigo-app/js/info.js"></script>
 
 <!-- content... -->
@@ -370,7 +370,7 @@ document.links[newindex].onclick();
          </h:panelGroup>
       </f:facet>
 
-
+      <h:outputText value="#{authorFrontDoorMessages.anonymous_users}" rendered="#{publishedAssessment.releaseTo eq 'Anonymous Users'}" />
       <h:outputText value="#{authorFrontDoorMessages.entire_site}" rendered="#{publishedAssessment.releaseTo ne 'Anonymous Users' && publishedAssessment.releaseTo ne 'Selected Groups'}" />
       <h:outputText value="#{authorFrontDoorMessages.selected_groups}" rendered="#{publishedAssessment.releaseTo eq 'Selected Groups'}"/>
 	  <f:verbatim><span class="info"></f:verbatim>
@@ -595,6 +595,7 @@ document.links[newindex].onclick();
          </h:panelGroup>
       </f:facet>
 
+      <h:outputText value="#{authorFrontDoorMessages.anonymous_users}" rendered="#{inactivePublishedAssessment.releaseTo eq 'Anonymous Users'}" />
 	  <h:outputText value="#{authorFrontDoorMessages.entire_site}" rendered="#{inactivePublishedAssessment.releaseTo ne 'Anonymous Users' && inactivePublishedAssessment.releaseTo ne 'Selected Groups'}" />
       <h:outputText value="#{authorFrontDoorMessages.selected_groups}" rendered="#{inactivePublishedAssessment.releaseTo eq 'Selected Groups'}" />
   	  <f:verbatim><span class="info"></f:verbatim>

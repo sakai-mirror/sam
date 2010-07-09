@@ -40,23 +40,36 @@
  <div class="portletBody">
   <h:form id="templateEditorForm">
   
-   <p class="navIntraTool" >
+<f:verbatim><ul class="navIntraTool actionToolbar" role="menu">
+<li role="menuitem" class="firstToolBarItem"><span></f:verbatim>
+
    <h:commandLink title="#{generalMessages.t_assessment}" action="author" id="authorLink" immediate="true">
       <h:outputText value="#{generalMessages.assessment}" />
        <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.author.AuthorActionListener" />
    </h:commandLink>
-    <h:outputText value=" #{generalMessages.separator} " />
+                                       
+<f:verbatim></span></li>
+<li role="menuitem" ><span></f:verbatim>
+
     <h:commandLink title="#{generalMessages.t_template}" action="template" id="templateLink" immediate="true">
       <h:outputText value="#{generalMessages.template}" />
        <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.author.TemplateListener" />
     </h:commandLink>
-    <h:outputText value=" #{generalMessages.separator} " />
+ 
+<f:verbatim></span></li>
+<li role="menuitem" ><span></f:verbatim>
+
     <h:commandLink title="#{generalMessages.t_questionPool}" action="poolList" id="poolLink" immediate="true">
       <h:outputText value="#{templateMessages.link_pool}" />
     </h:commandLink>
-   </p>
+    
+<f:verbatim></span></li>
+</ul></f:verbatim>
+
+
+
 <h3><h:outputText value="#{templateMessages.template_editor}"/>
      <h:outputText value="#{template.templateName}"/>
 </h3>
@@ -592,7 +605,13 @@
        <h:outputText value=" "/>
       <h:panelGroup>
     <h:selectOneRadio layout="pageDirection" value="#{template.recordedScore}"
-      required="true">
+      required="true" rendered="#{author.canRecordAverage}">
+      <f:selectItem itemValue="1" itemLabel="#{templateMessages.record_highest}"/>
+      <f:selectItem itemValue="2" itemLabel="#{templateMessages.record_last}"/>
+      <f:selectItem itemValue="4" itemLabel="#{assessmentSettingsMessages.average_score}"/>
+    </h:selectOneRadio>
+    <h:selectOneRadio layout="pageDirection" value="#{template.recordedScore}"
+      required="true" rendered="#{!author.canRecordAverage}">
       <f:selectItem itemValue="1" itemLabel="#{templateMessages.record_highest}"/>
       <f:selectItem itemValue="2" itemLabel="#{templateMessages.record_last}"/>
     </h:selectOneRadio>

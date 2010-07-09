@@ -1111,7 +1111,7 @@ public class DeliveryActionListener
     		  }
     		   
     	}
-    	if ( (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) || (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )|| (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )|| (item.getTypeId().equals(TypeIfc.MATCHING) )){
+    	if ( (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) || (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )|| (item.getTypeId().equals(TypeIfc.MATCHING) )){
     		if (mcmc_match_counter==correctAnswers){
     			haswronganswer=false;
     		}
@@ -1189,7 +1189,7 @@ public class DeliveryActionListener
 		}
 
         Collections.shuffle(shuffled, 
-        		new Random( (long) item.getText().hashCode() + agentString.hashCode()));
+        		new Random( (long) item.getText().hashCode() + (getAgentString() + "_" + item.getItemId().toString()).hashCode()));
         /*
         if (item.getTypeId().equals(TypeIfc.MATCHING))
         {
@@ -1443,17 +1443,11 @@ public class DeliveryActionListener
     else if (item.getTypeId().equals(TypeIfc.ESSAY_QUESTION)) 
     {
       String responseText = itemBean.getResponseText();
-      itemBean.setResponseText(FormattedText.convertFormattedTextToPlaintext(responseText));
+      // SAK-17021
+      // itemBean.setResponseText(FormattedText.convertFormattedTextToPlaintext(responseText));
+      itemBean.setResponseText(ContextUtil.stringWYSIWYG(responseText));
     }
-    else if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) || 
-    		item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
-            item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
-            item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ) 
-    {
-      String rationale = itemBean.getRationale();
-      itemBean.setRationale(FormattedText.convertFormattedTextToPlaintext(rationale));
-    }
-
+    
     return itemBean;
   }
 

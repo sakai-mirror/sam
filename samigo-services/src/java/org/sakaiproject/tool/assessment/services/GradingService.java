@@ -227,16 +227,10 @@ public class GradingService
       ArrayList l = getListForGradebookNotification(newList, oldList);
       
       notifyGradebook(l, pub);
-      //}
     } catch (GradebookServiceException ge) {
-      ge.printStackTrace();
+      log.error("GradebookServiceException" + ge);
       throw ge;
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new RuntimeException(e);
-    }
-
-
+    } 
   }
 
 
@@ -273,8 +267,11 @@ public class GradingService
       l = getHighestSubmittedOrGradedAssessmentGradingList(publishedAssessmentId);
     }
     // get the list of last score
-    else {
+    else  if ((scoringType).equals(EvaluationModelIfc.LAST_SCORE)) {
       l = getLastSubmittedOrGradedAssessmentGradingList(publishedAssessmentId);
+    }
+    else {
+      l = getTotalScores(publishedAssessmentId.toString(), "3", false);
     }
     return new ArrayList(l);
   }
@@ -784,6 +781,11 @@ public class GradingService
         ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
         Long itemId = itemGrading.getPublishedItemId();
         ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(itemId);
+        if (item == null) {
+        	//this probably shouldn't happen
+        	log.error("unable to retrive itemDataIfc for: " + publishedItemHash.get(itemId));
+        	continue;
+        }
         Long itemType = item.getTypeId();  
     	autoScore = (float) 0;
 
@@ -1594,11 +1596,11 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	    return results;
 	  }
   
-  public List getItemGradingIds(Long assessmentGradingId) {
+  public List getPublishedItemIds(Long assessmentGradingId) {
 	  	List results = null;
 	    try {
 	    	results = PersistenceService.getInstance().
-	        getAssessmentGradingFacadeQueries().getItemGradingIds(assessmentGradingId);
+	        getAssessmentGradingFacadeQueries().getPublishedItemIds(assessmentGradingId);
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	    }

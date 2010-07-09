@@ -446,7 +446,7 @@ public class ItemAddListener
        
 	    else{
            
-		if((hasOpen==true)&&(Character.getType(c)!=12) &&(Character.getType(c)!=25)){
+		if((hasOpen==true)&&(!Character.isWhitespace(c))){
 	    	notEmpty=true; 
 		}
 	    }
@@ -509,7 +509,7 @@ public class ItemAddListener
            
     	    else{
                
-    		if((hasOpen==true)&&(Character.getType(c)!=12) &&(Character.getType(c)!=25)){
+    		if((hasOpen==true)&&(!Character.isWhitespace(c))){
     	    	notEmpty=true; 
     		}
     	    }

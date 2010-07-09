@@ -56,21 +56,33 @@ document.links[newindex].onclick();
 <h:inputHidden value="#{itemauthor.currentItem.incorrFeedback}" />
 <h:inputHidden value="#{itemauthor.currentItem.generalFeedback}" />
 <%-- --%>
-<p class="navIntraTool">
+
+<f:verbatim><ul class="navIntraTool actionToolbar" role="menu">
+<li role="menuitem" class="firstToolBarItem"><span></f:verbatim>
+
     <h:commandLink title="#{generalMessages.t_assessment}" action="author" immediate="true">
       <h:outputText value="#{generalMessages.assessment}" />
     </h:commandLink>
-    <h:outputText value="#{generalMessages.separator} " />
+
+<f:verbatim></span></li>
+<li role="menuitem" ><span></f:verbatim>
+
     <h:commandLink title="#{generalMessages.t_template}" action="template" immediate="true">
       <h:outputText value="#{generalMessages.template}" />
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.TemplateListener" />
     </h:commandLink>
-    <h:outputText value="#{generalMessages.separator} " />
+
+<f:verbatim></span></li>
+<li role="menuitem" ><span></f:verbatim>
+
     <h:commandLink title="#{generalMessages.t_questionPool}" action="poolList" immediate="true">
       <h:outputText value="#{generalMessages.questionPool}" />
     </h:commandLink>
-</p>
-<br/>
+
+<f:verbatim></span></li>
+</ul>
+<br/></f:verbatim>
+
 <!-- breadcrumb-->
 <div>
     <h:commandLink title="#{authorMessages.t_assessment}" rendered="#{itemauthor.target == 'assessment'}" action="author" immediate="true">
@@ -110,21 +122,9 @@ document.links[newindex].onclick();
 <!-- CHANGE TYPE -->
 <div class="tier1">
 <div class=" shorttext"><h:outputLabel value="#{authorMessages.change_q_type}" rendered="#{author.isEditPendingAssessmentFlow}"/>
-<%-- todo:
-listener set selectFromQuestionPool, eliminating the rendered attribute
---%>
-
-<%-- from question pool context, do not show question pool as option --%>
-<h:selectOneMenu accesskey="#{authorMessages.a_options}" rendered="#{(itemauthor.target == 'assessment' && questionpool.importToAuthoring == 'true') || itemauthor.target == 'questionpool'}" onchange="changeTypeLink(this);"
-  value="#{itemauthor.currentItem.itemType}" required="true" id="changeQType1">
-  <f:valueChangeListener
-           type="org.sakaiproject.tool.assessment.ui.listener.author.StartCreateItemListener" />
-
-  <f:selectItems value="#{itemConfig.itemTypeSelectList}" />
-</h:selectOneMenu>
 
 <%-- not from qpool , show the last option: copy from question pool --%>
-<h:selectOneMenu onchange="changeTypeLink(this);" rendered="#{author.isEditPendingAssessmentFlow && itemauthor.target == 'assessment' && questionpool.importToAuthoring == 'false'}"
+<h:selectOneMenu onchange="changeTypeLink(this);"
   value="#{itemauthor.currentItem.itemType}" required="true" id="changeQType2">
   <f:valueChangeListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.StartCreateItemListener" />

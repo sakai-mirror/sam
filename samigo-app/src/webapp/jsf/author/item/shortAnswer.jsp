@@ -80,7 +80,7 @@
   <!-- 1 POINTS -->
   <div class="tier2">
     <div class="shorttext">  <h:outputLabel value="#{authorMessages.answer_point_value}" />
-    <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}" required="true">
+    <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}" required="true" onchange="toPoint(this.id);">
 	<f:validateDoubleRange/>
 	</h:inputText>
 	<br/> 
@@ -94,7 +94,7 @@
 
   <h:panelGrid>
    <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.itemText}" hasToggle="yes">
-     <f:validateLength minimum="1" maximum="4000"/>
+     <f:validateLength minimum="1" maximum="60000"/>
    </samigo:wysiwyg>
 
   </h:panelGrid>

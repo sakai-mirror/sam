@@ -248,6 +248,22 @@ implements ActionListener
 			}
 		}
 
+		String scoringType=assessmentSettings.getScoringType();
+		if ((scoringType).equals(EvaluationModelIfc.AVERAGE_SCORE.toString()) && "0".equals(assessmentSettings.getUnlimitedSubmissions())) {
+			try {
+				String submissionsAllowed = assessmentSettings.getSubmissionsAllowed().trim();
+				int submissionAllowed = Integer.parseInt(submissionsAllowed);
+				if (submissionAllowed < 2) {
+					throw new RuntimeException();
+				}
+			}
+			catch (RuntimeException e){
+				error=true;
+				String  submission_err = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages","averag_grading_single_submission");
+				context.addMessage(null,new FacesMessage(submission_err));
+			}
+		}
+
 		// check feedback - if at specific time then time should be defined.
 		if((assessmentSettings.getFeedbackDelivery()).equals("2")) {
 			if (assessmentSettings.getFeedbackDateString()==null || assessmentSettings.getFeedbackDateString().equals("")) {
@@ -390,6 +406,9 @@ implements ActionListener
 		// Feedback delivery
 		if (assessmentSettings.getFeedbackDelivery()!=null)
 			feedback.setFeedbackDelivery(new Integer(assessmentSettings.getFeedbackDelivery()));
+		if (assessmentSettings.getFeedbackComponentOption()!=null)
+		    feedback.setFeedbackComponentOption(new Integer(assessmentSettings.getFeedbackComponentOption()));
+
 		control.setFeedbackDate(assessmentSettings.getFeedbackDate());
 		// Feedback Components Students Can See
 		feedback.setShowStudentResponse(Boolean.valueOf(assessmentSettings.getShowStudentResponse()));

@@ -433,17 +433,14 @@ document.location='../evaluation/questionScore';
          <h:outputText value="#{description.firstName}" />
          <h:outputText value="#{evaluationMessages.na}" rendered="#{description.lastInitial eq 'Anonymous'}" />
          <f:actionListener
-            type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreUpdateListener" />
-         <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.evaluation.StudentScoreListener" />
          <f:param name="studentid" value="#{description.idString}" />
          <f:param name="publishedIdd" value="#{questionScores.publishedId}" />
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
- 		 <f:param name="email" value="#{description.email}" />
        </h:commandLink>
 	   <f:verbatim><br/></f:verbatim>
 	   <span class="itemAction">
-	   <h:outputLink id="createEmail1" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", '#{totalScores.graderEmailInfo}', \"#{description.firstName} #{description.lastName}\", '#{description.email}', '#{totalScores.assessmentName}');" value="#">
+	   <h:outputLink id="createEmail1" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
 	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
 	   </h:outputLink>
 	   </span>
@@ -461,8 +458,6 @@ document.location='../evaluation/questionScore';
           <f:param name="sortAscending" value="false" />
           <h:graphicImage alt="#{evaluationMessages.alt_sortLastNameDescending}" rendered="#{questionScores.sortAscending}" url="/images/sortascending.gif"/>
       	  <f:actionListener
-           type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreUpdateListener" />
-          <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreListener" />
           </h:commandLink>    
       </f:facet>
@@ -476,17 +471,14 @@ document.location='../evaluation/questionScore';
          <h:outputText value="#{description.firstName}" />
          <h:outputText value="#{evaluationMessages.na}" rendered="#{description.lastInitial eq 'Anonymous'}" />
          <f:actionListener
-            type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreUpdateListener" />
-         <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.evaluation.StudentScoreListener" />
          <f:param name="studentid" value="#{description.idString}" />
          <f:param name="publishedIdd" value="#{questionScores.publishedId}" />
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
-		 <f:param name="email" value="#{description.email}" />
        </h:commandLink>
        <f:verbatim><br/></f:verbatim>
 	   <span class="itemAction">
-	   <h:outputLink id="createEmail2" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", '#{totalScores.graderEmailInfo}', \"#{description.firstName} #{description.lastName}\",' #{description.email}', '#{totalScores.assessmentName}');" value="#">
+	   <h:outputLink id="createEmail2" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
 	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
 	   </h:outputLink>
 	   </span>
@@ -525,11 +517,10 @@ document.location='../evaluation/questionScore';
          <f:param name="studentid" value="#{description.idString}" />
          <f:param name="publishedIdd" value="#{questionScores.publishedId}" />
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
-		 <f:param name="email" value="#{description.email}" />
        </h:commandLink>
        <f:verbatim><br/></f:verbatim>
 	   <span class="itemAction">
-	   <h:outputLink id="createEmail3" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", '#{totalScores.graderEmailInfo}', \"#{description.firstName} #{description.lastName}\", '#{description.email}', '#{totalScores.assessmentName}');" value="#">
+	   <h:outputLink id="createEmail3" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
 	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
 	   </h:outputLink>
 	   </span>

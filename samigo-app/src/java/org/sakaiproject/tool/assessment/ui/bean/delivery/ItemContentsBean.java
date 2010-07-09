@@ -378,28 +378,47 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 	 * @return
 	 */
 	public boolean isUnanswered() {
-		if (getItemGradingDataArray().isEmpty()) {
+		ArrayList itemgradingdataArray = getItemGradingDataArray();
+		if (itemgradingdataArray.isEmpty()) {
 			return true;
 		}
-		Iterator iter = getItemGradingDataArray().iterator();
+		Iterator iter = itemgradingdataArray.iterator();
+		int itemgradingsize =itemgradingdataArray.size();
+		int publishedanswer_notnull = 0;
+		if (getItemData().getTypeId().toString().equals("9")) 
+			// SAM-776: Every choice has to be filled in before a question is considered answered 
+		{
+			while (iter.hasNext()) {
+				ItemGradingData data = (ItemGradingData) iter.next();
+				if (data.getPublishedAnswerId() != null){
+					publishedanswer_notnull ++;
+				}
+			}
+			if (publishedanswer_notnull == itemgradingsize) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		else {
 		while (iter.hasNext()) {
 			ItemGradingData data = (ItemGradingData) iter.next();
 			if (getItemData().getTypeId().toString().equals("8")
-					|| getItemData().getTypeId().toString().equals("11")) // fix
-																			// for
-																			// bug
-																			// sam-330
+					|| getItemData().getTypeId().toString().equals("11")) // SAM-330
 			{
 				if (data.getAnswerText() != null
 						&& !data.getAnswerText().equals("")) {
 					return false;
 				}
-			} else {
+			} 
+			else {
 				if (data.getPublishedAnswerId() != null
 						|| data.getAnswerText() != null) {
 					return false;
 				}
 			}
+		}
 		}
 		return true;
 	}
@@ -890,7 +909,6 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 			// for MCSC
 			if (data.getItemGradingId() == null) {
 				// this is a new answer , now we just need to set the rationale
-
 				data.setRationale(newRationale);
 
 			} else {
@@ -900,7 +918,6 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 				// SubmitForGradingListener doesn't recognize that this is a
 				// modified answer
 				// unless the itemgradingid = null
-
 				ItemGradingData newdata = new ItemGradingData();
 				newdata.setPublishedItemId(data.getPublishedItemId());
 				newdata.setPublishedItemTextId(data.getPublishedItemTextId());
@@ -911,8 +928,6 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 				setItemGradingDataArray(items);
 			}
 		}
-
-
 	}
 
 	public String getRationale() {
@@ -920,7 +935,7 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 		if (count > 0) {
 			ItemGradingData data = (ItemGradingData) getItemGradingDataArray()
 					.toArray()[count - 1];
-			rationale = data.getRationale();
+			rationale = FormattedText.convertFormattedTextToPlaintext(data.getRationale());
 		}
 		return Validator.check(rationale, "");
 	}
@@ -930,7 +945,9 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 		if (count > 0) {
 			ItemGradingData data = (ItemGradingData) getItemGradingDataArray()
 					.toArray()[count - 1];
-			rationale = data.getRationale().replaceAll("(\r\n|\r)", "<br/>");
+			if (data.getRationale() != null) {
+				rationale = FormattedText.convertFormattedTextToPlaintext(data.getRationale()).replaceAll("(\r\n|\r)", "<br/>");
+			}
 		}
 		return Validator.check(rationale, "");
 	}

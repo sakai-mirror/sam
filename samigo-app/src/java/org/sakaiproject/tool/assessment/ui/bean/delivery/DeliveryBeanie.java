@@ -70,20 +70,22 @@ private static Log log = LogFactory.getLog(DeliveryBeanie.class);
   private String rawScore;
   private java.util.Date feedbackDate;
   private String feedbackDelivery;
+  private String feedbackComponentOption;
   private String showScore;
   private String submissionHours; 
   private String submissionMinutes; 
   private java.util.Date dueDate;
   private boolean pastDue;
   private boolean timeRunning;
+  private String finalScore;
+  private boolean isAssessmentBeanie=false;
 
   // display * and notes for multiple submissions 
   private boolean multipleSubmissions;
   private String scoringOption;
    
-  // lydial added for timezone conversion 
-  //private String display_dateFormat= ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","output_date_no_sec");
-  private String display_dateFormat= "yyyy-MMM-dd hh:mm aaa";
+  private String display_dateFormat= ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","output_date_no_sec");
+  //private String display_dateFormat= "yyyy-MMM-dd hh:mm aaa";
   private SimpleDateFormat displayFormat = new SimpleDateFormat(display_dateFormat);
   private boolean hasRandomDrawPart;
   private boolean isAssessmentRetractForEdit;
@@ -91,7 +93,7 @@ private static Log log = LogFactory.getLog(DeliveryBeanie.class);
   
   //Allow students to view all submissions of the same assessment
   private Long assessmentGradingId;
-  private boolean recordedAssessment;
+  private boolean isRecordedAssessment;
   
   /**
    * Creates a new DeliveryBean object.
@@ -279,6 +281,16 @@ private static Log log = LogFactory.getLog(DeliveryBeanie.class);
     this.feedbackDelivery = feedbackDelivery;
   }
 
+  public String getFeedbackComponentOption()
+  {
+    return feedbackComponentOption;
+  }
+
+  public void setFeedbackComponentOption(String feedbackComponentOption)
+  {
+    this.feedbackComponentOption = feedbackComponentOption;
+  }
+
   public String getShowScore()
   {
     return showScore;
@@ -460,14 +472,29 @@ private static Log log = LogFactory.getLog(DeliveryBeanie.class);
 	/**
 	 * @return the recordedAssessment
 	 */
-	public boolean isRecordedAssessment() {
-		return recordedAssessment;
+	public boolean getIsRecordedAssessment() {
+		return isRecordedAssessment;
 	}
 
 	/**
 	 * @param recordedAssessment the recordedAssessment to set
 	 */
-	public void setRecordedAssessment(boolean recordedAssessment) {
-		this.recordedAssessment = recordedAssessment;
+	public void setIsRecordedAssessment(boolean isRecordedAssessment) {
+		this.isRecordedAssessment = isRecordedAssessment;
+	}
+	
+	public String getFinalScore() {
+		return finalScore;
+	}
+
+	public void setFinalScore(String finalScore) {
+		this.finalScore = finalScore;
+	}
+	public boolean getIsAssessmentBeanie() {
+		return isAssessmentBeanie;
+	}
+
+	public void setIsAssessmentBeanie(boolean isAssessmentBeanie) {
+		this.isAssessmentBeanie = isAssessmentBeanie;
 	}
 }

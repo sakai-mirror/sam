@@ -279,3 +279,10 @@ function disableImport(){
     }
   }
 }
+
+function toPoint(id)
+{
+  var x=document.getElementById(id).value
+  document.getElementById(id).value=x.replace(',','.')
+}
+

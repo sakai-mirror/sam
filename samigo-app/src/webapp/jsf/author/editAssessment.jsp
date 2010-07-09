@@ -33,8 +33,11 @@
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head><%= request.getAttribute("html.head") %>
       <title><h:outputText value="#{authorMessages.create_modify_a}" /></title>
+      <samigo:script path="/js/authoring.js"/>
+
 <script language="javascript" style="text/JavaScript">
 <%@ include file="/js/samigotree.js" %>
+
 <!--
 function resetSelectMenus(){
   var selectlist = document.getElementsByTagName("SELECT");
@@ -314,7 +317,7 @@ document.links[newindex].onclick();
      
 
      <h:outputText value=" #{authorMessages.dash} " />
-     <h:inputText id="answerptr" value="#{question.updatedScore}" required="true" size="6" onkeydown="inIt()" >
+     <h:inputText id="answerptr" value="#{question.updatedScore}" required="true" size="6" onkeydown="inIt()" onchange="toPoint(this.id);" >
 	<f:validateDoubleRange /></h:inputText>
 
 		<h:outputText rendered="#{question.itemData.score > 1}" value=" #{authorMessages.points_lower_case}"/>

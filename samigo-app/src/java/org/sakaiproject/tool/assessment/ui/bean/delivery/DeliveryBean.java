@@ -216,9 +216,9 @@ public class DeliveryBean
   // current agent string (if assigned). SAK-1927: esmiley
   private AgentFacade deliveryAgent;
 
-  // lydial added for timezone conversion 
-  //private String display_dateFormat= ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","output_date_no_sec");
-  private String display_dateFormat= "yyyy-MMM-dd hh:mm aaa";
+  private String display_dateFormat= ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","output_date_no_sec");
+  //private String display_dateFormat= "yyyy-MMM-dd hh:mm aaa";
+
   private SimpleDateFormat displayFormat = new SimpleDateFormat(display_dateFormat);
 
   private boolean noQuestions = false;
@@ -232,6 +232,7 @@ public class DeliveryBean
   
   private boolean fromTableOfContents;
   private float fileUploadSizeMax;
+  private boolean studentRichText;
   
   /**
    * Creates a new DeliveryBean object.
@@ -1295,16 +1296,16 @@ public class DeliveryBean
     SessionUtil.setSessionTimeout(FacesContext.getCurrentInstance(), this, false);
     
     SubmitToGradingActionListener listener = new SubmitToGradingActionListener();
+    // submission remaining and totalSubmissionPerAssessmentHash is updated inside 
+    // SubmitToGradingListener
+    listener.processAction(null);
+    
     // We don't need to call completeItemGradingData to create new ItemGradingData for linear access
     // because each ItemGradingData is created when it is viewed/answered 
     if (!"1".equals(navigation)) {
     	GradingService gradingService = new GradingService();
     	gradingService.completeItemGradingData(adata);
     }
-
-    // submission remaining and totalSubmissionPerAssessmentHash is updated inside 
-    // SubmitToGradingListener
-    listener.processAction(null);
     
     syncTimeElapsedWithServer();
 
@@ -2985,7 +2986,7 @@ public class DeliveryBean
 	  
 	  public String cleanRadioButton() {
 
-		  // Obtenemos el id de la pregunta
+		  // We get the id of the question
 		  String radioId = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("radioId");
 
 		  ArrayList parts = this.pageContents.getPartsContents();
@@ -2996,7 +2997,7 @@ public class DeliveryBean
 			  for (int j=0; j<items.size(); j++) {
 				  ItemContentsBean item = (ItemContentsBean)items.get(j);
 
-				  // Solamente borramos los checkbox de la pregunta actual
+				  //Just delete the checkbox of the current question
 				  if (!item.getItemData().getItemId().toString().equals(radioId)) continue;
 
 				  if (item.getItemData().getTypeId().longValue() == TypeIfc.MULTIPLE_CHOICE.longValue() || 
@@ -3006,7 +3007,8 @@ public class DeliveryBean
 					  item.setUnanswered(true);
 					  for (int k=0; k<item.getSelectionArray().size(); k++) {
 						  SelectionBean selection = (SelectionBean)item.getSelectionArray().get(k);
-						  selection.setResponse(false);
+						  //selection.setResponse(false);
+						  selection.setResponseFromCleanRadioButton();
 					  }
 					  
 					  ArrayList itemGradingData = new ArrayList();
@@ -3017,6 +3019,8 @@ public class DeliveryBean
 						  if (itemgrading.getItemGradingId() != null
 									&& itemgrading.getItemGradingId().intValue() > 0) {
 							  itemGradingData.add(itemgrading);
+							  itemgrading.setPublishedAnswerId(null);
+
 						  }
 					  }
 					  item.setItemGradingDataArray(itemGradingData);
@@ -3092,4 +3096,12 @@ public class DeliveryBean
 	  {
 	      return fileUploadSizeMax;
 	  }	  
+
+	  public boolean getStudentRichText()
+	  {
+	      String studentRichText = ServerConfigurationService.getString("samigo.studentRichText", "true");
+		  return Boolean.parseBoolean(studentRichText);
+	  } 
+
 }
+
