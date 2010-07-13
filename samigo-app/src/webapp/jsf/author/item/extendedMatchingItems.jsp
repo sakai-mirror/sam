@@ -102,7 +102,7 @@
    
   <h:panelGrid>
    <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.itemText}" hasToggle="yes">
-     <f:validateLength minimum="1" maximum="4000"/>
+     <f:validateLength minimum="1" maximum="64000"/>
    </samigo:wysiwyg>
 
   </h:panelGrid>
@@ -136,7 +136,7 @@
   <!-- WYSIWYG -->
   <h:panelGrid>
     <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes">
-      <f:validateLength maximum="4000"/>
+      <f:validateLength maximum="64000"/>
     </samigo:wysiwyg>
   </h:panelGrid>
   
@@ -172,7 +172,7 @@
   <!-- WYSIWYG -->
   <h:panelGrid>
    <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.leadInStatement}" hasToggle="yes">
-     <f:validateLength minimum="1" maximum="4000"/>
+     <f:validateLength minimum="1" maximum="64000"/>
    </samigo:wysiwyg>
 
   </h:panelGrid>
@@ -206,7 +206,7 @@
         <!-- WYSIWYG -->
   <h:panelGrid>
     <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes" >
-      <f:validateLength maximum="4000"/>
+      <f:validateLength maximum="64000"/>
     </samigo:wysiwyg>
     
   </h:panelGrid>
