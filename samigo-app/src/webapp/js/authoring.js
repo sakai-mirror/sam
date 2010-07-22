@@ -234,6 +234,71 @@ function clickAddEmiQuestionAnswerCombinationsLink(){
 }
 
 
+//gopalrc - added Jul 2010
+function setEmiAnswerOptionsSimpleOrRich() {
+	var isSimple = document.forms['itemForm']['itemForm:emiAnswerOptionsSimpleOrRich'][0].checked;
+	if (isSimple) {
+		hideLayer("emiAnswerOptionsRich");
+		showLayer("emiAnswerOptionsSimple");
+	}
+	else {
+		hideLayer("emiAnswerOptionsSimple");
+		showLayer("emiAnswerOptionsRich");
+	}
+}
+
+
+//gopalrc - added Jul 2010
+function showLayer(whichLayer)
+{
+  var elem, vis;
+  elem = getElementWithId(whichLayer);
+  vis = elem.style;
+  vis.display = 'block';
+}
+
+//gopalrc - added Jul 2010
+function hideLayer(whichLayer)
+{
+  var elem, vis;
+  elem = getElementWithId(whichLayer);
+  vis = elem.style;
+  vis.display = 'none';
+}
+
+
+//gopalrc - added Jul 2010
+function getElementWithId(id){
+    var obj;
+    if(document.getElementById){
+        /* Prefer the widely supported W3C DOM method, if
+           available:-
+        */
+        obj = document.getElementById(id);
+    }else if(document.all){
+        /* Branch to use document.all on document.all only
+           browsers. Requires that IDs are unique to the page
+           and do not coincide with NAME attributes on other
+           elements:-
+        */
+        obj = document.all[id];
+    }else if(document.layers){
+        /* Branch to use document.layers, but that will only work for
+           CSS positioned elements and LAYERs that are not nested. A
+           recursive method might be used instead to find positioned
+           elements within positioned elements but most DOM nodes on
+           document.layers browsers cannot be referenced at all.
+        */
+        obj = document.layers[id];
+    }
+    /* If no appropriate/functional element retrieval mechanism
+       exists on this browser this function returns null:-
+    */
+    return obj||null;
+}
+
+
+
 
 function countNum(){
   var spanList= document.getElementsByTagName("SPAN");

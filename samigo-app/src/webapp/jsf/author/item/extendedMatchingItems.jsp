@@ -42,7 +42,7 @@
       <!-- AUTHORING -->
       <samigo:script path="/js/authoring.js"/>
       </head>
-<body onload="resetInsertAnswerSelectMenus();<%= request.getAttribute("html.body.onload") %>">
+<body onload="resetInsertAnswerSelectMenus();setEmiAnswerOptionsSimpleOrRich();<%= request.getAttribute("html.body.onload") %>">
 
 <div class="portletBody">
 <!-- content... -->
@@ -109,15 +109,17 @@
 
   <h:outputLabel value="#{authorMessages.select_appropriate_format}" />
   <f:verbatim><br/></f:verbatim>
-  <h:selectOneRadio value="#{itemauthor.currentItem.emiAnswerOptionsSimpleOrRich}" layout="pageDirection" required="yes">
+  <h:selectOneRadio id="emiAnswerOptionsSimpleOrRich" value="#{itemauthor.currentItem.emiAnswerOptionsSimpleOrRich}"   onchange="setEmiAnswerOptionsSimpleOrRich();" layout="pageDirection" required="yes">
     <f:selectItem itemLabel="Simple text – for a list of items with no formatting" itemValue="0"/>
     <f:selectItem itemLabel="Rich text / attachments – for styled text, tables, labelled images" itemValue="1"/>
   </h:selectOneRadio>
 
-  <f:verbatim><br/><br/><br/></f:verbatim>
+  <f:verbatim><br/></f:verbatim>
   
   
   <!-- 3.1(a) ANSWER RICH - TABLE/GRAPHIC -->
+<div id="emiAnswerOptionsRich">
+ <div class="tier2">
   
    <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options_rich}" />
    </div>
@@ -136,7 +138,7 @@
   <div class="shorttext tier2">
     <h:outputText value="#{authorMessages.answer_options_number}" />
   <h:selectOneMenu  id="numberOfAnswerOptions"  onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsLinkXXXX();" value="#{itemauthor.currentItem.emiAnswerOptionsCount}" >
-    <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="2"/>
+    <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
     <f:selectItem itemLabel="2" itemValue="2"/>
     <f:selectItem itemLabel="3" itemValue="3"/>
     <f:selectItem itemLabel="4" itemValue="4"/>
@@ -166,17 +168,18 @@
   <h:commandLink id="hiddenAddEmiAnswerOptionsActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsAction}" value="">
   </h:commandLink>
   </div>
-  <br/>
 
-
-
+  </div>
+</div>
 
 
 
   <!-- 3.1(b) ANSWER OPTIONS -->
 
 <!-- dynamicaly generate rows of answer options -->
-<div class="tier2">
+
+<div id="emiAnswerOptionsSimple">
+ <div class="tier2">
 
  <h:panelGrid columns="2">
    <h:panelGroup>
@@ -215,7 +218,8 @@
 
   </h:panelGrid>
 
-</div>
+ </div>
+
 
 <div class="shorttext tier2">
   <h:outputText value="#{authorMessages.insert_additional_answer_options}" />
@@ -231,7 +235,9 @@
 <h:commandLink id="hiddenAddEmiAnswerOptionsActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsAction}" value="">
 </h:commandLink>
 </div>
-<br/>
+
+</div>
+
 
 
 

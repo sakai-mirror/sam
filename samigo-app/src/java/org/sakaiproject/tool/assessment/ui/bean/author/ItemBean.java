@@ -81,13 +81,11 @@ public class ItemBean
   //gopalrc - 20 July 2010 - EMI
   private String emiAnswerOptionsRich;
   private String emiAnswerOptionsToParse;
-  private String emiAnswerOptionsCount = "2";
+  private String emiAnswerOptionsCount = "0";
   private String emiAnswerOptionsSimpleOrRich = "0";
   
 
-
-
-private int totalMCAsnwers;
+  private int totalMCAsnwers;
   
   private boolean[] choiceCorrectArray;
   private String maxRecordingTime;
