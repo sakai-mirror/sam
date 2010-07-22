@@ -925,7 +925,7 @@ public class ItemAddListener
 	  
 	  	// ///////////////////////////////////////////////////////////
 		//
-		// 1. save Theme and Lead-In Text in first ItemText (seq=0)
+		// 1. save Theme and Lead-In Text in first ItemTexts (seq=0 and seq=-1)
 		//  
 		// ///////////////////////////////////////////////////////////
 		ItemText text1 = new ItemText();

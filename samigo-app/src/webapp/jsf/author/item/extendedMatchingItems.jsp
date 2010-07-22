@@ -30,7 +30,7 @@
 -->
 
 
-***** GOPAL TEST/TEMP - /jsf/author/item/extendedMatchingItem.jsp ************************
+***** GOPAL TEST/TEMP - /jsf/author/item/extendedMatchingItems.jsp ************************
 
 
 
@@ -96,55 +96,124 @@
 
   <!-- 2 QUESTION THEME TEXT -->
 
-   <div class="longtext"><h:outputLabel value="#{authorMessages.question_theme_text}" />
-</div>
+  <div class="longtext"> <h:outputLabel value="#{authorMessages.question_theme_text}" />
+    <h:inputText id="themetext" value="#{itemauthor.currentItem.itemText}"required="true" size="60" >
+    </h:inputText>
+    <h:message for="themetext" styleClass="validate"/>
+  </div>
+  <br/>
+
+
+
+  <!-- 3 ANSWER OPTIONS - SIMPLE OR RICH TEXT-->
+
+  <h:outputLabel value="#{authorMessages.select_appropriate_format}" />
+  <f:verbatim><br/></f:verbatim>
+  <h:selectOneRadio value="#{itemauthor.currentItem.emiAnswerOptionsSimpleOrRich}" layout="pageDirection" required="yes">
+    <f:selectItem itemLabel="Simple text – for a list of items with no formatting" itemValue="0"/>
+    <f:selectItem itemLabel="Rich text / attachments – for styled text, tables, labelled images" itemValue="1"/>
+  </h:selectOneRadio>
+
+  <f:verbatim><br/><br/><br/></f:verbatim>
+  
+  
+  <!-- 3.1(a) ANSWER RICH - TABLE/GRAPHIC -->
+  
+   <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options_rich}" />
+   </div>
+
   <!-- WYSIWYG -->
-   
   <h:panelGrid>
-   <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.itemText}" hasToggle="yes">
+   <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.emiAnswerOptionsRich}" hasToggle="yes">
      <f:validateLength minimum="1" maximum="64000"/>
    </samigo:wysiwyg>
 
   </h:panelGrid>
 
-  <!-- 2a ATTACHMENTS -->
+  <!-- ATTACHMENTS -->
   <%@ include file="/jsf/author/item/attachment.jsp" %>
 
+  <div class="shorttext tier2">
+    <h:outputText value="#{authorMessages.answer_options_number}" />
+  <h:selectOneMenu  id="numberOfAnswerOptions"  onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsLinkXXXX();" value="#{itemauthor.currentItem.emiAnswerOptionsCount}" >
+    <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="2"/>
+    <f:selectItem itemLabel="2" itemValue="2"/>
+    <f:selectItem itemLabel="3" itemValue="3"/>
+    <f:selectItem itemLabel="4" itemValue="4"/>
+    <f:selectItem itemLabel="5" itemValue="5"/>
+    <f:selectItem itemLabel="6" itemValue="6"/>
+    <f:selectItem itemLabel="7" itemValue="7"/>
+    <f:selectItem itemLabel="8" itemValue="8"/>
+    <f:selectItem itemLabel="9" itemValue="9"/>
+    <f:selectItem itemLabel="10" itemValue="10"/>
+    <f:selectItem itemLabel="11" itemValue="11"/>
+    <f:selectItem itemLabel="12" itemValue="12"/>
+    <f:selectItem itemLabel="13" itemValue="13"/>
+    <f:selectItem itemLabel="14" itemValue="14"/>
+    <f:selectItem itemLabel="15" itemValue="15"/>
+    <f:selectItem itemLabel="16" itemValue="16"/>
+    <f:selectItem itemLabel="17" itemValue="17"/>
+    <f:selectItem itemLabel="18" itemValue="18"/>
+    <f:selectItem itemLabel="19" itemValue="19"/>
+    <f:selectItem itemLabel="20" itemValue="20"/>
+    <f:selectItem itemLabel="21" itemValue="21"/>
+    <f:selectItem itemLabel="22" itemValue="22"/>
+    <f:selectItem itemLabel="23" itemValue="23"/>
+    <f:selectItem itemLabel="24" itemValue="24"/>
+    <f:selectItem itemLabel="25" itemValue="25"/>
+    <f:selectItem itemLabel="26" itemValue="26"/>
+  </h:selectOneMenu>
+  <h:commandLink id="hiddenAddEmiAnswerOptionsActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsAction}" value="">
+  </h:commandLink>
+  </div>
+  <br/>
 
 
-  <!-- 3 ANSWER OPTIONS -->
-  <div class="longtext">
-    <h:outputLabel value="#{authorMessages.answer_options} " />  </div>
+
+
+
+
+  <!-- 3.1(b) ANSWER OPTIONS -->
 
 <!-- dynamicaly generate rows of answer options -->
 <div class="tier2">
- <h:dataTable id="emiAnswerOptions" value="#{itemauthor.currentItem.emiAnswerOptions}" var="answer" headerClass="navView longtext">
-<h:column>
 
-<h:panelGrid columns="2">
-  <h:panelGroup>
-	
-    <h:outputText value="#{answer.label}"  />
-    <f:verbatim><br/></f:verbatim>
-    <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiAnswerOptions}" rendered="#{itemauthor.currentItem.itemType == 13}">
-      <h:outputText id="text" value="#{authorMessages.button_remove}" />
-      <f:param name="emiAnswerOptionId" value="#{answer.label}"/>
-    </h:commandLink>		 
+ <h:panelGrid columns="2">
+   <h:panelGroup>
 
-  </h:panelGroup>
+     <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options}"/></div>
+
+     <h:dataTable id="emiAnswerOptions" value="#{itemauthor.currentItem.emiAnswerOptions}" var="answer" headerClass="navView longtext">
+     <h:column>
+       <h:panelGrid columns="2">
+         <h:panelGroup>
+           <h:outputText value="#{answer.label}"  />
+           <f:verbatim><br/></f:verbatim>
+           <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiAnswerOptions}" rendered="#{itemauthor.currentItem.itemType == 13}">
+           <h:outputText id="text" value="#{authorMessages.button_remove}" />
+           <f:param name="emiAnswerOptionId" value="#{answer.label}"/>
+           </h:commandLink>		 
+         </h:panelGroup>
   
-  <!-- WYSIWYG -->
-  <h:panelGrid>
-    <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes">
-      <f:validateLength maximum="64000"/>
-    </samigo:wysiwyg>
+         <h:panelGrid>
+           <h:inputText value="#{answer.text}" size="40" >
+           </h:inputText>
+         </h:panelGrid>
+       </h:panelGrid>
+     </h:column>
+     </h:dataTable>
+
+   </h:panelGroup>
+
+
+   <h:panelGrid>
+     <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options_paste}"/></div>
+     <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.emiAnswerOptionsToParse}" hasToggle="yes">
+       <f:validateLength minimum="1" maximum="64000"/>
+     </samigo:wysiwyg>
+   </h:panelGrid>
+
   </h:panelGrid>
-  
-  
-</h:panelGrid>
-        
-</h:column>
-</h:dataTable>
 
 </div>
 
@@ -241,17 +310,6 @@
 </h:commandLink>
 </div>
 <br/>
-
-
-    <!-- 4 RATIONALE -->
-   <div class="longtext">
- <h:outputLabel value="#{authorMessages.require_rationale}" /></div>
-<div class="tier3">
-    <h:selectOneRadio value="#{itemauthor.currentItem.rationale}" >
-     <f:selectItem itemValue="true" itemLabel="#{authorMessages.yes}"/>
-     <f:selectItem itemValue="false" itemLabel="#{authorMessages.no}" />
-    </h:selectOneRadio>
-</div>
 
 
     <!-- 5 PART -->

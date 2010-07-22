@@ -71,15 +71,23 @@ public class ItemBean
   private ArrayList multipleChoiceAnswers;  // store List of answers multiple choice items, ArrayList of AnswerBean
   private String additionalChoices = "0";  // additonal multiple choice answers to be add. for the select menu
 
-  //gopalrc - added 23 Nov 2009
-  private ArrayList emiAnswerOptions;  // store List of possible options for an EMI question's anwers
-  private String additionalEmiAnswerOptions = "0";  // additonal options for an EMI question's anwers
+  //gopalrc - added 23 Nov 2009 - EMI
+  private ArrayList emiAnswerOptions;  // ArrayList of AnswerBean - store List of possible options for an EMI question's anwers
+  private String additionalEmiAnswerOptions = "0";  //Additonal options for an EMI question's anwers
   private String leadInStatement;
-  private ArrayList emiQuestionAnswerCombinations;  // store List of possible options for an EMI question's anwers
+  private ArrayList emiQuestionAnswerCombinations;  //ArrayList of AnswerBean - store List of possible options for an EMI question's anwers
   private String additionalEmiQuestionAnswerCombinations = "0";  // additonal options for an EMI question's anwers
 
+  //gopalrc - 20 July 2010 - EMI
+  private String emiAnswerOptionsRich;
+  private String emiAnswerOptionsToParse;
+  private String emiAnswerOptionsCount = "2";
+  private String emiAnswerOptionsSimpleOrRich = "0";
+  
 
-  private int totalMCAsnwers;
+
+
+private int totalMCAsnwers;
   
   private boolean[] choiceCorrectArray;
   private String maxRecordingTime;
@@ -1747,5 +1755,39 @@ public class ItemBean
 		return false;
 	}
 
+
+	//gopalrc - July 2010
+	public String getEmiAnswerOptionsRich() {
+		return emiAnswerOptionsRich;
+	}
+
+	public void setEmiAnswerOptionsRich(String emiAnswerOptionsRich) {
+		this.emiAnswerOptionsRich = emiAnswerOptionsRich;
+	}
+
+	public String getEmiAnswerOptionsToParse() {
+		return emiAnswerOptionsToParse;
+	}
+
+	public void setEmiAnswerOptionsToParse(String emiAnswerOptionsToParse) {
+		this.emiAnswerOptionsToParse = emiAnswerOptionsToParse;
+	}
+
+	public String getEmiAnswerOptionsSimpleOrRich() {
+		return emiAnswerOptionsSimpleOrRich;
+	}
+
+	public void setEmiAnswerOptionsSimpleOrRich(String emiAnswerOptionsSimpleOrRich) {
+		this.emiAnswerOptionsSimpleOrRich = emiAnswerOptionsSimpleOrRich;
+	}
+
 	
+	public String getEmiAnswerOptionsCount() {
+		return emiAnswerOptionsCount;
+	}
+
+	public void setEmiAnswerOptionsCount(String emiAnswerOptionsCount) {
+		this.emiAnswerOptionsCount = emiAnswerOptionsCount;
+	}
+
 }
