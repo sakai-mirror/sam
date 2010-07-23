@@ -73,7 +73,7 @@ public class ItemBean
 
   //gopalrc - added 23 Nov 2009 - EMI
   private ArrayList emiAnswerOptions;  // ArrayList of AnswerBean - store List of possible options for an EMI question's anwers
-  private String additionalEmiAnswerOptions = "0";  //Additonal options for an EMI question's anwers
+  private String additionalEmiAnswerOptions = "3";  //Additonal options for an EMI question's anwers
   private String leadInStatement;
   private ArrayList emiQuestionAnswerCombinations;  //ArrayList of AnswerBean - store List of possible options for an EMI question's anwers
   private String additionalEmiQuestionAnswerCombinations = "0";  // additonal options for an EMI question's anwers

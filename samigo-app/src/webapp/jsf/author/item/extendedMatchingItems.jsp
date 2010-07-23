@@ -40,9 +40,10 @@
       <head><%= request.getAttribute("html.head") %>
       <title><h:outputText value="#{authorMessages.item_display_author}"/></title>
       <!-- AUTHORING -->
+      <samigo:script path="/js/jquery-1.3.2.min.js"/>
       <samigo:script path="/js/authoring.js"/>
       </head>
-<body onload="resetInsertAnswerSelectMenus();setEmiAnswerOptionsSimpleOrRich();<%= request.getAttribute("html.body.onload") %>">
+<body onload="resetInsertAnswerSelectMenus();<%= request.getAttribute("html.body.onload") %>">
 
 <div class="portletBody">
 <!-- content... -->
@@ -109,7 +110,7 @@
 
   <h:outputLabel value="#{authorMessages.select_appropriate_format}" />
   <f:verbatim><br/></f:verbatim>
-  <h:selectOneRadio id="emiAnswerOptionsSimpleOrRich" value="#{itemauthor.currentItem.emiAnswerOptionsSimpleOrRich}"   onchange="setEmiAnswerOptionsSimpleOrRich();" layout="pageDirection" required="yes">
+  <h:selectOneRadio id="emiAnswerOptionsSimpleOrRich" value="#{itemauthor.currentItem.emiAnswerOptionsSimpleOrRich}" layout="pageDirection" required="yes">
     <f:selectItem itemLabel="Simple text – for a list of items with no formatting" itemValue="0"/>
     <f:selectItem itemLabel="Rich text / attachments – for styled text, tables, labelled images" itemValue="1"/>
   </h:selectOneRadio>
@@ -188,20 +189,23 @@
 
      <h:dataTable id="emiAnswerOptions" value="#{itemauthor.currentItem.emiAnswerOptions}" var="answer" headerClass="navView longtext">
      <h:column>
-       <h:panelGrid columns="2">
+       <h:panelGrid columns="3">
          <h:panelGroup>
            <h:outputText value="#{answer.label}"  />
-           <f:verbatim><br/></f:verbatim>
-           <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiAnswerOptions}" rendered="#{itemauthor.currentItem.itemType == 13}">
-           <h:outputText id="text" value="#{authorMessages.button_remove}" />
-           <f:param name="emiAnswerOptionId" value="#{answer.label}"/>
-           </h:commandLink>		 
          </h:panelGroup>
   
          <h:panelGrid>
            <h:inputText value="#{answer.text}" size="40" >
            </h:inputText>
          </h:panelGrid>
+
+         <h:panelGroup>
+           <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiAnswerOptions}" rendered="#{itemauthor.currentItem.itemType == 13}">
+           <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
+           <f:param name="emiAnswerOptionId" value="#{answer.label}"/>
+           </h:commandLink>		 
+         </h:panelGroup>
+
        </h:panelGrid>
      </h:column>
      </h:dataTable>
@@ -211,10 +215,17 @@
 
    <h:panelGrid>
      <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options_paste}"/></div>
-     <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.emiAnswerOptionsToParse}" hasToggle="yes">
-       <f:validateLength minimum="1" maximum="64000"/>
-     </samigo:wysiwyg>
+     <h:inputTextarea id="emiAnswerOptionsPaste" rows="6" cols="50" value="#{itemauthor.currentItem.emiAnswerOptionsToParse}">
+     </h:inputTextarea>
    </h:panelGrid>
+   
+  <!-- WYSIWYG -->
+  <h:panelGrid>
+   <samigo:wysiwyg rows="140" value="#{authorMessages.answer_options_paste}" hasToggle="yes">
+     <f:validateLength minimum="1" maximum="64000"/>
+   </samigo:wysiwyg>
+  </h:panelGrid>
+   
 
   </h:panelGrid>
 
@@ -222,26 +233,19 @@
 
 
 <div class="shorttext tier2">
-  <h:outputText value="#{authorMessages.insert_additional_answer_options}" />
-<h:selectOneMenu  id="insertAdditionalAnswerSelectMenu"  onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsLink();" value="#{itemauthor.currentItem.additionalEmiAnswerOptions}" >
-  <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
-  <f:selectItem itemLabel="1" itemValue="1"/>
-  <f:selectItem itemLabel="2" itemValue="2"/>
-  <f:selectItem itemLabel="3" itemValue="3"/>
-  <f:selectItem itemLabel="4" itemValue="4"/>
-  <f:selectItem itemLabel="5" itemValue="5"/>
-  <f:selectItem itemLabel="6" itemValue="6"/>
-</h:selectOneMenu>
-<h:commandLink id="hiddenAddEmiAnswerOptionsActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsAction}" value="">
-</h:commandLink>
+  <h:commandLink id="addEmiAnswerOptionsActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsAction}" value="">
+    <f:verbatim><img src="/library/image/silk/add.png" border="0"/></f:verbatim>
+    <h:outputText value="#{authorMessages.add_more_options}"/>
+  </h:commandLink>
 </div>
 
 </div>
-
 
 
 
   <!-- 4 LEAD IN STATEMENT -->
+
+<br/><br/>
 
   <div class="longtext"><h:outputLabel value="#{authorMessages.lead_in_statement}" /></div>
   <!-- WYSIWYG -->
@@ -249,7 +253,6 @@
    <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.leadInStatement}" hasToggle="yes">
      <f:validateLength minimum="1" maximum="64000"/>
    </samigo:wysiwyg>
-
   </h:panelGrid>
 
 <br/>
