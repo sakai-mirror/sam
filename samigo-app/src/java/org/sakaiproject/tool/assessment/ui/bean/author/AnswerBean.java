@@ -46,9 +46,14 @@ public class AnswerBean implements Serializable, Comparable{
   
   //gopalrc Jan 2010 - for EMI questions
   private String correctOptionLabels;
+  //gopalrc Jul 2010 - for EMI questions
+  private String requiredOptionsCount;
   
   
-  private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
+
+
+
+private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
   private static ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
 
   public static final String choiceLabels = rb.getString("choice_labels"); 
@@ -192,6 +197,16 @@ public class AnswerBean implements Serializable, Comparable{
 				}
 			}
 		}
+	}
+
+
+	//gopalrc - Jul 2010
+	public String getRequiredOptionsCount() {
+		return requiredOptionsCount;
+	}
+	
+	public void setRequiredOptionsCount(String requiredOptionsCount) {
+		this.requiredOptionsCount = requiredOptionsCount;
 	}
 	
 }

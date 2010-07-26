@@ -74,7 +74,8 @@ $(document).ready(function(){
 	
 	var textPasteAnswerOptions = $("textarea[name=itemForm:emiAnswerOptionsPaste]");
 	textPasteAnswerOptions.bind('blur', function(){
-		alert($("textarea#textPasteAnswerOptions").val());
+		var ta = $("textarea[name=itemForm:emiAnswerOptionsPaste]");
+		alert(ta.val());
 	});
 	
 	

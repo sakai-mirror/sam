@@ -76,7 +76,7 @@ public class ItemBean
   private String additionalEmiAnswerOptions = "3";  //Additonal options for an EMI question's anwers
   private String leadInStatement;
   private ArrayList emiQuestionAnswerCombinations;  //ArrayList of AnswerBean - store List of possible options for an EMI question's anwers
-  private String additionalEmiQuestionAnswerCombinations = "0";  // additonal options for an EMI question's anwers
+  private String additionalEmiQuestionAnswerCombinations = "3";  // additonal options for an EMI question's anwers
 
   //gopalrc - 20 July 2010 - EMI
   private String emiAnswerOptionsRich;
