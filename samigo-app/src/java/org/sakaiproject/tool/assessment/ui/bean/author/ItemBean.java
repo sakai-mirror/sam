@@ -73,14 +73,14 @@ public class ItemBean
 
   //gopalrc - added 23 Nov 2009 - EMI
   private ArrayList emiAnswerOptions;  // ArrayList of AnswerBean - store List of possible options for an EMI question's anwers
-  private String additionalEmiAnswerOptions = "3";  //Additonal options for an EMI question's anwers
+  private String additionalEmiAnswerOptions = "3";  //Additonal options for an EMI question's answers - Jul 2010 forced to 3, no longer selected from a list
   private String leadInStatement;
   private ArrayList emiQuestionAnswerCombinations;  //ArrayList of AnswerBean - store List of possible options for an EMI question's anwers
-  private String additionalEmiQuestionAnswerCombinations = "3";  // additonal options for an EMI question's anwers
+  private String additionalEmiQuestionAnswerCombinations = "3";  // additonal options for an EMI question's answers  - Jul 2010 forced to 3, no longer selected from a list
 
   //gopalrc - 20 July 2010 - EMI
   private String emiAnswerOptionsRich;
-  private String emiAnswerOptionsToParse;
+  private String emiAnswerOptionsPaste;
   private String emiAnswerOptionsCount = "0";
   private String emiAnswerOptionsSimpleOrRich = "0";
   
@@ -948,7 +948,6 @@ public class ItemBean
    */
   public void setOrigSection(String param) {
     this.origSection= param;
-
   }
 
   public ArrayList getMultipleChoiceAnswers() {
@@ -1548,7 +1547,7 @@ public class ItemBean
                   list.add(answerbean);
                 }
               setEmiAnswerOptions(list);
-              setAdditionalEmiAnswerOptions("0");
+              //setAdditionalEmiAnswerOptions("0"); // Jul 2010 forced to 3, no longer selected from a list
 
            }
            else
@@ -1561,8 +1560,26 @@ public class ItemBean
     
        }
        return "emiItem";
-  }
+    }
     
+    public String populateEmiAnswerOptionsAction() {
+    	String pasted = getEmiAnswerOptionsPaste();
+    	if (pasted == null || pasted.trim().equals("")) return "emiItem";
+    	
+    	ArrayList list = new ArrayList();
+    	String[] pastedOptions = getEmiAnswerOptionsPaste().split("\n");
+		for (int i=0; i<pastedOptions.length; i++) {
+			AnswerBean answerbean = new AnswerBean();
+       		answerbean.setSequence( Long.valueOf(i+1));
+       		answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
+       		answerbean.setText(pastedOptions[i]);
+      		list.add(answerbean);
+		}
+    	
+    	setEmiAnswerOptions(list);
+    	this.setEmiAnswerOptionsPaste(null);
+        return "emiItem";
+    }
 
     
     //*************** EMI Lead In Statement **********************
@@ -1676,7 +1693,7 @@ public class ItemBean
 
                 }
               setEmiQuestionAnswerCombinations(list);
-              setAdditionalEmiQuestionAnswerCombinations("0");
+              //setAdditionalEmiQuestionAnswerCombinations("0"); // Jul 2010 forced to 3, no longer selected from a list
 
            }
            else
@@ -1763,12 +1780,12 @@ public class ItemBean
 		this.emiAnswerOptionsRich = emiAnswerOptionsRich;
 	}
 
-	public String getEmiAnswerOptionsToParse() {
-		return emiAnswerOptionsToParse;
+	public String getEmiAnswerOptionsPaste() {
+		return emiAnswerOptionsPaste;
 	}
 
-	public void setEmiAnswerOptionsToParse(String emiAnswerOptionsToParse) {
-		this.emiAnswerOptionsToParse = emiAnswerOptionsToParse;
+	public void setEmiAnswerOptionsPaste(String emiAnswerOptionsPaste) {
+		this.emiAnswerOptionsPaste = emiAnswerOptionsPaste;
 	}
 
 	public String getEmiAnswerOptionsSimpleOrRich() {

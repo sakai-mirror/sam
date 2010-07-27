@@ -72,12 +72,12 @@ $(document).ready(function(){
 	});
 	
 	
-	var textPasteAnswerOptions = $("textarea[name=itemForm:emiAnswerOptionsPaste]");
+/*	var textPasteAnswerOptions = $("textarea[name=itemForm:emiAnswerOptionsPaste]");
 	textPasteAnswerOptions.bind('blur', function(){
 		var ta = $("textarea[name=itemForm:emiAnswerOptionsPaste]");
 		alert(ta.val());
 	});
-	
+*/	
 	
 	
 	//load triggers

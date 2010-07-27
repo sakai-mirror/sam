@@ -133,8 +133,46 @@
 
   </h:panelGrid>
 
-  <!-- ATTACHMENTS -->
-  <%@ include file="/jsf/author/item/attachment.jsp" %>
+ 
+ <!-- ATTACHMENTS BELOW-->
+ <div class="longtext">
+  <h:panelGroup rendered="#{itemauthor.hasAttachment}">
+    <h:dataTable value="#{itemauthor.attachmentList}" var="attach">
+      <h:column>
+        <%@ include file="/jsf/shared/mimeicon.jsp" %>
+      </h:column>
+      <h:column>
+        <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+        <h:outputLink value="#{attach.location}" target="new_window">
+           <h:outputText escape="false" value="#{attach.filename}" />
+        </h:outputLink>
+      </h:column>
+      <h:column>
+        <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+        <h:outputText escape="false" value="(#{attach.fileSize} #{generalMessages.kb})" rendered="#{!attach.isLink}"/>
+      </h:column>
+    </h:dataTable>
+  </h:panelGroup>
+
+  <h:panelGroup rendered="#{!itemauthor.hasAttachment}">
+    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="true">
+       <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
+       <h:outputText value="#{authorMessages.add_attachments}"/>
+    </h:commandLink>
+  </h:panelGroup>
+
+  <h:panelGroup rendered="#{itemauthor.hasAttachment}">
+    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="true">
+       <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
+       <h:outputText value="#{authorMessages.add_remove_attachments}"/>
+    </h:commandLink>
+  </h:panelGroup>
+ </div>
+ <!-- ATTACHMENTS ABOVE-->
+
+
+  <f:verbatim><br/><br/></f:verbatim>
+
 
   <div class="shorttext tier2">
     <h:outputText value="#{authorMessages.answer_options_count}" />
@@ -215,8 +253,13 @@
 
    <h:panelGrid>
      <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options_paste}"/></div>
-     <h:inputTextarea id="emiAnswerOptionsPaste" rows="6" cols="50" value="#{itemauthor.currentItem.emiAnswerOptionsToParse}">
+     <h:inputTextarea id="emiAnswerOptionsPaste" rows="6" cols="50" value="#{itemauthor.currentItem.emiAnswerOptionsPaste}">
      </h:inputTextarea>
+     <h:commandLink id="populateEmiAnswerOptionsActionlink" action="#{itemauthor.currentItem.populateEmiAnswerOptionsAction}" value="">
+       <f:verbatim><img src="/library/image/silk/arrow_left.png" border="0"/></f:verbatim>
+       <h:outputText value="#{authorMessages.answer_options_populate}"/>
+     </h:commandLink>
+     
    </h:panelGrid>
    
 
@@ -270,16 +313,53 @@
     <f:verbatim><br/></f:verbatim>
   </h:panelGroup>
   
-        <!-- WYSIWYG -->
+  <!-- WYSIWYG -->
   <h:panelGrid>
     <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes" >
       <f:validateLength maximum="64000"/>
     </samigo:wysiwyg>
     
-    <!-- ATTACHMENTS -->
-    <%@ include file="/jsf/author/item/attachment.jsp" %>
     
-  </h:panelGrid>
+ <!-- ATTACHMENTS BELOW-->
+ <div class="longtext">
+  <h:panelGroup rendered="#{itemauthor.hasAttachment}">
+    <h:dataTable value="#{itemauthor.attachmentList}" var="attach">
+      <h:column>
+        <%@ include file="/jsf/shared/mimeicon.jsp" %>
+      </h:column>
+      <h:column>
+        <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+        <h:outputLink value="#{attach.location}" target="new_window">
+           <h:outputText escape="false" value="#{attach.filename}" />
+        </h:outputLink>
+      </h:column>
+      <h:column>
+        <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+        <h:outputText escape="false" value="(#{attach.fileSize} #{generalMessages.kb})" rendered="#{!attach.isLink}"/>
+      </h:column>
+    </h:dataTable>
+  </h:panelGroup>
+
+  <h:panelGroup rendered="#{!itemauthor.hasAttachment}">
+    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="true">
+       <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
+       <h:outputText value="#{authorMessages.add_attachments}"/>
+    </h:commandLink>
+  </h:panelGroup>
+
+  <h:panelGroup rendered="#{itemauthor.hasAttachment}">
+    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="true">
+       <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
+       <h:outputText value="#{authorMessages.add_remove_attachments}"/>
+    </h:commandLink>
+  </h:panelGroup>
+ </div>
+ <!-- ATTACHMENTS ABOVE-->
+
+
+    
+ </h:panelGrid>
+
 			
   <h:panelGroup>
     <h:outputLabel value="#{authorMessages.correct_option_labels}" />
@@ -318,7 +398,7 @@
 </div>
 
 <div class="shorttext tier2">
-  <h:commandLink id="addEmiQAComboActionlink" action="#{itemauthor.currentItem.additionalEmiQuestionAnswerCombinations}" value="">
+  <h:commandLink id="addEmiQAComboActionlink" action="#{itemauthor.currentItem.addEmiQuestionAnswerCombinationsAction}" value="">
     <f:verbatim><img src="/library/image/silk/add.png" border="0"/></f:verbatim>
     <h:outputText value="#{authorMessages.add_more_items}"/>
   </h:commandLink>
