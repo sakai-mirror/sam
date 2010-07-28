@@ -60,7 +60,7 @@
       <title> <h:outputText value="#{delivery.assessmentTitle}"/>
       </title>
       </head>
-       <body onload="<%= request.getAttribute("html.body.onload") %>; checkRadio(); setLocation();SaveFormContentAsync('deliverAssessment', 'takeAssessmentForm', 'takeAssessmentForm:save', 'takeAssessmentForm:lastSubmittedDate1', 'takeAssessmentForm:lastSubmittedDate2',  <h:outputText value="#{delivery.autoSaveRepeatMilliseconds}"/>, true);" >
+       <body onload="<%= request.getAttribute("html.body.onload") %>; checkRadio(); setLocation();SaveFormContentAsync('deliverAssessment', 'takeAssessmentForm', 'takeAssessmentForm:save', 'takeAssessmentForm:lastSubmittedDate1', 'takeAssessmentForm:lastSubmittedDate2',  <h:outputText value="#{delivery.autoSaveRepeatMilliseconds}"/>, <h:outputText  value="#{delivery.actionString=='takeAssessment'}"/>);" >
    <!--div class="portletBody" style='background:#c57717'-->
       <!--h:outputText value="<body bgcolor='#c57717' #{delivery.settings.bgcolor} #{delivery.settings.background} onLoad='checkRadio();'>" escape="false" /-->
 
