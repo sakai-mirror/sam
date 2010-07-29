@@ -636,4 +636,8 @@ public class PublishedAssessmentService extends AssessmentService{
 		PersistenceService.getInstance().getPublishedAssessmentFacadeQueries()
 				.saveOrUpdateAttachments(list);
    }
+   public HashMap getToGradebookPublishedAssessmentSiteIdMap() {
+	   return PersistenceService.getInstance().getPublishedAssessmentFacadeQueries()
+	   .getToGradebookPublishedAssessmentSiteIdMap();
+   }
 }

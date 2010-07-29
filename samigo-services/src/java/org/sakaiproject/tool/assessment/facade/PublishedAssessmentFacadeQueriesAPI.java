@@ -356,4 +356,6 @@ public interface PublishedAssessmentFacadeQueriesAPI
   public void removeAssessmentAttachment(Long assessmentAttachmentId);
   
   public void saveOrUpdateAttachments(List list);
+  public HashMap getToGradebookPublishedAssessmentSiteIdMap();
+  
 }
