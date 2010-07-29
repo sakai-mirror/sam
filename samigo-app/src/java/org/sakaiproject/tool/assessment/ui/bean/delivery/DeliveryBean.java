@@ -1301,7 +1301,8 @@ public class DeliveryBean
     // We don't need to call completeItemGradingData to create new ItemGradingData for linear access
     // because each ItemGradingData is created when it is viewed/answered 
     if (!navigation.equals("1")) {
-    	listener.completeItemGradingData();
+    	GradingService gradingService = new GradingService();
+    	gradingService.completeItemGradingData(adata);
     }
     
     syncTimeElapsedWithServer();

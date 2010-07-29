@@ -1794,6 +1794,11 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 		  e.printStackTrace();
 	  }
   }
+  
+  public void completeItemGradingData(AssessmentGradingData assessmentGradingData)  {
+      PersistenceService.getInstance().getAssessmentGradingFacadeQueries().
+      completeItemGradingData(assessmentGradingData);
+  }
 }
 
 

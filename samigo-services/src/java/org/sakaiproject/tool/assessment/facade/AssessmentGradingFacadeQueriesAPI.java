@@ -220,4 +220,5 @@ public interface AssessmentGradingFacadeQueriesAPI
   
   public void autoSubmitAssessments();
   
+  public void completeItemGradingData(AssessmentGradingData assessmentGradingData);	
 }
