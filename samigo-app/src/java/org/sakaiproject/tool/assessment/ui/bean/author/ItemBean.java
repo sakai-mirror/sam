@@ -1437,23 +1437,19 @@ public class ItemBean
     
     //gopalrc - added 23 Nov 2009
     public ArrayList getEmiAnswerOptions() {
-    	ArrayList list = new ArrayList();
-    	// build a default list of 4 options, a, b, c, d,
-    	if (emiAnswerOptions!=null) {
-    		return emiAnswerOptions;
-    	// for modify
-     	}
-    	else {
-    	int defaultlength = 4;
-    		for (int i=0; i<defaultlength; i++){
+    	if (emiAnswerOptions==null) emiAnswerOptions = new ArrayList();
+    	int defaultlength = 26;
+    	// build or extend the list of options 26 a-z
+    	// for efficiency, these will now be shown/hidden using javascript
+		if (emiAnswerOptions.size() < defaultlength) {
+			for (int i=emiAnswerOptions.size(); i<defaultlength; i++ ) {
     			AnswerBean answerbean = new AnswerBean();
            		answerbean.setSequence( Long.valueOf(i+1));
            		answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
-          		list.add(answerbean);
-        	}
-    		setEmiAnswerOptions(list);
-    	}// else
-        return list;
+           		emiAnswerOptions.add(answerbean);
+			}
+		}
+		return emiAnswerOptions;
     }
     	
     	

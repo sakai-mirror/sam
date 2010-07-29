@@ -71,6 +71,40 @@ $(document).ready(function(){
 		}
 	});
 	
+	for (i=0; i<26; i++) {
+		var emiOptionRemoveLink = $("a[id=itemForm:emiAnswerOptions:" + i + ":RemoveLink]");
+		emiOptionRemoveLink.bind('click', function(event) {
+			//alert("clicked");
+			var optionId = $(this).attr("id").split(":")[2];
+			//var optionId = event.target.id;   //.split(":")[2];
+			alert("optionId = " + optionId);
+			
+			//if last option (Option 26 - id=25)
+			if (optionId===25) {
+				var optionText = $("input[id=itemForm:emiAnswerOptions:" + 25 + ":Text]");
+				optionText1.val("");
+				$("table[id=itemForm:emiAnswerOptions:" + 25 + ":Row]").hide();
+			}
+			
+			for (j=optionId; j<26; j++) {
+				var k = j+1;
+				var optionText1 = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
+				var optionText2 = $("input[id=itemForm:emiAnswerOptions:" + k + ":Text]");
+				
+				alert(" optionText1.val() = " + optionText1.val() + "\n optionText2.val() = " + optionText2.val());
+
+				optionText1.val(optionText2.val());
+				//if reached the visible-invisible boundary, hide the last visible row
+				if (optionText1.is(':visible') && optionText2.is(':hidden')) {
+					alert("boundary: j=" + j + " j+1=" + (j+1));
+					$("table[id=itemForm:emiAnswerOptions:" + j + ":Row]").hide();
+					return false;
+				}
+			}
+			return false;
+	    });
+	}
+	
 	
 /*	var textPasteAnswerOptions = $("textarea[name=itemForm:emiAnswerOptionsPaste]");
 	textPasteAnswerOptions.bind('blur', function(){
@@ -83,6 +117,23 @@ $(document).ready(function(){
 	//load triggers
 	var radioChecked = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked");
 	radioChecked.trigger('click');
+	
+	
+	//hide excess emiAnswerOptions at start
+	var firstOptionText = $("input[id=itemForm:emiAnswerOptions:" + 0 + ":Text]");
+	if (firstOptionText.val() === "") {
+		for (i=4; i<26; i++) {
+			$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").hide();
+		}
+	}
+	else {
+		for (i=0; i<26; i++) {
+			var optionText = $("input[id=itemForm:emiAnswerOptions:" + i + ":Text]");
+			if (optionText.val() === "") {
+				$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").hide();
+			}
+		}
+	}
 	
 	
 });

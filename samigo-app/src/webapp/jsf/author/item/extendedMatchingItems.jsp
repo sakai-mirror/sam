@@ -213,7 +213,7 @@
 
 
 
-  <!-- 3.1(b) ANSWER OPTIONS -->
+  <!-- 3.1(b) ANSWER OPTIONS - SIMPLE -->
 
 <!-- dynamicaly generate rows of answer options -->
 
@@ -227,21 +227,21 @@
 
      <h:dataTable id="emiAnswerOptions" value="#{itemauthor.currentItem.emiAnswerOptions}" var="answer" headerClass="navView longtext">
      <h:column>
-       <h:panelGrid columns="3">
+       <h:panelGrid id="Row" columns="3">
+
          <h:panelGroup>
-           <h:outputText value="#{answer.label}"  />
+           <h:outputText id="Label" value="#{answer.label}"  />
          </h:panelGroup>
   
          <h:panelGrid>
-           <h:inputText value="#{answer.text}" size="40" >
+           <h:inputText id="Text" value="#{answer.text}" size="40" >
            </h:inputText>
          </h:panelGrid>
 
          <h:panelGroup>
-           <h:commandLink title="#{authorMessages.t_removeO}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiAnswerOptions}" rendered="#{itemauthor.currentItem.itemType == 13}">
-           <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
-           <f:param name="emiAnswerOptionId" value="#{answer.label}"/>
-           </h:commandLink>		 
+           <h:outputLink id="RemoveLink" title="#{authorMessages.t_removeO}" rendered="#{itemauthor.currentItem.itemType == 13}">
+             <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
+           </h:outputLink>		 
          </h:panelGroup>
 
        </h:panelGrid>
