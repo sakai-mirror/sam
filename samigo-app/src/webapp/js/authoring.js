@@ -57,7 +57,14 @@
  *
  */
 
+
+var highestOptionId = +25;
+var additionalOptionsGroupSize = +3;
+
+
 $(document).ready(function(){
+	
+	//Show/Hide Simple or Rich-Text Options based on user selection
 	var radiosSimpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]");
 	radiosSimpleOrRichAnswerOptions.bind('click', function(){
 		if (this.value === "0"){
@@ -71,39 +78,53 @@ $(document).ready(function(){
 		}
 	});
 	
-	for (i=0; i<26; i++) {
+	//Remove Option
+	for (i=0; i<=highestOptionId; i++) {
 		var emiOptionRemoveLink = $("a[id=itemForm:emiAnswerOptions:" + i + ":RemoveLink]");
-		emiOptionRemoveLink.bind('click', function(event) {
-			//alert("clicked");
-			var optionId = $(this).attr("id").split(":")[2];
-			//var optionId = event.target.id;   //.split(":")[2];
-			alert("optionId = " + optionId);
+		emiOptionRemoveLink.bind('click', function() {
+			var optionId = +($(this).attr("id").split(":")[2]);
 			
-			//if last option (Option 26 - id=25)
-			if (optionId===25) {
-				var optionText = $("input[id=itemForm:emiAnswerOptions:" + 25 + ":Text]");
-				optionText1.val("");
-				$("table[id=itemForm:emiAnswerOptions:" + 25 + ":Row]").hide();
-			}
-			
-			for (j=optionId; j<26; j++) {
-				var k = j+1;
+			for (j=optionId; j<highestOptionId; j++) {
+				var k = +j+1;
 				var optionText1 = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
 				var optionText2 = $("input[id=itemForm:emiAnswerOptions:" + k + ":Text]");
 				
-				alert(" optionText1.val() = " + optionText1.val() + "\n optionText2.val() = " + optionText2.val());
-
 				optionText1.val(optionText2.val());
 				//if reached the visible-invisible boundary, hide the last visible row
 				if (optionText1.is(':visible') && optionText2.is(':hidden')) {
-					alert("boundary: j=" + j + " j+1=" + (j+1));
-					$("table[id=itemForm:emiAnswerOptions:" + j + ":Row]").hide();
-					return false;
+					$("table[id=itemForm:emiAnswerOptions:" + j + ":Row]").parent().parent().hide();
+					break;
 				}
 			}
+			var lastOptionText = $("input[id=itemForm:emiAnswerOptions:" + highestOptionId + ":Text]");
+			lastOptionText.val("");
+			$("table[id=itemForm:emiAnswerOptions:" + highestOptionId + ":Row]").parent().parent().hide();
 			return false;
 	    });
 	}
+	
+	
+	//Add Options
+	var emiOptionAddLink = $("a[id=itemForm:addEmiAnswerOptionsLink]");
+	emiOptionAddLink.bind('click', function(){
+		for (i=0; i<highestOptionId; i++) {
+			var j = +i+1;
+			var optionText1 = $("input[id=itemForm:emiAnswerOptions:" + i + ":Text]");
+			var optionText2 = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
+			//if reached the visible-invisible boundary, show additional rows
+			if (optionText1.is(':visible') && optionText2.is(':hidden')) {
+				for (k=0; k<additionalOptionsGroupSize; k++) {
+					var l = +j+k;
+					if (l<=highestOptionId) {
+						$("table[id=itemForm:emiAnswerOptions:" + l + ":Row]").parent().parent().show();
+					}
+				}
+				return false;
+			}
+		}
+		return false;
+	});
+	
 	
 	
 /*	var textPasteAnswerOptions = $("textarea[name=itemForm:emiAnswerOptionsPaste]");
@@ -123,22 +144,36 @@ $(document).ready(function(){
 	var firstOptionText = $("input[id=itemForm:emiAnswerOptions:" + 0 + ":Text]");
 	if (firstOptionText.val() === "") {
 		for (i=4; i<26; i++) {
-			$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").hide();
+			//$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").hide();
+			$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().hide();
 		}
 	}
 	else {
 		for (i=0; i<26; i++) {
 			var optionText = $("input[id=itemForm:emiAnswerOptions:" + i + ":Text]");
 			if (optionText.val() === "") {
-				$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").hide();
+				//$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").hide();
+				//$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parents('tr').siblings().fadeOut('fast');
+				$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().hide();
 			}
 		}
 	}
+
+	
+	
+	//Vertically Align the Pasted Options Table Container
+	$("textarea[id=itemForm:emiAnswerOptionsPaste]").parent().parent().parent().parent().parent().css('vertical-align','top');
+	$("table[id=itemForm:emiAnswerOptions]").parent().css('vertical-align','top');
+	
+	
 	
 	
 });
 
- 
+//*************** JQuery Functions Above ******************
+
+
+
 var checkflag = "false";
 
 function checkAll(field) {

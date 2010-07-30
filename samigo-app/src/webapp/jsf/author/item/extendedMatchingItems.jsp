@@ -255,11 +255,7 @@
      <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options_paste}"/></div>
      <h:inputTextarea id="emiAnswerOptionsPaste" rows="6" cols="50" value="#{itemauthor.currentItem.emiAnswerOptionsPaste}">
      </h:inputTextarea>
-     <h:commandLink id="populateEmiAnswerOptionsActionlink" action="#{itemauthor.currentItem.populateEmiAnswerOptionsAction}" value="">
-       <f:verbatim><img src="/library/image/silk/arrow_left.png" border="0"/></f:verbatim>
-       <h:outputText value="#{authorMessages.answer_options_populate}"/>
-     </h:commandLink>
-     
+     <!-- gopalrc TODO - Move population with pasted text from ItemBean into ItemAddListener -->
    </h:panelGrid>
    
 
@@ -268,12 +264,12 @@
  </div>
 
 
-<div class="shorttext tier2">
-  <h:commandLink id="addEmiAnswerOptionsActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsAction}" value="">
-    <f:verbatim><img src="/library/image/silk/add.png" border="0"/></f:verbatim>
+ <div class="shorttext tier2">
+  <h:outputLink id="addEmiAnswerOptionsLink" >
+    <f:verbatim><img src="/library/image/silk/add.png" border="0"></f:verbatim>
     <h:outputText value="#{authorMessages.add_more_options}"/>
-  </h:commandLink>
-</div>
+  </h:outputLink>		 
+ </div>
 
 </div>
 
@@ -307,9 +303,9 @@
  <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinations}" var="answer" headerClass="navView longtext">
  <h:column>
 
- <h:panelGrid columns="4">
+ <h:panelGrid id="Row" columns="4">
   <h:panelGroup>
-    <h:outputText value="#{answer.label}"  />
+    <h:outputText id="Label" value="#{answer.label}"  />
     <f:verbatim><br/></f:verbatim>
   </h:panelGroup>
   
