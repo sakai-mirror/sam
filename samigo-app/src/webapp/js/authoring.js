@@ -59,11 +59,14 @@
 
 
 var highestOptionId = +25;
+var highestItemId = +25;
 var additionalOptionsGroupSize = +3;
+var additionalItemsGroupSize = +3;
 
 
 $(document).ready(function(){
 	
+	//************* OPTIONS ********************
 	//Show/Hide Simple or Rich-Text Options based on user selection
 	var radiosSimpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]");
 	radiosSimpleOrRichAnswerOptions.bind('click', function(){
@@ -126,6 +129,56 @@ $(document).ready(function(){
 	});
 	
 	
+	//************* ITEMS ********************
+	//Remove Items
+	for (i=0; i<=highestOptionId; i++) {
+		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
+		emiItemRemoveLink.bind('click', function() {
+			var itemId = +($(this).attr("id").split(":")[2]);
+			
+			for (j=itemId; j<highestItemId; j++) {
+				var k = +j+1;
+				var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +"]");
+				var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +"]");
+				
+				itemText1.val(itemText2.val());
+				//if reached the visible-invisible boundary, hide the last visible row
+				if (itemText1.is(':visible') && itemText2.is(':hidden')) {
+					$("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent().hide();
+					break;
+				}
+			}
+			var lastItemText = $("input[id^=itemForm:emiQuestionAnswerCombinations:" + highestItemId +"]");
+			lastItemText.val("");
+			$("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent().hide();
+			return false;
+	    });
+	}
+	
+
+	
+	//Add Items
+	var emiItemAddLink = $("a[id=itemForm:addEmiQuestionAnswerCombinationsLink]");
+	emiItemAddLink.bind('click', function(){
+		for (i=0; i<highestItemId; i++) {
+			var j = +i+1;
+			var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + i +"]");
+			var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +"]");
+			//if reached the visible-invisible boundary, show additional rows
+			if (itemText1.is(':visible') && itemText2.is(':hidden')) {
+				for (k=0; k<additionalItemsGroupSize; k++) {
+					var l = +j+k;
+					if (l<=highestItemId) {
+						$("table[id=itemForm:emiQuestionAnswerCombinations:" + l + ":Row]").parent().parent().show();
+					}
+				}
+				return false;
+			}
+		}
+		return false;
+	});
+	
+	
 	
 /*	var textPasteAnswerOptions = $("textarea[name=itemForm:emiAnswerOptionsPaste]");
 	textPasteAnswerOptions.bind('blur', function(){
@@ -140,11 +193,10 @@ $(document).ready(function(){
 	radioChecked.trigger('click');
 	
 	
-	//hide excess emiAnswerOptions at start
+	//hide excess Options at start
 	var firstOptionText = $("input[id=itemForm:emiAnswerOptions:" + 0 + ":Text]");
 	if (firstOptionText.val() === "") {
 		for (i=4; i<26; i++) {
-			//$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").hide();
 			$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().hide();
 		}
 	}
@@ -152,12 +204,27 @@ $(document).ready(function(){
 		for (i=0; i<26; i++) {
 			var optionText = $("input[id=itemForm:emiAnswerOptions:" + i + ":Text]");
 			if (optionText.val() === "") {
-				//$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").hide();
-				//$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parents('tr').siblings().fadeOut('fast');
 				$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().hide();
 			}
 		}
 	}
+	
+	//hide excess Items at start
+	var firstItemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:0]");
+	if (firstItemText.val() === "") {
+		for (i=4; i<26; i++) {
+			$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().hide();
+		}
+	}
+	else {
+		for (i=0; i<26; i++) {
+			var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + i +"]");
+			if (itemText.val() === "") {
+				$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().hide();
+			}
+		}
+	}
+	
 
 	
 	

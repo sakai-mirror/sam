@@ -379,10 +379,9 @@
   </h:panelGroup>
 			
   <h:panelGroup>
-    <h:commandLink title="#{authorMessages.t_removeI}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiQuestionAnswerCombinations}" rendered="#{itemauthor.currentItem.itemType == 13}">
-      <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
-      <f:param name="emiQuestionAnswerComboId" value="#{answer.label}"/>
-    </h:commandLink>		 
+   <h:outputLink id="RemoveLink" title="#{authorMessages.t_removeI}" rendered="#{itemauthor.currentItem.itemType == 13}">
+     <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
+   </h:outputLink>		
   </h:panelGroup>
 			
   
@@ -394,10 +393,10 @@
 </div>
 
 <div class="shorttext tier2">
-  <h:commandLink id="addEmiQAComboActionlink" action="#{itemauthor.currentItem.addEmiQuestionAnswerCombinationsAction}" value="">
-    <f:verbatim><img src="/library/image/silk/add.png" border="0"/></f:verbatim>
+  <h:outputLink id="addEmiQuestionAnswerCombinationsLink" >
+    <f:verbatim><img src="/library/image/silk/add.png" border="0"></f:verbatim>
     <h:outputText value="#{authorMessages.add_more_items}"/>
-  </h:commandLink>
+  </h:outputLink>		 
 </div>
 <br/>
 
