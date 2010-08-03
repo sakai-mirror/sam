@@ -1077,7 +1077,26 @@ public class ItemAuthorBean
     }
     return getOutcome();
   }
-
+  
+  //gopalrc - Aug 2010 - For EMI Item Attachments
+	public String addAttachmentsForEMIItemsRedirect(AnswerBean item) {
+		// 1. load resources into session for resources mgmt page
+		// then redirect to resources mgmt page
+		try {
+			List filePickerList = prepareReferenceList(item.getAttachmentList());
+			ToolSession currentToolSession = SessionManager
+					.getCurrentToolSession();
+			currentToolSession.setAttribute(
+					FilePickerHelper.FILE_PICKER_ATTACHMENTS, filePickerList);
+			ExternalContext context = FacesContext.getCurrentInstance()
+					.getExternalContext();
+			context.redirect("sakai.filepicker.helper/tool");
+		} catch (Exception e) {
+			log.error("fail to redirect to attachment page: " + e.getMessage());
+		}
+		return getOutcome();
+	}  
+  
   /* called by SamigoJsfTool.java on exit from file picker */
   public void setItemAttachment(){
 	AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
@@ -1099,6 +1118,36 @@ public class ItemAuthorBean
         log.warn(e.getMessage());
       }
     }
+
+    // list returns contains modified list of attachments, i.e. new 
+    // and old attachments. This list will be 
+    // persisted to DB if user hit Save on the Item Modifying page.
+    List list = prepareItemAttachment(itemData, isEditPendingAssessmentFlow);
+    setAttachmentList(list);
+  }
+
+    //gopalrc - Aug 2010 - For EMI Item Attachments
+    /* called by SamigoJsfTool.java on exit from file picker */
+    public void setItemAttachmentForEmiItems(){
+    	AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
+    	boolean isEditPendingAssessmentFlow =  author.getIsEditPendingAssessmentFlow();
+    	ItemService service = null;
+    	if (isEditPendingAssessmentFlow) {
+    		service = new ItemService();
+    	}
+    	else {
+    		service = new PublishedItemService();
+    	}
+        ItemDataIfc itemData = null;
+        // itemId == null => new questiion
+        if (this.itemId!=null){
+          try{
+            itemData = service.getItem(this.itemId);
+          }
+          catch(Exception e){
+            log.warn(e.getMessage());
+          }
+        }
 
     // list returns contains modified list of attachments, i.e. new 
     // and old attachments. This list will be 

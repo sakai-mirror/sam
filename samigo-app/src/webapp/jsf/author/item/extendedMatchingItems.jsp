@@ -134,7 +134,7 @@
   </h:panelGrid>
 
  
- <!-- ATTACHMENTS BELOW-->
+ <!-- ATTACHMENTS BELOW - OPTIONS -->
  <div class="longtext">
   <h:panelGroup rendered="#{itemauthor.hasAttachment}">
     <h:dataTable value="#{itemauthor.attachmentList}" var="attach">
@@ -168,7 +168,7 @@
     </h:commandLink>
   </h:panelGroup>
  </div>
- <!-- ATTACHMENTS ABOVE-->
+ <!-- ATTACHMENTS ABOVE - OPTIONS-->
 
 
   <f:verbatim><br/><br/></f:verbatim>
@@ -316,10 +316,10 @@
     </samigo:wysiwyg>
     
     
- <!-- ATTACHMENTS BELOW-->
+ <!-- ATTACHMENTS BELOW - ITEMS-->
  <div class="longtext">
-  <h:panelGroup rendered="#{itemauthor.hasAttachment}">
-    <h:dataTable value="#{itemauthor.attachmentList}" var="attach">
+  <h:panelGroup rendered="#{answer.hasAttachment}">
+    <h:dataTable value="#{answer.attachmentList}" var="attach">
       <h:column>
         <%@ include file="/jsf/shared/mimeicon.jsp" %>
       </h:column>
@@ -336,21 +336,21 @@
     </h:dataTable>
   </h:panelGroup>
 
-  <h:panelGroup rendered="#{!itemauthor.hasAttachment}">
-    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="true">
+  <h:panelGroup rendered="#{!answer.hasAttachment}">
+    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="true">
        <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
        <h:outputText value="#{authorMessages.add_attachments}"/>
     </h:commandLink>
   </h:panelGroup>
 
-  <h:panelGroup rendered="#{itemauthor.hasAttachment}">
-    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="true">
+  <h:panelGroup rendered="#{answer.hasAttachment}">
+    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="true">
        <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
        <h:outputText value="#{authorMessages.add_remove_attachments}"/>
     </h:commandLink>
   </h:panelGroup>
  </div>
- <!-- ATTACHMENTS ABOVE-->
+ <!-- ATTACHMENTS ABOVE - ITEMS -->
 
 
     

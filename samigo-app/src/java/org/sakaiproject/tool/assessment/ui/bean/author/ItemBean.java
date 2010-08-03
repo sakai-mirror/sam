@@ -27,6 +27,8 @@ package org.sakaiproject.tool.assessment.ui.bean.author;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
 import org.sakaiproject.util.ResourceLoader;
 
 import javax.faces.application.FacesMessage;
@@ -83,6 +85,9 @@ public class ItemBean
   private String emiAnswerOptionsPaste;
   private String emiAnswerOptionsCount = "0";
   private String emiAnswerOptionsSimpleOrRich = "0";
+  //gopalrc Aug 2010 - attachments for EMI questions
+  private List attachmentList;
+
   
 
   private int totalMCAsnwers;
@@ -1796,4 +1801,23 @@ public class ItemBean
 		this.emiAnswerOptionsCount = emiAnswerOptionsCount;
 	}
 
+	//gopalrc - Aug 2010 - for EMI - Attachments at Item Level
+	//ATTACHMENTS CODE BELOW
+	  public List getAttachmentList() {
+	    return attachmentList;
+	  }
+
+	  public void setAttachmentList(List attachmentList)
+	  {
+	    this.attachmentList = attachmentList;
+	  }
+
+	  public boolean getHasAttachment(){
+	    if (attachmentList != null && attachmentList.size() >0)
+	      return true;
+	    else
+	      return false;    
+	  }
+	
+	
 }

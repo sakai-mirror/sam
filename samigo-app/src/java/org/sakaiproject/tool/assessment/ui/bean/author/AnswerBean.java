@@ -23,10 +23,35 @@
 package org.sakaiproject.tool.assessment.ui.bean.author;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.util.ResourceLoader;
 
+import org.sakaiproject.content.api.ContentResource;
+import org.sakaiproject.content.api.FilePickerHelper;
+import org.sakaiproject.entity.api.Reference;
+import org.sakaiproject.entity.cover.EntityManager;
+import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.exception.PermissionException;
+import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.tool.api.ToolSession;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
+import org.sakaiproject.tool.assessment.services.ItemService;
+import org.sakaiproject.tool.assessment.services.PublishedItemService;
+import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+import org.sakaiproject.tool.cover.SessionManager;
  
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -49,7 +74,8 @@ public class AnswerBean implements Serializable, Comparable{
   //gopalrc Jul 2010 - for EMI questions
   private String requiredOptionsCount;
   
-  
+  //gopalrc Aug 2010 - Attachments for EMI questions
+  private List attachmentList;
 
 
 
@@ -208,5 +234,46 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	public void setRequiredOptionsCount(String requiredOptionsCount) {
 		this.requiredOptionsCount = requiredOptionsCount;
 	}
+	
+	//gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
+	//ATTACHMENTS CODE BELOW
+	  public List getAttachmentList() {
+	    return attachmentList;
+	  }
+
+	  public void setAttachmentList(List attachmentList)
+	  {
+	    this.attachmentList = attachmentList;
+	  }
+
+	  public boolean getHasAttachment(){
+	    if (attachmentList != null && attachmentList.size() >0)
+	      return true;
+	    else
+	      return false;    
+	  }
+	  
+	  public String addAttachmentsRedirect() {
+  	      ItemAuthorBean itemAuthorBean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
+		  return itemAuthorBean.addAttachmentsForEMIItemsRedirect(this);
+		  
+		  /*
+		    // 1. load resources into session for resources mgmt page
+		    //    then redirect to resources mgmt page
+		    try	{
+		      List filePickerList = prepareReferenceList(attachmentList);
+		      ToolSession currentToolSession = SessionManager.getCurrentToolSession();
+		      currentToolSession.setAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS, filePickerList);
+		      ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+		      context.redirect("sakai.filepicker.helper/tool");
+		    }
+		    catch(Exception e){
+		      log.error("fail to redirect to attachment page: " + e.getMessage());
+		    }
+		    return getOutcome();
+		  */
+	  }
+
+	
 	
 }

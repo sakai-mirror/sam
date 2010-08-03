@@ -86,12 +86,10 @@ $(document).ready(function(){
 		var emiOptionRemoveLink = $("a[id=itemForm:emiAnswerOptions:" + i + ":RemoveLink]");
 		emiOptionRemoveLink.bind('click', function() {
 			var optionId = +($(this).attr("id").split(":")[2]);
-			
 			for (j=optionId; j<highestOptionId; j++) {
 				var k = +j+1;
 				var optionText1 = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
 				var optionText2 = $("input[id=itemForm:emiAnswerOptions:" + k + ":Text]");
-				
 				optionText1.val(optionText2.val());
 				//if reached the visible-invisible boundary, hide the last visible row
 				if (optionText1.is(':visible') && optionText2.is(':hidden')) {
@@ -135,12 +133,10 @@ $(document).ready(function(){
 		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
 		emiItemRemoveLink.bind('click', function() {
 			var itemId = +($(this).attr("id").split(":")[2]);
-			
 			for (j=itemId; j<highestItemId; j++) {
 				var k = +j+1;
 				var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +"]");
 				var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +"]");
-				
 				itemText1.val(itemText2.val());
 				//if reached the visible-invisible boundary, hide the last visible row
 				if (itemText1.is(':visible') && itemText2.is(':hidden')) {
@@ -162,10 +158,10 @@ $(document).ready(function(){
 	emiItemAddLink.bind('click', function(){
 		for (i=0; i<highestItemId; i++) {
 			var j = +i+1;
-			var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + i +"]");
-			var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +"]");
+			var row1 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]");
+			var row2 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]");
 			//if reached the visible-invisible boundary, show additional rows
-			if (itemText1.is(':visible') && itemText2.is(':hidden')) {
+			if (row1.is(':visible') && row2.is(':hidden')) {
 				for (k=0; k<additionalItemsGroupSize; k++) {
 					var l = +j+k;
 					if (l<=highestItemId) {
