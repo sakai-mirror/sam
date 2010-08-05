@@ -227,7 +227,7 @@ public class ItemAddListener
 	  ItemBean item =itemauthorbean.getCurrentItem();
 	  int countAnswerText=0;
 	  int indexLabel= 0;
-	  Iterator iter = item.getEmiAnswerOptions().iterator();
+	  Iterator iter = item.getEmiAnswerOptionsClean().iterator();
 	  boolean missingchoices=false;
 
 	  StringBuilder missingLabelbuf = new StringBuilder();
@@ -947,7 +947,7 @@ public class ItemAddListener
 		// with first ItemText  (seq=0).
 		// These will be used to construct the actual answers.
 		// ///////////////////////////////////////////////////////////
-		Iterator iter = bean.getEmiAnswerOptions().iterator();
+		Iterator iter = bean.getEmiAnswerOptionsClean().iterator();
 		Answer answer = null;
 		while (iter.hasNext()) {
 			AnswerBean answerbean = (AnswerBean) iter.next();
@@ -964,7 +964,7 @@ public class ItemAddListener
 			answerSet1.add(answer);
 		}
 
-		iter = bean.getEmiQuestionAnswerCombinations().iterator();
+		iter = bean.getEmiQuestionAnswerCombinationsClean().iterator();
 		//answer = null;
 		while (iter.hasNext()) {
 			AnswerBean answerbean = (AnswerBean) iter.next();
@@ -1254,7 +1254,7 @@ public class ItemAddListener
 		//gopalrc - added 25 Nov 2009
 		else if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
 
-			Iterator iter = bean.getEmiAnswerOptions().iterator();
+			Iterator iter = bean.getEmiAnswerOptionsClean().iterator();
 			Answer answer = null;
 			while (iter.hasNext()) {
 				AnswerBean answerbean = (AnswerBean) iter.next();
@@ -1270,8 +1270,9 @@ public class ItemAddListener
 
 				answerSet1.add(answer);
 			}
+
 			
-			iter = bean.getEmiQuestionAnswerCombinations().iterator();
+			iter = bean.getEmiQuestionAnswerCombinationsClean().iterator();
 			answer = null;
 			while (iter.hasNext()) {
 				AnswerBean answerbean = (AnswerBean) iter.next();
@@ -1747,7 +1748,7 @@ public class ItemAddListener
 		// with first ItemText  (seq=0).
 		// These will be used to construct the actual answers.
 		// ///////////////////////////////////////////////////////////
-		Iterator iter = bean.getEmiAnswerOptions().iterator();
+		Iterator iter = bean.getEmiAnswerOptionsClean().iterator();
 		PublishedAnswer answer = null;
 		while (iter.hasNext()) {
 			AnswerBean answerbean = (AnswerBean) iter.next();
@@ -1764,7 +1765,7 @@ public class ItemAddListener
 			answerSet1.add(answer);
 		}
 
-		iter = bean.getEmiQuestionAnswerCombinations().iterator();
+		iter = bean.getEmiQuestionAnswerCombinationsClean().iterator();
 		//answer = null;
 		while (iter.hasNext()) {
 			AnswerBean answerbean = (AnswerBean) iter.next();

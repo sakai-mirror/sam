@@ -33,6 +33,7 @@ public interface AttachmentIfc
   public static Long SECTION_ATTACHMENT = new Long(2);
   public static Long ITEM_ATTACHMENT = new Long(3);
   public static Long ITEMGRADING_ATTACHMENT = new Long(4);
+  public static Long ITEM_TEXT_ATTACHMENT = new Long(5);//gopalrc - Aug 2010 - for EMI sub-item attachments 
   public static Integer ACTIVE_STATUS = new Integer(1);
   public static Integer INACTIVE_STATUS = new Integer(0);
 

@@ -43,7 +43,7 @@ import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.TypeException;
 import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
-import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.PublishedItemService;
@@ -255,23 +255,11 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	  
 	  public String addAttachmentsRedirect() {
   	      ItemAuthorBean itemAuthorBean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
-		  return itemAuthorBean.addAttachmentsForEMIItemsRedirect(this);
-		  
-		  /*
-		    // 1. load resources into session for resources mgmt page
-		    //    then redirect to resources mgmt page
-		    try	{
-		      List filePickerList = prepareReferenceList(attachmentList);
-		      ToolSession currentToolSession = SessionManager.getCurrentToolSession();
-		      currentToolSession.setAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS, filePickerList);
-		      ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-		      context.redirect("sakai.filepicker.helper/tool");
-		    }
-		    catch(Exception e){
-		      log.error("fail to redirect to attachment page: " + e.getMessage());
-		    }
-		    return getOutcome();
-		  */
+	      ToolSession currentToolSession = SessionManager.getCurrentToolSession();
+	      currentToolSession.setAttribute(ItemTextAttachmentIfc.EMI_ITEM_SEQUENCE, this.getSequence());
+		  String outcome = itemAuthorBean.addAttachmentsRedirect();
+		  currentToolSession.removeAttribute(ItemTextAttachmentIfc.EMI_ITEM_SEQUENCE);
+		  return outcome;
 	  }
 
 	
