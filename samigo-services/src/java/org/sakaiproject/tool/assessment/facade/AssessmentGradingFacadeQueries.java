@@ -1847,7 +1847,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   }
   
   
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String sectionString, String questionString, String textString, String rationaleString, Map useridMap) {
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String partString, String questionString, String textString, String rationaleString, Map useridMap) {
 	  ArrayList dataList = new ArrayList();
 	  ArrayList headerList = new ArrayList();
 	  ArrayList finalList = new ArrayList(2);
@@ -2159,9 +2159,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
                         	poolName = psd.getSectionMetaDataByLabel(SectionDataIfc.POOLNAME_FOR_RANDOM_DRAW);
                         }
                     }
-					headerList.add(makeHeader(sectionString, sectionSequenceNumber, questionString, textString, questionNumber, poolString, poolName));
+					headerList.add(makeHeader(partString, sectionSequenceNumber, questionString, textString, questionNumber, poolString, poolName));
 					  if (addRationale) {
-						  headerList.add(makeHeader(sectionString, sectionSequenceNumber, questionString, rationaleString, questionNumber, poolString, poolName));
+						  headerList.add(makeHeader(partString, sectionSequenceNumber, questionString, rationaleString, questionNumber, poolString, poolName));
 					  }
 				  }	    		   
 			  } // outer for - questions
