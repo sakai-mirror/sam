@@ -49,6 +49,8 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
@@ -435,6 +437,37 @@ public class AssessmentService {
 				.removeItemAttachment(new Long(attachmentId));
 	}
 
+	
+	//gopalrc - Aug2010
+	public ItemTextAttachmentIfc createItemTextAttachment(ItemTextIfc itemText,
+			String resourceId, String filename, String protocol) {
+		return createItemTextAttachment(itemText, resourceId,
+					filename, protocol, true);
+	}
+
+	//gopalrc - Aug2010
+	public ItemTextAttachmentIfc createItemTextAttachment(ItemTextIfc itemText,
+			String resourceId, String filename, String protocol, boolean isEditPendingAssessmentFlow) {
+		ItemTextAttachmentIfc attachment = null;
+		try {
+			AssessmentFacadeQueriesAPI queries = PersistenceService
+					.getInstance().getAssessmentFacadeQueries();
+			attachment = queries.createItemTextAttachment(itemText, resourceId,
+					filename, protocol, isEditPendingAssessmentFlow);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return attachment;
+	}
+	
+	//gopalrc - Aug2010
+	public void removeItemTextAttachment(String attachmentId) {
+		PersistenceService.getInstance().getAssessmentFacadeQueries()
+				.removeItemTextAttachment(new Long(attachmentId));
+	}
+
+	
+	
 	public void updateAssessmentLastModifiedInfo(
 			AssessmentIfc assessment) {
 		try {
@@ -631,27 +664,27 @@ public class AssessmentService {
 	/** These characters are not allowed in a resource id */
 	public static final String INVALID_CHARS_IN_RESOURCE_ID = "^/\\{}[]()%*?#&=\n\r\t\b\f";
 
-	protected static final String MAP_TO_A = "‰ŠˆŒ€?‡‡";
+	protected static final String MAP_TO_A = "ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½";
 
-	protected static final String MAP_TO_B = "§§";
+	protected static final String MAP_TO_B = "ï¿½ï¿½";
 
-	protected static final String MAP_TO_C = "‚?¢¢";
+	protected static final String MAP_TO_C = "ï¿½?ï¿½ï¿½";
 
-	protected static final String MAP_TO_E = "Ž?‘?ƒ¾®®";
+	protected static final String MAP_TO_E = "ï¿½?ï¿½?ï¿½ï¿½ï¿½ï¿½";
 
-	protected static final String MAP_TO_I = "•”“’’";
+	protected static final String MAP_TO_I = "ï¿½ï¿½ï¿½ï¿½ï¿½";
 
-	protected static final String MAP_TO_L = "££";
+	protected static final String MAP_TO_L = "ï¿½ï¿½";
 
-	protected static final String MAP_TO_N = "–„„";
+	protected static final String MAP_TO_N = "ï¿½ï¿½ï¿½";
 
-	protected static final String MAP_TO_O = "™š˜…——";
+	protected static final String MAP_TO_O = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
 
-	protected static final String MAP_TO_U = "Ÿž?†œœ";
+	protected static final String MAP_TO_U = "ï¿½ï¿½?ï¿½ï¿½ï¿½";
 
 	protected static final String MAP_TO_Y = "Ø´??";
 
-	protected static final String MAP_TO_X = "???¤©»¨±?«µ¦À?";
+	protected static final String MAP_TO_X = "???ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½?";
 
 	/**
 	 * These characters are allowed; but if escapeResourceName() is called, they are escaped (actually, removed) Certain characters cause problems with filenames in certain OSes - so get rid of these characters in filenames

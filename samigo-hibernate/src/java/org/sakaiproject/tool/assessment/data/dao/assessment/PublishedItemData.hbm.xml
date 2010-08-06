@@ -64,6 +64,10 @@
        <key column="ITEMTEXTID"/>
        <one-to-many class="org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAnswer"/>
     </set>
+    <set name="itemTextAttachmentSet" table="SAM_PUBLISHEDATTACHMENT_T" cascade="all" order-by="createdDate asc" inverse="true" lazy="false">
+       <key column="ITEMTEXTID"/>
+       <one-to-many class="org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemTextAttachment"/>
+    </set>
   </class>
 
   <class name="org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemMetaData" table="SAM_PUBLISHEDITEMMETADATA_T">
@@ -167,6 +171,11 @@
         class="org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemData"/>
     </subclass>
 
+    <subclass name="org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemTextAttachment"
+      discriminator-value="5" lazy="false" > 
+      <many-to-one name="itemText" column="ITEMTEXTID" not-null="false"
+        class="org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemTextData"/>
+    </subclass>
 
   </class>
 

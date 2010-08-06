@@ -45,6 +45,8 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
@@ -1078,24 +1080,6 @@ public class ItemAuthorBean
     return getOutcome();
   }
   
-  //gopalrc - Aug 2010 - For EMI Item Attachments
-	public String addAttachmentsForEMIItemsRedirect(AnswerBean item) {
-		// 1. load resources into session for resources mgmt page
-		// then redirect to resources mgmt page
-		try {
-			List filePickerList = prepareReferenceList(item.getAttachmentList());
-			ToolSession currentToolSession = SessionManager
-					.getCurrentToolSession();
-			currentToolSession.setAttribute(
-					FilePickerHelper.FILE_PICKER_ATTACHMENTS, filePickerList);
-			ExternalContext context = FacesContext.getCurrentInstance()
-					.getExternalContext();
-			context.redirect("sakai.filepicker.helper/tool");
-		} catch (Exception e) {
-			log.error("fail to redirect to attachment page: " + e.getMessage());
-		}
-		return getOutcome();
-	}  
   
   /* called by SamigoJsfTool.java on exit from file picker */
   public void setItemAttachment(){
@@ -1126,35 +1110,6 @@ public class ItemAuthorBean
     setAttachmentList(list);
   }
 
-    //gopalrc - Aug 2010 - For EMI Item Attachments
-    /* called by SamigoJsfTool.java on exit from file picker */
-    public void setItemAttachmentForEmiItems(){
-    	AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
-    	boolean isEditPendingAssessmentFlow =  author.getIsEditPendingAssessmentFlow();
-    	ItemService service = null;
-    	if (isEditPendingAssessmentFlow) {
-    		service = new ItemService();
-    	}
-    	else {
-    		service = new PublishedItemService();
-    	}
-        ItemDataIfc itemData = null;
-        // itemId == null => new questiion
-        if (this.itemId!=null){
-          try{
-            itemData = service.getItem(this.itemId);
-          }
-          catch(Exception e){
-            log.warn(e.getMessage());
-          }
-        }
-
-    // list returns contains modified list of attachments, i.e. new 
-    // and old attachments. This list will be 
-    // persisted to DB if user hit Save on the Item Modifying page.
-    List list = prepareItemAttachment(itemData, isEditPendingAssessmentFlow);
-    setAttachmentList(list);
-  }
 
   private List prepareReferenceList(List attachmentList){
     List list = new ArrayList();
@@ -1266,4 +1221,165 @@ public class ItemAuthorBean
       this.resourceHash = resourceHash;
   }
 
+  
+  
+  
+  
+  //gopalrc - Aug 2010 - For EMI Item Attachments
+	public String addAttachmentsForEMIItemsRedirect() {
+		// 1. load resources into session for resources mgmt page
+		// then redirect to resources mgmt page
+		try {
+			ToolSession currentToolSession = SessionManager
+			.getCurrentToolSession();
+			AnswerBean emiQAComboItem = (AnswerBean)currentToolSession.getAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
+			List filePickerList = prepareEmiAttachmentReferenceList(emiQAComboItem.getAttachmentList());
+			currentToolSession.setAttribute(
+					FilePickerHelper.FILE_PICKER_ATTACHMENTS, filePickerList);
+			ExternalContext context = FacesContext.getCurrentInstance()
+					.getExternalContext();
+			context.redirect("sakai.filepicker.helper/tool");
+		} catch (Exception e) {
+			log.error("fail to redirect to attachment page: " + e.getMessage());
+		}
+		return getOutcome();
+	}  
+
+  
+    //gopalrc - Aug 2010 - For EMI Item Attachments
+    /* called by SamigoJsfTool.java on exit from file picker */
+    public void setEmiItemAttachment(){
+    	AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
+    	boolean isEditPendingAssessmentFlow =  author.getIsEditPendingAssessmentFlow();
+    	ItemService service = null;
+    	if (isEditPendingAssessmentFlow) {
+    		service = new ItemService();
+    	}
+    	else {
+    		service = new PublishedItemService();
+    	}
+        ItemDataIfc itemData = null;
+        // itemId == null => new questiion
+        if (this.itemId!=null){
+          try{
+            itemData = service.getItem(this.itemId);
+          }
+          catch(Exception e){
+            log.warn(e.getMessage());
+          }
+        }
+
+    	ToolSession currentToolSession = SessionManager
+    	.getCurrentToolSession();
+    	AnswerBean emiQAComboItem = (AnswerBean)currentToolSession.getAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
+        
+        ItemTextIfc itemText=null;
+        Iterator itemTextIter = itemData.getItemTextSet().iterator();
+        while (itemTextIter.hasNext()) {
+        	itemText = (ItemTextIfc)itemTextIter.next();
+        	if (itemText.getSequence().equals(emiQAComboItem.getSequence())) {
+        		break;
+        	}
+        }
+        
+    // list returns contains modified list of attachments, i.e. new 
+    // and old attachments. This list will be 
+    // persisted to DB if user hit Save on the Item Modifying page.
+    List list = prepareEmiItemAttachment(itemText, isEditPendingAssessmentFlow);
+    emiQAComboItem.setAttachmentList(list);
+  }
+
+  
+    //gopalrc - Aug 2010 - For EMI Item Attachments
+    private List prepareEmiAttachmentReferenceList(List attachmentList){
+        List list = new ArrayList();
+        if (attachmentList == null){
+          return list;
+        }
+        for (int i=0; i<attachmentList.size(); i++){
+          ContentResource cr = null;
+          AttachmentIfc attach = (AttachmentIfc) attachmentList.get(i);
+          try{
+            log.debug("*** resourceId="+attach.getResourceId());
+            cr = AssessmentService.getContentHostingService().getResource(attach.getResourceId());
+          }
+          catch (PermissionException e) {
+        	  log.warn("ContentHostingService.getResource() throws PermissionException="+e.getMessage());
+          }
+          catch (IdUnusedException e) {
+        	  log.warn("ContentHostingService.getResource() throws IdUnusedException="+e.getMessage());
+              // <-- bad sign, some left over association of question and resource, 
+              // use case: user remove resource in file picker, then exit modification without
+              // proper cancellation by clicking at the left nav instead of "cancel".
+              // Also in this use case, any added resource would be left orphan.
+              AssessmentService assessmentService = new AssessmentService();
+              assessmentService.removeItemTextAttachment(attach.getAttachmentId().toString());
+          }
+          catch (TypeException e) {
+        	  log.warn("ContentHostingService.getResource() throws TypeException="+e.getMessage());
+          }
+          if (cr!=null){
+        	Reference ref = EntityManager.newReference(cr.getReference());
+            log.debug("*** ref="+ref);
+            if (ref !=null ) list.add(ref);
+          }
+        }
+        return list;
+      }
+
+    //gopalrc - Aug 2010 - For EMI Item Attachments
+      private List prepareEmiItemAttachment(ItemTextIfc itemText, boolean isEditPendingAssessmentFlow){
+        ToolSession session = SessionManager.getCurrentToolSession();
+        if (session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
+
+          Set attachmentSet = new HashSet();
+          if (itemText != null){
+            attachmentSet = itemText.getItemTextAttachmentSet();
+          }
+          HashMap map = getResourceIdHash(attachmentSet);
+          ArrayList newAttachmentList = new ArrayList();
+          
+          AssessmentService assessmentService = new AssessmentService();
+          String protocol = ContextUtil.getProtocol();
+
+          List refs = (List)session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
+          if (refs!=null && refs.size() > 0){
+            Reference ref;
+
+            for(int i=0; i<refs.size(); i++) {
+              ref = (Reference) refs.get(i);
+              String resourceId = ref.getId();
+              if (map.get(resourceId) == null){
+                // new attachment, add 
+                log.debug("**** ref.Id="+ref.getId());
+                log.debug("**** ref.name="+ref.getProperties().getProperty(
+                           ref.getProperties().getNamePropDisplayName()));
+                ItemTextAttachmentIfc newAttach = assessmentService.createItemTextAttachment(
+                                              itemText,
+                                              ref.getId(), ref.getProperties().getProperty(
+                                                           ref.getProperties().getNamePropDisplayName()),
+                                            protocol, isEditPendingAssessmentFlow);
+                newAttachmentList.add(newAttach);
+              }
+              else{ 
+                // attachment already exist, let's add it to new list and
+    	    // check it off from map
+                newAttachmentList.add((ItemAttachmentIfc)map.get(resourceId));
+                map.remove(resourceId);
+              }
+            }
+          }
+
+          session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
+          session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
+          return newAttachmentList;
+        }
+        else if (itemText == null) {
+        	return new ArrayList();
+        }
+        else return itemText.getItemTextAttachmentList();
+      }
+
+
+  
 }

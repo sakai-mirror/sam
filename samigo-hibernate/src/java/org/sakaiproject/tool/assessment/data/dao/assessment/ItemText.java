@@ -25,9 +25,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 
@@ -46,6 +48,10 @@ public class ItemText
   //gopalrc - added 27 Nov 2009
   private ArrayList emiAnswerOptions;
   private ArrayList emiQuestionAnswerCombinations;
+  
+  //gopalrc - added Aug 2010
+  private Set itemTextAttachmentSet;
+
   
   public ItemText() {}
 
@@ -204,4 +210,29 @@ public class ItemText
 	  }
   }
 
+  
+    //gopalrc - added Aug 2010
+	public Set getItemTextAttachmentSet() {
+		return itemTextAttachmentSet;
+	}
+
+    //gopalrc - added Aug 2010
+	public void setItemTextAttachmentSet(Set itemTextAttachmentSet) {
+		this.itemTextAttachmentSet = itemTextAttachmentSet;
+	}
+
+    //gopalrc - added Aug 2010
+	public List getItemTextAttachmentList() {
+		ArrayList list = new ArrayList();
+		if (itemTextAttachmentSet != null) {
+			Iterator iter = itemTextAttachmentSet.iterator();
+			while (iter.hasNext()) {
+				ItemTextAttachmentIfc a = (ItemTextAttachmentIfc) iter.next();
+				list.add(a);
+			}
+		}
+		return list;
+	}
+  
+  
 }

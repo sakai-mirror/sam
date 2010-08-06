@@ -37,6 +37,8 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentBaseIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.osid.shared.impl.IdImpl;
@@ -181,6 +183,14 @@ public interface AssessmentFacadeQueriesAPI {
 
 	public void removeItemAttachment(Long itemAttachmentId);
 
+	//gopalrc - Aug 2010
+	public ItemTextAttachmentIfc createItemTextAttachment(ItemTextIfc itemText,
+			String resourceId, String filename, String protocolboolean, boolean isEditPendingAssessmentFlow);
+
+	//gopalrc - Aug 2010
+	public void removeItemTextAttachment(Long itemTextAttachmentId);
+
+	
 	public void updateAssessmentLastModifiedInfo(
 			AssessmentFacade assessment);
 

@@ -235,17 +235,18 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 		this.requiredOptionsCount = requiredOptionsCount;
 	}
 	
-	//gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
-	//ATTACHMENTS CODE BELOW
+ 	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
 	  public List getAttachmentList() {
 	    return attachmentList;
 	  }
 
+ 	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
 	  public void setAttachmentList(List attachmentList)
 	  {
 	    this.attachmentList = attachmentList;
 	  }
 
+ 	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
 	  public boolean getHasAttachment(){
 	    if (attachmentList != null && attachmentList.size() >0)
 	      return true;
@@ -253,15 +254,25 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	      return false;    
 	  }
 	  
+ 	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
 	  public String addAttachmentsRedirect() {
   	      ItemAuthorBean itemAuthorBean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 	      ToolSession currentToolSession = SessionManager.getCurrentToolSession();
-	      currentToolSession.setAttribute(ItemTextAttachmentIfc.EMI_ITEM_SEQUENCE, this.getSequence());
-		  String outcome = itemAuthorBean.addAttachmentsRedirect();
-		  currentToolSession.removeAttribute(ItemTextAttachmentIfc.EMI_ITEM_SEQUENCE);
+	      currentToolSession.setAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN, this);
+		  String outcome = itemAuthorBean.addAttachmentsForEMIItemsRedirect();
+		  currentToolSession.removeAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
 		  return outcome;
 	  }
 
+ 	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
+	  private HashMap resourceHash = new HashMap();
+	  public HashMap getResourceHash() {
+	      return resourceHash;
+	  }
+	  public void setResourceHash(HashMap resourceHash)
+	  {
+	      this.resourceHash = resourceHash;
+	  }
 	
 	
 }

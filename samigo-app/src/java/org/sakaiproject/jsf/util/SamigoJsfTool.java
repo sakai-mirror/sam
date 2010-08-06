@@ -42,10 +42,12 @@ import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.Web;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
+import org.sakaiproject.tool.assessment.ui.bean.author.AnswerBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentSettingsBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentBean;
 import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
@@ -243,7 +245,15 @@ import org.sakaiproject.tool.assessment.ui.bean.util.EmailBean;
 	  && ("true").equals(toolSession.getAttribute("SENT_TO_FILEPICKER_HELPER"))){
 	 ItemAuthorBean bean = (ItemAuthorBean) ContextUtil.lookupBeanFromExternalServlet(
                                "itemauthor", req, res);
-         bean.setItemAttachment();
+
+	 	 //gopalrc - Aug 2010 - For EMI Item Attachments	
+	     AnswerBean emiQAComboItem = (AnswerBean)toolSession.getAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
+	     if (emiQAComboItem == null) {
+	    	 bean.setItemAttachment();
+	     }
+	     else {
+	    	 bean.setEmiItemAttachment();
+	     }
          toolSession.removeAttribute("SENT_TO_FILEPICKER_HELPER");
       }
 

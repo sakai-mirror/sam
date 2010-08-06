@@ -20,6 +20,7 @@
  **********************************************************************************/
 
 package org.sakaiproject.tool.assessment.data.dao.assessment;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 
@@ -45,7 +46,10 @@ public class PublishedItemText
   private ArrayList emiAnswerOptions;
   private ArrayList emiQuestionAnswerCombinations;
   
+  //gopalrc - added Aug 2010
+  private Set itemTextAttachmentSet;
 
+  
   public PublishedItemText() {}
 
   public PublishedItemText(PublishedItemData item, Long sequence, String text, Set answerSet) {
@@ -198,5 +202,27 @@ public class PublishedItemText
 	  }
   }
   
+  //gopalrc - added Aug 2010
+	public Set getItemTextAttachmentSet() {
+		return itemTextAttachmentSet;
+	}
+
+  //gopalrc - added Aug 2010
+	public void setItemTextAttachmentSet(Set itemTextAttachmentSet) {
+		this.itemTextAttachmentSet = itemTextAttachmentSet;
+	}
+
+  //gopalrc - added Aug 2010
+	public List getItemTextAttachmentList() {
+		ArrayList list = new ArrayList();
+		if (itemTextAttachmentSet != null) {
+			Iterator iter = itemTextAttachmentSet.iterator();
+			while (iter.hasNext()) {
+				ItemTextAttachmentIfc a = (ItemTextAttachmentIfc) iter.next();
+				list.add(a);
+			}
+		}
+		return list;
+	}
 
 }

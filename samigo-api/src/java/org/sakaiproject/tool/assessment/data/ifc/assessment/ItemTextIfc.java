@@ -24,6 +24,7 @@
 package org.sakaiproject.tool.assessment.data.ifc.assessment;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public interface ItemTextIfc
@@ -64,6 +65,13 @@ public interface ItemTextIfc
   ArrayList getAnswerArray();
 
   ArrayList getAnswerArraySorted();
+  
+  Set getItemTextAttachmentSet();
+
+  void setItemTextAttachmentSet(Set itemTextAttachmentSet);
+
+  List getItemTextAttachmentList();
+
   
   //gopalrc - added 26 Nov 2009
   //TODO - For elegance these methods should probably be moved up to [Published]ItemData

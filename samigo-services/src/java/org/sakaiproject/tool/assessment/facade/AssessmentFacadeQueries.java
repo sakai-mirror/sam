@@ -59,7 +59,9 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.ItemData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemMetaData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemText;
+import org.sakaiproject.tool.assessment.data.dao.assessment.ItemTextAttachment;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemAttachment;
+import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemTextAttachment;
 import org.sakaiproject.tool.assessment.data.dao.assessment.SectionAttachment;
 import org.sakaiproject.tool.assessment.data.dao.assessment.SectionData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.SectionMetaData;
@@ -75,6 +77,8 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.facade.util.PagingUtilQueriesAPI;
@@ -1489,6 +1493,31 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			}
 		}
 	}
+
+	public void removeItemTextAttachment(Long itemTextAttachmentId) {
+		ItemTextAttachment itemTextAttachment = (ItemTextAttachment) getHibernateTemplate()
+				.load(ItemTextAttachment.class, itemTextAttachmentId);
+		ItemTextIfc itemText = itemTextAttachment.getItemText();
+		// String resourceId = itemAttachment.getResourceId();
+		int retryCount = PersistenceService.getInstance().getRetryCount()
+				.intValue();
+		while (retryCount > 0) {
+			try {
+				if (itemText != null) { // need to dissociate with item before
+					// deleting in Hibernate 3
+					Set set = itemText.getItemTextAttachmentSet();
+					set.remove(itemTextAttachment);
+					getHibernateTemplate().delete(itemTextAttachment);
+					retryCount = 0;
+				}
+			} catch (Exception e) {
+				log.warn("problem delete itemAttachment: " + e.getMessage());
+				retryCount = PersistenceService.getInstance().retryDeadlock(e,
+						retryCount);
+			}
+		}
+	}
+	
 	
 	public void updateAssessmentLastModifiedInfo(
 			AssessmentFacade assessment) {
@@ -1561,6 +1590,59 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		return attach;
 	}
 
+	//gopalrc - Aug 2010
+	public ItemTextAttachmentIfc createItemTextAttachment(ItemTextIfc itemText,
+			String resourceId, String filename, String protocol, boolean isEditPendingAssessmentFlow) {
+		ItemTextAttachmentIfc attach = null;
+		Boolean isLink = Boolean.FALSE;
+		try {
+			ContentResource cr = AssessmentService.getContentHostingService().getResource(resourceId);
+			if (cr != null) {
+				ResourceProperties p = cr.getProperties();
+				if (isEditPendingAssessmentFlow) {
+					attach = new ItemTextAttachment();
+				}
+				else {
+					attach = new PublishedItemTextAttachment();
+				}
+				attach.setItemText(itemText);
+				attach.setResourceId(resourceId);
+				attach.setMimeType(cr.getContentType());
+				// we want to display kb, so divide by 1000 and round the result
+				attach.setFileSize(fileSizeInKB(cr.getContentLength()));
+				if (cr.getContentType().lastIndexOf("url") > -1) {
+					isLink = Boolean.TRUE;
+					if (!filename.toLowerCase().startsWith("http")) {
+						String adjustedFilename = "http://" + filename;
+						attach.setFilename(adjustedFilename);
+					} else {
+						attach.setFilename(filename);
+					}
+				} else {
+					attach.setFilename(filename);
+				}
+				attach.setIsLink(isLink);
+				attach.setStatus(ItemAttachmentIfc.ACTIVE_STATUS);
+				attach.setCreatedBy(p.getProperty(p.getNamePropCreator()));
+				attach.setCreatedDate(new Date());
+				attach.setLastModifiedBy(p.getProperty(p
+						.getNamePropModifiedBy()));
+				attach.setLastModifiedDate(new Date());
+				attach.setLocation(getRelativePath(cr.getUrl(), protocol));
+				// getHibernateTemplate().save(attach);
+			}
+		} catch (PermissionException pe) {
+			pe.printStackTrace();
+		} catch (IdUnusedException ie) {
+			ie.printStackTrace();
+		} catch (TypeException te) {
+			te.printStackTrace();
+		}
+		return attach;
+	}
+
+	
+	
 	public SectionAttachmentIfc createSectionAttachment(SectionDataIfc section,
 			String resourceId, String filename, String protocol) {
 		SectionAttachment attach = null;
