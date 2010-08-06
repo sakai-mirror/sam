@@ -133,12 +133,14 @@ $Id$
      </h:selectOneMenu>
     </h:panelGroup>
 
+       <!-- XXX Jaques: Remove this
     <h:panelGroup rendered="#{histogramScores.randomType =='true'}">
     <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
       </h:panelGroup>
-
-
-    <h:panelGroup rendered="#{histogramScores.randomType =='false'}">
+       -->
+<!-- XXX Jaques: Add a parts drop down.
+<!-- XXX Jaques: Removed  rendered="#{histogramScores.randomType =='false'}" -->
+    <h:panelGroup>
  <f:verbatim><h4></f:verbatim>
   <h:outputText value="#{evaluationMessages.tot}" />
    <f:verbatim></h4><div class="tier2"></f:verbatim>
@@ -203,6 +205,7 @@ $Id$
 
   <h:dataTable value="#{histogramScores.info}" var="item">
 
+      <!-- XXX Jaques Remove -->
 <!-- need to add a randomtype property for histogramQuestionScoreBean (item) and if it's true, hide histogram  -->
 <%--
     <h:column rendered="#{histogramScores.randomType =='true'}">
@@ -211,7 +214,8 @@ $Id$
 --%>
 
 
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+<!-- XXX Jaques: Removed  rendered="#{histogramScores.randomType =='false'}" -->
+    <h:column>
       <h:panelGroup>
         <f:verbatim><h4></f:verbatim>
           <h:outputText value="#{item.title}" escape="false" />
