@@ -716,6 +716,16 @@ public class PublishedItemData
   }
   
   
+  public Boolean getPartialCreditFlag() {
+	  if (partialCreditFlag == null) {
+		  return Boolean.FALSE;
+	  }
+	  return partialCreditFlag;
+  }
+
+  public void setPartialCreditFlag(Boolean partialCreditFlag) {
+	  this.partialCreditFlag = partialCreditFlag;
+  }
   
 
   //gopalrc - added 30 Nov 2009
@@ -813,15 +823,55 @@ public class PublishedItemData
 		return false;
 	}
 	
-
-  public Boolean getPartialCreditFlag() {
-	  if (partialCreditFlag == null) {
-		  return Boolean.FALSE;
+	  //gopalrc - Aug 2010
+	  //TODO - For elegance this should probably be moved up to [Published]ItemData
+	  // as it applies only to the first (seq=0) ItemText
+	  public ArrayList getEmiAnswerOptions() {
+		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
+		  ItemTextIfc itemText = null;  
+		  Iterator itemTextIter = itemTextSet.iterator();
+		  while (itemTextIter.hasNext()) {
+			  itemText = (ItemTextIfc) itemTextIter.next();
+			  if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
+				  //TODO - move entire function up here to [Published]ItemData
+				  return itemText.getEmiAnswerOptions();
+			  }
+		  }
+		  return null;
 	  }
-	  return partialCreditFlag;
-  }
+	  
 
-  public void setPartialCreditFlag(Boolean partialCreditFlag) {
-	  this.partialCreditFlag = partialCreditFlag;
-  }
+	  
+	  //gopalrc - Aug 2010
+	  //TODO - For elegance this should probably be moved up to [Published]ItemData
+	  // as it applies only to the first (seq=0) ItemText
+	  public ArrayList getEmiQuestionAnswerCombinations() {
+		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
+		  ItemTextIfc itemText = null;  
+		  Iterator itemTextIter = itemTextSet.iterator();
+		  while (itemTextIter.hasNext()) {
+			  itemText = (ItemTextIfc) itemTextIter.next();
+			  if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
+				  //TODO - move entire function up here to [Published]ItemData
+				  return itemText.getEmiQuestionAnswerCombinations();
+			  }
+		  }
+		  return null;
+	  }
+	  
+	  //gopalrc - Aug 2010
+	  public ItemTextIfc getItemTextBySequence(Long itemTextSequence) {
+		  ItemTextIfc itemText = null;  
+		  Iterator itemTextIter = itemTextSet.iterator();
+		  while (itemTextIter.hasNext()) {
+			  itemText = (ItemTextIfc) itemTextIter.next();
+			  if (itemText.getSequence().equals(itemTextSequence)) {
+				  //TODO - move entire function up here to [Published]ItemData
+				  return itemText;
+			  }
+		  }
+		  return null;
+	  }
+	  
+
 }

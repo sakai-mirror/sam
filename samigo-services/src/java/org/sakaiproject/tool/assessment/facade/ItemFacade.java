@@ -1179,4 +1179,36 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 	  }
 	  return this.data.getPartialCreditFlag();
   }
+  
+  
+  //gopalrc - Aug 2010
+	public ArrayList getEmiAnswerOptions() {
+		try {
+			this.data = (ItemDataIfc) item.getData();
+		} catch (AssessmentException ex) {
+			throw new DataFacadeException(ex.getMessage());
+		}
+		return this.data.getEmiAnswerOptions();
+	}
+
+  //gopalrc - Aug 2010
+	public ArrayList getEmiQuestionAnswerCombinations() {
+		try {
+			this.data = (ItemDataIfc) item.getData();
+		} catch (AssessmentException ex) {
+			throw new DataFacadeException(ex.getMessage());
+		}
+		return this.data.getEmiQuestionAnswerCombinations();
+	}
+
+	// gopalrc - Aug 2010
+	public ItemTextIfc getItemTextBySequence(Long itemTextSequence) {
+		try {
+			this.data = (ItemDataIfc) item.getData();
+		} catch (AssessmentException ex) {
+			throw new DataFacadeException(ex.getMessage());
+		}
+		return this.data.getItemTextBySequence(itemTextSequence);
+	}
+	
 }

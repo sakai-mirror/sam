@@ -810,16 +810,17 @@ public ItemData() {}
 	  return partialCreditFlag;
   }
 
+  public void setPartialCreditFlag(Boolean particalCreditFlag) {
+	  this.partialCreditFlag = particalCreditFlag;	
+  }
+
+  
   //gopalrc - added 30 Nov 2009
   public String getLeadInText() {
 	if (leadInText == null) {
 		setThemeAndLeadInText();
 	}
 	return leadInText;
-  }
-
-  public void setPartialCreditFlag(Boolean particalCreditFlag) {
-	  this.partialCreditFlag = particalCreditFlag;	
   }
 
 
@@ -924,5 +925,47 @@ public ItemData() {}
 	}
 
 	
+
+	  //gopalrc - Aug 2010
+	  //TODO - For elegance this should probably be moved up to [Published]ItemData
+	  // as it applies only to the first (seq=0) ItemText
+	  public ArrayList getEmiAnswerOptions() {
+		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
+		  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE);  
+		  if (itemText != null) {
+			  //TODO - move entire function up here to [Published]ItemData
+			  return itemText.getEmiAnswerOptions();
+		  }
+		  return null;
+	  }
+	  
+
+	  
+	  //gopalrc - Aug 2010
+	  //TODO - For elegance this should probably be moved up to [Published]ItemData
+	  // as it applies only to the first (seq=0) ItemText
+	  public ArrayList getEmiQuestionAnswerCombinations() {
+		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
+		  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE);  
+		  if (itemText != null) {
+			  //TODO - move entire function up here to [Published]ItemData
+			  return itemText.getEmiQuestionAnswerCombinations();
+		  }
+		  return null;
+	  }
+	
+	  //gopalrc - Aug 2010
+	  public ItemTextIfc getItemTextBySequence(Long itemTextSequence) {
+		  ItemTextIfc itemText = null;  
+		  Iterator itemTextIter = itemTextSet.iterator();
+		  while (itemTextIter.hasNext()) {
+			  itemText = (ItemTextIfc) itemTextIter.next();
+			  if (itemText.getSequence().equals(itemTextSequence)) {
+				  //TODO - move entire function up here to [Published]ItemData
+				  return itemText;
+			  }
+		  }
+		  return null;
+	  }
 	
 }

@@ -186,5 +186,12 @@ public interface ItemDataIfc extends java.io.Serializable {
   public String getEmiAnswerOptionLabels();
   public boolean isValidEmiAnswerOptionLabel(String label);
 
+  //gopalrc - Aug 2010
+  public ArrayList getEmiAnswerOptions();
+  public ArrayList getEmiQuestionAnswerCombinations();
+
+  //gopalrc - Aug 2010
+  public ItemTextIfc getItemTextBySequence(Long itemTextSequence);
+
   
 }

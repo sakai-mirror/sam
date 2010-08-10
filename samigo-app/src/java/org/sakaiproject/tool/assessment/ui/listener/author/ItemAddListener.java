@@ -54,6 +54,7 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemFeedbackIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.ItemFacade;
@@ -663,6 +664,20 @@ public class ItemAddListener
        // added by daisyf, 10/10/06
        updateAttachment(item.getItemAttachmentList(), itemauthor.getAttachmentList(),
                         (ItemDataIfc)item.getData(), true);
+
+       // gopalrc - Aug 2010
+	  	if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+	  		Iterator emiItemIter = itemauthor.getCurrentItem().getEmiQuestionAnswerCombinations().iterator();
+	  		while (emiItemIter.hasNext()) {
+	  		   AnswerBean answerBean = (AnswerBean)emiItemIter.next();
+	  		   ItemTextIfc itemText = item.getItemTextBySequence(answerBean.getSequence());
+	  	       updateItemTextAttachment(itemText.getItemTextAttachmentList(), answerBean.getAttachmentList(),
+	  	    		 itemText, true);
+	  		}
+	  	}
+
+       
+       
        item = delegate.getItem(item.getItemId().toString());
 
 
@@ -786,6 +801,19 @@ public class ItemAddListener
           // added by daisyf, 10/10/06
           updateAttachment(item.getItemAttachmentList(), itemauthor.getAttachmentList(),
                            (ItemDataIfc)item.getData(), isEditPendingAssessmentFlow);
+          
+          // gopalrc - Aug 2010
+  	  	if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+  	  		Iterator emiItemIter = itemauthor.getCurrentItem().getEmiQuestionAnswerCombinations().iterator();
+  	  		while (emiItemIter.hasNext()) {
+  	  		   AnswerBean answerBean = (AnswerBean)emiItemIter.next();
+  	  		   ItemTextIfc itemText = item.getItemTextBySequence(answerBean.getSequence());
+  	  	       updateItemTextAttachment(itemText.getItemTextAttachmentList(), answerBean.getAttachmentList(),
+  	  	    		 itemText, isEditPendingAssessmentFlow);
+  	  		}
+  	  	}
+
+          
           item = delegate.getItem(item.getItemId().toString());
 
         }
@@ -2272,6 +2300,43 @@ Object[] fibanswers = getFIBanswers(entiretext).toArray();
     }
   }
 
+  //gopalrc - Aug 2010
+  private void updateItemTextAttachment(List oldList, List newList, ItemTextIfc itemText, boolean pendingOrPool){
+	    if ((oldList == null || oldList.size() == 0 ) && (newList == null || newList.size() == 0)) return;
+	    List list = new ArrayList();
+	    HashMap map = getAttachmentIdHash(oldList);
+	    for (int i=0; i<newList.size(); i++){
+	      ItemTextAttachmentIfc a = (ItemTextAttachmentIfc)newList.get(i);
+	      if (map.get(a.getAttachmentId())!=null){
+	        // exist already, remove it from map
+	        map.remove(a.getAttachmentId());
+	      }
+	      else{
+	        // new attachments
+	        a.setItemText(itemText);
+	        list.add(a);
+	      }
+	    }      
+	    // save new ones
+	    AssessmentService service;
+	    if (pendingOrPool) {
+	    	service = new AssessmentService();
+	    }
+	    else {
+	    	service = new PublishedAssessmentService();
+	    }
+	    service.saveOrUpdateAttachments(list);
+
+	    // remove old ones
+	    Set set = map.keySet();
+	    Iterator iter = set.iterator();
+	    while (iter.hasNext()){
+	      Long attachmentId = (Long)iter.next();
+	      service.removeItemAttachment(attachmentId.toString());
+	    }
+  }
+  
+  
   private HashMap getAttachmentIdHash(List list){
     HashMap map = new HashMap();
     for (int i=0; i<list.size(); i++){

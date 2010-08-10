@@ -56,7 +56,7 @@ private ItemTextIfc itemText;
                    Long fileSize, String description, String location,
                    Boolean isLink, Integer status, String createdBy, Date createdDate,
                    String lastModifiedBy, Date lastModifiedDate){
-    super(attachmentId, resourceId, ItemTextAttachmentIfc.ITEM_ATTACHMENT,
+    super(attachmentId, resourceId, ItemTextAttachmentIfc.ITEM_TEXT_ATTACHMENT,
           filename, mimeType,
           fileSize, description, location, isLink, status,
           createdBy, createdDate, lastModifiedBy, lastModifiedDate);

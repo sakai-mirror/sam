@@ -40,6 +40,7 @@ import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.PublishedItemService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
@@ -81,12 +82,12 @@ public class ResetItemAttachmentListener
 
 	//gopalrc - Aug 2010
     ToolSession currentToolSession = SessionManager.getCurrentToolSession();
-    AnswerBean answerBean = (AnswerBean)currentToolSession.getAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
+    Object aBean = currentToolSession.getAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
 
 	
     ItemAuthorBean itemauthorBean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
     String itemId = itemauthorBean.getItemId();
-	if (answerBean == null) {
+	if (aBean == null) {
 	    if (itemId !=null && !("").equals(itemId)){
 	      ItemDataIfc item = itemService.getItem(itemId);
 	      log.debug("*** item attachment="+item.getItemAttachmentList());
@@ -98,13 +99,16 @@ public class ResetItemAttachmentListener
 	}
 	//gopalrc - Aug 2010 - To Complete 
 	else {
+	    AnswerBean answerBean = (AnswerBean)aBean;
+	    Long sequence = answerBean.getSequence();
 	    if (itemId !=null && !("").equals(itemId)){
 	      ItemDataIfc item = itemService.getItem(itemId);
-	      log.debug("*** item attachment="+item.getItemAttachmentList());
-	      resetItemAttachment(itemauthorBean.getResourceHash(), item.getItemAttachmentList(), assessmentService);
+	      ItemTextIfc itemText = item.getItemTextBySequence(sequence);
+	      //log.debug("*** item attachment="+item.getItemAttachmentList());
+	      resetItemTextAttachment(answerBean.getResourceHash(), itemText.getItemTextAttachmentList(), assessmentService);
 	    }
 	    else{
-	      resetItemAttachment(itemauthorBean.getResourceHash(), new ArrayList(), assessmentService);
+	      resetItemTextAttachment(answerBean.getResourceHash(), new ArrayList(), assessmentService);
 	    }
 		
 	}
