@@ -1468,10 +1468,10 @@ public class DeliveryActionListener
       ItemTextIfc text = (ItemTextIfc) itemTextIter.next();
       
       
-      //Don't use the first ItemText (seq = 0)
-      //This is contains the question components
- 	  if (text.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || text.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) continue;
-      
+      //Don't use the non-question item ItemTexts
+      //i.e. ones which do not contain actual question-answer combos
+ 	  if (!text.isEmiQuestionItemText()) continue;
+
       
       MatchingBean mbean = new MatchingBean();
       newAnswers = new ArrayList();

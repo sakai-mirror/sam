@@ -1536,19 +1536,22 @@ public class ItemBean
     /**
      * gopalrc - added 23 Nov 2009
      */
+	/*
     public String getAdditionalEmiAnswerOptions()
     {
       return additionalEmiAnswerOptions;
     }
-
+    */
+	
     /**
      * gopalrc - added 23 Nov 2009
      */
+	/*
     public void setAdditionalEmiAnswerOptions(String size)
     {
       this.additionalEmiAnswerOptions= size;
     }
-
+    */
     
 /*    
     public String addEmiAnswerOptionsAction() {
@@ -1583,7 +1586,7 @@ public class ItemBean
     }
 */
     
-    public String populateEmiAnswerOptionsAction() {
+    public String populateEmiAnswerOptionsFromPastedAction() {
     	String pasted = getEmiAnswerOptionsPaste();
     	if (pasted == null || pasted.trim().equals("")) return "emiItem";
     	
@@ -1695,18 +1698,22 @@ public class ItemBean
     /**
      * gopalrc - added 23 Nov 2009
      */
+    /*
     public String getAdditionalEmiQuestionAnswerCombinations()
     {
       return additionalEmiQuestionAnswerCombinations;
     }
+    */
 
     /**
      * gopalrc - added 23 Nov 2009
      */
+    /*
     public void setAdditionalEmiQuestionAnswerCombinations(String size)
     {
       this.additionalEmiQuestionAnswerCombinations= size;
     }
+    */
 
     
     /**

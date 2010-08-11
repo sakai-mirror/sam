@@ -667,7 +667,7 @@ public class ItemAddListener
 
        // gopalrc - Aug 2010
 	  	if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-	  		Iterator emiItemIter = itemauthor.getCurrentItem().getEmiQuestionAnswerCombinations().iterator();
+	  		Iterator emiItemIter = itemauthor.getCurrentItem().getEmiQuestionAnswerCombinationsClean().iterator();
 	  		while (emiItemIter.hasNext()) {
 	  		   AnswerBean answerBean = (AnswerBean)emiItemIter.next();
 	  		   ItemTextIfc itemText = item.getItemTextBySequence(answerBean.getSequence());
@@ -804,7 +804,7 @@ public class ItemAddListener
           
           // gopalrc - Aug 2010
   	  	if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-  	  		Iterator emiItemIter = itemauthor.getCurrentItem().getEmiQuestionAnswerCombinations().iterator();
+  	  		Iterator emiItemIter = itemauthor.getCurrentItem().getEmiQuestionAnswerCombinationsClean().iterator();
   	  		while (emiItemIter.hasNext()) {
   	  		   AnswerBean answerBean = (AnswerBean)emiItemIter.next();
   	  		   ItemTextIfc itemText = item.getItemTextBySequence(answerBean.getSequence());
@@ -960,13 +960,18 @@ public class ItemAddListener
 		text1.setItem(item.getData());
 		text1.setSequence(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE);
 		text1.setText(bean.getItemText());
-		//text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
 
+		ItemText textTheme = new ItemText();
+		textTheme.setItem(item.getData());
+		textTheme.setSequence(ItemTextIfc.EMI_THEME_TEXT_SEQUENCE);
+		textTheme.setText(bean.getLeadInStatement());
 		
 		ItemText textLeadIn = new ItemText();
 		textLeadIn.setItem(item.getData());
 		textLeadIn.setSequence(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE);
 		textLeadIn.setText(bean.getLeadInStatement());
+		
+		
 		
 		// ///////////////////////////////////////////////////////////
 		//
@@ -1011,6 +1016,7 @@ public class ItemAddListener
 
 		text1.setAnswerSet(answerSet1);
 		textSet.add(text1);
+		textSet.add(textTheme);
 		textSet.add(textLeadIn);
 
 		
@@ -1024,7 +1030,7 @@ public class ItemAddListener
 		int numberOfCorrectAnswers = 0;
 		float correctAnswerScore = 0;
 		
-		iter = text1.getEmiQuestionAnswerCombinations().iterator();
+		iter = item.getEmiQuestionAnswerCombinations().iterator();
 		Answer qaCombo = null;
 		while (iter.hasNext()) {
 			qaCombo = (Answer) iter.next();
@@ -1074,7 +1080,7 @@ public class ItemAddListener
 		Iterator textSetIter = textSet.iterator();
 		while (textSetIter.hasNext()) {
 			ItemText itemText = (ItemText)textSetIter.next();
-			if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || itemText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) continue;
+			if (!itemText.isEmiQuestionItemText()) continue;
 			Iterator answerSetIter = itemText.getAnswerSet().iterator();
 			Answer actualAnswer = null;
 			while (answerSetIter.hasNext()) {
@@ -1758,8 +1764,11 @@ public class ItemAddListener
 		text1.setItem(item.getData());
 		text1.setSequence(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE);
 		text1.setText(bean.getItemText());
-		//text1.setText(bean.getItemText() + ItemBean.LEAD_IN_STATEMENT_DEMARCATOR + bean.getLeadInStatement());
 
+		ItemText textTheme = new ItemText();
+		textTheme.setItem(item.getData());
+		textTheme.setSequence(ItemTextIfc.EMI_THEME_TEXT_SEQUENCE);
+		textTheme.setText(bean.getLeadInStatement());
 		
 		PublishedItemText textLeadIn = new PublishedItemText();
 		textLeadIn.setItem(item.getData());
@@ -1812,6 +1821,7 @@ public class ItemAddListener
 
 		text1.setAnswerSet(answerSet1);
 		textSet.add(text1);
+		textSet.add(textTheme);
 		textSet.add(textLeadIn);
 		
 		
@@ -1824,7 +1834,7 @@ public class ItemAddListener
 		int numberOfCorrectAnswers = 0;
 		float correctAnswerScore = 0;
 		
-		iter = text1.getEmiQuestionAnswerCombinations().iterator();
+		iter = item.getEmiQuestionAnswerCombinations().iterator();
 		PublishedAnswer qaCombo = null;
 		while (iter.hasNext()) {
 			qaCombo = (PublishedAnswer) iter.next();
@@ -1875,7 +1885,8 @@ public class ItemAddListener
 		Iterator textSetIter = textSet.iterator();
 		while (textSetIter.hasNext()) {
 			PublishedItemText itemText = (PublishedItemText)textSetIter.next();
-			if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || itemText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) continue;
+			if (!itemText.isEmiQuestionItemText()) continue;
+
 			Iterator answerSetIter = itemText.getAnswerSet().iterator();
 			PublishedAnswer actualAnswer = null;
 			while (answerSetIter.hasNext()) {

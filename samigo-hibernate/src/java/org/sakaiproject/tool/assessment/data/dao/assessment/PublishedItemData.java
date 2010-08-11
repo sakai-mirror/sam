@@ -81,6 +81,11 @@ public class PublishedItemData
   //gopalrc - All available answer options for EMI question
   private String emiAnswerOptionLabels;
   
+  //gopalrc - added 27 Nov 2009
+  private ArrayList emiAnswerOptions;
+  private ArrayList emiQuestionAnswerCombinations;
+  
+  
   public PublishedItemData() {}
 
   // this constructor should be deprecated, it is missing triesAllowed
@@ -752,7 +757,7 @@ public class PublishedItemData
 			Iterator iter = itemTextSet.iterator();
 			while (iter.hasNext()) {
 				ItemTextIfc itemText= (ItemTextIfc) iter.next();
-				if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
+				if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_SEQUENCE)) {
 					themeText = itemText.getText();
 					themeTextIsSet = true;
 				}
@@ -769,30 +774,19 @@ public class PublishedItemData
 	  }
 
   
-  //gopalrc - for EMI - the textItem contains the components 
-  // from which the actual answers are constructed 
-  public ItemTextIfc getEmiAnswerComponentsItemText() {
-	  ItemTextIfc itemText = null;
-	  Iterator iter = itemTextSet.iterator();
-	  while (iter.hasNext()) {
-		  ItemTextIfc text = (ItemTextIfc) iter.next();
-		  if (text.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
-			  itemText = text;
-			  break;
-		  }
-	  }
-	  return itemText;
-  }
-  
     
   //gopalrc - total number of correct EMI answers
 	public int getNumberOfCorrectEmiOptions() {
 		int count=0;
-		PublishedItemText firstText = (PublishedItemText) getItemTextArraySorted().get(0);
-		Iterator iter = firstText.getEmiQuestionAnswerCombinations().iterator();
-		while (iter.hasNext()) {
-			PublishedAnswer answer = (PublishedAnswer) iter.next();
-			count += answer.getNumberOfCorrectEmiOptions();
+		Iterator itemTextIter = itemTextSet.iterator();
+		while (itemTextIter.hasNext()) {
+			ItemTextIfc itemText = (ItemTextIfc)itemTextIter.next();
+			if (!itemText.isEmiQuestionItemText()) continue;
+			Iterator answerIter = itemText.getAnswerSet().iterator();
+			while (answerIter.hasNext()) {
+				AnswerIfc answer = (AnswerIfc) answerIter.next();
+				if (answer.getIsCorrect()) count++;
+			}
 		}
 		return count;
 	}
@@ -803,7 +797,7 @@ public class PublishedItemData
 		if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId())) {
 			if (emiAnswerOptionLabels == null) {
 				emiAnswerOptionLabels = "";
-				Iterator iter = getEmiAnswerComponentsItemText().getEmiAnswerOptions().iterator();
+				Iterator iter = getEmiAnswerOptions().iterator();
 				while (iter.hasNext()) {
 					PublishedAnswer answer = (PublishedAnswer) iter.next();
 					emiAnswerOptionLabels += answer.getLabel();
@@ -827,14 +821,31 @@ public class PublishedItemData
 	  //TODO - For elegance this should probably be moved up to [Published]ItemData
 	  // as it applies only to the first (seq=0) ItemText
 	  public ArrayList getEmiAnswerOptions() {
+		  if (emiAnswerOptions != null) {
+			  return emiAnswerOptions;
+		  }
 		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
 		  ItemTextIfc itemText = null;  
 		  Iterator itemTextIter = itemTextSet.iterator();
 		  while (itemTextIter.hasNext()) {
 			  itemText = (ItemTextIfc) itemTextIter.next();
-			  if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
+			  if (itemText.getSequence().equals(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE)) {
 				  //TODO - move entire function up here to [Published]ItemData
-				  return itemText.getEmiAnswerOptions();
+				  
+				    ArrayList list = itemText.getAnswerArray();
+				    emiAnswerOptions = new ArrayList();
+				    if (list == null) {
+				    	return emiAnswerOptions;
+				    }
+				    Iterator iter = list.iterator();
+				    while (iter.hasNext()) {
+				    	PublishedAnswer answer = (PublishedAnswer) iter.next();
+				    	//if (answer.getLabel() != null && answer.getLabel().matches("[A-Za-z]")) {
+				    		emiAnswerOptions.add(answer);
+				    	//}
+				    }
+				    Collections.sort(emiAnswerOptions);
+				    return emiAnswerOptions;
 			  }
 		  }
 		  return null;
@@ -845,19 +856,59 @@ public class PublishedItemData
 	  //gopalrc - Aug 2010
 	  //TODO - For elegance this should probably be moved up to [Published]ItemData
 	  // as it applies only to the first (seq=0) ItemText
+/*	  
 	  public ArrayList getEmiQuestionAnswerCombinations() {
 		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
+		  if (emiQuestionAnswerCombinations != null) {
+			  return emiQuestionAnswerCombinations;
+		  }
 		  ItemTextIfc itemText = null;  
 		  Iterator itemTextIter = itemTextSet.iterator();
 		  while (itemTextIter.hasNext()) {
 			  itemText = (ItemTextIfc) itemTextIter.next();
 			  if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
 				  //TODO - move entire function up here to [Published]ItemData
-				  return itemText.getEmiQuestionAnswerCombinations();
+				    ArrayList list = itemText.getAnswerArray();
+				    emiQuestionAnswerCombinations = new ArrayList();
+				    if (list == null) {
+				    	return emiQuestionAnswerCombinations;
+				    }
+				    Iterator iter = list.iterator();
+				    while (iter.hasNext()) {
+				    	PublishedAnswer answer = (PublishedAnswer) iter.next();
+				    	if (answer.getLabel() != null && answer.getLabel().matches("[0-9]+")) {
+				    		emiQuestionAnswerCombinations.add(answer);
+				    		ArrayList answerOptions = this.getEmiAnswerOptions();
+				    		//set of possible selection options indicating correct and incorrect options
+				    		ArrayList selections = new ArrayList();
+				    		Iterator optionsIter = answerOptions.iterator();
+				    		while (optionsIter.hasNext()) {
+				    			PublishedAnswer option = (PublishedAnswer)optionsIter.next();
+				    			PublishedAnswer selection = null;
+				    			try {
+									selection = option.clone();
+								} catch (CloneNotSupportedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								if (answer.isEmiOptionCorrect(option.getLabel())) {
+									selection.setIsCorrect(Boolean.TRUE);
+								}
+								else {
+									selection.setIsCorrect(Boolean.FALSE);
+								}
+								selections.add(selection);
+				    		}
+				    		answer.setEmiSelectionOptions(selections);
+				    	}
+				    }
+				    Collections.sort(emiQuestionAnswerCombinations);
+				    return emiQuestionAnswerCombinations;
 			  }
 		  }
 		  return null;
 	  }
+*/	
 	  
 	  //gopalrc - Aug 2010
 	  public ItemTextIfc getItemTextBySequence(Long itemTextSequence) {
@@ -866,7 +917,6 @@ public class PublishedItemData
 		  while (itemTextIter.hasNext()) {
 			  itemText = (ItemTextIfc) itemTextIter.next();
 			  if (itemText.getSequence().equals(itemTextSequence)) {
-				  //TODO - move entire function up here to [Published]ItemData
 				  return itemText;
 			  }
 		  }

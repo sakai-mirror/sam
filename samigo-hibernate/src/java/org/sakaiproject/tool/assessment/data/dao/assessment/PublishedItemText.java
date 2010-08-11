@@ -42,9 +42,6 @@ public class PublishedItemText
   private Set answerSet;
   
   
-  //gopalrc - added 27 Nov 2009
-  private ArrayList emiAnswerOptions;
-  private ArrayList emiQuestionAnswerCombinations;
   
   //gopalrc - added Aug 2010
   private Set itemTextAttachmentSet;
@@ -133,6 +130,7 @@ public class PublishedItemText
   //gopalrc - added 26 Nov 2009
   //TODO - For elegance this should probably be moved up to [Published]ItemData
   // as it applies only to the first (seq=0) ItemText
+/*  
   public ArrayList getEmiAnswerOptions() {
 	  if (emiAnswerOptions != null) {
 		  return emiAnswerOptions;
@@ -154,10 +152,12 @@ public class PublishedItemText
 	    return emiAnswerOptions;
 	  }
   }
+*/  
   
   //gopalrc - added 26 Nov 2009
   //TODO - For elegance this should probably be moved up to [Published]ItemData
   // as it applies only to the first (seq=0) ItemText
+/*  
   public ArrayList getEmiQuestionAnswerCombinations() {
 	  if (emiQuestionAnswerCombinations != null) {
 		  return emiQuestionAnswerCombinations;
@@ -201,6 +201,7 @@ public class PublishedItemText
 	    return emiQuestionAnswerCombinations;
 	  }
   }
+*/  
   
   //gopalrc - added Aug 2010
 	public Set getItemTextAttachmentSet() {
@@ -224,5 +225,14 @@ public class PublishedItemText
 		}
 		return list;
 	}
+	
+	
+	  //gopalrc - added Aug 2010
+	  //This is an actual EMI Question Item 
+	  //(i.e. not Theme or Lead In Text or the complete Answer Options list) 
+	  public boolean isEmiQuestionItemText() {
+		  return getSequence() > 0;
+	  }
+
 
 }

@@ -688,7 +688,8 @@ public class HistogramListener
     	for (int i=0; i<text.size(); i++) { 
     	    ItemTextIfc iText = (ItemTextIfc) publishedItemTextHash.get(((ItemTextIfc) text.toArray()[i]).getId());
     		// all except for the EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE (seq=0) and EMI_LEAD_IN_TEXT_SEQUENCE (seq=-1)itemTexts
-    	    if (!(iText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || iText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE))) {
+    	    //if (!(iText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || iText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE))) {
+        	if (iText.isEmiQuestionItemText()) {
     	    	answers.addAll(iText.getAnswerArraySorted());
     	    }
     	}

@@ -181,14 +181,14 @@ public interface ItemDataIfc extends java.io.Serializable {
   //gopalrc - added 1 Dec 2009
   String getLeadInText();
   String getThemeText();
-  public ItemTextIfc getEmiAnswerComponentsItemText();
+  //public ItemTextIfc getEmiAnswerComponentsItemText();
   public int getNumberOfCorrectEmiOptions();
   public String getEmiAnswerOptionLabels();
   public boolean isValidEmiAnswerOptionLabel(String label);
 
   //gopalrc - Aug 2010
   public ArrayList getEmiAnswerOptions();
-  public ArrayList getEmiQuestionAnswerCombinations();
+  //public ArrayList getEmiQuestionAnswerCombinations();
 
   //gopalrc - Aug 2010
   public ItemTextIfc getItemTextBySequence(Long itemTextSequence);

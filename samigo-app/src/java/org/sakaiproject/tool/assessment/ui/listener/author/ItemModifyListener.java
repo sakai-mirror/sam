@@ -198,6 +198,7 @@ public class ItemModifyListener implements ActionListener
       List attachmentList = itemfacade.getData().getItemAttachmentList(); 
       itemauthorbean.setAttachmentList(attachmentList);
       itemauthorbean.setResourceHash(null);
+      
 
       int itype=0; // default to true/false
       if (itemauthorbean.getItemType()!=null) {
@@ -294,26 +295,107 @@ public class ItemModifyListener implements ActionListener
   private void populateItemText(ItemAuthorBean itemauthorbean, ItemFacade itemfacade, ItemBean bean)  {
 	  Set itemtextSet = itemfacade.getItemTextSet();
 	  Iterator iter = itemtextSet.iterator();
+
+	  //gopalrc - Aug 2010 - for EMI
+	  ArrayList qaComboList = new ArrayList();
+
 	  while (iter.hasNext()){
 		  ItemTextIfc  itemText = (ItemTextIfc) iter.next();
 		  
 		  //gopalrc - 18 Dec 2009
-		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-			  if (itemText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) {
-				  bean.setLeadInStatement(itemText.getText());
-			  }
+//		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
 			  //for EMI only want ItemText with sequence = 0
-			  if (!itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
-				  continue;
-			  }
-		  }
+//			  if (!itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
+//				  continue;
+//			  }
+//		  }
 		  
-		  bean.setItemText(itemText.getText());
 		  
 		  /////////////////////////////////////////////////////////////
 		  // Get current Answers choices
 		  /////////////////////////////////////////////////////////////
+		  //gopalrc - added 26 November 2009
+		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+			  if (itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_SEQUENCE)) {
+				  bean.setItemText(itemText.getText());
+				  continue;
+			  }
+			  else if (itemText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE)) {
+				  bean.setLeadInStatement(itemText.getText());
+				  continue;
+			  }
+			  else if (itemText.getSequence().equals(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE)) {
+				  ArrayList answerOptionsList = new ArrayList();
+				  Set answerobjlist = itemText.getAnswerSet();
+				  Iterator ansIter = answerobjlist.iterator();
+				  while(ansIter.hasNext())
+				  {
+					  AnswerIfc answerobj = (AnswerIfc) ansIter.next();
+					  AnswerBean answerbean = new AnswerBean();
+					  answerbean.setText(answerobj.getText());
+					  answerbean.setSequence(answerobj.getSequence());
+					  answerbean.setLabel(answerobj.getLabel());
+					  answerOptionsList.add(answerbean);
+				  }
+				  Collections.sort(answerOptionsList);
+				  bean.setEmiAnswerOptions(answerOptionsList);
+				  continue;
+			  }
+			  
+			  
+			  else {
+				  AnswerBean answerbean = new AnswerBean();
+				  answerbean.setText(itemText.getText());
+				  answerbean.setSequence(itemText.getSequence());
+				  answerbean.setLabel(itemText.getSequence().toString());
+				  
+				  Set answerobjlist = itemText.getAnswerSet();
+				  String afeedback =  "" ;
+				  Iterator ansIter = answerobjlist.iterator();
+				  //need to check sequence no, since this answerSet returns answers in random order
+				  int count = answerobjlist.size();
+				  AnswerIfc[] answerArray = new AnswerIfc[count];
+				  int seq = 0;
+				  List correctAnswerOptions = new ArrayList();
+				  while(ansIter.hasNext())
+				  {
+					  AnswerIfc answerobj = (AnswerIfc) ansIter.next();
+					  if (answerobj.getIsCorrect()) {
+						  correctAnswerOptions.add(answerobj.getLabel());
+					  }
+				  }
+				  Collections.sort(correctAnswerOptions);
+				  Iterator correctAnsLabels = correctAnswerOptions.iterator();
+				  String correctOptionLabels = "";
+				  while(correctAnsLabels.hasNext())
+				  {
+					  correctOptionLabels += (String) correctAnsLabels.next();
+				  }
+				  answerbean.setCorrectOptionLabels(correctOptionLabels);
+				  
 
+				  
+				  //gopalrc - Aug 2010 - TODO - EMI Item Attachments
+	/*
+				  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+				      List attachmentList = null; 
+					  Iterator emiQAComboItems = itemauthorbean.getCurrentItem().getEmiQuestionAnswerCombinationsClean().iterator();
+					  while (emiQAComboItems.hasNext()) {
+						  AnswerBean emiQAComboItem = (AnswerBean) emiQAComboItems.next();
+						  attachmentList = itemfacade.getItemTextBySequence(emiQAComboItem.getSequence()).getItemTextAttachmentList();
+						  emiQAComboItem.setAttachmentList(attachmentList);
+						  emiQAComboItem.setResourceHash(null);
+					  }
+				  }
+	*/
+			  }
+			  
+			  continue;
+			  
+		  } // EMI
+
+		  
+		  bean.setItemText(itemText.getText());
 
 		  if (new Long(itemauthorbean.getItemType()).equals(TypeFacade.TRUE_FALSE)) {
 
@@ -532,52 +614,6 @@ public class ItemModifyListener implements ActionListener
 		  } // mc
 		  
 		  
-		  //gopalrc - added 26 November 2009
-		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-			  Set answerobjlist = itemText.getAnswerSet();
-			  String afeedback =  "" ;
-			  Iterator iter1 = answerobjlist.iterator();
-			  ArrayList answerOptionsList = new ArrayList();
-			  ArrayList qaComboList = new ArrayList();
-			  //need to check sequence no, since this answerSet returns answers in random order
-			  int count = answerobjlist.size();
-			  AnswerIfc[] answerArray = new AnswerIfc[count];
-			  int seq = 0;
-			  while(iter1.hasNext())
-			  {
-				  AnswerIfc answerobj = (AnswerIfc) iter1.next();
-				  answerArray[seq++] = answerobj;
-			  }
-			  for (int i=0; i<answerArray.length; i++) {
-				  Set feedbackSet = answerArray[i].getAnswerFeedbackSet();
-				  // contains only one element in the Set
-				  if (feedbackSet.size() == 1) {
-					  AnswerFeedbackIfc afbobj=(AnswerFeedbackIfc) feedbackSet.iterator().next();
-					  afeedback = afbobj.getText();
-				  }
-				  AnswerBean answerbean = new AnswerBean();
-				  answerbean.setText(answerArray[i].getText());
-				  answerbean.setSequence(answerArray[i].getSequence());
-				  answerbean.setLabel(answerArray[i].getLabel());
-				  answerbean.setFeedback(afeedback);
-				  answerbean.setIsCorrect(answerArray[i].getIsCorrect());
-				  if (answerbean.getLabel() != null &&
-						  answerbean.getLabel().matches("[0-9]+")) {
-					  answerbean.setCorrectOptionLabels(answerArray[i].getCorrectOptionLabels());
-					  qaComboList.add(answerbean);
-				  }
-				  else {
-					  answerOptionsList.add(answerbean);
-				  }
-			  }
-
-			  Collections.sort(answerOptionsList);
-			  Collections.sort(qaComboList);
-			  
-			  bean.setEmiAnswerOptions(answerOptionsList);
-			  bean.setEmiQuestionAnswerCombinations(qaComboList);
-			  
-		  } // EMI
 		  
 		  
 		  /////////////////////////////////////////////////////////////
@@ -585,6 +621,12 @@ public class ItemModifyListener implements ActionListener
 		  /////////////////////////////////////////////////////////////
 
 	  } // looping through itemtextSet , only loop once for these types,
+
+	  //gopalrc - Aug 2010
+	  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+		  Collections.sort(qaComboList);
+		  bean.setEmiQuestionAnswerCombinations(qaComboList);
+	  }
   }
 
 

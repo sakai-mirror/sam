@@ -1111,20 +1111,6 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
   }
 
   
-  //gopalrc - for EMI - the textItem contains the components 
-  // from which the actual answers are constructed 
-  public ItemTextIfc getEmiAnswerComponentsItemText() {
-    try {
-        this.data = (ItemDataIfc) item.getData();
-    }
-    catch (AssessmentException ex) {
-        throw new DataFacadeException(ex.getMessage());
-    }
-	  
-	return data.getEmiAnswerComponentsItemText();
-  }
-  
-  
   //gopalrc - total number of correct EMI answers
 	public int getNumberOfCorrectEmiOptions() {
 	   try {
@@ -1192,6 +1178,7 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 	}
 
   //gopalrc - Aug 2010
+	/*
 	public ArrayList getEmiQuestionAnswerCombinations() {
 		try {
 			this.data = (ItemDataIfc) item.getData();
@@ -1200,6 +1187,7 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 		}
 		return this.data.getEmiQuestionAnswerCombinations();
 	}
+	*/
 
 	// gopalrc - Aug 2010
 	public ItemTextIfc getItemTextBySequence(Long itemTextSequence) {
