@@ -138,7 +138,7 @@ $Id$
     <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
       </h:panelGroup>
        -->
-<!-- XXX Jaques: Add a parts drop down.
+<!-- XXX Jaques: Add a parts drop down. -->
 <!-- XXX Jaques: Removed  rendered="#{histogramScores.randomType =='false'}" -->
     <h:panelGroup>
  <f:verbatim><h4></f:verbatim>

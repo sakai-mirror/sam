@@ -71,6 +71,7 @@ public class HistogramQuestionScoresBean
   private String questionNumber;
   private String questionText;
   private String questionType;
+  private String poolName;
   private String percentCorrect;
   private String partNumber;
   private String mean;
@@ -498,6 +499,25 @@ public class HistogramQuestionScoresBean
     questionType = pquestionType;
   }
 
+  /**
+   * get the pool name
+   *
+   * @return the pool name
+   */
+  public String getPoolName()
+  {
+    return poolName;
+  }
+
+  /**
+   * set the the pool name
+   *
+   * @param qpoolName the pool name
+   */
+  public void setPoolName(String qpoolName)
+  {
+    poolName = qpoolName;
+  }
   /**
    * get the percent correct
    *
@@ -947,11 +967,15 @@ public class HistogramQuestionScoresBean
   
   
   public String getQuestionLabel() {
+      String label = "Q" + questionNumber;
+      if(randomType && poolName != null){
+          label = label + "-Pool:" + poolName;
+      }
 	  if (getNumberOfParts() > 1) {
-		  return "P" + partNumber + "-Q" + questionNumber; 
+		  return "P" + partNumber + "-" + label;
 	  }
 	  else {
-		  return "Q" + questionNumber; 
+		  return label;
 	  }
   }
   

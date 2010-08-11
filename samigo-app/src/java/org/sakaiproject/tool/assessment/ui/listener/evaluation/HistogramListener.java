@@ -288,6 +288,7 @@ public class HistogramListener
 			  double totalpossible = 0;
 			  boolean hasRandompart = false;
 			  boolean isRandompart = false;
+                          String poolName = null;
 			  
 			  HashMap itemScoresMap = delegate.getItemScores(Long.valueOf(publishedId), Long.valueOf(0), which);
 			  HashMap itemScores = new HashMap();
@@ -331,8 +332,11 @@ public class HistogramListener
 						  .equals(Integer.valueOf(authortype))) {
 					  hasRandompart = true;
 					  isRandompart = true;
+                                          poolName = section
+                                                .getSectionMetaDataByLabel(SectionDataIfc.POOLNAME_FOR_RANDOM_DRAW);
 				  } else {
 					  isRandompart = false;
+                                          poolName = null;
 				  }
 				  if (section.getSequence() == null)
 					  section.setSequence(Integer.valueOf(secseq++));
@@ -362,6 +366,7 @@ public class HistogramListener
 							  + " (" + type + ")");
 					  questionScores.setQuestionText(item.getText());
 					  questionScores.setQuestionType(item.getTypeId().toString());
+                                          questionScores.setPoolName(poolName);
 					  //totalpossible = totalpossible + item.getScore().doubleValue();
 					  //ArrayList responses = null;
 					  
@@ -371,7 +376,7 @@ public class HistogramListener
 
 
 					  // below - gopalrc Nov 2007
-					  questionScores.setN(""+numSubmissions);
+					  questionScores.setN(""+numSubmissions);//XXX Jaques: Change this
 					  questionScores.setItemId(item.getItemId());
 					  Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
 					  Set studentsResponded = questionScores.getStudentsResponded();
@@ -1954,7 +1959,7 @@ public class HistogramListener
     //spreadsheetRows.add(bean.getShowDiscriminationColumn());
     
 	boolean showDetailedStatisticsSheet;
-    if (totalBean.getFirstItem().equals("") || totalBean.getHasRandomDrawPart()) {
+    if (totalBean.getFirstItem().equals("")) {
     	showDetailedStatisticsSheet = false;
         spreadsheetRows.add(showDetailedStatisticsSheet);
     	return spreadsheetRows;
@@ -1975,8 +1980,12 @@ public class HistogramListener
     
     headerList = new ArrayList<Object>();
     headerList.add(ExportResponsesBean.HEADER_MARKER); 
-    headerList.add(rb.getString("question")); 
-    headerList.add("N");
+    headerList.add(rb.getString("question"));
+    if(bean.getRandomType()){
+        headerList.add("N(" + bean.getNumResponses() + ")");
+    }else{
+        headerList.add("N");
+    }
     headerList.add(rb.getString("pct_correct_of")); 
     if (bean.getShowDiscriminationColumn()) {
         headerList.add(rb.getString("pct_correct_of")); 
@@ -2013,14 +2022,8 @@ public class HistogramListener
     	statsLine.add(questionBean.getQuestionLabel());
     	Double dVal;
     	
-    	try {
-    		dVal = Double.parseDouble(questionBean.getN());
-       		statsLine.add(dVal);
-    	}
-    	catch (NumberFormatException ex) {
-       		statsLine.add(questionBean.getN());
-    	}
-
+    	statsLine.add(questionBean.getNumResponses());
+    	
     	try {
     		if (questionBean.getShowPercentageCorrectAndDiscriminationFigures()) {
     			dVal = Double.parseDouble(questionBean.getPercentCorrect());

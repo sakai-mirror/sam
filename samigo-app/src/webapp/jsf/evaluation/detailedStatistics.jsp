@@ -174,11 +174,18 @@ Below added by gopalrc Nov 2007
         <h:outputText value="#{item.questionLabel}" escape="false" />
     </h:column>
 
-    <h:column>
+    <h:column rendered="#{histogramScores.randomType =='false'}" >
         <f:facet name="header">
-            <h:outputText escape="false" value="N" /> 
+            <h:outputText escape='false' value='N' />
         </f:facet>
-        <h:outputText value="#{item.n}" escape="false" />
+        <h:outputText value="#{item.numResponses}" escape="false" />
+    </h:column>
+
+    <h:column rendered="#{histogramScores.randomType =='true'}" >
+        <f:facet name="header">
+            <h:outputText escape="false" value="N(#{histogramScores.numResponses})" />
+        </f:facet>
+        <h:outputText value="#{item.numResponses}" escape="false" />
     </h:column>
 
     <h:column>
