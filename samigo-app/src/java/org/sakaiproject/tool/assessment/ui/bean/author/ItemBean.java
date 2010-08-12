@@ -1585,7 +1585,7 @@ public class ItemBean
        return "emiItem";
     }
 */
-    
+    //gopalrc - Jul 2010
     public String populateEmiAnswerOptionsFromPastedAction() {
     	String pasted = getEmiAnswerOptionsPaste();
     	if (pasted == null || pasted.trim().equals("")) return "emiItem";

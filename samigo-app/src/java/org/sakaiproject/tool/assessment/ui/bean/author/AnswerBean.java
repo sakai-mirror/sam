@@ -43,8 +43,10 @@ import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.TypeException;
 import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.PublishedItemService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
@@ -77,9 +79,13 @@ public class AnswerBean implements Serializable, Comparable{
   //gopalrc Aug 2010 - Attachments for EMI questions
   private List attachmentList;
 
+  //gopalrc - for navigation
+  private String outcome;
 
 
 private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
+  
+  private static Log log = LogFactory.getLog(AnswerBean.class);
   private static ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
 
   public static final String choiceLabels = rb.getString("choice_labels"); 
@@ -254,16 +260,185 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	      return false;    
 	  }
 	  
+	  //gopalrc
+	  public String getOutcome()
+	  {
+	    return outcome;
+	  }
+
+	  /**
+	   * set the survey scale
+	   * @param param
+	   */
+	  public void setOutcome(String param)
+	  {
+	    this.outcome= param;
+	  }
+
  	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
 	  public String addAttachmentsRedirect() {
   	      ItemAuthorBean itemAuthorBean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 	      ToolSession currentToolSession = SessionManager.getCurrentToolSession();
 	      currentToolSession.setAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN, this);
-		  String outcome = itemAuthorBean.addAttachmentsForEMIItemsRedirect();
+	      
+			// 1. load resources into session for resources mgmt page
+			// then redirect to resources mgmt page
+			try {
+				List filePickerList = prepareEmiAttachmentReferenceList(this.getAttachmentList());
+				currentToolSession.setAttribute(
+						FilePickerHelper.FILE_PICKER_ATTACHMENTS, filePickerList);
+				ExternalContext context = FacesContext.getCurrentInstance()
+						.getExternalContext();
+				context.redirect("sakai.filepicker.helper/tool");
+			} catch (Exception e) {
+				log.error("fail to redirect to attachment page: " + e.getMessage());
+			}
+		  
+		  
 		  currentToolSession.removeAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
-		  return outcome;
+ 	      return getOutcome();
 	  }
 
+
+	  
+	    //gopalrc - Aug 2010 - For EMI Item Attachments
+	    /* called by SamigoJsfTool.java on exit from file picker */
+	    public void setEmiItemAttachment(){
+	    	AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
+	    	boolean isEditPendingAssessmentFlow =  author.getIsEditPendingAssessmentFlow();
+	    	ItemService service = null;
+	    	if (isEditPendingAssessmentFlow) {
+	    		service = new ItemService();
+	    	}
+	    	else {
+	    		service = new PublishedItemService();
+	    	}
+	        ItemDataIfc itemData = null;
+		    ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
+	        // itemId == null => new questiion
+	        if (itemauthorbean.getItem().getItemId()!=null){
+	          try{
+	            itemData = service.getItem(itemauthorbean.getItem().getItemId().toString());
+	          }
+	          catch(Exception e){
+	            log.warn(e.getMessage());
+	          }
+	        }
+
+	        ItemTextIfc itemText=itemData.getItemTextBySequence(getSequence());
+	        
+	    // list returns contains modified list of attachments, i.e. new 
+	    // and old attachments. This list will be 
+	    // persisted to DB if user hit Save on the Item Modifying page.
+	    List list = prepareEmiItemAttachment(itemText, isEditPendingAssessmentFlow);
+	    setAttachmentList(list);
+	  }
+
+	  
+	    //gopalrc - Aug 2010 - For EMI Item Attachments
+	    private List prepareEmiAttachmentReferenceList(List attachmentList){
+	        List list = new ArrayList();
+	        if (attachmentList == null){
+	          return list;
+	        }
+	        for (int i=0; i<attachmentList.size(); i++){
+	          ContentResource cr = null;
+	          AttachmentIfc attach = (AttachmentIfc) attachmentList.get(i);
+	          try{
+	            log.debug("*** resourceId="+attach.getResourceId());
+	            cr = AssessmentService.getContentHostingService().getResource(attach.getResourceId());
+	          }
+	          catch (PermissionException e) {
+	        	  log.warn("ContentHostingService.getResource() throws PermissionException="+e.getMessage());
+	          }
+	          catch (IdUnusedException e) {
+	        	  log.warn("ContentHostingService.getResource() throws IdUnusedException="+e.getMessage());
+	              // <-- bad sign, some left over association of question and resource, 
+	              // use case: user remove resource in file picker, then exit modification without
+	              // proper cancellation by clicking at the left nav instead of "cancel".
+	              // Also in this use case, any added resource would be left orphan.
+	              AssessmentService assessmentService = new AssessmentService();
+	              assessmentService.removeItemTextAttachment(attach.getAttachmentId().toString());
+	          }
+	          catch (TypeException e) {
+	        	  log.warn("ContentHostingService.getResource() throws TypeException="+e.getMessage());
+	          }
+	          if (cr!=null){
+	        	Reference ref = EntityManager.newReference(cr.getReference());
+	            log.debug("*** ref="+ref);
+	            if (ref !=null ) list.add(ref);
+	          }
+	        }
+	        return list;
+	      }
+
+	    //gopalrc - Aug 2010 - For EMI Item Attachments
+	      private List prepareEmiItemAttachment(ItemTextIfc itemText, boolean isEditPendingAssessmentFlow){
+	        ToolSession session = SessionManager.getCurrentToolSession();
+	        if (session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
+
+	          Set attachmentSet = new HashSet();
+	          if (itemText != null){
+	            attachmentSet = itemText.getItemTextAttachmentSet();
+	          }
+	          HashMap map = getResourceIdHash(attachmentSet);
+	          ArrayList newAttachmentList = new ArrayList();
+	          
+	          AssessmentService assessmentService = new AssessmentService();
+	          String protocol = ContextUtil.getProtocol();
+
+	          List refs = (List)session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
+	          if (refs!=null && refs.size() > 0){
+	            Reference ref;
+
+	            for(int i=0; i<refs.size(); i++) {
+	              ref = (Reference) refs.get(i);
+	              String resourceId = ref.getId();
+	              if (map.get(resourceId) == null){
+	                // new attachment, add 
+	                log.debug("**** ref.Id="+ref.getId());
+	                log.debug("**** ref.name="+ref.getProperties().getProperty(
+	                           ref.getProperties().getNamePropDisplayName()));
+	                ItemTextAttachmentIfc newAttach = assessmentService.createItemTextAttachment(
+	                                              itemText,
+	                                              ref.getId(), ref.getProperties().getProperty(
+	                                                           ref.getProperties().getNamePropDisplayName()),
+	                                            protocol, isEditPendingAssessmentFlow);
+	                newAttachmentList.add(newAttach);
+	              }
+	              else{ 
+	                // attachment already exist, let's add it to new list and
+	    	    // check it off from map
+	                newAttachmentList.add((ItemAttachmentIfc)map.get(resourceId));
+	                map.remove(resourceId);
+	              }
+	            }
+	          }
+
+	          session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
+	          session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
+	          return newAttachmentList;
+	        }
+	        else if (itemText == null) {
+	        	return new ArrayList();
+	        }
+	        else return itemText.getItemTextAttachmentList();
+	      }
+
+
+	    private HashMap getResourceIdHash(Set attachmentSet){
+	    	    HashMap map = new HashMap();
+	    	    if (attachmentSet !=null ){
+	    	      Iterator iter = attachmentSet.iterator();
+	    	      while (iter.hasNext()){
+	    	        ItemAttachmentIfc attach = (ItemAttachmentIfc) iter.next();
+	    	        map.put(attach.getResourceId(), attach);
+	    	      }
+	    	    }
+	    	    return map;
+	    }
+	  
+	  
  	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
 	  private HashMap resourceHash = new HashMap();
 	  public HashMap getResourceHash() {

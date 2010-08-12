@@ -32,12 +32,6 @@ public interface ItemTextIfc
 {
 	
 	
-  public static Long EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE = Long.valueOf(0);
-/*	
-  public static Long EMI_LEAD_IN_TEXT_SEQUENCE = Long.valueOf(-1);
-*/
-	
-  
   public static Long EMI_THEME_TEXT_SEQUENCE = Long.valueOf(-1);
   public static Long EMI_ANSWER_OPTIONS_SEQUENCE = Long.valueOf(-2);
   public static Long EMI_LEAD_IN_TEXT_SEQUENCE = Long.valueOf(-3);

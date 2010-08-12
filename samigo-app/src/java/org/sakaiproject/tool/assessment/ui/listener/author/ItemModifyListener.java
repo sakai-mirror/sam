@@ -302,14 +302,6 @@ public class ItemModifyListener implements ActionListener
 	  while (iter.hasNext()){
 		  ItemTextIfc  itemText = (ItemTextIfc) iter.next();
 		  
-		  //gopalrc - 18 Dec 2009
-//		  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-			  //for EMI only want ItemText with sequence = 0
-//			  if (!itemText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE)) {
-//				  continue;
-//			  }
-//		  }
-		  
 		  
 		  /////////////////////////////////////////////////////////////
 		  // Get current Answers choices
@@ -325,6 +317,7 @@ public class ItemModifyListener implements ActionListener
 				  continue;
 			  }
 			  else if (itemText.getSequence().equals(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE)) {
+				  bean.setEmiAnswerOptionsRich(itemText.getText());
 				  ArrayList answerOptionsList = new ArrayList();
 				  Set answerobjlist = itemText.getAnswerSet();
 				  Iterator ansIter = answerobjlist.iterator();
@@ -343,7 +336,7 @@ public class ItemModifyListener implements ActionListener
 			  }
 			  
 			  
-			  else {
+			  else { // Actual Answers - EMI QA Combo Items
 				  AnswerBean answerbean = new AnswerBean();
 				  answerbean.setText(itemText.getText());
 				  answerbean.setSequence(itemText.getSequence());
@@ -372,22 +365,16 @@ public class ItemModifyListener implements ActionListener
 					  correctOptionLabels += (String) correctAnsLabels.next();
 				  }
 				  answerbean.setCorrectOptionLabels(correctOptionLabels);
-				  
 
 				  
-				  //gopalrc - Aug 2010 - TODO - EMI Item Attachments
-	/*
-				  if (Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-				      List attachmentList = null; 
-					  Iterator emiQAComboItems = itemauthorbean.getCurrentItem().getEmiQuestionAnswerCombinationsClean().iterator();
-					  while (emiQAComboItems.hasNext()) {
-						  AnswerBean emiQAComboItem = (AnswerBean) emiQAComboItems.next();
-						  attachmentList = itemfacade.getItemTextBySequence(emiQAComboItem.getSequence()).getItemTextAttachmentList();
-						  emiQAComboItem.setAttachmentList(attachmentList);
-						  emiQAComboItem.setResourceHash(null);
-					  }
-				  }
-	*/
+				  //gopalrc - Aug 2010 - EMI Item Attachments
+			      List attachmentList = null; 
+				  attachmentList = itemfacade.getItemTextBySequence(answerbean.getSequence()).getItemTextAttachmentList();
+				  answerbean.setAttachmentList(attachmentList);
+				  answerbean.setResourceHash(null);
+				  
+				  qaComboList.add(answerbean);
+				  
 			  }
 			  
 			  continue;

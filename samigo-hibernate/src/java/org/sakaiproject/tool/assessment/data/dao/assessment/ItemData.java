@@ -63,8 +63,8 @@ public class ItemData
   private String emiAnswerOptionLabels;
 
   //gopalrc - added 27 Nov 2009
-  private ArrayList emiAnswerOptions;
-  private ArrayList emiQuestionAnswerCombinations;
+//  private ArrayList emiAnswerOptions;
+//  private ArrayList emiQuestionAnswerCombinations;
 
 
   
@@ -907,17 +907,13 @@ public ItemData() {}
 	
 
 	  //gopalrc - Aug 2010
-	  //TODO - For elegance this should probably be moved up to [Published]ItemData
-	  // as it applies only to the first (seq=0) ItemText
 	  public ArrayList getEmiAnswerOptions() {
 		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
-		  if (emiAnswerOptions != null) {
-			  return emiAnswerOptions;
-		  }
 		  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE);  
 		  if (itemText != null) {
-			  //TODO - move entire function up here to [Published]ItemData
-			    ArrayList list = itemText.getAnswerArray();
+			    return itemText.getAnswerArraySorted();
+/*			    
+			    ArrayList list = itemText.getAnswerArraySorted();
 			    emiAnswerOptions = new ArrayList();
 			    if (list == null) {
 			    	return emiAnswerOptions;
@@ -931,6 +927,7 @@ public ItemData() {}
 			    }
 			    Collections.sort(emiAnswerOptions);
 			    return emiAnswerOptions;
+*/
 		  }
 		  return null;
 	  }
@@ -938,57 +935,18 @@ public ItemData() {}
 
 	  
 	  //gopalrc - Aug 2010
-	  //TODO - For elegance this should probably be moved up to [Published]ItemData
-	  // as it applies only to the first (seq=0) ItemText
-/*	  
 	  public ArrayList getEmiQuestionAnswerCombinations() {
 		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
-		  if (emiQuestionAnswerCombinations != null) {
-			  return emiQuestionAnswerCombinations;
+		  Iterator iter = getItemTextArraySorted().iterator();
+		  ArrayList emiQuestionAnswerCombinations = new ArrayList();
+		  while (iter.hasNext()) {
+			  ItemTextIfc itemText = (ItemTextIfc)iter.next();
+			  if (itemText.isEmiQuestionItemText()) {
+				  emiQuestionAnswerCombinations.add(itemText);
+			  }
 		  }
-		  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE);  
-		  if (itemText != null) {
-			  //TODO - move entire function up here to [Published]ItemData
-			    ArrayList list = itemText.getAnswerArray();
-			    emiQuestionAnswerCombinations = new ArrayList();
-			    if (list == null) {
-			    	return emiQuestionAnswerCombinations;
-			    }
-			    Iterator iter = list.iterator();
-			    while (iter.hasNext()) {
-			    	Answer answer = (Answer) iter.next();
-			    	if (answer.getLabel() != null && answer.getLabel().matches("[0-9]+")) {
-			    		emiQuestionAnswerCombinations.add(answer);
-			    		ArrayList answerOptions = this.getEmiAnswerOptions();
-			    		//set of possible selection options indicating correct and incorrect options
-			    		ArrayList selections = new ArrayList();
-			    		Iterator optionsIter = answerOptions.iterator();
-			    		while (optionsIter.hasNext()) {
-			    			Answer option = (Answer)optionsIter.next();
-			    			Answer selection = null;
-			    			try {
-								selection = option.clone();
-							} catch (CloneNotSupportedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							if (answer.isEmiOptionCorrect(option.getLabel())) {
-								selection.setIsCorrect(Boolean.TRUE);
-							}
-							else {
-								selection.setIsCorrect(Boolean.FALSE);
-							}
-							selections.add(selection);
-			    		}
-			    		answer.setEmiSelectionOptions(selections);
-			    	}
-			    }
-			    Collections.sort(emiQuestionAnswerCombinations);
-			    return emiQuestionAnswerCombinations;
-		  }
-		  return null;
+		  return emiQuestionAnswerCombinations;
 	  }
-*/
 	  
 	  //gopalrc - Aug 2010
 	  public ItemTextIfc getItemTextBySequence(Long itemTextSequence) {

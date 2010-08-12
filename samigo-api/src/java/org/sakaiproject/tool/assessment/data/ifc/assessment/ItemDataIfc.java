@@ -188,7 +188,7 @@ public interface ItemDataIfc extends java.io.Serializable {
 
   //gopalrc - Aug 2010
   public ArrayList getEmiAnswerOptions();
-  //public ArrayList getEmiQuestionAnswerCombinations();
+  public ArrayList getEmiQuestionAnswerCombinations();
 
   //gopalrc - Aug 2010
   public ItemTextIfc getItemTextBySequence(Long itemTextSequence);

@@ -113,10 +113,13 @@ public class ItemText
 
   public ArrayList getAnswerArray() {
     ArrayList list = new ArrayList();
+    list.addAll(answerSet);
+    /* gopalrc - above more efficient?
     Iterator iter = answerSet.iterator();
     while (iter.hasNext()){
       list.add(iter.next());
     }
+    */
     return list;
   }
 

@@ -39,7 +39,7 @@ should be included in file importing DeliveryMessages
       <f:verbatim><br/><br/></f:verbatim>
 
 
-      <h:dataTable value="#{question.itemData.emiAnswerComponentsItemText.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
+      <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
         <h:column> 
           <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
             <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
@@ -54,10 +54,10 @@ should be included in file importing DeliveryMessages
       
       
 
-      <h:dataTable value="#{question.itemData.emiAnswerComponentsItemText.emiQuestionAnswerCombinations}" var="answer" border="1" style="border-style:solid">
+      <h:dataTable value="#{question.itemData.emiQuestionAnswerCombinations}" var="item" border="1" style="border-style:solid">
 
         <h:column> 
-      <h:dataTable value="#{answer.emiSelectionOptions}" var="answerOption">
+      <h:dataTable value="#{item.answerArraySorted}" var="answerOption">
         <h:column>
          <h:panelGroup rendered="#{answerOption.text != null && answerOption.text ne '' && answerOption.isCorrect}">
           <h:outputText escape="false" value="#{answerOption.label}" /> 
@@ -76,8 +76,8 @@ should be included in file importing DeliveryMessages
         </h:column>
 
         <h:column> 
-         <h:panelGroup rendered="#{answer.text != null && answer.text ne ''}">
-          <h:outputText escape="false" value="#{answer.label}. #{answer.text}" /> 
+         <h:panelGroup rendered="#{item.text != null && item.text ne ''}">
+          <h:outputText escape="false" value="#{item.sequence}. #{item.text}" /> 
          </h:panelGroup>
         </h:column>
 

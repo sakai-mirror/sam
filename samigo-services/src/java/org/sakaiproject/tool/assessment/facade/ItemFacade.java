@@ -1178,7 +1178,6 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 	}
 
   //gopalrc - Aug 2010
-	/*
 	public ArrayList getEmiQuestionAnswerCombinations() {
 		try {
 			this.data = (ItemDataIfc) item.getData();
@@ -1187,7 +1186,6 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 		}
 		return this.data.getEmiQuestionAnswerCombinations();
 	}
-	*/
 
 	// gopalrc - Aug 2010
 	public ItemTextIfc getItemTextBySequence(Long itemTextSequence) {

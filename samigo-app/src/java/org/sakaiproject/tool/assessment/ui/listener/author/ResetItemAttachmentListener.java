@@ -97,7 +97,7 @@ public class ResetItemAttachmentListener
 	      resetItemAttachment(itemauthorBean.getResourceHash(), new ArrayList(), assessmentService);
 	    }
 	}
-	//gopalrc - Aug 2010 - To Complete 
+	//gopalrc - Aug 2010
 	else {
 	    AnswerBean answerBean = (AnswerBean)aBean;
 	    Long sequence = answerBean.getSequence();
