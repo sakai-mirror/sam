@@ -83,8 +83,8 @@ public class ItemBean
   //gopalrc - 20 July 2010 - EMI
   private String emiAnswerOptionsRich;
   private String emiAnswerOptionsPaste;
-  private String emiAnswerOptionsCount = "0";
-  private String emiAnswerOptionsSimpleOrRich = "0";
+  private String answerOptionsRichCount = "0";
+  private String answerOptionsSimpleOrRich = "0";
 
   
 
@@ -1828,21 +1828,21 @@ public class ItemBean
 		this.emiAnswerOptionsPaste = emiAnswerOptionsPaste;
 	}
 
-	public String getEmiAnswerOptionsSimpleOrRich() {
-		return emiAnswerOptionsSimpleOrRich;
+	public String getAnswerOptionsSimpleOrRich() {
+		return answerOptionsSimpleOrRich;
 	}
 
-	public void setEmiAnswerOptionsSimpleOrRich(String emiAnswerOptionsSimpleOrRich) {
-		this.emiAnswerOptionsSimpleOrRich = emiAnswerOptionsSimpleOrRich;
+	public void setAnswerOptionsSimpleOrRich(String answerOptionsSimpleOrRich) {
+		this.answerOptionsSimpleOrRich = answerOptionsSimpleOrRich;
 	}
 
 	
-	public String getEmiAnswerOptionsCount() {
-		return emiAnswerOptionsCount;
+	public String getAnswerOptionsRichCount() {
+		return answerOptionsRichCount;
 	}
 
-	public void setEmiAnswerOptionsCount(String emiAnswerOptionsCount) {
-		this.emiAnswerOptionsCount = emiAnswerOptionsCount;
+	public void setAnswerOptionsRichCount(String answerOptionsRichCount) {
+		this.answerOptionsRichCount = answerOptionsRichCount;
 	}
 
 }

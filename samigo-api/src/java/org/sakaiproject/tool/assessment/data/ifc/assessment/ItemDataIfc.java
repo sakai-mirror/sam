@@ -192,6 +192,9 @@ public interface ItemDataIfc extends java.io.Serializable {
 
   //gopalrc - Aug 2010
   public ItemTextIfc getItemTextBySequence(Long itemTextSequence);
-
+  public Integer getAnswerOptionsRichCount();
+  public void setAnswerOptionsRichCount(Integer answerOptionsRichCount);
+  public Integer getAnswerOptionsSimpleOrRich();
+  public void setAnswerOptionsSimpleOrRich(Integer answerOptionsSimpleOrRich);  
   
 }

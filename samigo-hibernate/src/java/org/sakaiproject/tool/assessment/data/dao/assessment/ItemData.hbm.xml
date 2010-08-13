@@ -24,6 +24,8 @@
     <property name="score" type="float" column="SCORE" not-null="false" />
     <property name="partialCreditFlag" type="boolean" column="PARTIAL_CREDIT_FLAG" not-null="false"/>
     <property name="discount" type="float" column="DISCOUNT" not-null="false" />
+    <property name="answerOptionsRichCount" type="integer" column="ANSWER_OPTIONS_RICH_COUNT" not-null="false" />
+    <property name="answerOptionsSimpleOrRich" type="integer" column="ANSWER_OPTIONS_SIMPLE_OR_RICH" not-null="false" />
     <property name="hint" type="string" length="4000" column="HINT" not-null="false" />
     <property name="hasRationale" type="boolean" column="HASRATIONALE" not-null="false" />
     <property name="status" type="integer" column="STATUS" not-null="true" />

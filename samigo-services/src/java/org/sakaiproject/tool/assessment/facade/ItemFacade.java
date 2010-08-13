@@ -103,6 +103,9 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
   private String themeText;
   private String leadInText;
 
+  //gopalrc - added Aug 2010
+  private Integer answerOptionsRichCount;
+  private Integer answerOptionsSimpleOrRich;
 
   
   /** ItemFacade is the class that is exposed to developer
@@ -1196,5 +1199,35 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 		}
 		return this.data.getItemTextBySequence(itemTextSequence);
 	}
+	
+	
+	public Integer getAnswerOptionsRichCount() {
+		try {
+			this.data = (ItemDataIfc) item.getData();
+		} catch (AssessmentException ex) {
+			throw new DataFacadeException(ex.getMessage());
+		}
+		return this.data.getAnswerOptionsRichCount();
+	}
+
+	public void setAnswerOptionsRichCount(Integer answerOptionsRichCount) {
+		this.answerOptionsRichCount = answerOptionsRichCount;
+		this.data.setAnswerOptionsRichCount(answerOptionsRichCount);
+	}	  
+	  
+	public Integer getAnswerOptionsSimpleOrRich() {
+		try {
+			this.data = (ItemDataIfc) item.getData();
+		} catch (AssessmentException ex) {
+			throw new DataFacadeException(ex.getMessage());
+		}
+		return this.data.getAnswerOptionsSimpleOrRich();
+	}
+
+	public void setAnswerOptionsSimpleOrRich(Integer answerOptionsSimpleOrRich) {
+		this.answerOptionsSimpleOrRich = answerOptionsSimpleOrRich;
+		this.data.setAnswerOptionsSimpleOrRich(answerOptionsSimpleOrRich);
+	}
+	
 	
 }

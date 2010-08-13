@@ -85,6 +85,10 @@ public class PublishedItemData
   private ArrayList emiAnswerOptions;
   private ArrayList emiQuestionAnswerCombinations;
   
+  //gopalrc - added Aug 2010
+  private Integer answerOptionsRichCount;
+  private Integer answerOptionsSimpleOrRich;
+  
   
   public PublishedItemData() {}
 
@@ -879,6 +883,23 @@ public class PublishedItemData
 		  }
 		  return null;
 	  }
+	  
+	  
+		public Integer getAnswerOptionsRichCount() {
+			return answerOptionsRichCount;
+		}
+
+		public void setAnswerOptionsRichCount(Integer answerOptionsRichCount) {
+			this.answerOptionsRichCount = answerOptionsRichCount;
+		}	  
+		  
+		public Integer getAnswerOptionsSimpleOrRich() {
+			return answerOptionsSimpleOrRich;
+		}
+
+		public void setAnswerOptionsSimpleOrRich(Integer answerOptionsSimpleOrRich) {
+			this.answerOptionsSimpleOrRich = answerOptionsSimpleOrRich;
+		}
 	  
 
 }

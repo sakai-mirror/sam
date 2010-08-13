@@ -62,13 +62,14 @@ public class ItemData
   //gopalrc - All available answer options for EMI question
   private String emiAnswerOptionLabels;
 
-  //gopalrc - added 27 Nov 2009
-//  private ArrayList emiAnswerOptions;
-//  private ArrayList emiQuestionAnswerCombinations;
-
+  //gopalrc - added Aug 2010
+  private Integer answerOptionsRichCount;
+  private Integer answerOptionsSimpleOrRich;
+  
 
   
   
+
 public ItemData() {}
 
   // this constructor should be deprecated, it is missing triesAllowed
@@ -960,5 +961,24 @@ public ItemData() {}
 		  }
 		  return null;
 	  }
-	
+
+	  
+	public Integer getAnswerOptionsRichCount() {
+		return answerOptionsRichCount;
+	}
+
+	public void setAnswerOptionsRichCount(Integer answerOptionsRichCount) {
+		this.answerOptionsRichCount = answerOptionsRichCount;
+	}	  
+	  
+	public Integer getAnswerOptionsSimpleOrRich() {
+		return answerOptionsSimpleOrRich;
+	}
+
+	public void setAnswerOptionsSimpleOrRich(Integer answerOptionsSimpleOrRich) {
+		this.answerOptionsSimpleOrRich = answerOptionsSimpleOrRich;
+	}
+	  
+	  
+	  
 }
