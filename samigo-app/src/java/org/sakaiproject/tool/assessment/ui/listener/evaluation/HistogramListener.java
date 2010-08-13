@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.faces.component.html.HtmlSelectOneMenu;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
@@ -114,13 +115,24 @@ public class HistogramListener
    */
   public void processValueChange(ValueChangeEvent event)
   {
+    if(!HtmlSelectOneMenu.class.isInstance(event.getSource()) ||
+            event.getNewValue() == null || event.getNewValue().equals(event.getOldValue())){
+        return;
+    }
+    HtmlSelectOneMenu selectOneMenu = HtmlSelectOneMenu.class.cast(event.getSource());
+    if(selectOneMenu.getId() != null && selectOneMenu.getId().startsWith("allSubmissions")){
+        processAllSubmissionsChange(event);
+    }
+  }
 
+  public void processAllSubmissionsChange(ValueChangeEvent event)
+  {
     TotalScoresBean totalBean = (TotalScoresBean) ContextUtil.lookupBean(
                                 "totalScores");
     HistogramScoresBean bean = (HistogramScoresBean) ContextUtil.lookupBean(
                                "histogramScores");
     QuestionScoresBean questionBean = (QuestionScoresBean)
-    ContextUtil.lookupBean("questionScores");
+                                ContextUtil.lookupBean("questionScores");
 
     String selectedvalue= (String) event.getNewValue();
     if ((selectedvalue!=null) && (!selectedvalue.equals("")) ){
@@ -282,6 +294,7 @@ public class HistogramListener
 			  assessmentName = pub.getTitle();
 
 			  ArrayList parts = pub.getSectionArraySorted();
+                          histogramScores.setAssesmentParts(parts);
 			  ArrayList info = new ArrayList();
 			  Iterator partsIter = parts.iterator();
 			  int secseq = 1;

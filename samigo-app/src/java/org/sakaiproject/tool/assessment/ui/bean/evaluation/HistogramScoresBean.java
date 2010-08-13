@@ -28,10 +28,13 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
 
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.TotalScoresBean;
 
@@ -59,8 +62,8 @@ public class HistogramScoresBean
   private String adjustedScore;
   private String questionNumber;
   private String allSubmissions;
-  private String partNumber;
-  private Integer parts;
+  private String partNumber;//Note: this is sequence number
+  private Integer parts;//???
   private String mean;
   private String median;
   private String mode;
@@ -69,7 +72,8 @@ public class HistogramScoresBean
   private String lowerQuartile; //medidan of lowest-median
   private String upperQuartile; //median of median-highest
   private int interval; // number interval breaks down
-  private Collection info;
+  private Collection info; //HistogramQuestionScoresBean
+  private Collection<HistogramQuestionScoresBean> allInfo;
   private int[] numStudentCollection = {  };
   private String[] rangeCollection = {  };
   private int[] columnHeight = {  };
@@ -83,7 +87,9 @@ public class HistogramScoresBean
   private HistogramBarBean[] histogramBars;
   private HistogramQuestionScoresBean[] histogramQuestions;
   private boolean randomType;   // true = has at least one random draw part
-
+  private List<PublishedSectionData> assesmentParts = new ArrayList<PublishedSectionData>();
+  private List<SelectItem> selectItemParts = new ArrayList<SelectItem>();
+  
   private static Log log = LogFactory.getLog(HistogramScoresBean.class);
 
 
@@ -401,7 +407,7 @@ publishedId = ppublishedId;
    */
   public void setInfo(Collection pinfo)
   {
-    info = pinfo;
+    filterInfo(pinfo);
   }
 
   /**
@@ -537,6 +543,7 @@ publishedId = ppublishedId;
   public void setPartNumber(String ppartNumber)
   {
     partNumber = ppartNumber;
+    filterInfo(allInfo);
   }
 
   /**
@@ -973,5 +980,48 @@ publishedId = ppublishedId;
 	  }
   }
 
-  
+    /**
+     * @return the assesmentParts
+     */
+    public List<PublishedSectionData> getAssesmentParts() {
+        return assesmentParts;
+    }
+
+    /**
+     * @param assesmentParts the assesmentParts to set
+     */
+    public void setAssesmentParts(List<PublishedSectionData> assesmentParts) {
+        this.assesmentParts = assesmentParts;
+        selectItemParts.clear();
+        setPartNumber(assesmentParts.get(0).getSequence().toString());
+        for(PublishedSectionData section: assesmentParts){
+            selectItemParts.add(new SelectItem(section.getSequence().toString(), section.getTitle()));
+        }
+    }
+
+    public List<SelectItem> getSelectItemParts(){
+        return selectItemParts;
+    }
+
+    /**
+     * This method will filter the info (HistogramQuestionScoresBean)
+     * to only show the questions for the active part.
+     */
+    private void filterInfo(Collection<HistogramQuestionScoresBean> pinfo){
+        allInfo = pinfo;
+        if(pinfo == null || partNumber == null || partNumber.length() == 0){
+            info = pinfo;
+        }else{
+            if(info == null){
+                info = new ArrayList<HistogramQuestionScoresBean>();
+            }else{
+                info.clear();
+            }
+            for(HistogramQuestionScoresBean question: pinfo){
+                if(partNumber.equals(question.getPartNumber())){
+                    info.add(question);
+                }
+            }
+        }
+    }
 }

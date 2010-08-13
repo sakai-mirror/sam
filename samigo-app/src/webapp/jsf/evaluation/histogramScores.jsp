@@ -138,7 +138,7 @@ $Id$
     <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
       </h:panelGroup>
        -->
-<!-- XXX Jaques: Add a parts drop down. -->
+       
 <!-- XXX Jaques: Removed  rendered="#{histogramScores.randomType =='false'}" -->
     <h:panelGroup>
  <f:verbatim><h4></f:verbatim>
@@ -201,7 +201,25 @@ $Id$
 </h:panelGrid>
 </p>
 
+<h:panelGroup>
+    <f:verbatim><h4></f:verbatim>
+    <h:outputText value="#{evaluationMessages.q_view}" />
+    <f:verbatim></h4></f:verbatim>
+</h:panelGroup>
 
+<!-- XXX Jaques: Add a parts drop down. -->
+<h:panelGroup rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
+    <h:outputText value="#{evaluationMessages.part} " />
+    <h:outputText value="#{evaluationMessages.column} " />
+    <!-- rendered=" {histogramScores.partNames.size>1}" -->
+    <h:selectOneMenu id="partNumber" onchange="document.forms[0].submit();"
+                     value="#{histogramScores.partNumber}" >
+	<f:selectItem itemValue="" itemLabel="#{evaluationMessages.all_parts}" />
+        <f:selectItems value="#{histogramScores.selectItemParts}"/>
+        <f:valueChangeListener
+            type="org.sakaiproject.tool.assessment.ui.listener.evaluation.HistogramListener" />
+    </h:selectOneMenu>
+</h:panelGroup>
 
   <h:dataTable value="#{histogramScores.info}" var="item">
 
