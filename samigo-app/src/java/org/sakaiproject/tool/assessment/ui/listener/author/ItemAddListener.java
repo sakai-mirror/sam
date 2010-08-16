@@ -228,6 +228,13 @@ public class ItemAddListener
 	  ItemBean item =itemauthorbean.getCurrentItem();
 	  int countAnswerText=0;
 	  int indexLabel= 0;
+	  
+	  if (item.getEmiAnswerOptionsClean()==null || item.getEmiAnswerOptionsClean().size()==0) {
+		  if (item.getEmiAnswerOptionsPaste()!=null && !item.getEmiAnswerOptionsPaste().trim().equals("")) {
+			  item.populateEmiAnswerOptionsFromPasted();
+		  }
+	  }
+	  
 	  Iterator iter = item.getEmiAnswerOptionsClean().iterator();
 	  boolean missingchoices=false;
 
@@ -630,7 +637,9 @@ public class ItemAddListener
       else {
         	//prepare itemText, including answers
     	  	if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-                item.setItemTextSet(prepareTextForEMI(item, bean, itemauthor));
+			  item.setAnswerOptionsSimpleOrRich(Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()));
+			  item.setAnswerOptionsRichCount(Integer.valueOf(bean.getAnswerOptionsRichCount()));
+              item.setItemTextSet(prepareTextForEMI(item, bean, itemauthor));
     	  	}
     	  	else if (!item.getTypeId().equals(TypeFacade.MATCHING)) {
               item.setItemTextSet(prepareText(item, bean, itemauthor));
@@ -947,6 +956,7 @@ public class ItemAddListener
    */
   private HashSet prepareTextForEMI(ItemFacade item, ItemBean bean,
 			ItemAuthorBean itemauthor) {
+	  
 
 		HashSet textSet = new HashSet();
 		HashSet answerSet1 = new HashSet();
@@ -1013,6 +1023,7 @@ public class ItemAddListener
 			itemText.setItem(item.getData());
 			itemText.setSequence(qaCombo.getSequence());
 			itemText.setText(qaCombo.getText());
+			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
 			
 			HashSet answerSet = new HashSet();
 			Iterator selectionOptions = textAnswerOptions.getAnswerArraySorted().iterator();
@@ -1334,6 +1345,8 @@ public class ItemAddListener
 		  preparePublishedTextForMatching(item, bean, delegate);
 	  }
 	  else if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+		  item.setAnswerOptionsSimpleOrRich(Integer.valueOf(item.getAnswerOptionsSimpleOrRich()));
+		  item.setAnswerOptionsRichCount(Integer.valueOf(item.getAnswerOptionsRichCount()));
 		  preparePublishedTextForEMI(item, bean, delegate);		  
 	  }
 	  
@@ -1782,6 +1795,7 @@ public class ItemAddListener
 			itemText.setItem(item.getData());
 			itemText.setSequence(qaCombo.getSequence());
 			itemText.setText(qaCombo.getText());
+			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
 			
 			HashSet answerSet = new HashSet();
 			Iterator selectionOptions = textAnswerOptions.getAnswerArraySorted().iterator();

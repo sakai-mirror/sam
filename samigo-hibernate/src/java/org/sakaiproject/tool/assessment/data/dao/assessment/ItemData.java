@@ -59,7 +59,7 @@ public class ItemData
   //gopalrc - added 30 Nov 2009 - for EMI question
   private String themeText;
   private String leadInText;
-  //gopalrc - All available answer options for EMI question
+  //gopalrc - All available answer option labels for EMI question
   private String emiAnswerOptionLabels;
 
   //gopalrc - added Aug 2010

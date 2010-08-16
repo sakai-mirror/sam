@@ -1459,17 +1459,22 @@ public class ItemBean
     
     public ArrayList getEmiAnswerOptionsClean() {
     	ArrayList list = new ArrayList();
+    	ArrayList delList = new ArrayList();
     	if (emiAnswerOptions!=null) {
         	list.addAll(emiAnswerOptions);
     	}
 		for (int i=list.size()-1; i>=0; i--) {
 			AnswerBean answerbean = (AnswerBean)list.get(i);
 			if (answerbean.getText() == null || answerbean.getText().trim().equals("")) {
-				list.remove(i);
+				delList.add(answerbean);
 			}
 			else {
 				break;
 			}
+		}
+		Iterator iter = delList.iterator();
+		while (iter.hasNext()) {
+			list.remove(iter.next());
 		}
 		return list;
     }    
@@ -1586,7 +1591,7 @@ public class ItemBean
     }
 */
     //gopalrc - Jul 2010
-    public String populateEmiAnswerOptionsFromPastedAction() {
+    public String populateEmiAnswerOptionsFromPasted() {
     	String pasted = getEmiAnswerOptionsPaste();
     	if (pasted == null || pasted.trim().equals("")) return "emiItem";
     	

@@ -110,7 +110,7 @@
 
   <h:outputLabel value="#{authorMessages.select_appropriate_format}" />
   <f:verbatim><br/></f:verbatim>
-  <h:selectOneRadio id="emiAnswerOptionsSimpleOrRich" value="#{itemauthor.currentItem.emiAnswerOptionsSimpleOrRich}" layout="pageDirection" required="yes">
+  <h:selectOneRadio id="emiAnswerOptionsSimpleOrRich" value="#{itemauthor.currentItem.answerOptionsSimpleOrRich}" layout="pageDirection" required="yes">
     <f:selectItem itemLabel="Simple text – for a list of items with no formatting" itemValue="0"/>
     <f:selectItem itemLabel="Rich text / attachments – for styled text, tables, labelled images" itemValue="1"/>
   </h:selectOneRadio>
@@ -176,7 +176,7 @@
 
   <div class="shorttext tier2">
     <h:outputText value="#{authorMessages.answer_options_count}" />
-    <h:selectOneMenu  id="answerOptionsRichCount"  onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsCountLink();" value="#{itemauthor.currentItem.emiAnswerOptionsRichCount}" >
+    <h:selectOneMenu  id="answerOptionsRichCount"  onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsCountLink();" value="#{itemauthor.currentItem.answerOptionsRichCount}" >
       <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
       <f:selectItem itemLabel="2" itemValue="2"/>
       <f:selectItem itemLabel="3" itemValue="3"/>

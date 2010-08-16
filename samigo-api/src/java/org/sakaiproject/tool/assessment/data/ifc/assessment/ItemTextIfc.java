@@ -79,4 +79,9 @@ public interface ItemTextIfc
   //This is an actual EMI Question Item (i.e. not Theme or Lead In Text or Complete Answer Options List) 
   public boolean isEmiQuestionItemText();
   
+	// gopalrc - added Aug 2010
+	public Integer getRequiredOptionsCount();
+	public void setRequiredOptionsCount(Integer requiredOptionsCount);
+  
+  
 }

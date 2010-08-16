@@ -40,7 +40,8 @@ public class PublishedItemText
   private Long sequence;
   private String text;
   private Set answerSet;
-  
+  private Integer requiredOptionsCount;
+
   
   
   //gopalrc - added Aug 2010
@@ -233,6 +234,16 @@ public class PublishedItemText
 	  public boolean isEmiQuestionItemText() {
 		  return getSequence() > 0;
 	  }
+
+		// gopalrc - added Aug 2010
+		public Integer getRequiredOptionsCount() {
+			return requiredOptionsCount;
+		}
+
+		// gopalrc - added Aug 2010
+		public void setRequiredOptionsCount(Integer requiredOptionsCount) {
+			this.requiredOptionsCount = requiredOptionsCount;
+		}
 
 
 }

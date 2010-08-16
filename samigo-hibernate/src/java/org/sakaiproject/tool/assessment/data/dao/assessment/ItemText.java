@@ -47,6 +47,8 @@ public class ItemText
 
   //gopalrc - added Aug 2010
   private Set itemTextAttachmentSet;
+  private Integer requiredOptionsCount;
+  
 
   
   public ItemText() {}
@@ -135,83 +137,6 @@ public class ItemText
   }
   
   
-  //gopalrc - added 26 Nov 2009
-  //TODO - For elegance this should probably be moved up to [Published]ItemData
-  // as it applies only to the first (seq=0) ItemText
-/*  
-  public ArrayList getEmiAnswerOptions() {
-	  if (emiAnswerOptions != null) {
-		  return emiAnswerOptions;
-	  }
-	  else { // use lazy initialization
-	    ArrayList list = getAnswerArray();
-	    emiAnswerOptions = new ArrayList();
-	    if (list == null) {
-	    	return emiAnswerOptions;
-	    }
-	    Iterator iter = list.iterator();
-	    while (iter.hasNext()) {
-	    	Answer answer = (Answer) iter.next();
-	    	if (answer.getLabel() != null && answer.getLabel().matches("[A-Za-z]")) {
-	    		emiAnswerOptions.add(answer);
-	    	}
-	    }
-	    Collections.sort(emiAnswerOptions);
-	    return emiAnswerOptions;
-	  }
-  }
-*/  
-
-  
-  //gopalrc - added 26 Nov 2009
-  //TODO - For elegance this should probably be moved up to [Published]ItemData
-  // as it applies only to the first (seq=0) ItemText
-/*  
-  public ArrayList getEmiQuestionAnswerCombinations() {
-	  if (emiQuestionAnswerCombinations != null) {
-		  return emiQuestionAnswerCombinations;
-	  }
-	  else { // use lazy initialization
-	    ArrayList list = getAnswerArray();
-	    emiQuestionAnswerCombinations = new ArrayList();
-	    if (list == null) {
-	    	return emiQuestionAnswerCombinations;
-	    }
-	    Iterator iter = list.iterator();
-	    while (iter.hasNext()) {
-	    	Answer answer = (Answer) iter.next();
-	    	if (answer.getLabel() != null && answer.getLabel().matches("[0-9]+")) {
-	    		emiQuestionAnswerCombinations.add(answer);
-	    		ArrayList answerOptions = this.getEmiAnswerOptions();
-	    		//set of possible selection options indicating correct and incorrect options
-	    		ArrayList selections = new ArrayList();
-	    		Iterator optionsIter = answerOptions.iterator();
-	    		while (optionsIter.hasNext()) {
-	    			Answer option = (Answer)optionsIter.next();
-	    			Answer selection = null;
-	    			try {
-						selection = option.clone();
-					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if (answer.isEmiOptionCorrect(option.getLabel())) {
-						selection.setIsCorrect(Boolean.TRUE);
-					}
-					else {
-						selection.setIsCorrect(Boolean.FALSE);
-					}
-					selections.add(selection);
-	    		}
-	    		answer.setEmiSelectionOptions(selections);
-	    	}
-	    }
-	    Collections.sort(emiQuestionAnswerCombinations);
-	    return emiQuestionAnswerCombinations;
-	  }
-  }
-*/
-  
     //gopalrc - added Aug 2010
 	public Set getItemTextAttachmentSet() {
 		return itemTextAttachmentSet;
@@ -242,5 +167,16 @@ public class ItemText
 	  public boolean isEmiQuestionItemText() {
 		  return getSequence() > 0;
 	  }
-	
+
+	  
+	// gopalrc - added Aug 2010
+	public Integer getRequiredOptionsCount() {
+		return requiredOptionsCount;
+	}
+
+	// gopalrc - added Aug 2010
+	public void setRequiredOptionsCount(Integer requiredOptionsCount) {
+		this.requiredOptionsCount = requiredOptionsCount;
+	}
+
 }

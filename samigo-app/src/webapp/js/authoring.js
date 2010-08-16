@@ -86,6 +86,7 @@ $(document).ready(function(){
 		var emiOptionRemoveLink = $("a[id=itemForm:emiAnswerOptions:" + i + ":RemoveLink]");
 		emiOptionRemoveLink.bind('click', function() {
 			var optionId = +($(this).attr("id").split(":")[2]);
+			var firstHidden = -1;
 			for (j=optionId; j<highestOptionId; j++) {
 				var k = +j+1;
 				var optionText1 = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
@@ -94,7 +95,14 @@ $(document).ready(function(){
 				//if reached the visible-invisible boundary, hide the last visible row
 				if (optionText1.is(':visible') && optionText2.is(':hidden')) {
 					$("table[id=itemForm:emiAnswerOptions:" + j + ":Row]").parent().parent().hide();
+					firstHidden = j;
 					break;
+				}
+			}
+			if (firstHidden != -1) {
+				for (m=firstHidden; m<=highestItemId; m++) {
+					var oText = $("input[id=itemForm:emiAnswerOptions:" + m + ":Text]");
+					oText.val("");
 				}
 			}
 			var lastOptionText = $("input[id=itemForm:emiAnswerOptions:" + highestOptionId + ":Text]");
@@ -129,10 +137,11 @@ $(document).ready(function(){
 	
 	//************* ITEMS ********************
 	//Remove Items
-	for (i=0; i<=highestOptionId; i++) {
+	for (i=0; i<=highestItemId; i++) {
 		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
 		emiItemRemoveLink.bind('click', function() {
 			var itemId = +($(this).attr("id").split(":")[2]);
+			var firstHidden = -1;
 			for (j=itemId; j<highestItemId; j++) {
 				var k = +j+1;
 				var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +"]");
@@ -141,7 +150,14 @@ $(document).ready(function(){
 				//if reached the visible-invisible boundary, hide the last visible row
 				if (itemText1.is(':visible') && itemText2.is(':hidden')) {
 					$("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent().hide();
+					firstHidden = j;
 					break;
+				}
+			}
+			if (firstHidden != -1) {
+				for (m=firstHidden; m<=highestItemId; m++) {
+					var iText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + m +"]");
+					iText.val("");
 				}
 			}
 			var lastItemText = $("input[id^=itemForm:emiQuestionAnswerCombinations:" + highestItemId +"]");
@@ -191,37 +207,41 @@ $(document).ready(function(){
 	
 	//hide excess Options at start
 	var firstOptionText = $("input[id=itemForm:emiAnswerOptions:" + 0 + ":Text]");
-	if (firstOptionText.val() === "") {
-		for (i=4; i<26; i++) {
+	var isAllNull = true;
+	for (i=25; i>=0; i--) {
+		var optionText = $("input[id=itemForm:emiAnswerOptions:" + i + ":Text]");
+		if (optionText.val() === "" || optionText.val() === null) {
 			$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().hide();
 		}
+		else {
+			isAllNull = false;
+			break;
+		}
 	}
-	else {
-		for (i=0; i<26; i++) {
-			var optionText = $("input[id=itemForm:emiAnswerOptions:" + i + ":Text]");
-			if (optionText.val() === "") {
-				$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().hide();
-			}
+	if (isAllNull) {
+		for (i=0; i<4; i++) {
+			$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().show();
 		}
 	}
 	
 	//hide excess Items at start
 	var firstItemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:0]");
-	if (firstItemText.val() === "") {
-		for (i=4; i<26; i++) {
+	isAllNull = true;
+	for (i=25; i>=0; i--) {
+		var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + i +"]");
+		if (itemText.val() === "") {
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().hide();
 		}
-	}
-	else {
-		for (i=0; i<26; i++) {
-			var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + i +"]");
-			if (itemText.val() === "") {
-				$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().hide();
-			}
+		else {
+			isAllNull = false;
+			break;
 		}
 	}
-	
-
+	if (isAllNull) {
+		for (i=0; i<4; i++) {
+			$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();
+		}
+	}
 	
 	
 	//Vertically Align the Pasted Options Table Container
