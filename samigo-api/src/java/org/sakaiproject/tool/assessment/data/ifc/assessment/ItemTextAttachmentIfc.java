@@ -34,7 +34,4 @@ public interface ItemTextAttachmentIfc
 
   void setItemText(ItemTextIfc itemText);
   
-  //gopalrc - Aug 2010 - EMI Item Sequence for Attachments - Used in tool session
-  public static String EMI_ITEM_TEXT_ANSWERBEAN = "EMI_ITEM_TEXT_ANSWERBEAN";
-
 }

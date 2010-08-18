@@ -247,7 +247,7 @@ import org.sakaiproject.tool.assessment.ui.bean.util.EmailBean;
                                "itemauthor", req, res);
 
 	 	 //gopalrc - Aug 2010 - For EMI Item Attachments	
-	     AnswerBean emiQAComboItem = (AnswerBean)toolSession.getAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
+	     AnswerBean emiQAComboItem = bean.getCurrentAnswer();
 	     if (emiQAComboItem == null) {
 	    	 bean.setItemAttachment();
 	     }

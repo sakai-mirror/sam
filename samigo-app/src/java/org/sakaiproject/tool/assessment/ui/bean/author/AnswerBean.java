@@ -278,8 +278,8 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
  	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
 	  public String addAttachmentsRedirect() {
   	      ItemAuthorBean itemAuthorBean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
+  	      itemAuthorBean.setCurrentAnswer(this);
 	      ToolSession currentToolSession = SessionManager.getCurrentToolSession();
-	      currentToolSession.setAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN, this);
 	      
 			// 1. load resources into session for resources mgmt page
 			// then redirect to resources mgmt page
@@ -294,8 +294,6 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 				log.error("fail to redirect to attachment page: " + e.getMessage());
 			}
 		  
-		  
-		  currentToolSession.removeAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
  	      return getOutcome();
 	  }
 
@@ -316,9 +314,9 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	        ItemDataIfc itemData = null;
 		    ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 	        // itemId == null => new questiion
-	        if (itemauthorbean.getItem().getItemId()!=null){
+	        if (itemauthorbean.getItemId()!=null){
 	          try{
-	            itemData = service.getItem(itemauthorbean.getItem().getItemId().toString());
+	            itemData = service.getItem(itemauthorbean.getItemId());
 	          }
 	          catch(Exception e){
 	            log.warn(e.getMessage());

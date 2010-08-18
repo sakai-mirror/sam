@@ -80,14 +80,14 @@ public class ResetItemAttachmentListener
 		assessmentService = new PublishedAssessmentService();
 	}
 
-	//gopalrc - Aug 2010
-    ToolSession currentToolSession = SessionManager.getCurrentToolSession();
-    Object aBean = currentToolSession.getAttribute(ItemTextAttachmentIfc.EMI_ITEM_TEXT_ANSWERBEAN);
-
-	
     ItemAuthorBean itemauthorBean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
     String itemId = itemauthorBean.getItemId();
-	if (aBean == null) {
+
+	//gopalrc - Aug 2010
+//    Object aBean = itemauthorBean.getCurrentAnswer();
+    AnswerBean answerBean = itemauthorBean.getCurrentAnswer();
+
+    if (answerBean == null) {
 	    if (itemId !=null && !("").equals(itemId)){
 	      ItemDataIfc item = itemService.getItem(itemId);
 	      log.debug("*** item attachment="+item.getItemAttachmentList());
@@ -99,7 +99,6 @@ public class ResetItemAttachmentListener
 	}
 	//gopalrc - Aug 2010
 	else {
-	    AnswerBean answerBean = (AnswerBean)aBean;
 	    Long sequence = answerBean.getSequence();
 	    if (itemId !=null && !("").equals(itemId)){
 	      ItemDataIfc item = itemService.getItem(itemId);

@@ -138,7 +138,13 @@ public class ItemAuthorBean
 
   // for navigation
   private String outcome;
-  /**
+  
+  //gopalrc - Aug 2010 - for EMI attachments
+  private AnswerBean currentAnswer;
+  
+  
+
+/**
    * Creates a new ItemAuthorBean object.
    */
   public ItemAuthorBean()
@@ -152,6 +158,7 @@ public class ItemAuthorBean
      this.attachmentList = item.getItemAttachmentList();
    }
 
+  
   public ItemDataIfc getItem()
   {
     return item;
@@ -1067,6 +1074,10 @@ public class ItemAuthorBean
   public String addAttachmentsRedirect() {
     // 1. load resources into session for resources mgmt page
     //    then redirect to resources mgmt page
+	
+	//gopalrc - not EMI item (ItemText) attachment  
+	setCurrentAnswer(null);
+ 
     try	{
       List filePickerList = prepareReferenceList(attachmentList);
       ToolSession currentToolSession = SessionManager.getCurrentToolSession();
@@ -1222,6 +1233,15 @@ public class ItemAuthorBean
   }
 
   
+  //gopalrc
+   public AnswerBean getCurrentAnswer() {
+		return currentAnswer;
+   }
+
+  //gopalrc
+  public void setCurrentAnswer(AnswerBean currentAnswer) {
+	this.currentAnswer = currentAnswer;
+  }
   
   
 }
