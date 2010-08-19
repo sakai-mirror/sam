@@ -139,6 +139,14 @@ $(document).ready(function(){
 				var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]");
 				var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]");
 				itemText1.val(itemText2.val());
+				var correctOptionLabels1 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]");
+				var correctOptionLabels2 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + k + ":correctOptionLabels]");
+				correctOptionLabels1.val(correctOptionLabels2.val());
+				var requiredAnswersCount1 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + j +":requiredOptionsCount]");
+				var requiredAnswersCount2 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + k +":requiredOptionsCount]");
+				requiredAnswersCount1.val(requiredAnswersCount2.val());
+
+				
 				//if reached the visible-invisible boundary, hide the last visible row
 				if (itemText1.is(':visible') && !itemText2.is(':visible')) {
 					itemText1.val("");
@@ -148,6 +156,8 @@ $(document).ready(function(){
 			}
 			var lastItemText = $("input[id^=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":]");
 			lastItemText.val("");
+			var lastCorrectOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":correctOptionLabels]");
+			lastCorrectOptionLabels.val("");
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent().hide();
 			return false;
 	    });

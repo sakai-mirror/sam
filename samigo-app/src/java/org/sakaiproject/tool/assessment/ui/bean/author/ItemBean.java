@@ -35,6 +35,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.tool.assessment.facade.TypeFacade;
@@ -84,7 +85,7 @@ public class ItemBean
   private String emiAnswerOptionsRich;
   private String emiAnswerOptionsPaste;
   private String answerOptionsRichCount = "0";
-  private String answerOptionsSimpleOrRich = "0";
+  private String answerOptionsSimpleOrRich = ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString();
 
   
 

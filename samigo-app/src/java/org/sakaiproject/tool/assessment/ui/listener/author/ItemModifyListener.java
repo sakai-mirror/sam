@@ -613,13 +613,15 @@ public class ItemModifyListener implements ActionListener
 				  while(correctAnsLabels.hasNext())
 				  {
 					  correctOptionLabels += (String) correctAnsLabels.next();
+					  if (!correctAnsLabels.hasNext()) {
+						  correctOptionLabels += ",";
+					  }
 				  }
 				  answerbean.setCorrectOptionLabels(correctOptionLabels);
 
 				  
 				  //gopalrc - Aug 2010 - EMI Item Attachments
-			      List attachmentList = null; 
-				  attachmentList = itemfacade.getItemTextBySequence(answerbean.getSequence()).getItemTextAttachmentList();
+			      List attachmentList = itemfacade.getItemTextBySequence(answerbean.getSequence()).getItemTextAttachmentList();
 				  answerbean.setAttachmentList(attachmentList);
 				  answerbean.setResourceHash(null);
 				  

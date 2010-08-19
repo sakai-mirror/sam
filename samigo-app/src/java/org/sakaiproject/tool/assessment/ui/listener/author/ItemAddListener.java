@@ -50,6 +50,7 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemText;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerFeedbackIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemFeedbackIfc;
@@ -680,7 +681,7 @@ public class ItemAddListener
 	  		while (emiItemIter.hasNext()) {
 	  		   AnswerBean answerBean = (AnswerBean)emiItemIter.next();
 	  		   ItemTextIfc itemText = item.getItemTextBySequence(answerBean.getSequence());
-	  	       updateItemTextAttachment(itemText.getItemTextAttachmentList(), answerBean.getAttachmentList(),
+	  	       updateItemTextAttachment(answerBean.getAttachmentList(),
 	  	    		 itemText, true);
 	  		}
 	  	}
@@ -817,7 +818,7 @@ public class ItemAddListener
   	  		while (emiItemIter.hasNext()) {
   	  		   AnswerBean answerBean = (AnswerBean)emiItemIter.next();
   	  		   ItemTextIfc itemText = item.getItemTextBySequence(answerBean.getSequence());
-  	  	       updateItemTextAttachment(itemText.getItemTextAttachmentList(), answerBean.getAttachmentList(),
+  	  	       updateItemTextAttachment(answerBean.getAttachmentList(),
   	  	    		 itemText, isEditPendingAssessmentFlow);
   	  		}
   	  	}
@@ -1026,25 +1027,51 @@ public class ItemAddListener
 			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
 			
 			HashSet answerSet = new HashSet();
-			Iterator selectionOptions = textAnswerOptions.getAnswerArraySorted().iterator();
-			while (selectionOptions.hasNext()) {
-				AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
-				boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
-				
-				if (isCorrect) {
-					numberOfCorrectAnswers++;
-				}
 
-				AnswerIfc actualAnswer = new Answer(itemText,
-						selectOption.getText(), selectOption
-						.getSequence(), selectOption.getLabel(),
-						isCorrect, null, null, null,
-						Float.valueOf(bean.getItemDiscount()), null, null);
-				
-				answerSet.add(actualAnswer);
+			
+			if (Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()).equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE) ) {
+				Iterator selectionOptions = textAnswerOptions.getAnswerArraySorted().iterator();
+				while (selectionOptions.hasNext()) {
+					AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
+					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
+					
+					if (isCorrect) {
+						numberOfCorrectAnswers++;
+					}
+	
+					AnswerIfc actualAnswer = new Answer(itemText,
+							selectOption.getText(), selectOption
+							.getSequence(), selectOption.getLabel(),
+							isCorrect, null, null, null,
+							Float.valueOf(bean.getItemDiscount()), null, null);
+					
+					answerSet.add(actualAnswer);
+				}
+				itemText.setAnswerSet(answerSet);
+				textSet.add(itemText);
 			}
-			itemText.setAnswerSet(answerSet);
-			textSet.add(itemText);
+			else { // ANSWER_OPTION_RICH
+				int answerOptionsCount = Integer.valueOf(bean.getAnswerOptionsRichCount());
+				for (int i=0; i<answerOptionsCount; i++) {
+					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i);
+					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
+					
+					if (isCorrect) {
+						numberOfCorrectAnswers++;
+					}
+	
+					AnswerIfc actualAnswer = new Answer(itemText,
+							label, Long.valueOf(i), label,
+							isCorrect, null, null, null,
+							Float.valueOf(bean.getItemDiscount()), null, null);
+					
+					answerSet.add(actualAnswer);
+				}
+				itemText.setAnswerSet(answerSet);
+				textSet.add(itemText);
+					
+			}
+			
 		}
 
 		//now calculate and save the answer scores
@@ -1798,26 +1825,54 @@ public class ItemAddListener
 			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
 			
 			HashSet answerSet = new HashSet();
-			Iterator selectionOptions = textAnswerOptions.getAnswerArraySorted().iterator();
-			while (selectionOptions.hasNext()) {
-				AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
-				boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
-				
-				if (isCorrect) {
-					numberOfCorrectAnswers++;
+			
+			
+			
+			if (Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()).equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE) ) {
+				Iterator selectionOptions = textAnswerOptions.getAnswerArraySorted().iterator();
+				while (selectionOptions.hasNext()) {
+					AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
+					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
+					
+					if (isCorrect) {
+						numberOfCorrectAnswers++;
+					}
+	
+					AnswerIfc actualAnswer = new PublishedAnswer(itemText,
+							selectOption.getText(), selectOption
+							.getSequence(), selectOption.getLabel(),
+							isCorrect, null, null, null,
+							Float.valueOf(bean.getItemDiscount()), null, null);
+					
+					answerSet.add(actualAnswer);
 				}
-
-				AnswerIfc actualAnswer = new PublishedAnswer(itemText,
-						selectOption.getText(), selectOption
-						.getSequence(), selectOption.getLabel(),
-						isCorrect, null, null, null,
-						Float.valueOf(bean.getItemDiscount()), null, null);
-				
-				answerSet.add(actualAnswer);
+				itemText.setAnswerSet(answerSet);
+				textSet.add(itemText);
 			}
-			itemText.setAnswerSet(answerSet);
-			textSet.add(itemText);
+			else { // ANSWER_OPTION_RICH
+				int answerOptionsCount = Integer.valueOf(bean.getAnswerOptionsRichCount());
+				for (int i=0; i<answerOptionsCount; i++) {
+					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i);
+					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
+					
+					if (isCorrect) {
+						numberOfCorrectAnswers++;
+					}
+	
+					AnswerIfc actualAnswer = new PublishedAnswer(itemText,
+							label, Long.valueOf(i), label,
+							isCorrect, null, null, null,
+							Float.valueOf(bean.getItemDiscount()), null, null);
+					
+					answerSet.add(actualAnswer);
+				}
+				itemText.setAnswerSet(answerSet);
+				textSet.add(itemText);
+					
+			}
+			
 		}
+
 
 		//now calculate and save the answer scores
 		if (numberOfCorrectAnswers != 0) {
@@ -2253,21 +2308,15 @@ Object[] fibanswers = getFIBanswers(entiretext).toArray();
   }
 
   //gopalrc - Aug 2010
-  private void updateItemTextAttachment(List oldList, List newList, ItemTextIfc itemText, boolean pendingOrPool){
-	    if ((oldList == null || oldList.size() == 0 ) && (newList == null || newList.size() == 0)) return;
+  private void updateItemTextAttachment(List newList, ItemTextIfc itemText, boolean pendingOrPool){
+	    if (newList == null || newList.size() == 0) return;
 	    List list = new ArrayList();
-	    HashMap map = getAttachmentIdHash(oldList);
 	    for (int i=0; i<newList.size(); i++){
 	      ItemTextAttachmentIfc a = (ItemTextAttachmentIfc)newList.get(i);
-	      if (map.get(a.getAttachmentId())!=null){
-	        // exist already, remove it from map
-	        map.remove(a.getAttachmentId());
-	      }
-	      else{
-	        // new attachments
-	        a.setItemText(itemText);
-	        list.add(a);
-	      }
+	      // new attachments
+	      a.setAttachmentId(null);  
+	      a.setItemText(itemText);
+	      list.add(a);
 	    }      
 	    // save new ones
 	    AssessmentService service;
@@ -2278,26 +2327,20 @@ Object[] fibanswers = getFIBanswers(entiretext).toArray();
 	    	service = new PublishedAssessmentService();
 	    }
 	    service.saveOrUpdateAttachments(list);
-
-	    // remove old ones
-	    Set set = map.keySet();
-	    Iterator iter = set.iterator();
-	    while (iter.hasNext()){
-	      Long attachmentId = (Long)iter.next();
-	      service.removeItemTextAttachment(attachmentId.toString());
-	    }
   }
   
   
   private HashMap getAttachmentIdHash(List list){
     HashMap map = new HashMap();
     for (int i=0; i<list.size(); i++){
-      ItemAttachmentIfc a = (ItemAttachmentIfc)list.get(i);
+//  	gopalrc - modified below to be more generic (i.e. include both Item and ItemText attachments)
+//        ItemAttachmentIfc a = (ItemAttachmentIfc)list.get(i);
+      AttachmentIfc a = (AttachmentIfc)list.get(i);
       map.put(a.getAttachmentId(), a);
     }
     return map;
   }
-  
+
   private void updateItemFeedback(ItemFacade item, String feedbackTypeId, String feedbackText) {
 	  Set itemFeedbackSet = item.getItemFeedbackSet();
 	  if ((itemFeedbackSet == null || itemFeedbackSet.size() == 0) || !item.getItemFeedbackMap(itemFeedbackSet).containsKey(feedbackTypeId)) {

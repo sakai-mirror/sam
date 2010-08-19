@@ -43,7 +43,6 @@ import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.TypeException;
 import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
-import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
@@ -284,7 +283,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 			// 1. load resources into session for resources mgmt page
 			// then redirect to resources mgmt page
 			try {
-				List filePickerList = prepareEmiAttachmentReferenceList(this.getAttachmentList());
+				List filePickerList = prepareAttachmentReferenceList(this.getAttachmentList());
 				currentToolSession.setAttribute(
 						FilePickerHelper.FILE_PICKER_ATTACHMENTS, filePickerList);
 				ExternalContext context = FacesContext.getCurrentInstance()
@@ -301,7 +300,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	  
 	    //gopalrc - Aug 2010 - For EMI Item Attachments
 	    /* called by SamigoJsfTool.java on exit from file picker */
-	    public void setEmiItemAttachment(){
+	    public void setItemTextAttachment(){
 	    	AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
 	    	boolean isEditPendingAssessmentFlow =  author.getIsEditPendingAssessmentFlow();
 	    	ItemService service = null;
@@ -328,13 +327,13 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	    // list returns contains modified list of attachments, i.e. new 
 	    // and old attachments. This list will be 
 	    // persisted to DB if user hit Save on the Item Modifying page.
-	    List list = prepareEmiItemAttachment(itemText, isEditPendingAssessmentFlow);
+	    List list = prepareItemTextAttachment(itemText, isEditPendingAssessmentFlow);
 	    setAttachmentList(list);
 	  }
 
 	  
 	    //gopalrc - Aug 2010 - For EMI Item Attachments
-	    private List prepareEmiAttachmentReferenceList(List attachmentList){
+	    private List prepareAttachmentReferenceList(List attachmentList){
 	        List list = new ArrayList();
 	        if (attachmentList == null){
 	          return list;
@@ -371,7 +370,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	      }
 
 	    //gopalrc - Aug 2010 - For EMI Item Attachments
-	      private List prepareEmiItemAttachment(ItemTextIfc itemText, boolean isEditPendingAssessmentFlow){
+	      private List prepareItemTextAttachment(ItemTextIfc itemText, boolean isEditPendingAssessmentFlow){
 	        ToolSession session = SessionManager.getCurrentToolSession();
 	        if (session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
 
@@ -407,7 +406,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	              else{ 
 	                // attachment already exist, let's add it to new list and
 	    	    // check it off from map
-	                newAttachmentList.add((ItemAttachmentIfc)map.get(resourceId));
+	                newAttachmentList.add((ItemTextAttachmentIfc)map.get(resourceId));
 	                map.remove(resourceId);
 	              }
 	            }
@@ -429,7 +428,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	    	    if (attachmentSet !=null ){
 	    	      Iterator iter = attachmentSet.iterator();
 	    	      while (iter.hasNext()){
-	    	        ItemAttachmentIfc attach = (ItemAttachmentIfc) iter.next();
+	    	        ItemTextAttachmentIfc attach = (ItemTextAttachmentIfc) iter.next();
 	    	        map.put(attach.getResourceId(), attach);
 	    	      }
 	    	    }

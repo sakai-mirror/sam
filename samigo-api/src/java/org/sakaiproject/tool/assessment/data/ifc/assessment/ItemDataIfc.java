@@ -179,6 +179,8 @@ public interface ItemDataIfc extends java.io.Serializable {
   
   
   //gopalrc - added 1 Dec 2009
+  // internal use
+  public static final String ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   String getLeadInText();
   String getThemeText();
   //public ItemTextIfc getEmiAnswerComponentsItemText();
@@ -194,6 +196,10 @@ public interface ItemDataIfc extends java.io.Serializable {
   public ItemTextIfc getItemTextBySequence(Long itemTextSequence);
   public Integer getAnswerOptionsRichCount();
   public void setAnswerOptionsRichCount(Integer answerOptionsRichCount);
+  
+  //gopalrc
+  public static final Integer ANSWER_OPTIONS_SIMPLE = 0;
+  public static final Integer ANSWER_OPTIONS_RICH = 1;
   public Integer getAnswerOptionsSimpleOrRich();
   public void setAnswerOptionsSimpleOrRich(Integer answerOptionsSimpleOrRich);  
   

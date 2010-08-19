@@ -252,7 +252,7 @@ import org.sakaiproject.tool.assessment.ui.bean.util.EmailBean;
 	    	 bean.setItemAttachment();
 	     }
 	     else {
-	    	 emiQAComboItem.setEmiItemAttachment();
+	    	 emiQAComboItem.setItemTextAttachment();
 	     }
          toolSession.removeAttribute("SENT_TO_FILEPICKER_HELPER");
       }
