@@ -613,7 +613,7 @@ public class ItemModifyListener implements ActionListener
 				  while(correctAnsLabels.hasNext())
 				  {
 					  correctOptionLabels += (String) correctAnsLabels.next();
-					  if (!correctAnsLabels.hasNext()) {
+					  if (correctAnsLabels.hasNext()) {
 						  correctOptionLabels += ",";
 					  }
 				  }

@@ -23,6 +23,8 @@
     <property name="grade" type="string" length="80" column="GRADE" not-null="false" />
     <property name="score" type="float" column="SCORE" not-null="false" />
     <property name="discount" type="float" column="DISCOUNT" not-null="false" />
+    <property name="answerOptionsRichCount" type="integer" column="ANSWER_OPTIONS_RICH_COUNT" not-null="false" />
+    <property name="answerOptionsSimpleOrRich" type="integer" column="ANSWER_OPTIONS_SIMPLE_OR_RICH" not-null="false" />
     <property name="hint" type="string" length="4000" column="HINT" not-null="false" />
     <property name="hasRationale" type="boolean" column="HASRATIONALE" not-null="false" />
     <property name="partialCreditFlag" type="boolean" column="PARTIAL_CREDIT_FLAG" not-null="false"/>
@@ -60,6 +62,7 @@
       column="ITEMID" not-null="true" index="SAM_PUBITEMTEXT_ITEM_I" />
     <property name="sequence" type="long" column="SEQUENCE" not-null="true" />
     <property name="text" type="text" column="TEXT" not-null="false" />
+	<property name="requiredOptionsCount" type="integer" column="REQUIRED_OPTIONS_COUNT" not-null="false" />
     <set name="answerSet" table="SAM_PUBLISHEDANSWER_T" cascade="all" inverse="true" lazy="false">
        <key column="ITEMTEXTID"/>
        <one-to-many class="org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAnswer"/>

@@ -56,7 +56,7 @@ public class FibBean
   
   //gopalrc - added for EMI - Jan 2010
   //contains the set of FibBeans for each sub-question in choices list
-  private MatchingBean subQuestionContainer;
+  //private MatchingBean subQuestionContainer;
   
 
 
@@ -101,6 +101,7 @@ public class FibBean
   {
     
     //gopalrc - Jan 2010
+/*	  
     if (parent.getItemData().getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
    		response = newresp.toUpperCase();
     	
@@ -177,6 +178,9 @@ public class FibBean
     } // end if EMI
     
     else { // other type
+*/	    
+    
+    
         response = newresp;
 	    if (data == null)
 	    {
@@ -189,7 +193,7 @@ public class FibBean
 	      parent.setItemGradingDataArray(items);
 	    }
 	    data.setAnswerText(newresp);
-    }
+//    }
     
   }
 
@@ -223,7 +227,7 @@ public class FibBean
     hasInput = newin;
   }
   
-  
+/*  
   //gopalrc - added for EMI - Jan 2010
   public MatchingBean getSubQuestionContainer() {
 	return subQuestionContainer;
@@ -233,12 +237,14 @@ public class FibBean
 	public void setSubQuestionContainer(MatchingBean subQuestionContainer) {
 		this.subQuestionContainer = subQuestionContainer;
 	}
-
+*/
+  
 	//gopalrc - added for EMI - Jan 2010
 	public void validateEmiResponse(FacesContext context, 
             UIComponent toValidate,
             Object value) {
 		
+/*		
 		String response = ((String) value).trim().toUpperCase();
 		
 
@@ -265,6 +271,7 @@ public class FibBean
 		    	  	}
 		      }
 		}
+		*/
 	}
 
 }

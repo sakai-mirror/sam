@@ -1490,8 +1490,9 @@ public class DeliveryActionListener
       if (rb == null) { 	 
   		rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.DeliveryMessages");
   	  }
-      
-      
+     
+      // TODO sort out the itemgrading responses
+  /*    
       //Now populate the choices (anwers) for each sub-question
       //Each choice is represented by a SelectionBean
       FibBean fibBean = null;
@@ -1559,6 +1560,8 @@ public class DeliveryActionListener
       
       
       mbean.setChoices(choices); // Set the A/B/C... choices
+      
+*/      
       beans.add(mbean);
     }
     

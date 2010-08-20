@@ -270,6 +270,10 @@ public class ItemAddListener
 		  } // end of while
 
 		  String missingLabel = missingLabelbuf.toString();
+
+		  //gopalrc TODO - more validation required if rich options
+		  if (item.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_RICH.toString())) return;
+		  
 		  if(!error){
 			  if(countAnswerText<=1){
 				  String answerList_err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","answerList_error");
@@ -1047,13 +1051,11 @@ public class ItemAddListener
 					
 					answerSet.add(actualAnswer);
 				}
-				itemText.setAnswerSet(answerSet);
-				textSet.add(itemText);
 			}
 			else { // ANSWER_OPTION_RICH
 				int answerOptionsCount = Integer.valueOf(bean.getAnswerOptionsRichCount());
 				for (int i=0; i<answerOptionsCount; i++) {
-					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i);
+					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i, i+1);
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
 					
 					if (isCorrect) {
@@ -1067,10 +1069,10 @@ public class ItemAddListener
 					
 					answerSet.add(actualAnswer);
 				}
-				itemText.setAnswerSet(answerSet);
-				textSet.add(itemText);
-					
 			}
+			
+			itemText.setAnswerSet(answerSet);
+			textSet.add(itemText);
 			
 		}
 
@@ -1826,8 +1828,6 @@ public class ItemAddListener
 			
 			HashSet answerSet = new HashSet();
 			
-			
-			
 			if (Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()).equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE) ) {
 				Iterator selectionOptions = textAnswerOptions.getAnswerArraySorted().iterator();
 				while (selectionOptions.hasNext()) {
@@ -1846,13 +1846,11 @@ public class ItemAddListener
 					
 					answerSet.add(actualAnswer);
 				}
-				itemText.setAnswerSet(answerSet);
-				textSet.add(itemText);
 			}
 			else { // ANSWER_OPTION_RICH
 				int answerOptionsCount = Integer.valueOf(bean.getAnswerOptionsRichCount());
 				for (int i=0; i<answerOptionsCount; i++) {
-					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i);
+					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i, i+1);
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
 					
 					if (isCorrect) {
@@ -1866,11 +1864,9 @@ public class ItemAddListener
 					
 					answerSet.add(actualAnswer);
 				}
-				itemText.setAnswerSet(answerSet);
-				textSet.add(itemText);
-					
 			}
-			
+			itemText.setAnswerSet(answerSet);
+			textSet.add(itemText);
 		}
 
 

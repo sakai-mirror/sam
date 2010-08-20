@@ -825,6 +825,14 @@ public class PublishedItemData
 	  //TODO - For elegance this should probably be moved up to [Published]ItemData
 	  // as it applies only to the first (seq=0) ItemText
 	  public ArrayList getEmiAnswerOptions() {
+		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
+		  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE);  
+		  if (itemText != null) {
+			    return itemText.getAnswerArraySorted();
+		  }
+		  return null;
+/*		  
+		  
 		  if (emiAnswerOptions != null) {
 			  return emiAnswerOptions;
 		  }
@@ -853,6 +861,7 @@ public class PublishedItemData
 			  }
 		  }
 		  return null;
+*/		  
 	  }
 	  
 
@@ -885,21 +894,45 @@ public class PublishedItemData
 	  }
 	  
 	  
+	  //gopalrc - Aug 2010
 		public Integer getAnswerOptionsRichCount() {
 			return answerOptionsRichCount;
 		}
 
+		  //gopalrc - Aug 2010
 		public void setAnswerOptionsRichCount(Integer answerOptionsRichCount) {
 			this.answerOptionsRichCount = answerOptionsRichCount;
 		}	  
 		  
+		  //gopalrc - Aug 2010
 		public Integer getAnswerOptionsSimpleOrRich() {
 			return answerOptionsSimpleOrRich;
 		}
 
+		  //gopalrc - Aug 2010
 		public void setAnswerOptionsSimpleOrRich(Integer answerOptionsSimpleOrRich) {
 			this.answerOptionsSimpleOrRich = answerOptionsSimpleOrRich;
 		}
-	  
+		
+		  //gopalrc - Aug 2010
+		  public String getEmiAnswerOptionsRichText() {
+			  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
+			  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE);  
+			  if (itemText != null) {
+				    return itemText.getText();
+			  }
+			  return null;
+		  }
+
+		  //gopalrc - Aug 2010
+		  public boolean getIsAnswerOptionsSimple() {
+			  return this.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE);
+		  }
+
+		  //gopalrc - Aug 2010
+		  public boolean getIsAnswerOptionsRich() {
+			  return this.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_RICH);
+		  }
+
 
 }

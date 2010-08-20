@@ -176,7 +176,7 @@
 
   <div class="shorttext tier2">
     <h:outputText value="#{authorMessages.answer_options_count}" />
-    <h:selectOneMenu  id="answerOptionsRichCount"  onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsCountLink();" value="#{itemauthor.currentItem.answerOptionsRichCount}" >
+    <h:selectOneMenu  id="answerOptionsRichCount"  value="#{itemauthor.currentItem.answerOptionsRichCount}" >
       <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
       <f:selectItem itemLabel="2" itemValue="2"/>
       <f:selectItem itemLabel="3" itemValue="3"/>
@@ -204,8 +204,6 @@
       <f:selectItem itemLabel="25" itemValue="25"/>
       <f:selectItem itemLabel="26" itemValue="26"/>
     </h:selectOneMenu>
-    <h:commandLink id="hiddenAddEmiAnswerOptionsCountActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsCountAction}" value="">
-  </h:commandLink>
   </div>
 
   </div>

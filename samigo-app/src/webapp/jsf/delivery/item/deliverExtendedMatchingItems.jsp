@@ -32,7 +32,7 @@ should be included in file importing DeliveryMessages
   <f:verbatim><br /><br /></f:verbatim>
   
   
-  <h:dataTable value="#{question.itemData.emiAnswerComponentsItemText.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
+  <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option" border="1" style="border-style:solid" rendered="#{question.itemData.isAnswerOptionsSimple}">
      <h:column> 
        <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
          <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
@@ -41,13 +41,37 @@ should be included in file importing DeliveryMessages
   </h:dataTable>
       
       
+  <h:outputText value="#{question.itemData.emiAnswerOptionsRichText}"  escape="false" rendered="#{question.itemData.isAnswerOptionsRich}"/>
+      
+  <!-- ATTACHMENTS BELOW - EMI RICH ANSWER OPTIONS-->
+  <h:dataTable value="#{question.itemData.itemAttachmentList}" var="attach" rendered="#{question.itemData.isAnswerOptionsRich}">
+    <h:column rendered="#{!attach.isMedia}">
+      <%@ include file="/jsf/shared/mimeicon.jsp" %>
+    </h:column>
+    <h:column>
+      <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:outputText escape="false" value="
+	    <embed src=\"#{delivery.protocol}/samigo-app/servlet/ShowAttachmentMedia?actionMode=preview&resourceId=#{attach.encodedResourceId}&mimeType=#{attach.mimeType}&filename=#{attach.filename}\" volume=\"50\" height=\"350\" width=\"400\" autostart=\"false\"/>" rendered="#{attach.isInlineVideo}"/>
+      <h:outputText escape="false" value="
+	    <embed src=\"#{delivery.protocol}/samigo-app/servlet/ShowAttachmentMedia?actionMode=preview&resourceId=#{attach.encodedResourceId}&mimeType=#{attach.mimeType}&filename=#{attach.filename}\" height=\"350\" width=\"400\"/>" rendered="#{attach.isInlineFlash}"/>
+	  <h:outputText escape="false" value="
+	    <img src=\"#{delivery.protocol}/samigo-app/servlet/ShowAttachmentMedia?actionMode=preview&resourceId=#{attach.encodedResourceId}&mimeType=#{attach.mimeType}&filename=#{attach.filename}\" />" rendered="#{attach.isInlineImage}"/>
+      <h:outputLink value="#{attach.location}" target="new_window" rendered="#{!attach.isMedia}">
+         <h:outputText escape="false" value="#{attach.filename}" />
+      </h:outputLink>
+    </h:column>
+    <h:column>
+      <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:outputText escape="false" value="#{attach.fileSize} #{generalMessages.kb}" rendered="#{!attach.isLink && !attach.isMedia}"/>
+    </h:column>
+  </h:dataTable>
+  <!-- ATTACHMENTS ABOVE - EMI RICH ANSWER OPTIONS-->
+  
   
   
   <f:verbatim><br /><br /></f:verbatim>
   <h:outputText value="#{question.leadInText}"  escape="false"/>
   <f:verbatim><br /><br /></f:verbatim>
-  <!-- ATTACHMENTS -->
-  <%@ include file="/jsf/delivery/item/attachment.jsp" %>
 
 
 <!--
@@ -65,29 +89,11 @@ should be included in file importing DeliveryMessages
    
 
    <h:column>
-     <h:dataTable value="#{matching.choices}" var="selection">
-       <h:column rendered="#{delivery.feedback eq 'true' &&
-           delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
-           <h:graphicImage id="image"
-             rendered="#{selection.answer.isCorrect eq 'true' && selection.response eq selection.answer.label}"
-             alt="#{deliveryMessages.alt_correct}" url="/images/checkmark.gif" >
-           </h:graphicImage>
-           <h:graphicImage id="image2"
-             rendered="#{selection.answer.isCorrect ne 'true' && selection.response eq selection.answer.label}"
-             width="16" height="16"
-             alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
-           </h:graphicImage>
-       </h:column>
-
-       <h:column>
-          <h:inputText id="responseAnswer" value="#{selection.response}" size="1" style="text-transform:uppercase;"
-           disabled="#{delivery.actionString=='reviewAssessment'
-                 || delivery.actionString=='gradeAssessment'}"
-                 validator="#{selection.validateEmiResponse}"> 
-          </h:inputText>
-       </h:column>
-       
-     </h:dataTable>
+      <h:inputText id="responseAnswer" value="#{matching.response}" size="1" style="text-transform:uppercase;"
+       disabled="#{delivery.actionString=='reviewAssessment'
+             || delivery.actionString=='gradeAssessment'}"
+             validator="#{selection.validateEmiResponse}"> 
+      </h:inputText>
    </h:column>
 
    <h:column>

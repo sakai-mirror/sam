@@ -69,12 +69,6 @@ public interface ItemTextIfc
   List getItemTextAttachmentList();
 
   
-  //gopalrc - added 26 Nov 2009
-  //TODO - For elegance these methods should probably be moved up to [Published]ItemData
-  // as it applies only to the first (seq=0) ItemText
-  //public ArrayList getEmiAnswerOptions();
-  //public ArrayList getEmiQuestionAnswerCombinations();
-  
   //gopalrc - added Aug 2010
   //This is an actual EMI Question Item (i.e. not Theme or Lead In Text or Complete Answer Options List) 
   public boolean isEmiQuestionItemText();

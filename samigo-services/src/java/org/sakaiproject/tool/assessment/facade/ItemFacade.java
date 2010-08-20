@@ -1228,6 +1228,36 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
 		this.answerOptionsSimpleOrRich = answerOptionsSimpleOrRich;
 		this.data.setAnswerOptionsSimpleOrRich(answerOptionsSimpleOrRich);
 	}
+
+	public String getEmiAnswerOptionsRichText() {
+		try {
+			this.data = (ItemDataIfc) item.getData();
+		} catch (AssessmentException ex) {
+			throw new DataFacadeException(ex.getMessage());
+		}
+		return this.data.getEmiAnswerOptionsRichText();
+	}
+	
+	
+	  //gopalrc - Aug 2010
+	  public boolean getIsAnswerOptionsSimple() {
+			try {
+				this.data = (ItemDataIfc) item.getData();
+			} catch (AssessmentException ex) {
+				throw new DataFacadeException(ex.getMessage());
+			}
+			return this.data.getIsAnswerOptionsSimple();
+	  }
+
+	  //gopalrc - Aug 2010
+	  public boolean getIsAnswerOptionsRich() {
+			try {
+				this.data = (ItemDataIfc) item.getData();
+			} catch (AssessmentException ex) {
+				throw new DataFacadeException(ex.getMessage());
+			}
+			return this.data.getIsAnswerOptionsRich();
+	  }
 	
 	
 }

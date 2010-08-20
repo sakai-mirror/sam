@@ -913,22 +913,6 @@ public ItemData() {}
 		  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE);  
 		  if (itemText != null) {
 			    return itemText.getAnswerArraySorted();
-/*			    
-			    ArrayList list = itemText.getAnswerArraySorted();
-			    emiAnswerOptions = new ArrayList();
-			    if (list == null) {
-			    	return emiAnswerOptions;
-			    }
-			    Iterator iter = list.iterator();
-			    while (iter.hasNext()) {
-			    	Answer answer = (Answer) iter.next();
-			    	//if (answer.getLabel() != null && answer.getLabel().matches("[A-Za-z]")) {
-			    		emiAnswerOptions.add(answer);
-			    	//}
-			    }
-			    Collections.sort(emiAnswerOptions);
-			    return emiAnswerOptions;
-*/
 		  }
 		  return null;
 	  }
@@ -963,22 +947,45 @@ public ItemData() {}
 	  }
 
 	  
+  //gopalrc - Aug 2010
 	public Integer getAnswerOptionsRichCount() {
 		return answerOptionsRichCount;
 	}
 
+  //gopalrc - Aug 2010
 	public void setAnswerOptionsRichCount(Integer answerOptionsRichCount) {
 		this.answerOptionsRichCount = answerOptionsRichCount;
 	}	  
 	  
+  //gopalrc - Aug 2010
 	public Integer getAnswerOptionsSimpleOrRich() {
 		return answerOptionsSimpleOrRich;
 	}
 
+  //gopalrc - Aug 2010
 	public void setAnswerOptionsSimpleOrRich(Integer answerOptionsSimpleOrRich) {
 		this.answerOptionsSimpleOrRich = answerOptionsSimpleOrRich;
 	}
 	  
-	  
+  //gopalrc - Aug 2010
+  public String getEmiAnswerOptionsRichText() {
+	  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
+	  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE);  
+	  if (itemText != null) {
+		    return itemText.getText();
+	  }
+	  return null;
+  }
+  
+  //gopalrc - Aug 2010
+  public boolean getIsAnswerOptionsSimple() {
+	  return this.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE);
+  }
+
+  //gopalrc - Aug 2010
+  public boolean getIsAnswerOptionsRich() {
+	  return this.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_RICH);
+  }
+
 	  
 }

@@ -1254,19 +1254,8 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 
   //gopalrc - added 30 Nov 2009
   public void setThemeAndLeadInText() {
-	  /*
-	String text = getText();  
-	if ((TypeIfc.EXTENDED_MATCHING_ITEMS).equals(getItemData().getTypeId()) &&
-			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
-		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
-		themeText = itemTextElements[0];
-		leadInText = itemTextElements[1];
-	}
-	*/
-	  
 	themeText = itemData.getThemeText();
 	leadInText = itemData.getLeadInText();
-
   }
     
   

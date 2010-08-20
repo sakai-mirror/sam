@@ -1806,13 +1806,23 @@ public class ItemBean
 	//gopalrc - Jan 2010
 	public boolean isValidEmiAnswerOptionLabel(String label) {
 		if (label == null) return false;
-		Iterator iter = getEmiAnswerOptionsClean().iterator();
-		while (iter.hasNext()) {
-			AnswerBean answerBean = (AnswerBean) iter.next();
-			if (answerBean.getLabel().equals(label)) {
+		String simpleOrRich = this.getAnswerOptionsSimpleOrRich();
+		if (simpleOrRich == ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString()) {
+			Iterator iter = getEmiAnswerOptionsClean().iterator();
+			while (iter.hasNext()) {
+				AnswerBean answerBean = (AnswerBean) iter.next();
+				if (answerBean.getLabel().equals(label)) {
+					return true;
+				}
+			}
+		}
+		else { // ANSWER_OPTIONS_RICH
+			String optionLabels = ItemDataIfc.ANSWER_OPTION_LABELS.substring(0, Integer.valueOf(this.getAnswerOptionsRichCount()));
+			if (optionLabels.contains(label)) {
 				return true;
 			}
 		}
+			
 		return false;
 	}
 

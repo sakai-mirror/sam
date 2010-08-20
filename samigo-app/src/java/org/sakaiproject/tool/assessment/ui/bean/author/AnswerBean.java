@@ -189,6 +189,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	
 	
 	//gopalrc - added for EMI - Jan 2010
+	//TODO - Move validation to JavaScript/JQuery
 	public void validateCorrectOptionLabels(FacesContext context, 
             UIComponent toValidate,
             Object value) {
@@ -200,6 +201,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 			return;
 		}
 		*/
+		/*
 		String optionLabels = ((String) value).trim().toUpperCase();
 		String[] optionLabelsArray = optionLabels.split(",");
 		
@@ -228,6 +230,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 				}
 			}
 		}
+		*/
 	}
 
 
