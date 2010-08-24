@@ -1974,7 +1974,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
                                 ((ItemGradingIfc)((List)grades.get(index)).get(0)).getPublishedItemId().longValue() != pid.getItemId().longValue()){
 						//have to add the placeholder
                         List newList = new ArrayList();
-                        newList.add(new EmptyItemGrading(pid.getSection().getSequence(), pid.getItemId()));
+                        newList.add(new EmptyItemGrading(pid.getSection().getSequence(), pid.getItemId(), pid.getSequence()));
                         grades.add(index, newList);
                     }
                 }
@@ -1982,7 +1982,6 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
                           
 			  int questionNumber = 0;
 			  for (Object oo: grades) {	   
-				  questionNumber++;
 				  // There can be more than one answer to a question, e.g. for
 				  // FIB with more than one blank or matching questions. So sort
 				  // by sequence number of answer. (don't bother to sort if just 1)
@@ -2020,6 +2019,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 					  Long publishedItemId = grade.getPublishedItemId();	    		   
 					  ItemDataIfc publishedItemData = (ItemDataIfc) publishedItemHash.get(publishedItemId);
 					  Long typeId = publishedItemData.getTypeId();
+                      questionNumber = publishedItemData.getSequence();
 					  if (typeId.equals(TypeIfc.FILL_IN_BLANK) || typeId.equals(TypeIfc.FILL_IN_NUMERIC)) {
 						  log.debug("FILL_IN_BLANK, FILL_IN_NUMERIC");
 						  isFinFib = true;
@@ -2132,8 +2132,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
                   Integer sectionSequenceNumber = null;
                   if(grade == null || EmptyItemGrading.class.isInstance(grade)){
                   	sectionSequenceNumber = EmptyItemGrading.class.cast(grade).getSectionSequence();
+                    questionNumber = EmptyItemGrading.class.cast(grade).getItemSequence();
                   	//want to make the cell empty
-                        maintext = " ";
+                    maintext = " ";
                   }else{
                   	sectionSequenceNumber = updateSectionScore(sectionItems, sectionScores, grade.getPublishedItemId(), itemScore);
                   }
@@ -3110,10 +3111,19 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     class EmptyItemGrading implements ItemGradingIfc {
         private Integer sectionSequence;
         private Long publishedItemId;
+        private Integer itemSequence;
 
-        EmptyItemGrading(Integer sectionSequence, Long publishedItemId){
+        EmptyItemGrading(Integer sectionSequence, Long publishedItemId, Integer itemSequence){
             this.sectionSequence = sectionSequence;
             this.publishedItemId = publishedItemId;
+            this.itemSequence = itemSequence;
+        }
+
+        /**
+         * @return the itemSequence
+         */
+        public Integer getItemSequence() {
+            return itemSequence;
         }
 
         public Integer getSectionSequence(){

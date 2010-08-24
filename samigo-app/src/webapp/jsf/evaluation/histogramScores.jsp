@@ -221,7 +221,7 @@ $Id$
     </h:selectOneMenu>
 </h:panelGroup>
 
-  <h:dataTable value="#{histogramScores.info}" var="item">
+  <h:dataTable value="#{histogramScores.partInfo}" var="item">
 
       <!-- XXX Jaques Remove -->
 <!-- need to add a randomtype property for histogramQuestionScoreBean (item) and if it's true, hide histogram  -->

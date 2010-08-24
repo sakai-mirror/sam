@@ -72,8 +72,8 @@ public class HistogramScoresBean
   private String lowerQuartile; //medidan of lowest-median
   private String upperQuartile; //median of median-highest
   private int interval; // number interval breaks down
-  private Collection info; //HistogramQuestionScoresBean
-  private Collection<HistogramQuestionScoresBean> allInfo;
+  private Collection<HistogramQuestionScoresBean> info; //HistogramQuestionScoresBean
+  private Collection<HistogramQuestionScoresBean> partInfo;
   private int[] numStudentCollection = {  };
   private String[] rangeCollection = {  };
   private int[] columnHeight = {  };
@@ -395,7 +395,7 @@ publishedId = ppublishedId;
    *
    * @return the info collection
    */
-  public Collection getInfo()
+  public Collection<HistogramQuestionScoresBean> getInfo()
   {
     return info;
   }
@@ -405,9 +405,20 @@ publishedId = ppublishedId;
    *
    * @param pinfo the info
    */
-  public void setInfo(Collection pinfo)
+  public void setInfo(Collection<HistogramQuestionScoresBean> pinfo)
   {
-    filterInfo(pinfo);
+      info = pinfo;
+    filterInfo();
+  }
+
+  /**
+   * the a collection of information for the active part
+   *
+   * @return the part info collection
+   */
+  public Collection<HistogramQuestionScoresBean> getPartInfo()
+  {
+    return partInfo;
   }
 
   /**
@@ -543,7 +554,7 @@ publishedId = ppublishedId;
   public void setPartNumber(String ppartNumber)
   {
     partNumber = ppartNumber;
-    filterInfo(allInfo);
+    filterInfo();
   }
 
   /**
@@ -1007,19 +1018,18 @@ publishedId = ppublishedId;
      * This method will filter the info (HistogramQuestionScoresBean)
      * to only show the questions for the active part.
      */
-    private void filterInfo(Collection<HistogramQuestionScoresBean> pinfo){
-        allInfo = pinfo;
-        if(pinfo == null || partNumber == null || partNumber.length() == 0){
-            info = pinfo;
+    private void filterInfo(){
+        if(info == null || partNumber == null || partNumber.length() == 0){
+            partInfo = info;
         }else{
-            if(info == null){
-                info = new ArrayList<HistogramQuestionScoresBean>();
+            if(partInfo == null){
+                partInfo = new ArrayList<HistogramQuestionScoresBean>();
             }else{
-                info.clear();
+                partInfo.clear();
             }
-            for(HistogramQuestionScoresBean question: pinfo){
+            for(HistogramQuestionScoresBean question: info){
                 if(partNumber.equals(question.getPartNumber())){
-                    info.add(question);
+                    partInfo.add(question);
                 }
             }
         }
