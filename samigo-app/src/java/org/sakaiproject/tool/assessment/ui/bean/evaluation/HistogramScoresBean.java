@@ -1019,14 +1019,16 @@ publishedId = ppublishedId;
      * to only show the questions for the active part.
      */
     private void filterInfo(){
-        if(info == null || partNumber == null || partNumber.length() == 0){
-            partInfo = info;
+        if(partInfo == null){
+            partInfo = new ArrayList<HistogramQuestionScoresBean>();
         }else{
-            if(partInfo == null){
-                partInfo = new ArrayList<HistogramQuestionScoresBean>();
-            }else{
-                partInfo.clear();
-            }
+            partInfo.clear();
+        }
+        if(info == null){
+            return;
+        }else if(partNumber == null || partNumber.length() == 0){
+            partInfo.addAll(info);
+        }else{
             for(HistogramQuestionScoresBean question: info){
                 if(partNumber.equals(question.getPartNumber())){
                     partInfo.add(question);
