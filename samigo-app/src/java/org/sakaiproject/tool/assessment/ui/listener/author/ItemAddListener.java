@@ -590,6 +590,12 @@ public class ItemAddListener
 
       item.setTypeId(Long.valueOf(bean.getItemType()));
 
+  	  //gopalrc
+  	  if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+	    item.setAnswerOptionsSimpleOrRich(Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()));
+	    item.setAnswerOptionsRichCount(Integer.valueOf(bean.getAnswerOptionsRichCount()));
+  	  }
+      
       item.setCreatedBy(AgentFacade.getAgentString());
       item.setCreatedDate(new Date());
       item.setLastModifiedBy(AgentFacade.getAgentString());
@@ -641,9 +647,8 @@ public class ItemAddListener
       }
       else {
         	//prepare itemText, including answers
+    	  	//gopalrc
     	  	if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-			  item.setAnswerOptionsSimpleOrRich(Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()));
-			  item.setAnswerOptionsRichCount(Integer.valueOf(bean.getAnswerOptionsRichCount()));
               item.setItemTextSet(prepareTextForEMI(item, bean, itemauthor));
     	  	}
     	  	else if (!item.getTypeId().equals(TypeFacade.MATCHING)) {

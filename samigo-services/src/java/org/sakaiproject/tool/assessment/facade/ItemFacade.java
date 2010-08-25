@@ -100,12 +100,12 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
   
 
   //gopalrc - added 30 Nov 2009 - for EMI question
-  private String themeText;
-  private String leadInText;
+  protected String themeText;
+  protected String leadInText;
 
   //gopalrc - added Aug 2010
-  private Integer answerOptionsRichCount;
-  private Integer answerOptionsSimpleOrRich;
+  protected Integer answerOptionsRichCount;
+  protected Integer answerOptionsSimpleOrRich;
 
   
   /** ItemFacade is the class that is exposed to developer
@@ -159,6 +159,10 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable, Assess
     this.itemFeedbackMap = getItemFeedbackMap(this.itemFeedbackSet);
     this.hasRationale= data.getHasRationale();//rshastri :SAK-1824
     this.itemAttachmentSet = getItemAttachmentSet();
+    
+    //gopalrc - Aug 2010
+    this.answerOptionsRichCount = getAnswerOptionsRichCount();
+    this.answerOptionsSimpleOrRich = getAnswerOptionsSimpleOrRich();
   }
 
     /*

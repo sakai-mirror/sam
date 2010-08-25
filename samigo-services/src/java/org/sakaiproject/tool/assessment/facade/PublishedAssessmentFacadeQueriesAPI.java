@@ -97,7 +97,7 @@ public interface PublishedAssessmentFacadeQueriesAPI
       Set itemSet, String protocol);
 
   public Set preparePublishedItemTextSet(PublishedItemData publishedItem,
-      Set itemTextSet);
+      Set itemTextSet, String protocol);
 
   public Set preparePublishedItemMetaDataSet(PublishedItemData publishedItem,
       Set itemMetaDataSet);

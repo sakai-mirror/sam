@@ -66,6 +66,7 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.ItemData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemMetaData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.ItemText;
+import org.sakaiproject.tool.assessment.data.dao.assessment.ItemTextAttachment;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAnswer;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAnswerFeedback;
@@ -79,6 +80,7 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemMetaData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemText;
+import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemTextAttachment;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedMetaData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionAttachment;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
@@ -409,7 +411,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 					// itemFeedbackSet later
 					item.getTriesAllowed(), item.getPartialCreditFlag());
 			Set publishedItemTextSet = preparePublishedItemTextSet(
-					publishedItem, item.getItemTextSet());
+					publishedItem, item.getItemTextSet(), protocol);
 			Set publishedItemMetaDataSet = preparePublishedItemMetaDataSet(
 					publishedItem, item.getItemMetaDataSet());
 			Set publishedItemFeedbackSet = preparePublishedItemFeedbackSet(
@@ -420,13 +422,18 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			publishedItem.setItemMetaDataSet(publishedItemMetaDataSet);
 			publishedItem.setItemFeedbackSet(publishedItemFeedbackSet);
 			publishedItem.setItemAttachmentSet(publishedItemAttachmentSet);
+			
+			//gopalrc - Aug 2010 - for EMI
+			publishedItem.setAnswerOptionsRichCount(item.getAnswerOptionsRichCount());
+			publishedItem.setAnswerOptionsSimpleOrRich(item.getAnswerOptionsSimpleOrRich());
+			
 			h.add(publishedItem);
 		}
 		return h;
 	}
 
 	public Set preparePublishedItemTextSet(PublishedItemData publishedItem,
-			Set itemTextSet) {
+			Set itemTextSet, String protocol) {
 		log.debug("**published item text size = " + itemTextSet.size());
 		HashSet h = new HashSet();
 		Iterator k = itemTextSet.iterator();
@@ -439,6 +446,12 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			Set publishedAnswerSet = preparePublishedAnswerSet(
 					publishedItemText, itemText.getAnswerSet());
 			publishedItemText.setAnswerSet(publishedAnswerSet);
+			
+			//gopalrc - Aug 2010
+			Set publishedItemTextAttachmentSet = this.preparePublishedItemTextAttachmentSet(publishedItemText, 
+					itemText.getItemTextAttachmentSet(), protocol);
+			publishedItemText.setItemTextAttachmentSet(publishedItemTextAttachmentSet);
+			
 			h.add(publishedItemText);
 		}
 		return h;
@@ -513,6 +526,43 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		return h;
 	}
 
+	//gopalrc - Aug 2010 - EMI ItemText attachments
+	public Set preparePublishedItemTextAttachmentSet(
+			PublishedItemText publishedItemText, Set itemTextAttachmentSet,
+			String protocol) {
+		HashSet h = new HashSet();
+		Iterator o = itemTextAttachmentSet.iterator();
+		while (o.hasNext()) {
+			ItemTextAttachment itemTextAttachment = (ItemTextAttachment) o.next();
+			try {
+				// create a copy of the resource
+				AssessmentService service = new AssessmentService();
+				ContentResource cr_copy = service.createCopyOfContentResource(
+						itemTextAttachment.getResourceId(), itemTextAttachment
+								.getFilename());
+				// get relative path
+				String url = getRelativePath(cr_copy.getUrl(), protocol);
+
+				PublishedItemTextAttachment publishedItemTextAttachment = new PublishedItemTextAttachment(
+						null, publishedItemText, cr_copy.getId(), itemTextAttachment
+								.getFilename(), itemTextAttachment.getMimeType(),
+						itemTextAttachment.getFileSize(), itemTextAttachment
+								.getDescription(), url, itemTextAttachment
+								.getIsLink(), itemTextAttachment.getStatus(),
+						itemTextAttachment.getCreatedBy(), itemTextAttachment
+								.getCreatedDate(), itemTextAttachment
+								.getLastModifiedBy(), itemTextAttachment
+								.getLastModifiedDate());
+				h.add(publishedItemTextAttachment);
+			} catch (Exception e) {
+				log.warn(e.getMessage());
+			}
+		}
+		return h;
+	}
+	
+	
+	
 	public String getRelativePath(String url, String protocol) {
 		// replace whitespace with %20
 		url = replaceSpace(url);

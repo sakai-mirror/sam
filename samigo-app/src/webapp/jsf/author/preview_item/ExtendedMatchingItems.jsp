@@ -27,19 +27,15 @@ should be included in file importing DeliveryMessages
   ***** Included In /jsf/author/previewAssessment.jsp ************
   <h:outputText escape="false" value="#{question.class.name}" />
   
-  
-  
 
 
-  <!-- ATTACHMENTS -->
-  <%@ include file="/jsf/author/preview_item/attachment.jsp" %>
 
       
       <h:outputText escape="false" value="#{question.itemData.themeText}" />
       <f:verbatim><br/><br/></f:verbatim>
 
 
-      <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option" border="1" style="border-style:solid">
+      <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option"  rendered="#{question.itemData.isAnswerOptionsSimple}" border="1" style="border-style:solid">
         <h:column> 
           <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
             <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
@@ -47,6 +43,29 @@ should be included in file importing DeliveryMessages
         </h:column>
       </h:dataTable>
       
+
+  <!-- RICH TEXT - EMI RICH ANSWER OPTIONS-->
+  <h:outputText value="#{question.itemData.emiAnswerOptionsRichText}"  escape="false" rendered="#{question.itemData.isAnswerOptionsRich}"/>
+      
+  <!-- ATTACHMENTS BELOW - EMI RICH ANSWER OPTIONS-->
+  <h:dataTable value="#{question.itemData.itemAttachmentList}" var="attach"  rendered="#{question.itemData.isAnswerOptionsRich}">
+    <h:column>
+      <%@ include file="/jsf/shared/mimeicon.jsp" %>
+    </h:column>
+    <h:column>
+      <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:outputLink value="#{attach.location}" target="new_window">
+         <h:outputText escape="false" value="#{attach.filename}" />
+      </h:outputLink>
+    </h:column>
+    <h:column>
+      <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:outputText escape="false" value="#{attach.fileSize} #{generalMessages.kb}" rendered="#{!attach.isLink}"/>
+    </h:column>
+  </h:dataTable>
+  <!-- ATTACHMENTS ABOVE - EMI RICH ANSWER OPTIONS-->
+
+
       
       <f:verbatim><br/><br/></f:verbatim>
       <h:outputText escape="false" value="#{question.itemData.leadInText}" />
@@ -77,9 +96,30 @@ should be included in file importing DeliveryMessages
 
         <h:column> 
          <h:panelGroup rendered="#{item.text != null && item.text ne ''}">
-          <h:outputText escape="false" value="#{item.sequence}. #{item.text}" /> 
+          <h:outputText escape="false" value="#{item.sequence}. #{item.text}" />
+          
+  <!-- ATTACHMENTS BELOW - EMI ITEMTEXT ATTACHMENTS-->
+  <h:dataTable value="#{item.itemTextAttachmentList}" var="attach">
+    <h:column>
+      <%@ include file="/jsf/shared/mimeicon.jsp" %>
+    </h:column>
+    <h:column>
+      <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:outputLink value="#{attach.location}" target="new_window">
+         <h:outputText escape="false" value="#{attach.filename}" />
+      </h:outputLink>
+    </h:column>
+    <h:column>
+      <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:outputText escape="false" value="#{attach.fileSize} #{generalMessages.kb}" rendered="#{!attach.isLink}"/>
+    </h:column>
+  </h:dataTable>
+  <!-- ATTACHMENTS ABOVE - EMI ITEMTEXT ATTACHMENTS-->
+           
          </h:panelGroup>
         </h:column>
+        
+        
 
       </h:dataTable>
       

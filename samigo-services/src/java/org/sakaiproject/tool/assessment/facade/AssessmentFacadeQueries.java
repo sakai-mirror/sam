@@ -2195,7 +2195,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 					// itemFeedbackSet later
 					item.getTriesAllowed(), item.getPartialCreditFlag());
 			Set newItemTextSet = prepareItemTextSet(newItem, item
-					.getItemTextSet());
+					.getItemTextSet(), protocol);
 			Set newItemMetaDataSet = prepareItemMetaDataSet(newItem, item
 					.getItemMetaDataSet());
 			Set newItemFeedbackSet = prepareItemFeedbackSet(newItem, item
@@ -2206,12 +2206,19 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			newItem.setItemMetaDataSet(newItemMetaDataSet);
 			newItem.setItemFeedbackSet(newItemFeedbackSet);
 			newItem.setItemAttachmentSet(newItemAttachmentSet);
+			
+			//gopalrc - Aug 2010 - for EMI
+			newItem.setAnswerOptionsRichCount(item.getAnswerOptionsRichCount());
+			newItem.setAnswerOptionsSimpleOrRich(item.getAnswerOptionsSimpleOrRich());
+			
+			
+			
 			h.add(newItem);
 		}
 		return h;
 	}
 
-	public Set prepareItemTextSet(ItemData newItem, Set itemTextSet) {
+	public Set prepareItemTextSet(ItemData newItem, Set itemTextSet, String protocol) {
 		log.debug("new item text size = " + itemTextSet.size());
 		HashSet h = new HashSet();
 		Iterator k = itemTextSet.iterator();
@@ -2223,6 +2230,12 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			Set newAnswerSet = prepareAnswerSet(newItemText, itemText
 					.getAnswerSet());
 			newItemText.setAnswerSet(newAnswerSet);
+			
+			//gopalrc - Aug 2010 - for EMI
+			Set itemTextAttachmentSet = this.prepareItemTextAttachmentSet(newItemText, 
+					itemText.getItemTextAttachmentSet(), protocol);
+			newItemText.setItemTextAttachmentSet(itemTextAttachmentSet);
+
 			h.add(newItemText);
 		}
 		return h;
@@ -2286,6 +2299,43 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		return h;
 	}
 
+	
+	//gopalrc - Aug 2010 - EMI ItemText attachments
+	public Set prepareItemTextAttachmentSet(ItemText newItemText,
+			Set itemTextAttachmentSet, String protocol) {
+		HashSet h = new HashSet();
+		Iterator o = itemTextAttachmentSet.iterator();
+		while (o.hasNext()) {
+			ItemTextAttachment itemTextAttachment = (ItemTextAttachment) o.next();
+			try {
+				// create a copy of the resource
+				AssessmentService service = new AssessmentService();
+				ContentResource cr_copy = service.createCopyOfContentResource(
+						itemTextAttachment.getResourceId(), itemTextAttachment
+								.getFilename());
+				// get relative path
+				String url = getRelativePath(cr_copy.getUrl(), protocol);
+
+				ItemTextAttachment newItemTextAttachment = new ItemTextAttachment(null,
+						newItemText, cr_copy.getId(), itemTextAttachment.getFilename(),
+						itemTextAttachment.getMimeType(), itemTextAttachment
+								.getFileSize(),
+						itemTextAttachment.getDescription(), url, itemTextAttachment
+								.getIsLink(), itemTextAttachment.getStatus(),
+						itemTextAttachment.getCreatedBy(), itemTextAttachment
+								.getCreatedDate(), itemTextAttachment
+								.getLastModifiedBy(), itemTextAttachment
+								.getLastModifiedDate());
+				h.add(newItemTextAttachment);
+			} catch (Exception e) {
+				log.warn(e.getMessage());
+			}
+		}
+		return h;
+	}
+	
+	
+	
 	public Set prepareSectionAttachmentSet(SectionData newSection,
 			Set sectionAttachmentSet, String protocol) {
 		HashSet h = new HashSet();

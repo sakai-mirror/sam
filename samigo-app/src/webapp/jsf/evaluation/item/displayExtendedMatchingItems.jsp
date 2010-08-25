@@ -43,6 +43,32 @@ include file for displaying Extended Matching Items questions
         </h:column>
       </h:dataTable>
   
+    <h:outputText value="#{question.emiAnswerOptionsRichText}"  escape="false" rendered="#{question.isAnswerOptionsRich}"/>
+      
+  <!-- ATTACHMENTS BELOW - EMI RICH ANSWER OPTIONS-->
+  <h:dataTable value="#{question.itemAttachmentList}" var="attach" rendered="#{question.isAnswerOptionsRich}">
+    <h:column rendered="#{!attach.isMedia}">
+      <%@ include file="/jsf/shared/mimeicon.jsp" %>
+    </h:column>
+    <h:column>
+      <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:outputText escape="false" value="
+	    <embed src=\"#{delivery.protocol}/samigo-app/servlet/ShowAttachmentMedia?actionMode=preview&resourceId=#{attach.encodedResourceId}&mimeType=#{attach.mimeType}&filename=#{attach.filename}\" volume=\"50\" height=\"350\" width=\"400\" autostart=\"false\"/>" rendered="#{attach.isInlineVideo}"/>
+      <h:outputText escape="false" value="
+	    <embed src=\"#{delivery.protocol}/samigo-app/servlet/ShowAttachmentMedia?actionMode=preview&resourceId=#{attach.encodedResourceId}&mimeType=#{attach.mimeType}&filename=#{attach.filename}\" height=\"350\" width=\"400\"/>" rendered="#{attach.isInlineFlash}"/>
+	  <h:outputText escape="false" value="
+	    <img src=\"#{delivery.protocol}/samigo-app/servlet/ShowAttachmentMedia?actionMode=preview&resourceId=#{attach.encodedResourceId}&mimeType=#{attach.mimeType}&filename=#{attach.filename}\" />" rendered="#{attach.isInlineImage}"/>
+      <h:outputLink value="#{attach.location}" target="new_window" rendered="#{!attach.isMedia}">
+         <h:outputText escape="false" value="#{attach.filename}" />
+      </h:outputLink>
+    </h:column>
+    <h:column>
+      <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:outputText escape="false" value="#{attach.fileSize} #{generalMessages.kb}" rendered="#{!attach.isLink && !attach.isMedia}"/>
+    </h:column>
+  </h:dataTable>
+  <!-- ATTACHMENTS ABOVE - EMI RICH ANSWER OPTIONS-->
+  
   
         
       <f:verbatim><br/><br/></f:verbatim>

@@ -1511,7 +1511,8 @@ public class DeliveryActionListener
 	        choices.add(fibBean);
         } // end if answer.isCorrect()       
       }
-
+      
+      
       
       // Now add the user responses (ItemGrading)
       int responseCount = 0;
@@ -1561,7 +1562,30 @@ public class DeliveryActionListener
       
       mbean.setChoices(choices); // Set the A/B/C... choices
       
-*/      
+*/   
+      
+      // Now add the user responses (ItemGrading)
+      ArrayList userResponseLabels = new ArrayList();
+      int responseCount = 0;
+      Iterator itemGradingIter = bean.getItemGradingDataArray().iterator();
+      while (itemGradingIter.hasNext())
+      {
+        ItemGradingData data = (ItemGradingData) itemGradingIter.next();
+        if (data.getPublishedItemTextId().equals(text.getId()))
+        {
+            // We found an existing grading data for this itemtext (sub-question)
+            // mbean.setItemGradingData(data);
+            AnswerIfc pubAnswer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId()); 
+        	userResponseLabels.add(pubAnswer.getLabel());
+        }
+      }
+      Collections.sort(userResponseLabels);
+      String userResponse = "";
+      Iterator sortedLabels = userResponseLabels.iterator();
+      while (sortedLabels.hasNext()) {
+    	  userResponse += sortedLabels.next().toString();
+      }
+      mbean.setResponse(userResponse);
       beans.add(mbean);
     }
     

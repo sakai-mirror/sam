@@ -75,6 +75,10 @@ public class PublishedItemFacade extends ItemFacade implements Serializable, Ite
 	    this.itemFeedbackMap = getItemFeedbackMap(this.itemFeedbackSet);
 	    this.hasRationale= data.getHasRationale();//rshastri :SAK-1824
 	    this.itemAttachmentSet = getItemAttachmentSet();
+	    
+	    //gopalrc - Aug 2010
+	    this.answerOptionsRichCount = getAnswerOptionsRichCount();
+	    this.answerOptionsSimpleOrRich = getAnswerOptionsSimpleOrRich();
 	  }
 
 	  // the following method's signature has a one to one relationship to
