@@ -22,6 +22,7 @@
 
 
 package org.sakaiproject.tool.assessment.ui.bean.evaluation;
+import com.lowagie.text.Section;
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
 
 import java.io.Serializable;
@@ -35,6 +36,7 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.TotalScoresBean;
 
@@ -1005,8 +1007,29 @@ publishedId = ppublishedId;
         this.assesmentParts = assesmentParts;
         selectItemParts.clear();
         setPartNumber(assesmentParts.get(0).getSequence().toString());
+        /*
+         * For parts from pools:
+         * Part <part.sequence>: <part.title>, Pool: <part.poolname>
+         * UNLESS part.title = "Default" in which case omit it, i.e. use:
+         * Part <part.sequence>, Pool: <part.poolname>
+         * For parts not from pools
+         * Part <part.sequence>: <part.title>
+         * UNLESS part.title = "Default" in which case omit it, i.e. use:
+         * Part <part.sequence>
+         */
+        String defaultStr = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","default");
+        String partStr = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","part") + " ";
+        String poolStr = ", " + ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages","pool") + ": ";
+        String text = null;
         for(PublishedSectionData section: assesmentParts){
-            selectItemParts.add(new SelectItem(section.getSequence().toString(), section.getTitle()));
+            text = partStr + String.valueOf(section.getSequence());
+            if(!defaultStr.equals(section.getTitle())){
+                text = text + ": " + section.getTitle();
+            }
+            if(section.getSectionMetaDataByLabel(SectionDataIfc.POOLNAME_FOR_RANDOM_DRAW) != null){
+                text = text + poolStr + section.getSectionMetaDataByLabel(SectionDataIfc.POOLNAME_FOR_RANDOM_DRAW);
+            }
+            selectItemParts.add(new SelectItem(String.valueOf(section.getSequence()), text));
         }
     }
 
