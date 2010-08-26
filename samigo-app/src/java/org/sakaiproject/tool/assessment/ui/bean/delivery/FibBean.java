@@ -55,7 +55,8 @@ public class FibBean
   private boolean hasInput;
   
   //gopalrc - added for EMI - Jan 2010
-  //contains the set of FibBeans for each sub-question in choices list
+  //The MatchingBean that contains the set of FibBeans 
+  //for each sub-question in choices list
   //private MatchingBean subQuestionContainer;
   
 
@@ -101,10 +102,13 @@ public class FibBean
   {
     
     //gopalrc - Jan 2010
-/*	  
+	//gopalrc - Aug 2010 - Below is probably not needed for new EMI response structure
+	// Will remove when refactor complete
+	/*  
     if (parent.getItemData().getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
    		response = newresp.toUpperCase();
     	
+   		// If the Response is empty
         if (response==null || response.trim().equals("")) {
         	if (data != null) {
   	    	  ArrayList items = parent.getItemGradingDataArray();
@@ -121,6 +125,8 @@ public class FibBean
         	}
         } // end if response is empty
         
+        // The response is not empty and there is no saved ItemGradingData
+        // i.e. it is a new response
         else if (data == null || data.getItemGradingId().equals(null))
 	    {
           data = new ItemGradingData();
@@ -140,6 +146,7 @@ public class FibBean
 	      }
 	    } // end if data == null
         
+        // The user changed the response
         else if (!data.getPublishedAnswer().getLabel().equals(response)) // changed response
 	    {
   	      data.setPublishedItemId(parent.getItemData().getItemId());
@@ -178,9 +185,7 @@ public class FibBean
     } // end if EMI
     
     else { // other type
-*/	    
-    
-    
+    */
         response = newresp;
 	    if (data == null)
 	    {
@@ -193,7 +198,7 @@ public class FibBean
 	      parent.setItemGradingDataArray(items);
 	    }
 	    data.setAnswerText(newresp);
-//    }
+    //}
     
   }
 
@@ -237,17 +242,13 @@ public class FibBean
 	public void setSubQuestionContainer(MatchingBean subQuestionContainer) {
 		this.subQuestionContainer = subQuestionContainer;
 	}
-*/
   
 	//gopalrc - added for EMI - Jan 2010
 	public void validateEmiResponse(FacesContext context, 
             UIComponent toValidate,
             Object value) {
 		
-/*		
 		String response = ((String) value).trim().toUpperCase();
-		
-
 
 		if (response.length() > 1 || (response.length() != 0 && !parent.getItemData().isValidEmiAnswerOptionLabel(response)) ) {
 			((UIInput)toValidate).setValid(false);
@@ -271,7 +272,7 @@ public class FibBean
 		    	  	}
 		      }
 		}
-		*/
 	}
-
+*/
+  
 }

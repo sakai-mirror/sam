@@ -2235,6 +2235,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			Set itemTextAttachmentSet = this.prepareItemTextAttachmentSet(newItemText, 
 					itemText.getItemTextAttachmentSet(), protocol);
 			newItemText.setItemTextAttachmentSet(itemTextAttachmentSet);
+			newItemText.setRequiredOptionsCount(itemText.getRequiredOptionsCount());
 
 			h.add(newItemText);
 		}

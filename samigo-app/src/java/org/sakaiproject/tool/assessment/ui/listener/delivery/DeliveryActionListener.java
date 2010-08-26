@@ -1314,7 +1314,7 @@ public class DeliveryActionListener
         item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
         item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY) ||
         item.getTypeId().equals(TypeIfc.TRUE_FALSE) ||
-        item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
+        //item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) || //gopalrc - TODO - Verify: This should be handled in populateEMI()
         item.getTypeId().equals(TypeIfc.MATCHING))
     {
       Iterator iter = myanswers.iterator();
@@ -1481,7 +1481,7 @@ public class DeliveryActionListener
       mbean.setItemText(text);
       mbean.setItemContentsBean(bean);
 
-      ArrayList choices = new ArrayList();
+//      ArrayList choices = new ArrayList();
       Iterator itemTextAnwersIter = text.getAnswerArraySorted().iterator();
      
       int i = 0;
@@ -1492,30 +1492,34 @@ public class DeliveryActionListener
   	  }
      
       // TODO sort out the itemgrading responses
-  /*    
       //Now populate the choices (anwers) for each sub-question
-      //Each choice is represented by a SelectionBean
+      //Each choice is represented by a FibBean
+/*      
       FibBean fibBean = null;
       while (itemTextAnwersIter.hasNext())
       {
         AnswerIfc answer = (AnswerIfc) itemTextAnwersIter.next();
         newAnswers.add(Character.toString(alphabet.charAt(i)) +
                        ". " + answer.getText());
- 
-        if (answer.getIsCorrect()) {
+
+        // Now Possible to choose any number of answers from the options (Aug 2010)
+        //if (answer.getIsCorrect()) {
         	fibBean = new FibBean();
         	fibBean.setItemContentsBean(bean);
         	fibBean.setSubQuestionContainer(mbean);
-        	//fibBean.setAnswer(answer); - for EMI the fibBean is not associated with any specific answer until the user enters a value
+        	
+        	// Perhaps required for new structure (Aug 2010) 
+        	fibBean.setAnswer(answer); //- for EMI the fibBean is not associated with any specific answer until the user enters a value
 
 	        choices.add(fibBean);
-        } // end if answer.isCorrect()       
+        //} // end if answer.isCorrect()       
       }
-      
+*/      
       
       
       // Now add the user responses (ItemGrading)
       int responseCount = 0;
+      ArrayList userResponseLabels = new ArrayList();
       Iterator itemGradingIter = bean.getItemGradingDataArray().iterator();
       while (itemGradingIter.hasNext())
       {
@@ -1526,18 +1530,28 @@ public class DeliveryActionListener
             // mbean.setItemGradingData(data);
             AnswerIfc pubAnswer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId()); 
             if (pubAnswer != null) {
+            	userResponseLabels.add(pubAnswer.getLabel());
             	data.setPublishedAnswer(pubAnswer);
-	        	fibBean = ((FibBean)choices.get(responseCount++));
-	          	fibBean.setItemGradingData(data);
-	        	fibBean.setAnswer(pubAnswer);
+//	        	fibBean = ((FibBean)choices.get(responseCount++));
+//	          	fibBean.setItemGradingData(data);
+//	        	fibBean.setAnswer(pubAnswer);
 	            // We found an existing grading data for this Answer
-	            fibBean.setResponse(pubAnswer.getLabel());
+//	            fibBean.setResponse(pubAnswer.getLabel());
             }
         }
       }
-      
+
+      //Sort the user Response Labels and create the response string
+      Collections.sort(userResponseLabels);
+      String previousResponse = "";
+      Iterator sortedLabels = userResponseLabels.iterator();
+      while (sortedLabels.hasNext()) {
+    	  previousResponse += sortedLabels.next().toString();
+      }
+      mbean.setResponse(previousResponse);
       
       //Now Sort the choices according to answer-options selected
+/*      
       HashMap choicesMap = new HashMap();
       Iterator choicesIter = choices.iterator();
       int z = 0;
@@ -1559,33 +1573,10 @@ public class DeliveryActionListener
     	  choices.add(choicesMap.get(choicesIter.next()));
       }
       
-      
       mbean.setChoices(choices); // Set the A/B/C... choices
+*/      
+
       
-*/   
-      
-      // Now add the user responses (ItemGrading)
-      ArrayList userResponseLabels = new ArrayList();
-      int responseCount = 0;
-      Iterator itemGradingIter = bean.getItemGradingDataArray().iterator();
-      while (itemGradingIter.hasNext())
-      {
-        ItemGradingData data = (ItemGradingData) itemGradingIter.next();
-        if (data.getPublishedItemTextId().equals(text.getId()))
-        {
-            // We found an existing grading data for this itemtext (sub-question)
-            // mbean.setItemGradingData(data);
-            AnswerIfc pubAnswer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId()); 
-        	userResponseLabels.add(pubAnswer.getLabel());
-        }
-      }
-      Collections.sort(userResponseLabels);
-      String userResponse = "";
-      Iterator sortedLabels = userResponseLabels.iterator();
-      while (sortedLabels.hasNext()) {
-    	  userResponse += sortedLabels.next().toString();
-      }
-      mbean.setResponse(userResponse);
       beans.add(mbean);
     }
     

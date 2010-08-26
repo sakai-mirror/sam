@@ -90,10 +90,10 @@ should be included in file importing DeliveryMessages
    
 
    <h:column>
-      <h:inputText id="responseAnswer" value="#{matching.response}" size="1" style="text-transform:uppercase;"
+      <h:inputText id="responseAnswer" value="#{matching.response}" style="text-transform:uppercase;"
        disabled="#{delivery.actionString=='reviewAssessment'
              || delivery.actionString=='gradeAssessment'}"
-             validator="#{selection.validateEmiResponse}"> 
+             validator="#{matching.validateEmiResponse}"> 
       </h:inputText>
    </h:column>
 

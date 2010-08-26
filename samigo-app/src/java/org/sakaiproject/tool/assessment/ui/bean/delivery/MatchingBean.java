@@ -26,9 +26,17 @@ package org.sakaiproject.tool.assessment.ui.bean.delivery;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
+import javax.faces.context.FacesContext;
+
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
+import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
+import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 
 /**
  * @author rgollub@stanford.edu
@@ -84,6 +92,12 @@ public class MatchingBean
 
   public void setResponse(String newresp)
   {
+	  
+    if (parent.getItemData().getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
+    	this.setResponseEMI(newresp);
+    	return;
+    }
+	  
     response = newresp;
     if (data == null)
     {
@@ -168,5 +182,97 @@ public class MatchingBean
       */
     return isCorrect;
   }
+  
+  
+  //gopalrc - Aug 2010
+  public void setResponseEMI(String newresp) {
+		response = newresp.toUpperCase();
+		String processedResponses = "";
+		ArrayList itemGradingList = parent.getItemGradingDataArray();
+		ArrayList newItemGradingList = new ArrayList();
+		Iterator itemGradingDataIter = itemGradingList.iterator();
+		String answerLabel = null;
+		ItemGradingData itemGradingData = null;
+
+		// This step saves re-selected options and eliminates
+		// previously selected options that were 
+		// not selected again
+		while (itemGradingDataIter.hasNext()) {
+			itemGradingData = (ItemGradingData) itemGradingDataIter.next();
+			//Only add or eliminate itemGradings for this sub-question (ItemText)
+			if (!itemGradingData.getPublishedItemTextId().equals(this.getItemText().getId())) {
+				newItemGradingList.add(itemGradingData);
+				continue;
+			}
+			answerLabel = itemGradingData.getPublishedAnswer().getLabel();
+			if (response.contains(answerLabel)) {
+				newItemGradingList.add(itemGradingData);
+				processedResponses += answerLabel;
+			}
+		}
+
+		// This step saves valid new responses
+		for (int i = 0; i < response.length(); i++) {
+			answerLabel = response.substring(i, i + 1);
+			// If not a valid Answer Option label, bypass processing
+			if (!ItemDataIfc.ANSWER_OPTION_LABELS.contains(answerLabel)) continue;
+			// If this response is already processed bypass processing
+			if (processedResponses.contains(answerLabel)) continue;
+				
+			processedResponses += answerLabel;
+			itemGradingData = new ItemGradingData();
+			itemGradingData.setPublishedItemId(parent.getItemData()
+					.getItemId());
+			Iterator iter = getItemText().getAnswerSet().iterator();
+			while (iter.hasNext()) {
+				AnswerIfc selectedAnswer = (AnswerIfc) iter.next();
+				if (selectedAnswer.getLabel().equals(answerLabel)) {
+					itemGradingData.setPublishedItemTextId(selectedAnswer
+							.getItemText().getId());
+					itemGradingData.setPublishedAnswerId(selectedAnswer.getId());
+					break;
+				}
+			}
+			newItemGradingList.add(itemGradingData);
+		}
+
+		parent.setItemGradingDataArray(newItemGradingList); 		
+
+  }
+  
+  
+	//gopalrc - added for EMI - Aug 2010
+	public void validateEmiResponse(FacesContext context, 
+          UIComponent toValidate,
+          Object value) {
+/*		
+		String response = ((String) value).trim().toUpperCase();
+
+		if (response.length() > 1 || (response.length() != 0 && !parent.getItemData().isValidEmiAnswerOptionLabel(response)) ) {
+			((UIInput)toValidate).setValid(false);
+			String invalid_response = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","invalid_response");     
+			String please_select_from_available = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","please_select_from_available");     
+			FacesMessage message = new FacesMessage(invalid_response + " '" + response + "' " + please_select_from_available);
+			context.addMessage(toValidate.getClientId(context), message);
+		}
+		else {
+		      Iterator iter = subQuestionContainer.getChoices().iterator();
+		      while (iter.hasNext()) {
+		    	  FibBean fibBean = (FibBean) iter.next();
+		    	  if (fibBean.getResponse()!=null && fibBean.getResponse().equals(response) && 
+		    			  !fibBean.equals(this)) 
+		    	  	{
+						((UIInput)toValidate).setValid(false);
+						String duplicate_responses = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","duplicate_responses");     
+						String for_sub_question = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","for_sub_question");     
+						FacesMessage message = new FacesMessage(duplicate_responses + " '" + response + "'  " + for_sub_question + " " + subQuestionContainer.getItemText().getSequence() );
+						context.addMessage(toValidate.getClientId(context), message);
+		    	  	}
+		      }
+		}
+*/		
+	}
+
+  
 
 }
