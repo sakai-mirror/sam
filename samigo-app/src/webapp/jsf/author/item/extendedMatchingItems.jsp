@@ -45,7 +45,7 @@
       </head>
 <body onload="resetInsertAnswerSelectMenus();<%= request.getAttribute("html.body.onload") %>">
 
-<div class="portletBody">
+<div id="portletContent" class="portletBody" style="display:none;">
 <!-- content... -->
 <!-- FORM -->
 <!-- HEADING -->
@@ -367,9 +367,33 @@
     <f:verbatim><br/></f:verbatim>
     <h:selectOneMenu  id="requiredOptionsCount"  onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsCountLink();" value="#{answer.requiredOptionsCount}" >
       <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
+      <f:selectItem itemLabel="1" itemValue="1"/>
       <f:selectItem itemLabel="2" itemValue="2"/>
       <f:selectItem itemLabel="3" itemValue="3"/>
       <f:selectItem itemLabel="4" itemValue="4"/>
+      <f:selectItem itemLabel="5" itemValue="5"/>
+      <f:selectItem itemLabel="6" itemValue="6"/>
+      <f:selectItem itemLabel="7" itemValue="7"/>
+      <f:selectItem itemLabel="8" itemValue="8"/>
+      <f:selectItem itemLabel="9" itemValue="9"/>
+      <f:selectItem itemLabel="10" itemValue="10"/>
+      <f:selectItem itemLabel="11" itemValue="11"/>
+      <f:selectItem itemLabel="12" itemValue="12"/>
+      <f:selectItem itemLabel="13" itemValue="13"/>
+      <f:selectItem itemLabel="14" itemValue="14"/>
+      <f:selectItem itemLabel="15" itemValue="15"/>
+      <f:selectItem itemLabel="16" itemValue="16"/>
+      <f:selectItem itemLabel="17" itemValue="17"/>
+      <f:selectItem itemLabel="18" itemValue="18"/>
+      <f:selectItem itemLabel="19" itemValue="19"/>
+      <f:selectItem itemLabel="20" itemValue="20"/>
+      <f:selectItem itemLabel="21" itemValue="21"/>
+      <f:selectItem itemLabel="22" itemValue="22"/>
+      <f:selectItem itemLabel="23" itemValue="23"/>
+      <f:selectItem itemLabel="24" itemValue="24"/>
+      <f:selectItem itemLabel="25" itemValue="25"/>
+      <f:selectItem itemLabel="26" itemValue="26"/>
+      
     </h:selectOneMenu>
     <h:commandLink id="hiddenAddEmiAnswerOptionsCountActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsCountAction}" value="">
     </h:commandLink>
@@ -377,9 +401,10 @@
   </h:panelGroup>
 			
   <h:panelGroup>
-   <h:outputLink id="RemoveLink" title="#{authorMessages.t_removeI}" rendered="#{itemauthor.currentItem.itemType == 13}">
-     <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
-   </h:outputLink>		
+    <h:commandLink title="#{authorMessages.t_removeI}" id="RemoveLink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiQuestionAnswerCombinations}" rendered="#{itemauthor.currentItem.itemType == 13}">
+      <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
+      <f:param name="emiQuestionAnswerComboId" value="#{answer.label}"/>
+    </h:commandLink>		 
   </h:panelGroup>
 			
   
@@ -391,10 +416,10 @@
 </div>
 
 <div class="shorttext tier2">
-  <h:outputLink id="addEmiQuestionAnswerCombinationsLink" >
+  <h:commandLink id="addEmiQuestionAnswerCombinationsLink" action="#{itemauthor.currentItem.addEmiQuestionAnswerCombinationsAction}" value="">
     <f:verbatim><img src="/library/image/silk/add.png" border="0"></f:verbatim>
     <h:outputText value="#{authorMessages.add_more_items}"/>
-  </h:outputLink>		 
+  </h:commandLink>
 </div>
 <br/>
 

@@ -1021,7 +1021,7 @@ public class ItemAddListener
 		// 3. Prepare and save actual answers from answer components 
 		// (emiAnswerOptions and emiQuestionAnswerCombinations)
 		// ///////////////////////////////////////////////////////////
-		int numberOfCorrectAnswers = 0;
+		int numberOfCorrectAnswersRequired = 0;
 		float correctAnswerScore = 0;
 		
 		iter = bean.getEmiQuestionAnswerCombinationsClean().iterator();
@@ -1033,7 +1033,12 @@ public class ItemAddListener
 			itemText.setItem(item.getData());
 			itemText.setSequence(qaCombo.getSequence());
 			itemText.setText(qaCombo.getText());
-			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
+			Integer requiredOptions = Integer.valueOf(qaCombo.getRequiredOptionsCount());
+			if (requiredOptions == 0) {
+				requiredOptions = qaCombo.correctOptionsCount();
+			}
+			itemText.setRequiredOptionsCount(requiredOptions);
+			numberOfCorrectAnswersRequired += requiredOptions;
 			
 			HashSet answerSet = new HashSet();
 
@@ -1044,9 +1049,11 @@ public class ItemAddListener
 					AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
 					
+					/*
 					if (isCorrect) {
 						numberOfCorrectAnswers++;
 					}
+					*/
 	
 					AnswerIfc actualAnswer = new Answer(itemText,
 							selectOption.getText(), selectOption
@@ -1062,11 +1069,11 @@ public class ItemAddListener
 				for (int i=0; i<answerOptionsCount; i++) {
 					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i, i+1);
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
-					
+					/*
 					if (isCorrect) {
 						numberOfCorrectAnswers++;
 					}
-	
+					*/
 					AnswerIfc actualAnswer = new Answer(itemText,
 							label, Long.valueOf(i), label,
 							isCorrect, null, null, null,
@@ -1082,8 +1089,8 @@ public class ItemAddListener
 		}
 
 		//now calculate and save the answer scores
-		if (numberOfCorrectAnswers != 0) {
-			correctAnswerScore = Float.valueOf(bean.getItemScore()) / (float)numberOfCorrectAnswers;
+		if (numberOfCorrectAnswersRequired != 0) {
+			correctAnswerScore = Float.valueOf(bean.getItemScore()) / (float)numberOfCorrectAnswersRequired;
 		}
 		float answerScore = 0;
 		Iterator textSetIter = textSet.iterator();

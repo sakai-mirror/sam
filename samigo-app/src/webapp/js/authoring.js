@@ -127,7 +127,7 @@ $(document).ready(function(){
 		return false;
 	});
 	
-	
+/*	
 	//************* ITEMS ********************
 	//Remove Items
 	for (i=0; i<=highestItemId; i++) {
@@ -138,6 +138,9 @@ $(document).ready(function(){
 				var k = +j+1;
 				var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]");
 				var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]");
+				var removeLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + j + ":RemoveLink]");
+				var removeLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + k + ":RemoveLink]");
+				
 				itemText1.val(itemText2.val());
 				var correctOptionLabels1 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]");
 				var correctOptionLabels2 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + k + ":correctOptionLabels]");
@@ -145,10 +148,8 @@ $(document).ready(function(){
 				var requiredAnswersCount1 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + j +":requiredOptionsCount]");
 				var requiredAnswersCount2 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + k +":requiredOptionsCount]");
 				requiredAnswersCount1.val(requiredAnswersCount2.val());
-
-				
 				//if reached the visible-invisible boundary, hide the last visible row
-				if (itemText1.is(':visible') && !itemText2.is(':visible')) {
+				if (removeLink1.is(':visible') && removeLink2.is(':hidden')) {
 					itemText1.val("");
 					$("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent().hide();
 					break;
@@ -185,11 +186,36 @@ $(document).ready(function(){
 		}
 		return false;
 	});
+*/	
+	
+
+	
+	//Update RequiredOptionsCount based on CorrectOptionsLabels
+	for (i=0; i<=highestItemId; i++) {
+		var emiCorrectOptionLabelsInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":correctOptionLabels]");
+		if (emiCorrectOptionLabelsInput==null) break;
+		emiCorrectOptionLabelsInput.bind('change', function() {
+			var itemId = +($(this).attr("id").split(":")[2]);
+			var requiredOptionsCountSelect = $("select[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":requiredOptionsCount]");
+			var currentSelection = requiredOptionsCountSelect.val();
+			var changedCorrectOptions = $(this).val().split(",");
+			requiredOptionsCountSelect.empty();
+			requiredOptionsCountSelect.append('<option value="0">select</option>');
+			for (j=1; j<=changedCorrectOptions.length; j++) {
+				if (j == currentSelection) {
+					requiredOptionsCountSelect.append('<option selected="selected" value="'+ j +'">'+ j +'</option>');
+				}
+				else {
+					requiredOptionsCountSelect.append('<option value="'+ j +'">'+ j +'</option>');
+				}
+			}
+			return false;
+	    });
+		emiCorrectOptionLabelsInput.trigger('change');
+	}
 	
 	
-	
-	
-	//load triggers
+	//trigger startup events
 	var radioChecked = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked");
 	radioChecked.trigger('click');
 	
@@ -213,6 +239,7 @@ $(document).ready(function(){
 		}
 	}
 	
+/*	
 	//hide excess Items at start
 	var firstItemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:0]");
 	isAllNull = true;
@@ -231,12 +258,13 @@ $(document).ready(function(){
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();
 		}
 	}
-	
+*/	
 	
 	//Vertically Align the Pasted Options Table Container
 	$("textarea[id=itemForm:emiAnswerOptionsPaste]").parent().parent().parent().parent().parent().css('vertical-align','top');
 	$("table[id=itemForm:emiAnswerOptions]").parent().css('vertical-align','top');
 	
+	$("div[id=portletContent]").css('display','block');
 	
 	
 	
@@ -386,6 +414,7 @@ for (i=0; i<document.links.length; i++) {
 
 document.links[newindex].onclick();
 }
+
 
 
 //gopalrc - added 23 Nov 2009

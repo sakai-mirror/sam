@@ -1016,7 +1016,7 @@ public class GradingService
           }
           break;
 
-      case 13: // EMI
+      case 13: //gopalrc EMI
           autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
           //overridescore
           if (itemGrading.getOverrideScore() != null)

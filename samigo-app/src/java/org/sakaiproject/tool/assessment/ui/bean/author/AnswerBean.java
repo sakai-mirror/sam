@@ -177,6 +177,10 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
     this.correctOptionLabels = correctOptionLabels;
   }
 
+  
+  public int correctOptionsCount() {
+	  return correctOptionLabels.length();
+  }
 
 	// --mustansar for partial credit
 	public Float getPartialCredit() {

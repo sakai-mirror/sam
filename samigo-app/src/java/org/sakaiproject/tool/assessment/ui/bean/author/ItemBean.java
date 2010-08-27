@@ -1634,23 +1634,28 @@ public class ItemBean
     	this.emiQuestionAnswerCombinations= list;
     }
     
-    //gopalrc - added 23 Nov 2009 - Modified for Javascript Add/Remove July 2010
+    //gopalrc - added 23 Nov 2009
+    //Modified for Javascript Add/Remove July 2010
+    //Reverted to Java - Javascript tricky for rich-text editor
     public ArrayList getEmiQuestionAnswerCombinations() {
-    	if (emiQuestionAnswerCombinations==null) {
-    		emiQuestionAnswerCombinations = new ArrayList();
-    	}
-    	int defaultlength = 26;
-    	// build or extend the list of items 26 a-z
-    	// for efficiency, these will now be shown/hidden using javascript
-		if (emiQuestionAnswerCombinations.size() < defaultlength) {
-			for (int i=emiQuestionAnswerCombinations.size(); i<defaultlength; i++ ) {
-    			AnswerBean answerbean = new AnswerBean();
-           		answerbean.setSequence( Long.valueOf(i+1));
+    	ArrayList list = new ArrayList();
+    	// build a default list of 4 choices, a, b, c, d,
+    	// modify
+    	if (emiQuestionAnswerCombinations!=null) {
+    		return emiQuestionAnswerCombinations;
+     	}
+    	// new
+    	else {
+	    	int defaultlength = 4;
+	    	for (int i=0; i<defaultlength; i++){
+				AnswerBean answerbean = new AnswerBean();
+	       		answerbean.setSequence( Long.valueOf(i+1));
 				answerbean.setLabel(answerbean.getSequence().toString());
-				emiQuestionAnswerCombinations.add(answerbean);
-			}
-		}
-		return emiQuestionAnswerCombinations;
+				list.add(answerbean);
+	       	}
+	    	setEmiQuestionAnswerCombinations(list);
+    	}// else
+        return list;
     }
 
     public ArrayList getEmiQuestionAnswerCombinationsClean() {
@@ -1673,7 +1678,6 @@ public class ItemBean
     
     
     //gopalrc - added 23 Nov 2009
-/*    
     public String removeEmiQuestionAnswerCombinations() {
     	String labelToRemove = ContextUtil.lookupParam("emiQuestionAnswerComboId");
 		ArrayList list = getEmiQuestionAnswerCombinations(); // get existing list
@@ -1699,36 +1703,30 @@ public class ItemBean
 		}
 		return null;
 	}
-*/    
     
     /**
      * gopalrc - added 23 Nov 2009
      */
-    /*
     public String getAdditionalEmiQuestionAnswerCombinations()
     {
       return additionalEmiQuestionAnswerCombinations;
     }
-    */
 
     /**
      * gopalrc - added 23 Nov 2009
      */
-    /*
     public void setAdditionalEmiQuestionAnswerCombinations(String size)
     {
       this.additionalEmiQuestionAnswerCombinations= size;
     }
-    */
 
     
     /**
      * gopalrc - added 23 Nov 2009
      */
-/*    
     public String addEmiQuestionAnswerCombinationsAction() {
     	
-        String newvalue = this.getAdditionalEmiQuestionAnswerCombinations();
+        String newvalue = getAdditionalEmiQuestionAnswerCombinations();
         ArrayList list = getEmiQuestionAnswerCombinations(); // get existing list
         if (list!=null) {
                 // add additional answer bean
@@ -1757,8 +1755,6 @@ public class ItemBean
        }
        return "emiItem";
   }
-    
-*/
     
 
 
