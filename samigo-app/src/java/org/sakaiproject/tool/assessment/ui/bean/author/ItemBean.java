@@ -1457,29 +1457,26 @@ public class ItemBean
 		}
 		return emiAnswerOptions;
     }
+    	
     
     public ArrayList getEmiAnswerOptionsClean() {
     	ArrayList list = new ArrayList();
-    	ArrayList delList = new ArrayList();
     	if (emiAnswerOptions!=null) {
         	list.addAll(emiAnswerOptions);
     	}
 		for (int i=list.size()-1; i>=0; i--) {
 			AnswerBean answerbean = (AnswerBean)list.get(i);
 			if (answerbean.getText() == null || answerbean.getText().trim().equals("")) {
-				delList.add(answerbean);
+				list.remove(i);
 			}
 			else {
 				break;
 			}
 		}
-		Iterator iter = delList.iterator();
-		while (iter.hasNext()) {
-			list.remove(iter.next());
-		}
 		return list;
     }    
-    	
+    
+    
     	
 	public boolean isPartialCreditEnabled() {
 		if (partialCreditEnabledChecked) {
@@ -1633,11 +1630,36 @@ public class ItemBean
     {
     	this.emiQuestionAnswerCombinations= list;
     }
+
+    
     
     //gopalrc - added 23 Nov 2009
-    //Modified for Javascript Add/Remove July 2010
-    //Reverted to Java - Javascript tricky for rich-text editor
+    // Modified for Javascript Add/Remove July 2010
+    //TODO - Sort out complexities relating to samigo:wysiwyg FCKEditor
+/*    
     public ArrayList getEmiQuestionAnswerCombinations() {
+    	if (emiQuestionAnswerCombinations==null) {
+    		emiQuestionAnswerCombinations = new ArrayList();
+    	}
+    	int defaultlength = 26;
+    	// build or extend the list of items 26 a-z
+    	// for efficiency, these will now be shown/hidden using javascript
+		if (emiQuestionAnswerCombinations.size() < defaultlength) {
+			for (int i=emiQuestionAnswerCombinations.size(); i<defaultlength; i++ ) {
+    			AnswerBean answerbean = new AnswerBean();
+           		answerbean.setSequence( Long.valueOf(i+1));
+				answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
+				emiQuestionAnswerCombinations.add(answerbean);
+			}
+		}
+		return emiQuestionAnswerCombinations;
+    }
+*/    	
+    
+    
+    
+    //gopalrc - added 23 Nov 2009
+     public ArrayList getEmiQuestionAnswerCombinations() {
     	ArrayList list = new ArrayList();
     	// build a default list of 4 choices, a, b, c, d,
     	// modify
@@ -1657,7 +1679,7 @@ public class ItemBean
     	}// else
         return list;
     }
-
+    
     public ArrayList getEmiQuestionAnswerCombinationsClean() {
     	ArrayList list = new ArrayList();
     	if (emiQuestionAnswerCombinations!=null) {

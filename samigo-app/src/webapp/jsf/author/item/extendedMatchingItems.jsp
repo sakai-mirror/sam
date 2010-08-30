@@ -309,7 +309,7 @@
   
   <!-- WYSIWYG -->
   <h:panelGrid>
-    <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes" >
+    <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="no" >
       <f:validateLength maximum="64000"/>
     </samigo:wysiwyg>
     
@@ -393,15 +393,17 @@
       <f:selectItem itemLabel="24" itemValue="24"/>
       <f:selectItem itemLabel="25" itemValue="25"/>
       <f:selectItem itemLabel="26" itemValue="26"/>
-      
     </h:selectOneMenu>
-    <h:commandLink id="hiddenAddEmiAnswerOptionsCountActionlink" action="#{itemauthor.currentItem.addEmiAnswerOptionsCountAction}" value="">
-    </h:commandLink>
        
   </h:panelGroup>
 			
   <h:panelGroup>
-    <h:commandLink title="#{authorMessages.t_removeI}" id="RemoveLink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiQuestionAnswerCombinations}" rendered="#{itemauthor.currentItem.itemType == 13}">
+     <h:outputLink id="RemoveLink" title="#{authorMessages.t_removeI}" rendered="true">
+       <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
+     </h:outputLink>		 
+  
+  
+    <h:commandLink title="#{authorMessages.t_removeI}" id="XX_RemoveLink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeEmiQuestionAnswerCombinations}" rendered="false">
       <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
       <f:param name="emiQuestionAnswerComboId" value="#{answer.label}"/>
     </h:commandLink>		 
@@ -416,7 +418,13 @@
 </div>
 
 <div class="shorttext tier2">
-  <h:commandLink id="addEmiQuestionAnswerCombinationsLink" action="#{itemauthor.currentItem.addEmiQuestionAnswerCombinationsAction}" value="">
+  <h:outputLink id="addEmiQuestionAnswerCombinationsLink" rendered="true">
+    <f:verbatim><img src="/library/image/silk/add.png" border="0"></f:verbatim>
+    <h:outputText value="#{authorMessages.add_more_items}"/>
+  </h:outputLink>		 
+
+
+  <h:commandLink id="XX_addEmiQuestionAnswerCombinationsLink" action="#{itemauthor.currentItem.addEmiQuestionAnswerCombinationsAction}" rendered="false">
     <f:verbatim><img src="/library/image/silk/add.png" border="0"></f:verbatim>
     <h:outputText value="#{authorMessages.add_more_items}"/>
   </h:commandLink>

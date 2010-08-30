@@ -664,29 +664,36 @@ public ItemData() {}
 	  
    String answerKey="";
    ArrayList itemTextArray = getItemTextArraySorted();
-
-   
    if (itemTextArray.size()==0)
      return answerKey;
 
-   ArrayList answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();
-   HashMap h = new HashMap();
-
+   
    //gopalrc - added 20 Nov 2009
-   // NB - nesting different from PublishedItemData (Why??) - Outside above for loop.
-   //TODO - Complete Answerkey for EMI
 	if (this.getTypeId().equals(TypeD.EXTENDED_MATCHING_ITEMS)) {
-		for (int k = 0; k < answerArray.size(); k++) {
-			AnswerIfc a = (AnswerIfc) answerArray.get(k);
-			if (a.getLabel().matches("[0-9]+")) {
-				answerKey += a.getLabel() + ":" + a.getCorrectOptionLabels();
-				if (k < answerArray.size()-1) answerKey += " ; ";  
+		Iterator itemTextIter = itemTextArray.iterator();
+		while (itemTextIter.hasNext()) {
+			ItemTextIfc itemText = (ItemTextIfc) itemTextIter.next();
+			if (itemText.isEmiQuestionItemText()) {
+			   answerKey += itemText.getSequence() + ":";
+			   ArrayList emiItems = itemText.getAnswerArraySorted();
+			   Iterator emiItemsIter = emiItems.iterator();
+			   while (emiItemsIter.hasNext()) {
+				   AnswerIfc answer = (AnswerIfc)emiItemsIter.next();
+				   if (answer.getIsCorrect()) {
+					   answerKey += answer.getLabel();
+				   }
+			   }
+			   answerKey += " ";
 			}
 		}
 		return answerKey;
 	}
+   
+   
+   
+   ArrayList answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();
+   HashMap h = new HashMap();
 
-	
    for (int i=0; i<itemTextArray.size();i++){
      ItemTextIfc text = (ItemTextIfc)itemTextArray.get(i);
      ArrayList answers = text.getAnswerArraySorted();
@@ -887,7 +894,7 @@ public ItemData() {}
 				emiAnswerOptionLabels = "";
 				Iterator iter = getEmiAnswerOptions().iterator();
 				while (iter.hasNext()) {
-					Answer answer = (Answer) iter.next();
+					AnswerIfc answer = (AnswerIfc) iter.next();
 					emiAnswerOptionLabels += answer.getLabel();
 				}
 			}

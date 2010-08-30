@@ -127,7 +127,7 @@ $(document).ready(function(){
 		return false;
 	});
 	
-/*	
+
 	//************* ITEMS ********************
 	//Remove Items
 	for (i=0; i<=highestItemId; i++) {
@@ -136,29 +136,46 @@ $(document).ready(function(){
 			var itemId = +($(this).attr("id").split(":")[2]);
 			for (j=itemId; j<highestItemId; j++) {
 				var k = +j+1;
-				var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]");
-				var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]");
+
 				var removeLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + j + ":RemoveLink]");
 				var removeLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + k + ":RemoveLink]");
-				
+
+				var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]");
+				var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]");
 				itemText1.val(itemText2.val());
+
+				var itemIframeContents1 = $("iframe[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").contents().find("html[dir='ltr']");
+				var itemIframeContents2 = $("iframe[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]").contents().find("html[dir='ltr']");
+
+				itemIframeContents1.css("background-color","#BADA55");
+
+				//itemIframe1.html(itemIframe2.html());
+//alert("2");				
+				
 				var correctOptionLabels1 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]");
 				var correctOptionLabels2 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + k + ":correctOptionLabels]");
 				correctOptionLabels1.val(correctOptionLabels2.val());
+				
 				var requiredAnswersCount1 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + j +":requiredOptionsCount]");
 				var requiredAnswersCount2 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + k +":requiredOptionsCount]");
 				requiredAnswersCount1.val(requiredAnswersCount2.val());
 				//if reached the visible-invisible boundary, hide the last visible row
-				if (removeLink1.is(':visible') && removeLink2.is(':hidden')) {
+				if (removeLink1.is(':visible') && !removeLink2.is(':visible')) {
 					itemText1.val("");
 					$("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent().hide();
 					break;
 				}
 			}
+			
 			var lastItemText = $("input[id^=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":]");
 			lastItemText.val("");
-			var lastCorrectOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":correctOptionLabels]");
+			var lastCorrectOptionLabels = $("textarea[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":correctOptionLabels]");
 			lastCorrectOptionLabels.val("");
+			var lastRequiredAnswersCount = $("select[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":requiredOptionsCount]");
+			lastRequiredAnswersCount.val("0");
+			var lastItemIframe1 = $("iframe[id^=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":]");
+			//lastItemIframe1.html();
+			
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent().hide();
 			return false;
 	    });
@@ -186,7 +203,6 @@ $(document).ready(function(){
 		}
 		return false;
 	});
-*/	
 	
 
 	
@@ -239,7 +255,7 @@ $(document).ready(function(){
 		}
 	}
 	
-/*	
+
 	//hide excess Items at start
 	var firstItemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:0]");
 	isAllNull = true;
@@ -258,7 +274,7 @@ $(document).ready(function(){
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();
 		}
 	}
-*/	
+
 	
 	//Vertically Align the Pasted Options Table Container
 	$("textarea[id=itemForm:emiAnswerOptionsPaste]").parent().parent().parent().parent().parent().css('vertical-align','top');

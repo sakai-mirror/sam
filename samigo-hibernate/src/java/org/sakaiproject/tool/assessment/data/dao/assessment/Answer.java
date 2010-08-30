@@ -59,19 +59,20 @@ public class Answer
   
   
   //gopalrc Jan 2010 - for EMI questions
-  private String correctOptionLabels;
+  //private String correctOptionLabels;
   
   
   //gopalrc - added 27 Nov 2009
   //set of possible EMI selection options indicating correct and incorrect options
-  private ArrayList emiSelectionOptions;
+  //private ArrayList emiSelectionOptions;
   
   
 
 public Answer() {}
 
   public Answer(ItemTextIfc itemText, String text, Long sequence, String label,
-                Boolean isCorrect, String grade, Float score, Float partialCredit, Float discount, String correctOptionLabels,
+                Boolean isCorrect, String grade, Float score, Float partialCredit, Float discount, 
+                //String correctOptionLabels,
                 Set answerFeedbackSet) {
     this.itemText = itemText;
     this.item = itemText.getItem();
@@ -82,7 +83,7 @@ public Answer() {}
     this.grade = grade;
     this.score = score;
     this.discount=discount;
-    this.correctOptionLabels = correctOptionLabels;
+//    this.correctOptionLabels = correctOptionLabels;
     this.answerFeedbackSet = answerFeedbackSet;
     this.partialCredit=partialCredit;
   }
@@ -262,6 +263,7 @@ public Answer() {}
 
 	
 	//gopalrc added 16 Nov 2009
+/*  
 	public boolean isEmiOptionCorrect(String optionLabel) {
 		optionLabel = optionLabel.trim().toUpperCase();
 		String correctOptionLabels = getCorrectOptionLabels();
@@ -272,12 +274,14 @@ public Answer() {}
 			return false;
 		}
 	}
+*/	
 	
 	//gopalrc added 27 Nov 2009
+/*	
 	public ArrayList getEmiSelectionOptions() {
 		return emiSelectionOptions;
 	}
-  
+*/  
 	
   //--mustansar for partial credit
   public Float getPartialCredit(){
@@ -286,10 +290,12 @@ public Answer() {}
 
   
   //gopalrc added 27 Nov 2009
+/*  
 	public void setEmiSelectionOptions(ArrayList emiSelectionOptions) {
 		this.emiSelectionOptions = emiSelectionOptions;
 	}
-	
+*/
+  
 	//gopalrc added 27 Nov 2009
 	protected Answer clone() throws CloneNotSupportedException {
 		return (Answer)super.clone();
@@ -297,6 +303,7 @@ public Answer() {}
 	
 
 	//gopalrc - added 30 Nov 2009
+/*
 	public int getNumberOfCorrectEmiOptions() {
 		int count = 0;
 		Iterator iter = emiSelectionOptions.iterator();
@@ -308,20 +315,24 @@ public Answer() {}
 		}
 		return count;
 	}
+*/
 	
 	
 	
   //gopalrc Jan 2010 - for EMI questions
+/*	
   public String getCorrectOptionLabels() {
     return correctOptionLabels;
   }
-
+*/
+	
   //gopalrc Jan 2010 - for EMI questions
+/*	
   public void setCorrectOptionLabels(String correctOptionLabels) {
 	if (correctOptionLabels != null) correctOptionLabels = correctOptionLabels.trim().toUpperCase();  
     this.correctOptionLabels = correctOptionLabels;
   }
-
+*/
 	
   public void setPartialCredit(Float pCredit ){
 	  this.partialCredit=pCredit;

@@ -1357,7 +1357,9 @@ public class QuestionPoolFacadeQueries
 	    	  while (answerIter.hasNext()) {
 	    		  Answer fromAnswer = (Answer) answerIter.next();
 	    		  Answer toAnswer = new Answer(toItemText, fromAnswer.getText(), fromAnswer.getSequence(), fromAnswer.getLabel(),
-	    				  fromAnswer.getIsCorrect(), fromAnswer.getGrade(), fromAnswer.getScore(), fromAnswer.getPartialCredit(), fromAnswer.getDiscount(), fromAnswer.getCorrectOptionLabels(), null);
+	    				  fromAnswer.getIsCorrect(), fromAnswer.getGrade(), fromAnswer.getScore(), fromAnswer.getPartialCredit(), fromAnswer.getDiscount(), 
+	    				  //fromAnswer.getCorrectOptionLabels(), 
+	    				  null);
 	    		  
 	    		  HashSet toAnswerFeedbackSet = new HashSet();
 	    		  Set fromAnswerFeedbackSet = fromAnswer.getAnswerFeedbackSet();
