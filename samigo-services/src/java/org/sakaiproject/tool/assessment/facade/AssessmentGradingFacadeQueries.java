@@ -1856,12 +1856,11 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	  // gopalrc - Nov 2007
 	  HashSet publishedAssessmentSections = pubService.getSectionSetForAssessment(Long.valueOf(publishedAssessmentId));
 	  Float zeroFloat = new Float(0.0);
-	  //XXX Jaques, can do the sections above and this 3 below in one! (and line1882)
 	  HashMap publishedAnswerHash = pubService.preparePublishedAnswerHash(pubService.getPublishedAssessment(publishedAssessmentId));
 	  HashMap publishedItemTextHash = pubService.preparePublishedItemTextHash(pubService.getPublishedAssessment(publishedAssessmentId));
 	  HashMap publishedItemHash = pubService.preparePublishedItemHash(pubService.getPublishedAssessment(publishedAssessmentId));
 
-      //XXX Jaques: Get this sorted to add the blank gradings for the questions not answered later.
+      //Get this sorted to add the blank gradings for the questions not answered later.
       Set publishItemSet = new TreeSet(new ItemComparator());
       publishItemSet.addAll(publishedItemHash.values());
           
@@ -1964,7 +1963,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
 			  Collections.sort(grades, new QuestionComparator(publishedItemHash));
 
-              //XXX Jaques: Add the blank gradings for the questions not answered.
+              //Add the blank gradings for the questions not answered in random pools.
               if(grades.size() < publishItemSet.size()){
               	int index = -1;
                 for(Object pido: publishItemSet){
@@ -2003,7 +2002,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 				  // gopalrc - Dec 2007
 				  float itemScore = 0.0f;
 
-                  //XXX Jaques: Add the missing sequences!
+                  //Add the missing sequences!
 				  for (Object ooo: l) {
 					  grade = (ItemGradingIfc)ooo;
 					  if (grade == null || EmptyItemGrading.class.isInstance(grade)) {
@@ -2153,7 +2152,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
 				  // Only set header based on the first item grading data
 				  if (fistItemGradingData) {
-                  	//XXX Jaques: get the pool name
+                  	//get the pool name
                     String poolName = null;
                     for(Iterator i = publishedAssessmentSections.iterator(); i.hasNext();){
                     	PublishedSectionData psd = (PublishedSectionData)i.next();

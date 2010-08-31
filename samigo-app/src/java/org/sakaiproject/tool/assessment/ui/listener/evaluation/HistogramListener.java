@@ -204,7 +204,12 @@ public class HistogramListener
 
 		  GradingService delegate = new GradingService();
 		  PublishedAssessmentService pubService = new PublishedAssessmentService();
-		  ArrayList allscores = delegate.getTotalScores(publishedId, which);
+		  List<AssessmentGradingData> allscores = delegate.getTotalScores(publishedId, which);
+          //set the ItemGradingData manually here. or we cannot
+          //retrieve it later.
+          for(AssessmentGradingData agd: allscores){
+          	agd.setItemGradingSet(delegate.getItemGradingSet(String.valueOf(agd.getAssessmentGradingId())));
+          }
           if (allscores.size() == 0) {
 			// Similar case in Bug 1537, but clicking Statistics link instead of assignment title.
 			// Therefore, redirect the the same page.
@@ -389,7 +394,7 @@ public class HistogramListener
 
 
 					  // below - gopalrc Nov 2007
-					  questionScores.setN(""+numSubmissions);//XXX Jaques: Change this
+					  questionScores.setN(""+numSubmissions);
 					  questionScores.setItemId(item.getItemId());
 					  Set studentsWithAllCorrect = questionScores.getStudentsWithAllCorrect();
 					  Set studentsResponded = questionScores.getStudentsResponded();
@@ -400,51 +405,56 @@ public class HistogramListener
 						  questionScores.setDiscrimination("0.0");
 					  }
 					  else {
+                          int percent27ForThisQuestion = percent27;
+                          Set<String> upperQuartileStudents = histogramScores.getUpperQuartileStudents().keySet();
+                          Set<String> lowerQuartileStudents = histogramScores.getLowerQuartileStudents().keySet();
+                          if(isRandompart){
+                          	//we need to calculate the 27% upper and lower
+                            //per question for the people that actually answered
+                            //this question.
+                            upperQuartileStudents = new HashSet<String>();
+                            lowerQuartileStudents = new HashSet<String>();
+                            percent27ForThisQuestion = questionScores.getNumResponses()*27/100;
+                            if (percent27ForThisQuestion == 0) percent27ForThisQuestion = 1;
+                            //need to only get gradings for students that answered this question
+                            List<AssessmentGradingData> filteredGradings =
+                            		filterGradingData(submissionsSortedForDiscrim, questionScores.getItemId());
+                            for (int i = 0; i < percent27ForThisQuestion; i++) {
+                            	lowerQuartileStudents.add(((AssessmentGradingData)
+                                	filteredGradings.get(i)).getAgentId());
+                                upperQuartileStudents.add(((AssessmentGradingData)
+                                	filteredGradings.get(questionScores.getNumResponses()-1-i)).getAgentId());
+                            }
+                          }
 						  int numStudentsWithAllCorrectFromUpperQuartile = 0;
 						  int numStudentsWithAllCorrectFromLowerQuartile = 0;
 						  Iterator studentsIter = studentsWithAllCorrect.iterator();
 						  while (studentsIter.hasNext()) {
 							  String agentId = (String) studentsIter.next();
-							  if (histogramScores.isUpperQuartileStudent(agentId)) {
+							  if (upperQuartileStudents.contains(agentId)) {
 								  numStudentsWithAllCorrectFromUpperQuartile++;
 							  }
-							  if (histogramScores.isLowerQuartileStudent(agentId)) {
+							  if (lowerQuartileStudents.contains(agentId)) {
 								  numStudentsWithAllCorrectFromLowerQuartile++;
-							  }
-						  }
-						  int numStudentsRespondedFromUpperQuartile = 0;
-						  int numStudentsRespondedFromLowerQuartile = 0;
-						  studentsIter = studentsResponded.iterator();
-						  while (studentsIter.hasNext()) {
-							  String agentId = (String) studentsIter.next();
-							  if (histogramScores.isUpperQuartileStudent(agentId)) {
-								  numStudentsRespondedFromUpperQuartile++;
-							  }
-							  if (histogramScores.isLowerQuartileStudent(agentId)) {
-								  numStudentsRespondedFromLowerQuartile++;
 							  }
 						  }
 						  
 						  float percentCorrectFromUpperQuartileStudents = 
 							  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
-									  (float) percent27) * 100f;
+									  (float) percent27ForThisQuestion) * 100f;
 
 						  float percentCorrectFromLowerQuartileStudents = 
 							  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
-									  (float) percent27) * 100f;
+									  (float) percent27ForThisQuestion) * 100f;
 
 						  questionScores.setPercentCorrectFromUpperQuartileStudents(
 								  Integer.toString((int) percentCorrectFromUpperQuartileStudents));
 						  questionScores.setPercentCorrectFromLowerQuartileStudents(
 								  Integer.toString((int) percentCorrectFromLowerQuartileStudents));
 
-						  float numResponses = (float)questionScores.getNumResponses();
-
 						  float discrimination = ((float)numStudentsWithAllCorrectFromUpperQuartile -								  
-								  (float)numStudentsWithAllCorrectFromLowerQuartile)/(float)percent27 ;
+								  (float)numStudentsWithAllCorrectFromLowerQuartile)/(float)percent27ForThisQuestion ;
 						  
-						  
-
 						  // round to 2 decimals
 						  if (discrimination > 999999 || discrimination < -999999) {
 							  questionScores.setDiscrimination("NaN");
@@ -2114,5 +2124,19 @@ public class HistogramListener
     return spreadsheetRows;
     
   }
+
+    private List<AssessmentGradingData> filterGradingData(List<AssessmentGradingData> submissionsSortedForDiscrim, Long itemId) {
+        List<AssessmentGradingData> submissionsForItemSortedForDiscrim = new ArrayList<AssessmentGradingData>();
+        for(AssessmentGradingData agd: submissionsSortedForDiscrim){
+            Set<ItemGradingData> itemGradings = agd.getItemGradingSet();
+            for(ItemGradingData igd: itemGradings){
+                if(igd.getPublishedItemId().equals(itemId)){
+                    submissionsForItemSortedForDiscrim.add(agd);
+                    break;
+                }
+            }
+        }
+        return submissionsForItemSortedForDiscrim;
+    }
 
 }

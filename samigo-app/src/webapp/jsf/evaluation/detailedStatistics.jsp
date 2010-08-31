@@ -132,16 +132,6 @@ $Id: histogramScores.jsp 38982 2007-12-06 13:05:38Z gopal.ramasammycook@gmail.co
      </h:selectOneMenu>
     </h:panelGroup>
 
-           <!-- XXX Jaques: Remove this
-    <h:panelGroup rendered="#{histogramScores.randomType =='true'}">
-    <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
-      </h:panelGroup>
--->
-
-
-
-
-
 <!-- 
 ***************************************************
 ***************************************************
@@ -158,15 +148,6 @@ Below added by gopalrc Nov 2007
 
   <h:dataTable value="#{histogramScores.detailedStatistics}" var="item" styleClass="listHier lines">
 
-      <!-- XXX Jaques: Remove -->
-<!-- need to add a randomtype property for histogramQuestionScoreBean (item) and if it's true, hide histogram  -->
-<%--
-    <h:column rendered="#{histogramScores.randomType =='true'}">
-      <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
-    </h:column>
---%>
-
-<!-- XXX Jaques: Removed all rendered="#{histogramScores.randomType =='false'}" -->
     <h:column>
         <f:facet name="header">
             <h:outputText escape="false" value="#{evaluationMessages.question}" /> 

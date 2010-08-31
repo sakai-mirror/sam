@@ -132,14 +132,7 @@ $Id$
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.HistogramListener" />
      </h:selectOneMenu>
     </h:panelGroup>
-
-       <!-- XXX Jaques: Remove this
-    <h:panelGroup rendered="#{histogramScores.randomType =='true'}">
-    <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
-      </h:panelGroup>
-       -->
        
-<!-- XXX Jaques: Removed  rendered="#{histogramScores.randomType =='false'}" -->
     <h:panelGroup>
  <f:verbatim><h4></f:verbatim>
   <h:outputText value="#{evaluationMessages.tot}" />
@@ -207,11 +200,10 @@ $Id$
     <f:verbatim></h4></f:verbatim>
 </h:panelGroup>
 
-<!-- XXX Jaques: Add a parts drop down. -->
+<!-- The parts drop down. -->
 <h:panelGroup rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
     <h:outputText value="#{evaluationMessages.part} " />
     <h:outputText value="#{evaluationMessages.column} " />
-    <!-- rendered=" {histogramScores.partNames.size>1}" -->
     <h:selectOneMenu id="partNumber" onchange="document.forms[0].submit();"
                      value="#{histogramScores.partNumber}" >
 	<f:selectItem itemValue="" itemLabel="#{evaluationMessages.all_parts}" />
@@ -223,16 +215,6 @@ $Id$
 
   <h:dataTable value="#{histogramScores.partInfo}" var="item">
 
-      <!-- XXX Jaques Remove -->
-<!-- need to add a randomtype property for histogramQuestionScoreBean (item) and if it's true, hide histogram  -->
-<%--
-    <h:column rendered="#{histogramScores.randomType =='true'}">
-      <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
-    </h:column>
---%>
-
-
-<!-- XXX Jaques: Removed  rendered="#{histogramScores.randomType =='false'}" -->
     <h:column>
       <h:panelGroup>
         <f:verbatim><h4></f:verbatim>

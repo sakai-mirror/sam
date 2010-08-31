@@ -22,7 +22,6 @@
 
 
 package org.sakaiproject.tool.assessment.ui.bean.evaluation;
-import com.lowagie.text.Section;
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
 
 import java.io.Serializable;
@@ -37,8 +36,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
-
-import org.sakaiproject.tool.assessment.ui.bean.evaluation.TotalScoresBean;
 
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 
@@ -889,6 +886,13 @@ publishedId = ppublishedId;
 		  }
 	  }
   }
+
+  public Map getUpperQuartileStudents(){
+      if (upperQuartileStudents == null) {
+          upperQuartileStudents = new HashMap();
+      }
+      return upperQuartileStudents;
+  }
   
   public int getNumberOfUpperQuartileStudents() {
 	  if (upperQuartileStudents == null) {
@@ -919,6 +923,13 @@ publishedId = ppublishedId;
 			  return true;
 		  }
 	  }
+  }
+
+  public Map getLowerQuartileStudents(){
+      if (lowerQuartileStudents == null) {
+          lowerQuartileStudents = new HashMap();
+      }
+      return lowerQuartileStudents;
   }
 
   public int getNumberOfLowerQuartileStudents() {
