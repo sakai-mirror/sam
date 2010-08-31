@@ -1636,7 +1636,6 @@ public class ItemBean
     //gopalrc - added 23 Nov 2009
     // Modified for Javascript Add/Remove July 2010
     //TODO - Sort out complexities relating to samigo:wysiwyg FCKEditor
-/*    
     public ArrayList getEmiQuestionAnswerCombinations() {
     	if (emiQuestionAnswerCombinations==null) {
     		emiQuestionAnswerCombinations = new ArrayList();
@@ -1647,18 +1646,18 @@ public class ItemBean
 		if (emiQuestionAnswerCombinations.size() < defaultlength) {
 			for (int i=emiQuestionAnswerCombinations.size(); i<defaultlength; i++ ) {
     			AnswerBean answerbean = new AnswerBean();
-           		answerbean.setSequence( Long.valueOf(i+1));
-				answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
+           		answerbean.setSequence(Long.valueOf(i+1));
+				answerbean.setLabel(answerbean.getSequence().toString());
 				emiQuestionAnswerCombinations.add(answerbean);
 			}
 		}
 		return emiQuestionAnswerCombinations;
     }
-*/    	
     
     
     
     //gopalrc - added 23 Nov 2009
+/*    
      public ArrayList getEmiQuestionAnswerCombinations() {
     	ArrayList list = new ArrayList();
     	// build a default list of 4 choices, a, b, c, d,
@@ -1679,6 +1678,7 @@ public class ItemBean
     	}// else
         return list;
     }
+*/    	
     
     public ArrayList getEmiQuestionAnswerCombinationsClean() {
     	ArrayList list = new ArrayList();

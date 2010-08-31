@@ -309,7 +309,7 @@
   
   <!-- WYSIWYG -->
   <h:panelGrid>
-    <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="no" >
+    <samigo:wysiwyg rows="140" value="#{answer.text}" hasToggle="yes">
       <f:validateLength maximum="64000"/>
     </samigo:wysiwyg>
     

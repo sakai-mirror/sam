@@ -62,6 +62,8 @@ var highestOptionId = +25;
 var highestItemId = +25;
 var additionalOptionsGroupSize = +3;
 var additionalItemsGroupSize = +3;
+var backupEMIItemRowHTML;
+
 
 
 $(document).ready(function(){
@@ -129,7 +131,81 @@ $(document).ready(function(){
 	
 
 	//************* ITEMS ********************
+	backupEMIItemRow = $("table[id=itemForm:emiQuestionAnswerCombinations:" + 0 + ":Row]").parent().parent();
+
 	//Remove Items
+	for (i=0; i<=highestItemId; i++) {
+		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
+		emiItemRemoveLink.bind('click', function() {
+			var itemId = +($(this).attr("id").split(":")[2]);
+			var row = $("table[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":Row]").parent().parent();
+			row.remove();
+			return false;
+			for (i=itemId+1; i<highestItemId; i++) {
+				var labelSpan = $("span[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Label]");
+				var newLabel = +labelSpan.html()-1;
+				labelSpan.html(newLabel);
+			}
+	    });
+	}
+	
+	
+/*	
+	for (i=0; i<=highestItemId; i++) {
+		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
+		emiItemRemoveLink.bind('click', function() {
+			var itemId = +($(this).attr("id").split(":")[2]);
+			var lastVisible = 0;
+			
+			// Have to do this in 2 loops, because the attributes like visibility are also copied
+			for (x=itemId; x<highestItemId; x++) {
+				y = +x+1;
+				var remLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + x + ":RemoveLink]");
+				var remLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + y + ":RemoveLink]");
+				//if reached the visible-invisible boundary, hide the last visible row
+				if (remLink1.is(':visible') && !remLink2.is(':visible')) {
+					lastVisible=x;
+					break;
+				}
+			}
+alert("A");			
+			for (j=itemId; j<highestItemId; j++) {
+				var k = +j+1;
+
+				var removeLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + j + ":RemoveLink]");
+				var removeLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + k + ":RemoveLink]");
+
+alert("B");			
+				
+				var row1 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent();
+				var row2 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + k + ":Row]").parent().parent();
+				row1.html(row2.clone(true).html());
+
+alert("C");			
+				
+				//if reached the visible-invisible boundary, hide the last visible row
+				if (j === lastVisible) {
+alert("D1");			
+                    row1.hide();
+                    row1.html(backupEMIItemRow.clone(true).html());
+alert("D2");			
+                    
+					break;
+				}
+			}
+			
+			lastRow = $("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent();
+alert("E");			
+
+			lastRow.hide();
+			lastRow.html(backupEMIItemRow.clone(true).html());
+			return false;
+	    });
+	}
+*/	
+	
+	
+/*	
 	for (i=0; i<=highestItemId; i++) {
 		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
 		emiItemRemoveLink.bind('click', function() {
@@ -143,15 +219,21 @@ $(document).ready(function(){
 				var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]");
 				var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]");
 				itemText1.val(itemText2.val());
-
-				var itemIframeContents1 = $("iframe[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").contents().find("html[dir='ltr']");
-				var itemIframeContents2 = $("iframe[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]").contents().find("html[dir='ltr']");
-
-				itemIframeContents1.css("background-color","#BADA55");
-
-				//itemIframe1.html(itemIframe2.html());
-//alert("2");				
+				var itemTextId1 = itemText1.attr("id");
+				var itemTextId2 = itemText2.attr("id");
+				var fckEditor1;
+				var fckEditor2;
 				
+				if (typeof FCKeditorAPI !== "undefined" && itemText1 !== null && itemText2 !== null) {
+				    fckEditor1 = FCKeditorAPI.GetInstance(itemTextId1);
+				    fckEditor2 = FCKeditorAPI.GetInstance(itemTextId2);
+				    if (fckEditor1 && fckEditor2) {
+				    	fckEditor1.SetHTML(fckEditor2.GetHTML());
+				    }
+				    else if (fckEditor1) {
+				    	fckEditor1.SetHTML(itemText2.val());
+				    }
+				}
 				var correctOptionLabels1 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]");
 				var correctOptionLabels2 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + k + ":correctOptionLabels]");
 				correctOptionLabels1.val(correctOptionLabels2.val());
@@ -160,9 +242,13 @@ $(document).ready(function(){
 				var requiredAnswersCount2 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + k +":requiredOptionsCount]");
 				requiredAnswersCount1.val(requiredAnswersCount2.val());
 				//if reached the visible-invisible boundary, hide the last visible row
+				
 				if (removeLink1.is(':visible') && !removeLink2.is(':visible')) {
 					itemText1.val("");
-					$("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent().hide();
+					if (typeof FCKeditorAPI !== "undefined") {
+						if (fckEditor1) fckEditor1.SetHTML("");
+					}
+                    $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent().hide();
 					break;
 				}
 			}
@@ -173,14 +259,18 @@ $(document).ready(function(){
 			lastCorrectOptionLabels.val("");
 			var lastRequiredAnswersCount = $("select[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":requiredOptionsCount]");
 			lastRequiredAnswersCount.val("0");
-			var lastItemIframe1 = $("iframe[id^=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":]");
-			//lastItemIframe1.html();
+
+			if (typeof FCKeditorAPI !== "undefined" && lastItemText !== null) {
+			    lastFckEditor = FCKeditorAPI.GetInstance(lastItemText.attr("id"));
+			    if (lastFckEditor) lastFckEditor.SetHTML("");
+			}
+			
 			
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent().hide();
 			return false;
 	    });
 	}
-	
+*/	
 
 	
 	//Add Items
