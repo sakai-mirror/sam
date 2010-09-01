@@ -26,6 +26,7 @@ package org.sakaiproject.tool.assessment.ui.bean.author;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -1628,15 +1629,37 @@ public class ItemBean
     //gopalrc - added 23 Nov 2009
     public void setEmiQuestionAnswerCombinations(ArrayList list)
     {
-    	this.emiQuestionAnswerCombinations= list;
+    	this.emiQuestionAnswerCombinations = list;
     }
 
     
     
+    //gopalrc - added 23 Aug 2010
+    public void setEmiQuestionAnswerCombinationsUI(ArrayList list)
+    {
+    	this.emiQuestionAnswerCombinations = list;
+    	/*
+    	ArrayList cleanSortedList = new ArrayList();
+    	for (int i=0; i<list.size(); i++) {
+    		AnswerBean emiItem = (AnswerBean)list.get(i);
+    		if (emiItem==null || emiItem.getText()==null || emiItem.getText().trim().equals("")) continue;
+    		emiItem.setSequence(Long.valueOf(emiItem.getLabel()));
+    		cleanSortedList.add(emiItem);
+    	}
+    	Collections.sort(cleanSortedList);
+    	for (int i=0; i<cleanSortedList.size(); i++) {
+    		AnswerBean emiItem = (AnswerBean)cleanSortedList.get(i);
+    		emiItem.setSequence(Long.valueOf(i));
+    		emiItem.setLabel(emiItem.getSequence().toString());
+    	}
+    	this.emiQuestionAnswerCombinations = cleanSortedList;
+    	*/
+    }
+
     //gopalrc - added 23 Nov 2009
     // Modified for Javascript Add/Remove July 2010
     //TODO - Sort out complexities relating to samigo:wysiwyg FCKEditor
-    public ArrayList getEmiQuestionAnswerCombinations() {
+    public ArrayList getEmiQuestionAnswerCombinationsUI() {
     	if (emiQuestionAnswerCombinations==null) {
     		emiQuestionAnswerCombinations = new ArrayList();
     	}
@@ -1681,6 +1704,29 @@ public class ItemBean
 */    	
     
     public ArrayList getEmiQuestionAnswerCombinationsClean() {
+    	String removeLabel = "X";
+    	ArrayList list = new ArrayList();
+    	if (emiQuestionAnswerCombinations!=null) {
+        	list.addAll(emiQuestionAnswerCombinations);
+    	}
+    	ArrayList cleanSortedList = new ArrayList();
+    	for (int i=0; i<list.size(); i++) {
+    		AnswerBean emiItem = (AnswerBean)list.get(i);
+    		if (emiItem==null || emiItem.getText()==null || emiItem.getText().trim().equals("") 
+    				|| emiItem.getLabel().trim().equals(removeLabel)) continue;
+    		emiItem.setSequence(Long.valueOf(emiItem.getLabel()));
+    		cleanSortedList.add(emiItem);
+    	}
+    	Collections.sort(cleanSortedList);
+    	for (int i=0; i<cleanSortedList.size(); i++) {
+    		AnswerBean emiItem = (AnswerBean)cleanSortedList.get(i);
+    		int seq = i+1;
+    		emiItem.setSequence(Long.valueOf(seq));
+    		emiItem.setLabel(""+seq);
+    	}
+    	return cleanSortedList;
+    	
+    	/*
     	ArrayList list = new ArrayList();
     	if (emiQuestionAnswerCombinations!=null) {
         	list.addAll(emiQuestionAnswerCombinations);
@@ -1695,14 +1741,17 @@ public class ItemBean
 			}
 		}
 		return list;
+		*/
+    	
     }    
 
     
     
     //gopalrc - added 23 Nov 2009
+/*    
     public String removeEmiQuestionAnswerCombinations() {
     	String labelToRemove = ContextUtil.lookupParam("emiQuestionAnswerComboId");
-		ArrayList list = getEmiQuestionAnswerCombinations(); // get existing list
+		ArrayList list = getEmiQuestionAnswerCombinationsClean(); // get existing list
 		if (list == null) {
 			return null;
 		}
@@ -1725,27 +1774,32 @@ public class ItemBean
 		}
 		return null;
 	}
+*/    
     
     /**
      * gopalrc - added 23 Nov 2009
      */
+/*    
     public String getAdditionalEmiQuestionAnswerCombinations()
     {
       return additionalEmiQuestionAnswerCombinations;
     }
-
-    /**
-     * gopalrc - added 23 Nov 2009
-     */
-    public void setAdditionalEmiQuestionAnswerCombinations(String size)
-    {
-      this.additionalEmiQuestionAnswerCombinations= size;
-    }
-
+*/
     
     /**
      * gopalrc - added 23 Nov 2009
      */
+/*    
+    public void setAdditionalEmiQuestionAnswerCombinations(String size)
+    {
+      this.additionalEmiQuestionAnswerCombinations= size;
+    }
+*/
+    
+    /**
+     * gopalrc - added 23 Nov 2009
+     */
+/*    
     public String addEmiQuestionAnswerCombinationsAction() {
     	
         String newvalue = getAdditionalEmiQuestionAnswerCombinations();
@@ -1777,7 +1831,7 @@ public class ItemBean
        }
        return "emiItem";
   }
-    
+*/    
 
 
     public void resetPartialCreditValues() {

@@ -60,13 +60,73 @@
 
 var highestOptionId = +25;
 var highestItemId = +25;
+var maxAvailableItems = +10;
 var additionalOptionsGroupSize = +3;
 var additionalItemsGroupSize = +3;
 var backupEMIItemRowHTML;
-
+var removeLabel = "X";
 
 
 $(document).ready(function(){
+	
+	//************* VALIDATION *****************
+/*	
+	var $dialog = $('<div></div>')
+	.html('Please correct these before submitting!')
+	.dialog({
+		autoOpen: false,
+		title: 'Errors Encountered'
+	});
+*/
+	
+	var buttonSave = $("input[value=Save]");
+	buttonSave.bind('click', function(){
+		var errorMessages="";
+
+		//Check Answer Point Value
+		var answerPointValue = $("input[name=itemForm:answerptr]").val();
+		if (answerPointValue.trim()=="" || +answerPointValue==0) {
+			errorMessages="Answer Point Value has not been entered.";
+		}
+		
+		
+		//Check Answer Point Value
+		var themeText = $("input[name=itemForm:themetext]").val();
+		if (themeText.trim()=="") {
+			errorMessages="Theme Text has not been entered.";
+		}
+		
+		
+		//Check Options
+		var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]").val();
+		if (simpleOrRichAnswerOptions===0) { //simple
+			for (j=0; j<highestOptionId; j++) {
+				var optionText = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
+				
+				//if reached the visible-invisible boundary, hide the last visible row
+				if (optionText.is(':visible') && (optionText.val()==null || optionText.val().trim()=="") ) {
+					errorMessages="Simple Text Options are left blank - Please Enter Option Text or remove options before saving.";
+					break;
+				}
+			}
+		}
+		else {
+			var richAnswerOptionsCount = $("select[id=itemForm:answerOptionsRichCount]").val();
+			if (richAnswerOptionsCount == "0") {
+				errorMessages="Number of Rich Text Options not selected.";
+			}
+		}
+		
+		//$dialog.dialog('open');
+		if (errorMessages !== "") {
+			alert(errorMessages);
+			return false;
+		}
+		else {
+			return true;
+		}
+	});
+	
 	
 	//************* OPTIONS ********************
 	//Show/Hide Simple or Rich-Text Options based on user selection
@@ -139,158 +199,52 @@ $(document).ready(function(){
 		emiItemRemoveLink.bind('click', function() {
 			var itemId = +($(this).attr("id").split(":")[2]);
 			var row = $("table[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":Row]").parent().parent();
-			row.remove();
-			return false;
-			for (i=itemId+1; i<highestItemId; i++) {
-				var labelSpan = $("span[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Label]");
-				var newLabel = +labelSpan.html()-1;
-				labelSpan.html(newLabel);
-			}
-	    });
-	}
-	
-	
-/*	
-	for (i=0; i<=highestItemId; i++) {
-		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
-		emiItemRemoveLink.bind('click', function() {
-			var itemId = +($(this).attr("id").split(":")[2]);
-			var lastVisible = 0;
-			
-			// Have to do this in 2 loops, because the attributes like visibility are also copied
-			for (x=itemId; x<highestItemId; x++) {
-				y = +x+1;
-				var remLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + x + ":RemoveLink]");
-				var remLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + y + ":RemoveLink]");
-				//if reached the visible-invisible boundary, hide the last visible row
-				if (remLink1.is(':visible') && !remLink2.is(':visible')) {
-					lastVisible=x;
-					break;
+			var labelRemove = $("input[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":Label]");
+			labelRemove.val(removeLabel);
+			row.hide();
+			var seq=+1;
+			//Resequence items
+			for (j=0; j<highestItemId; j++) {
+				var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
+				if (labelInput && labelInput.is(':visible') && labelInput.val() !== removeLabel)  {
+					labelInput.val(seq++);
 				}
 			}
-alert("A");			
-			for (j=itemId; j<highestItemId; j++) {
-				var k = +j+1;
-
-				var removeLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + j + ":RemoveLink]");
-				var removeLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + k + ":RemoveLink]");
-
-alert("B");			
-				
-				var row1 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent();
-				var row2 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + k + ":Row]").parent().parent();
-				row1.html(row2.clone(true).html());
-
-alert("C");			
-				
-				//if reached the visible-invisible boundary, hide the last visible row
-				if (j === lastVisible) {
-alert("D1");			
-                    row1.hide();
-                    row1.html(backupEMIItemRow.clone(true).html());
-alert("D2");			
-                    
-					break;
-				}
-			}
-			
-			lastRow = $("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent();
-alert("E");			
-
-			lastRow.hide();
-			lastRow.html(backupEMIItemRow.clone(true).html());
 			return false;
 	    });
 	}
-*/	
 	
 	
-/*	
-	for (i=0; i<=highestItemId; i++) {
-		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
-		emiItemRemoveLink.bind('click', function() {
-			var itemId = +($(this).attr("id").split(":")[2]);
-			for (j=itemId; j<highestItemId; j++) {
-				var k = +j+1;
-
-				var removeLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + j + ":RemoveLink]");
-				var removeLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + k + ":RemoveLink]");
-
-				var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]");
-				var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]");
-				itemText1.val(itemText2.val());
-				var itemTextId1 = itemText1.attr("id");
-				var itemTextId2 = itemText2.attr("id");
-				var fckEditor1;
-				var fckEditor2;
-				
-				if (typeof FCKeditorAPI !== "undefined" && itemText1 !== null && itemText2 !== null) {
-				    fckEditor1 = FCKeditorAPI.GetInstance(itemTextId1);
-				    fckEditor2 = FCKeditorAPI.GetInstance(itemTextId2);
-				    if (fckEditor1 && fckEditor2) {
-				    	fckEditor1.SetHTML(fckEditor2.GetHTML());
-				    }
-				    else if (fckEditor1) {
-				    	fckEditor1.SetHTML(itemText2.val());
-				    }
-				}
-				var correctOptionLabels1 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]");
-				var correctOptionLabels2 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + k + ":correctOptionLabels]");
-				correctOptionLabels1.val(correctOptionLabels2.val());
-				
-				var requiredAnswersCount1 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + j +":requiredOptionsCount]");
-				var requiredAnswersCount2 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + k +":requiredOptionsCount]");
-				requiredAnswersCount1.val(requiredAnswersCount2.val());
-				//if reached the visible-invisible boundary, hide the last visible row
-				
-				if (removeLink1.is(':visible') && !removeLink2.is(':visible')) {
-					itemText1.val("");
-					if (typeof FCKeditorAPI !== "undefined") {
-						if (fckEditor1) fckEditor1.SetHTML("");
-					}
-                    $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent().hide();
-					break;
-				}
-			}
-			
-			var lastItemText = $("input[id^=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":]");
-			lastItemText.val("");
-			var lastCorrectOptionLabels = $("textarea[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":correctOptionLabels]");
-			lastCorrectOptionLabels.val("");
-			var lastRequiredAnswersCount = $("select[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":requiredOptionsCount]");
-			lastRequiredAnswersCount.val("0");
-
-			if (typeof FCKeditorAPI !== "undefined" && lastItemText !== null) {
-			    lastFckEditor = FCKeditorAPI.GetInstance(lastItemText.attr("id"));
-			    if (lastFckEditor) lastFckEditor.SetHTML("");
-			}
-			
-			
-			$("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent().hide();
-			return false;
-	    });
-	}
-*/	
 
 	
 	//Add Items
 	var emiItemAddLink = $("a[id=itemForm:addEmiQuestionAnswerCombinationsLink]");
 	emiItemAddLink.bind('click', function(){
+		var j=+0;
+		var availableItems=0;
 		for (i=0; i<highestItemId; i++) {
-			var j = +i+1;
-			var row1 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]");
-			var row2 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]");
+			var row = $("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]");
+			var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Label]");
 			//if reached the visible-invisible boundary, show additional rows
-			if (row1.is(':visible') && !row2.is(':visible')) {
-				for (k=0; k<additionalItemsGroupSize; k++) {
-					var l = +j+k;
-					if (l<=highestItemId) {
-						$("table[id=itemForm:emiQuestionAnswerCombinations:" + l + ":Row]").parent().parent().show();
-					}
+			if (row && !row.is(':visible') && labelInput.val() !== removeLabel) {
+				$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();
+				availableItems++;
+				if (availableItems>=maxAvailableItems) {
+					alert("Maximum Number of Items Added");
+					return false;
 				}
+				if (++j==additionalItemsGroupSize) return false;
+			}
+			else {
+				availableItems++;
+			}
+			
+			if (availableItems>=maxAvailableItems) {
+				alert("Maximum Number of Items Added");
 				return false;
 			}
 		}
+		alert("Please save accumulated changes before adding additional items.");
 		return false;
 	});
 	
@@ -678,3 +632,124 @@ function toPoint(id)
   document.getElementById(id).value=x.replace(',','.')
 }
 
+/*	
+for (i=0; i<=highestItemId; i++) {
+	var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
+	emiItemRemoveLink.bind('click', function() {
+		var itemId = +($(this).attr("id").split(":")[2]);
+		var lastVisible = 0;
+		
+		// Have to do this in 2 loops, because the attributes like visibility are also copied
+		for (x=itemId; x<highestItemId; x++) {
+			y = +x+1;
+			var remLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + x + ":RemoveLink]");
+			var remLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + y + ":RemoveLink]");
+			//if reached the visible-invisible boundary, hide the last visible row
+			if (remLink1.is(':visible') && !remLink2.is(':visible')) {
+				lastVisible=x;
+				break;
+			}
+		}
+alert("A");			
+		for (j=itemId; j<highestItemId; j++) {
+			var k = +j+1;
+
+			var removeLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + j + ":RemoveLink]");
+			var removeLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + k + ":RemoveLink]");
+
+alert("B");			
+			
+			var row1 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent();
+			var row2 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + k + ":Row]").parent().parent();
+			row1.html(row2.clone(true).html());
+
+alert("C");			
+			
+			//if reached the visible-invisible boundary, hide the last visible row
+			if (j === lastVisible) {
+alert("D1");			
+                row1.hide();
+                row1.html(backupEMIItemRow.clone(true).html());
+alert("D2");			
+                
+				break;
+			}
+		}
+		
+		lastRow = $("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent();
+alert("E");			
+
+		lastRow.hide();
+		lastRow.html(backupEMIItemRow.clone(true).html());
+		return false;
+    });
+}
+*/	
+
+
+/*	
+for (i=0; i<=highestItemId; i++) {
+	var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
+	emiItemRemoveLink.bind('click', function() {
+		var itemId = +($(this).attr("id").split(":")[2]);
+		for (j=itemId; j<highestItemId; j++) {
+			var k = +j+1;
+
+			var removeLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + j + ":RemoveLink]");
+			var removeLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + k + ":RemoveLink]");
+
+			var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]");
+			var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]");
+			itemText1.val(itemText2.val());
+			var itemTextId1 = itemText1.attr("id");
+			var itemTextId2 = itemText2.attr("id");
+			var fckEditor1;
+			var fckEditor2;
+			
+			if (typeof FCKeditorAPI !== "undefined" && itemText1 !== null && itemText2 !== null) {
+			    fckEditor1 = FCKeditorAPI.GetInstance(itemTextId1);
+			    fckEditor2 = FCKeditorAPI.GetInstance(itemTextId2);
+			    if (fckEditor1 && fckEditor2) {
+			    	fckEditor1.SetHTML(fckEditor2.GetHTML());
+			    }
+			    else if (fckEditor1) {
+			    	fckEditor1.SetHTML(itemText2.val());
+			    }
+			}
+			var correctOptionLabels1 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]");
+			var correctOptionLabels2 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + k + ":correctOptionLabels]");
+			correctOptionLabels1.val(correctOptionLabels2.val());
+			
+			var requiredAnswersCount1 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + j +":requiredOptionsCount]");
+			var requiredAnswersCount2 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + k +":requiredOptionsCount]");
+			requiredAnswersCount1.val(requiredAnswersCount2.val());
+			//if reached the visible-invisible boundary, hide the last visible row
+			
+			if (removeLink1.is(':visible') && !removeLink2.is(':visible')) {
+				itemText1.val("");
+				if (typeof FCKeditorAPI !== "undefined") {
+					if (fckEditor1) fckEditor1.SetHTML("");
+				}
+                $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent().hide();
+				break;
+			}
+		}
+		
+		var lastItemText = $("input[id^=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":]");
+		lastItemText.val("");
+		var lastCorrectOptionLabels = $("textarea[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":correctOptionLabels]");
+		lastCorrectOptionLabels.val("");
+		var lastRequiredAnswersCount = $("select[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":requiredOptionsCount]");
+		lastRequiredAnswersCount.val("0");
+
+		if (typeof FCKeditorAPI !== "undefined" && lastItemText !== null) {
+		    lastFckEditor = FCKeditorAPI.GetInstance(lastItemText.attr("id"));
+		    if (lastFckEditor) lastFckEditor.SetHTML("");
+		}
+		
+		
+		$("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent().hide();
+		return false;
+    });
+}
+*/	

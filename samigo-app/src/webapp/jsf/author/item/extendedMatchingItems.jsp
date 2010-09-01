@@ -42,6 +42,7 @@
       <!-- AUTHORING -->
       <samigo:script path="/js/jquery-1.3.2.min.js"/>
       <samigo:script path="/js/authoring.js"/>
+      <samigo:script path="/js/jquery-ui-1.7.2.custom.min.js"/>
       </head>
 <body onload="resetInsertAnswerSelectMenus();<%= request.getAttribute("html.body.onload") %>">
 
@@ -298,12 +299,14 @@
 <!-- dynamicaly generate rows of question-answer combos -->
 <div class="tier2">
 
- <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinations}" var="answer" headerClass="navView longtext">
+ <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinationsUI}" var="answer" headerClass="navView longtext">
  <h:column>
 
  <h:panelGrid id="Row" columns="4">
   <h:panelGroup>
-    <h:outputText id="Label" value="#{answer.label}"  />
+    <h:outputText id="XX_Label" value="#{answer.label}" rendered="false" />
+    <h:inputText id="Label" value="#{answer.label}" size="1"/>
+    
     <f:verbatim><br/></f:verbatim>
   </h:panelGroup>
   
@@ -498,6 +501,11 @@
 
 </p>
 </h:form>
+
+    <!-- ERROR MESSAGES for JavaScript Processing-->
+    <h:inputHidden id="errorXXX" value="#{authorMessages.XXXX}" />
+
+
 <!-- end content -->
 </div>
 

@@ -123,6 +123,8 @@ should be included in file importing DeliveryMessages
     </h:column>
   </h:dataTable>
   <!-- ATTACHMENTS ABOVE - EMI RICH ANSWER OPTIONS-->
+
+      <f:verbatim><br/><br/></f:verbatim>
      
    </h:column>
   
