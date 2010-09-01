@@ -2132,8 +2132,8 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
                   if(grade == null || EmptyItemGrading.class.isInstance(grade)){
                   	sectionSequenceNumber = EmptyItemGrading.class.cast(grade).getSectionSequence();
                     questionNumber = EmptyItemGrading.class.cast(grade).getItemSequence();
-                  	//want to make the cell empty
-                    maintext = " ";
+                  	// indicate that the student was not presented with this question
+                    maintext = "-";
                   }else{
                   	sectionSequenceNumber = updateSectionScore(sectionItems, sectionScores, grade.getPublishedItemId(), itemScore);
                   }
