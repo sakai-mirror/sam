@@ -63,63 +63,108 @@ var highestItemId = +25;
 var maxAvailableItems = +10;
 var additionalOptionsGroupSize = +3;
 var additionalItemsGroupSize = +3;
-var backupEMIItemRowHTML;
 var removeLabel = "X";
+var maxErrorsDisplayed = +20;
 
 
 $(document).ready(function(){
 	
 	//************* VALIDATION *****************
-/*	
-	var $dialog = $('<div></div>')
-	.html('Please correct these before submitting!')
+	var error_dialog_title_line1 = $("input[id=error_dialog_title_line1]").val();
+	var error_dialog_title_line2 = $("input[id=error_dialog_title_line2]").val();
+	var answer_point_value_error = $("input[id=answer_point_value_error]").val();
+	var theme_text_error = $("input[id=theme_text_error]").val();
+	var simple_text_options_blank_error = $("input[id=simple_text_options_blank_error]").val();
+	var number_of_rich_text_options_error = $("input[id=number_of_rich_text_options_error]").val();
+	var blank_or_non_integer_item_sequence_error = $("input[id=blank_or_non_integer_item_sequence_error]").val();
+	var correct_option_labels_error = $("input[id=correct_option_labels_error]").val();
+	var item_text_not_entered_error = $("input[id=item_text_not_entered_error]").val();
+	
+	
+	var $errorMessageDialog = $('<div></div>')
+	.html('')
 	.dialog({
 		autoOpen: false,
-		title: 'Errors Encountered'
+		title: error_dialog_title_line1+'<br/>'+error_dialog_title_line2
 	});
-*/
 	
 	var buttonSave = $("input[value=Save]");
 	buttonSave.bind('click', function(){
-		var errorMessages="";
+		var errorMessages = new Array(maxErrorsDisplayed);
+		var errorNumber=+0;
 
-		//Check Answer Point Value
+		//Validate Answer Point Value
 		var answerPointValue = $("input[name=itemForm:answerptr]").val();
 		if (answerPointValue.trim()=="" || +answerPointValue==0) {
-			errorMessages="Answer Point Value has not been entered.";
+			errorMessages[errorNumber++] = answer_point_value_error;
 		}
 		
 		
-		//Check Answer Point Value
+		//Validate Answer Point Value
 		var themeText = $("input[name=itemForm:themetext]").val();
 		if (themeText.trim()=="") {
-			errorMessages="Theme Text has not been entered.";
+			errorMessages[errorNumber++] = theme_text_error;
 		}
 		
 		
-		//Check Options
+		//Validate Options
 		var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]").val();
-		if (simpleOrRichAnswerOptions===0) { //simple
-			for (j=0; j<highestOptionId; j++) {
-				var optionText = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
-				
-				//if reached the visible-invisible boundary, hide the last visible row
-				if (optionText.is(':visible') && (optionText.val()==null || optionText.val().trim()=="") ) {
-					errorMessages="Simple Text Options are left blank - Please Enter Option Text or remove options before saving.";
-					break;
+		
+		if (simpleOrRichAnswerOptions==0) { //simple
+			var pastedOptions = $("textarea[id=itemForm:emiAnswerOptionsPaste]").val();
+			if (pastedOptions == null || pastedOptions.trim()=="") {
+				for (j=0; j<highestOptionId; j++) {
+					var optionText = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
+					if (optionText.is(':visible') && (optionText.val()==null || optionText.val().trim()=="") ) {
+						errorMessages[errorNumber++] = simple_text_options_blank_error;
+						break;
+					}
 				}
 			}
 		}
 		else {
 			var richAnswerOptionsCount = $("select[id=itemForm:answerOptionsRichCount]").val();
 			if (richAnswerOptionsCount == "0") {
-				errorMessages="Number of Rich Text Options not selected.";
+				errorMessages[errorNumber++] = number_of_rich_text_options_error;
 			}
 		}
 		
-		//$dialog.dialog('open');
-		if (errorMessages !== "") {
-			alert(errorMessages);
+
+		//Validate Items
+		for (j=0; j<highestItemId; j++) {
+			var itemError = false;
+			var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
+			if (labelInput && labelInput.is(':visible') && labelInput.val() !== removeLabel)  {
+				if (labelInput.val().trim()=="" || /[^0-9]/g.test(labelInput.val())) {
+					errorMessages[errorNumber++] = blank_or_non_integer_item_sequence_error + labelInput.val();
+					itemError = true;
+				}
+				var correctOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]").val();
+				if (correctOptionLabels.trim()=="" || /[^a-z,]/gi.test(correctOptionLabels)) {
+					errorMessages[errorNumber++] = correct_option_labels_error + labelInput.val();
+					itemError = true;
+				}
+				var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").val();
+				if (itemText.trim()=="") {
+					errorMessages[errorNumber++] = item_text_not_entered_error + labelInput.val();
+					itemError = true;
+				}
+				if (itemError) break;
+			}
+		}
+		
+		
+		
+		if (errorNumber > 0) {
+			$errorMessageDialog.dialog('close');
+			var messageHTML = "<font color='red'><ul>";
+			for (i=0; i<errorNumber; i++) {
+				messageHTML += "<li>" + errorMessages[i]+"</li>";
+			}
+			messageHTML += "<ul/></font>";
+			$errorMessageDialog.html(messageHTML);
+			$errorMessageDialog.dialog('open');
+			//alert(errorMessages);
 			return false;
 		}
 		else {
@@ -191,8 +236,6 @@ $(document).ready(function(){
 	
 
 	//************* ITEMS ********************
-	backupEMIItemRow = $("table[id=itemForm:emiQuestionAnswerCombinations:" + 0 + ":Row]").parent().parent();
-
 	//Remove Items
 	for (i=0; i<=highestItemId; i++) {
 		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
@@ -213,7 +256,6 @@ $(document).ready(function(){
 			return false;
 	    });
 	}
-	
 	
 
 	
@@ -251,6 +293,7 @@ $(document).ready(function(){
 
 	
 	//Update RequiredOptionsCount based on CorrectOptionsLabels
+	var all_option = $("input[id=all]").val();
 	for (i=0; i<=highestItemId; i++) {
 		var emiCorrectOptionLabelsInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":correctOptionLabels]");
 		if (emiCorrectOptionLabelsInput==null) break;
@@ -260,7 +303,7 @@ $(document).ready(function(){
 			var currentSelection = requiredOptionsCountSelect.val();
 			var changedCorrectOptions = $(this).val().split(",");
 			requiredOptionsCountSelect.empty();
-			requiredOptionsCountSelect.append('<option value="0">select</option>');
+			requiredOptionsCountSelect.append('<option value="0">' + all_option + '</option>');
 			for (j=1; j<=changedCorrectOptions.length; j++) {
 				if (j == currentSelection) {
 					requiredOptionsCountSelect.append('<option selected="selected" value="'+ j +'">'+ j +'</option>');

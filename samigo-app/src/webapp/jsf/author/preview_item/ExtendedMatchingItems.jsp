@@ -25,6 +25,8 @@ should be included in file importing DeliveryMessages
 -->
   ***** GOPAL TEST/TEMP - /jsf/author/preview_item/ExtendedMatchingItem.jsp *****
   ***** Included In /jsf/author/previewAssessment.jsp ************
+  
+  
   <h:outputText escape="false" value="#{question.class.name}" />
   
 
@@ -35,7 +37,7 @@ should be included in file importing DeliveryMessages
       <f:verbatim><br/><br/></f:verbatim>
 
 
-      <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option"  rendered="#{question.itemData.isAnswerOptionsSimple}" border="1" style="border-style:solid">
+      <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option"  rendered="#{question.itemData.isAnswerOptionsSimple}"  styleClass="simpleBorder">
         <h:column> 
           <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
             <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
@@ -73,10 +75,10 @@ should be included in file importing DeliveryMessages
       
       
 
-      <h:dataTable value="#{question.itemData.emiQuestionAnswerCombinations}" var="item" border="1" style="border-style:solid">
+      <h:dataTable value="#{question.itemData.emiQuestionAnswerCombinations}" var="item" styleClass="simpleBorder">
 
         <h:column> 
-      <h:dataTable value="#{item.answerArraySorted}" var="answerOption">
+      <h:dataTable value="#{item.answerArraySorted}" var="answerOption" styleClass="">
         <h:column>
          <h:panelGroup rendered="#{answerOption.text != null && answerOption.text ne '' && answerOption.isCorrect}">
           <h:outputText escape="false" value="#{answerOption.label}" /> 

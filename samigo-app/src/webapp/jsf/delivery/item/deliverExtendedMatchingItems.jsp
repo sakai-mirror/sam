@@ -32,7 +32,7 @@ should be included in file importing DeliveryMessages
   <f:verbatim><br /><br /></f:verbatim>
   
   
-  <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option" border="1" style="border-style:solid" rendered="#{question.itemData.isAnswerOptionsSimple}">
+  <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option" style="border-width: 1px 1px 1px 1px; border-spacing: 1px; border-style: solid solid solid solid; border-color: gray gray gray gray; border-collapse: collapse; background-color: white;" rendered="#{question.itemData.isAnswerOptionsSimple}">
      <h:column> 
        <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
          <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
@@ -86,7 +86,7 @@ should be included in file importing DeliveryMessages
 -->
 
   
-  <h:dataTable value="#{question.matchingArray}" var="matching">
+  <h:dataTable value="#{question.matchingArray}" var="matching" style="border-width: 1px 1px 1px 1px; border-spacing: 1px; border-style: solid solid solid solid; border-color: gray gray gray gray; border-collapse: collapse; background-color: white;">
    
 
    <h:column>

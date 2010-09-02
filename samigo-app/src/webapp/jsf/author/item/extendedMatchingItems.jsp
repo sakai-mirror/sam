@@ -40,9 +40,10 @@
       <head><%= request.getAttribute("html.head") %>
       <title><h:outputText value="#{authorMessages.item_display_author}"/></title>
       <!-- AUTHORING -->
+	  <link type="text/css" href="/samigo-app/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />	
       <samigo:script path="/js/jquery-1.3.2.min.js"/>
-      <samigo:script path="/js/authoring.js"/>
       <samigo:script path="/js/jquery-ui-1.7.2.custom.min.js"/>
+      <samigo:script path="/js/authoring.js"/>
       </head>
 <body onload="resetInsertAnswerSelectMenus();<%= request.getAttribute("html.body.onload") %>">
 
@@ -369,7 +370,7 @@
     <h:outputText value="#{authorMessages.required_options_count}" />
     <f:verbatim><br/></f:verbatim>
     <h:selectOneMenu  id="requiredOptionsCount"  onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsCountLink();" value="#{answer.requiredOptionsCount}" >
-      <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
+      <f:selectItem itemLabel="#{authorMessages.all}" itemValue="0"/>
       <f:selectItem itemLabel="1" itemValue="1"/>
       <f:selectItem itemLabel="2" itemValue="2"/>
       <f:selectItem itemLabel="3" itemValue="3"/>
@@ -502,9 +503,21 @@
 </p>
 </h:form>
 
-    <!-- ERROR MESSAGES for JavaScript Processing-->
-    <h:inputHidden id="errorXXX" value="#{authorMessages.XXXX}" />
+	
+    <!-- TEXT for JavaScript Processing-->
+    <h:inputHidden id="all" value="#{authorMessages.all}" />
 
+
+    <!-- ERROR MESSAGES for JavaScript Processing-->
+    <h:inputHidden id="error_dialog_title_line1" value="#{authorMessages.error_dialog_title_line1}" />
+    <h:inputHidden id="error_dialog_title_line2" value="#{authorMessages.error_dialog_title_line2}" />
+    <h:inputHidden id="answer_point_value_error" value="#{authorMessages.answer_point_value_error}" />
+    <h:inputHidden id="theme_text_error" value="#{authorMessages.theme_text_error}" />
+    <h:inputHidden id="simple_text_options_blank_error" value="#{authorMessages.simple_text_options_blank_error}" />
+    <h:inputHidden id="number_of_rich_text_options_error" value="#{authorMessages.number_of_rich_text_options_error}" />
+    <h:inputHidden id="blank_or_non_integer_item_sequence_error" value="#{authorMessages.blank_or_non_integer_item_sequence_error}" />
+    <h:inputHidden id="correct_option_labels_error" value="#{authorMessages.correct_option_labels_error}" />
+    <h:inputHidden id="item_text_not_entered_error" value="#{authorMessages.item_text_not_entered_error}" />
 
 <!-- end content -->
 </div>
