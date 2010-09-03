@@ -39,9 +39,10 @@ should be included in file importing DeliveryMessages
 
       <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option"  rendered="#{question.itemData.isAnswerOptionsSimple}"  styleClass="simpleBorder">
         <h:column> 
-          <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
-            <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
-          </h:panelGroup>
+            <h:outputText escape="false" value="#{option.label}. " /> 
+        </h:column>
+        <h:column> 
+            <h:outputText escape="false" value=" #{option.text}" /> 
         </h:column>
       </h:dataTable>
       
@@ -78,7 +79,7 @@ should be included in file importing DeliveryMessages
       <h:dataTable value="#{question.itemData.emiQuestionAnswerCombinations}" var="item" styleClass="simpleBorder">
 
         <h:column> 
-      <h:dataTable value="#{item.answerArraySorted}" var="answerOption" styleClass="">
+      <h:dataTable value="#{item.answerArraySorted}" var="answerOption" styleClass="noBorder">
         <h:column>
          <h:panelGroup rendered="#{answerOption.text != null && answerOption.text ne '' && answerOption.isCorrect}">
           <h:outputText escape="false" value="#{answerOption.label}" /> 
@@ -101,7 +102,7 @@ should be included in file importing DeliveryMessages
           <h:outputText escape="false" value="#{item.sequence}. #{item.text}" />
           
   <!-- ATTACHMENTS BELOW - EMI ITEMTEXT ATTACHMENTS-->
-  <h:dataTable value="#{item.itemTextAttachmentList}" var="attach">
+  <h:dataTable value="#{item.itemTextAttachmentList}" var="attach" styleClass="noBorder">
     <h:column>
       <%@ include file="/jsf/shared/mimeicon.jsp" %>
     </h:column>

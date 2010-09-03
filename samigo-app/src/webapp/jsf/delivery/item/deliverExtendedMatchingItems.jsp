@@ -32,11 +32,12 @@ should be included in file importing DeliveryMessages
   <f:verbatim><br /><br /></f:verbatim>
   
   
-  <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option" style="border-width: 1px 1px 1px 1px; border-spacing: 1px; border-style: solid solid solid solid; border-color: gray gray gray gray; border-collapse: collapse; background-color: white;" rendered="#{question.itemData.isAnswerOptionsSimple}">
+  <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option"  styleClass="simpleBorder" rendered="#{question.itemData.isAnswerOptionsSimple}">
      <h:column> 
-       <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
-         <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
-       </h:panelGroup>
+         <h:outputText escape="false" value="#{option.label}. " /> 
+     </h:column>
+     <h:column> 
+         <h:outputText escape="false" value=" #{option.text}" /> 
      </h:column>
   </h:dataTable>
       
@@ -86,7 +87,7 @@ should be included in file importing DeliveryMessages
 -->
 
   
-  <h:dataTable value="#{question.matchingArray}" var="matching" style="border-width: 1px 1px 1px 1px; border-spacing: 1px; border-style: solid solid solid solid; border-color: gray gray gray gray; border-collapse: collapse; background-color: white;">
+  <h:dataTable value="#{question.matchingArray}" var="matching" styleClass="simpleBorder">
    
 
    <h:column>
@@ -101,7 +102,7 @@ should be included in file importing DeliveryMessages
      <h:outputText value="#{matching.text}" escape="false" />
      
   <!-- ATTACHMENTS BELOW - EMI RICH ANSWER OPTIONS-->
-  <h:dataTable value="#{matching.itemText.itemTextAttachmentList}" var="attach">
+  <h:dataTable value="#{matching.itemText.itemTextAttachmentList}" var="attach"  styleClass="simpleBorder">
     <h:column rendered="#{!attach.isMedia}">
       <%@ include file="/jsf/shared/mimeicon.jsp" %>
     </h:column>

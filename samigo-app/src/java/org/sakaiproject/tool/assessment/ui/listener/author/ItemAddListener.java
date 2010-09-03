@@ -649,14 +649,15 @@ public class ItemAddListener
         	//prepare itemText, including answers
     	  	//gopalrc
     	  	if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-              item.setItemTextSet(prepareTextForEMI(item, bean, itemauthor));
+                item.setItemTextSet(prepareTextForEMI(item, bean, itemauthor));
     	  	}
-    	  	else if (!item.getTypeId().equals(TypeFacade.MATCHING)) {
-              item.setItemTextSet(prepareText(item, bean, itemauthor));
+    	  	else if (item.getTypeId().equals(TypeFacade.MATCHING)) {
+                item.setItemTextSet(prepareTextForMatching(item, bean, itemauthor));
             }
-            else {
-              item.setItemTextSet(prepareTextForMatching(item, bean, itemauthor));
+            else { //Other Types
+                item.setItemTextSet(prepareText(item, bean, itemauthor));
             }
+    	  	
             // prepare MetaData
             item.setItemMetaDataSet(prepareMetaData(item, bean));
 
@@ -1033,15 +1034,15 @@ public class ItemAddListener
 			itemText.setItem(item.getData());
 			itemText.setSequence(qaCombo.getSequence());
 			itemText.setText(qaCombo.getText());
+			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
+
 			Integer requiredOptions = Integer.valueOf(qaCombo.getRequiredOptionsCount());
 			if (requiredOptions == 0) {
 				requiredOptions = qaCombo.correctOptionsCount();
 			}
-			itemText.setRequiredOptionsCount(requiredOptions);
 			numberOfCorrectAnswersRequired += requiredOptions;
 			
 			HashSet answerSet = new HashSet();
-
 			
 			if (Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()).equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE) ) {
 				Iterator selectionOptions = textAnswerOptions.getAnswerArraySorted().iterator();
@@ -1060,7 +1061,13 @@ public class ItemAddListener
 							.getSequence(), selectOption.getLabel(),
 							isCorrect, null, null, null,
 							Float.valueOf(bean.getItemDiscount()), null);
-					
+
+					HashSet answerFeedbackSet1 = new HashSet();
+					answerFeedbackSet1.add(new AnswerFeedback(actualAnswer,
+							AnswerFeedbackIfc.GENERAL_FEEDBACK,
+							stripPtags(qaCombo.getFeedback())));
+					actualAnswer.setAnswerFeedbackSet(answerFeedbackSet1);
+
 					answerSet.add(actualAnswer);
 				}
 			}
@@ -1078,6 +1085,12 @@ public class ItemAddListener
 							label, Long.valueOf(i), label,
 							isCorrect, null, null, null,
 							Float.valueOf(bean.getItemDiscount()), null);
+					
+					HashSet answerFeedbackSet1 = new HashSet();
+					answerFeedbackSet1.add(new AnswerFeedback(actualAnswer,
+							AnswerFeedbackIfc.GENERAL_FEEDBACK,
+							stripPtags(qaCombo.getFeedback())));
+					actualAnswer.setAnswerFeedbackSet(answerFeedbackSet1);
 					
 					answerSet.add(actualAnswer);
 				}
@@ -1114,6 +1127,58 @@ public class ItemAddListener
 		return textSet;
 	}
   
+
+  /*
+    
+   		//gopalrc - added 25 Nov 2009
+		else if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+
+			Iterator iter = bean.getEmiAnswerOptionsClean().iterator();
+			Answer answer = null;
+			while (iter.hasNext()) {
+				AnswerBean answerbean = (AnswerBean) iter.next();
+				answer = new Answer(text1,
+						stripPtags(answerbean.getText()), answerbean
+						.getSequence(), answerbean.getLabel(),
+						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), null, Float.valueOf(bean.getItemDiscount()), null);
+				
+				HashSet answerFeedbackSet1 = new HashSet();
+				answerFeedbackSet1.add(new AnswerFeedback(answer,
+						AnswerFeedbackIfc.GENERAL_FEEDBACK,
+						stripPtags(answerbean.getFeedback())));
+				answer.setAnswerFeedbackSet(answerFeedbackSet1);
+
+				answerSet1.add(answer);
+			}
+
+			
+			iter = bean.getEmiQuestionAnswerCombinationsClean().iterator();
+			answer = null;
+			while (iter.hasNext()) {
+				AnswerBean answerbean = (AnswerBean) iter.next();
+				answer = new Answer(text1,
+						stripPtags(answerbean.getText()), answerbean
+						.getSequence(), answerbean.getLabel(),
+						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), null,Float.valueOf(bean.getItemDiscount()), null);
+						
+						
+				HashSet answerFeedbackSet1 = new HashSet();
+				answerFeedbackSet1.add(new AnswerFeedback(answer,
+						AnswerFeedbackIfc.GENERAL_FEEDBACK,
+						stripPtags(answerbean.getFeedback())));
+				answer.setAnswerFeedbackSet(answerFeedbackSet1);
+
+				answerSet1.add(answer);
+			}			
+
+			text1.setAnswerSet(answerSet1);
+			textSet.add(text1);
+
+		}
+
+    
+    
+   */
   
   
   
@@ -1300,50 +1365,6 @@ public class ItemAddListener
 			textSet.add(text1);
 
 		}
-
-		//gopalrc - added 25 Nov 2009
-		else if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
-
-			Iterator iter = bean.getEmiAnswerOptionsClean().iterator();
-			Answer answer = null;
-			while (iter.hasNext()) {
-				AnswerBean answerbean = (AnswerBean) iter.next();
-				answer = new Answer(text1,
-						stripPtags(answerbean.getText()), answerbean
-						.getSequence(), answerbean.getLabel(),
-						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), null, Float.valueOf(bean.getItemDiscount()), null);
-				HashSet answerFeedbackSet1 = new HashSet();
-				answerFeedbackSet1.add(new AnswerFeedback(answer,
-						AnswerFeedbackIfc.GENERAL_FEEDBACK,
-						stripPtags(answerbean.getFeedback())));
-				answer.setAnswerFeedbackSet(answerFeedbackSet1);
-
-				answerSet1.add(answer);
-			}
-
-			
-			iter = bean.getEmiQuestionAnswerCombinationsClean().iterator();
-			answer = null;
-			while (iter.hasNext()) {
-				AnswerBean answerbean = (AnswerBean) iter.next();
-				answer = new Answer(text1,
-						stripPtags(answerbean.getText()), answerbean
-						.getSequence(), answerbean.getLabel(),
-						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), null,Float.valueOf(bean.getItemDiscount()), null);
-				HashSet answerFeedbackSet1 = new HashSet();
-				answerFeedbackSet1.add(new AnswerFeedback(answer,
-						AnswerFeedbackIfc.GENERAL_FEEDBACK,
-						stripPtags(answerbean.getFeedback())));
-				answer.setAnswerFeedbackSet(answerFeedbackSet1);
-
-				answerSet1.add(answer);
-			}			
-
-			text1.setAnswerSet(answerSet1);
-			textSet.add(text1);
-
-		}
-		
 
 		// for file Upload and audio recording
 		else {
@@ -1824,7 +1845,7 @@ public class ItemAddListener
 		// 3. Prepare and save actual answers from answer components 
 		// (emiAnswerOptions and emiQuestionAnswerCombinations)
 		// ///////////////////////////////////////////////////////////
-		int numberOfCorrectAnswers = 0;
+		int numberOfCorrectAnswersRequired = 0;
 		float correctAnswerScore = 0;
 		
 		iter = bean.getEmiQuestionAnswerCombinationsClean().iterator();
@@ -1838,6 +1859,12 @@ public class ItemAddListener
 			itemText.setText(qaCombo.getText());
 			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
 			
+			Integer requiredOptions = Integer.valueOf(qaCombo.getRequiredOptionsCount());
+			if (requiredOptions == 0) {
+				requiredOptions = qaCombo.correctOptionsCount();
+			}
+			numberOfCorrectAnswersRequired += requiredOptions;
+			
 			HashSet answerSet = new HashSet();
 			
 			if (Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()).equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE) ) {
@@ -1845,16 +1872,24 @@ public class ItemAddListener
 				while (selectionOptions.hasNext()) {
 					AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
-					
+
+					/*
 					if (isCorrect) {
 						numberOfCorrectAnswers++;
 					}
+					 */
 	
 					AnswerIfc actualAnswer = new PublishedAnswer(itemText,
 							selectOption.getText(), selectOption
 							.getSequence(), selectOption.getLabel(),
 							isCorrect, null, null, null,
 							Float.valueOf(bean.getItemDiscount()), null);
+					
+					HashSet answerFeedbackSet = new HashSet();
+				    answerFeedbackSet.add(new PublishedAnswerFeedback(actualAnswer,
+				                                             AnswerFeedbackIfc.GENERAL_FEEDBACK,
+				                                             stripPtags(qaCombo.getFeedback())));
+				    actualAnswer.setAnswerFeedbackSet(answerFeedbackSet);
 					
 					answerSet.add(actualAnswer);
 				}
@@ -1865,16 +1900,24 @@ public class ItemAddListener
 					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i, i+1);
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
 					
+					/*
 					if (isCorrect) {
 						numberOfCorrectAnswers++;
 					}
-	
+					*/
+					
 					AnswerIfc actualAnswer = new PublishedAnswer(itemText,
 							label, Long.valueOf(i), label,
 							isCorrect, null, null, null,
 							Float.valueOf(bean.getItemDiscount()), null);
 					
-					answerSet.add(actualAnswer);
+					HashSet answerFeedbackSet = new HashSet();
+				    answerFeedbackSet.add(new PublishedAnswerFeedback(actualAnswer,
+				                                             AnswerFeedbackIfc.GENERAL_FEEDBACK,
+				                                             stripPtags(qaCombo.getFeedback())));
+				    actualAnswer.setAnswerFeedbackSet(answerFeedbackSet);
+
+				    answerSet.add(actualAnswer);
 				}
 			}
 			itemText.setAnswerSet(answerSet);
@@ -1883,8 +1926,8 @@ public class ItemAddListener
 
 
 		//now calculate and save the answer scores
-		if (numberOfCorrectAnswers != 0) {
-			correctAnswerScore = Float.valueOf(bean.getItemScore()) / (float)numberOfCorrectAnswers;
+		if (numberOfCorrectAnswersRequired != 0) {
+			correctAnswerScore = Float.valueOf(bean.getItemScore()) / (float)numberOfCorrectAnswersRequired;
 		}
 		float answerScore = 0;
 		Iterator textSetIter = textSet.iterator();

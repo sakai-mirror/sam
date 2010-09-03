@@ -248,6 +248,7 @@ table.simpleBorder {
 	border-color: gray gray gray gray;
 	border-collapse: collapse;
 	background-color: white;
+	vertical-align: top; 
 }
 table.simpleBorder td {
 	border-width: 1px 1px 1px 1px;
@@ -256,4 +257,16 @@ table.simpleBorder td {
 	border-color: gray gray gray gray;
 	background-color: white;
 	-moz-border-radius: 0px 0px 0px 0px;
+	vertical-align: top; 
 }
+table.noBorder {
+	border-style: none none none none;
+	background-color: white;
+	vertical-align: top; 
+}
+table.noBorder td {
+	border-style: none none none none;
+	background-color: white;
+	vertical-align: top; 
+}
+
