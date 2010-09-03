@@ -186,6 +186,7 @@ public class HistogramListener
         }
         
     	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
+        ResourceLoader rbEval = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
         String assessmentName = "";
 
 		  // gopalrc Dec 2007
@@ -380,6 +381,7 @@ public class HistogramListener
 
 					  questionScores.setPartNumber( section.getSequence().toString());
 					  questionScores.setQuestionNumber( item.getSequence().toString());
+                      questionScores.setItemId(item.getItemId());
 					  questionScores.setTitle(title + item.getSequence().toString()
 							  + " (" + type + ")");
 					  questionScores.setQuestionText(item.getText());
@@ -416,20 +418,24 @@ public class HistogramListener
                             lowerQuartileStudents = new HashSet<String>();
                             percent27ForThisQuestion = questionScores.getNumResponses()*27/100;
                             if (percent27ForThisQuestion == 0) percent27ForThisQuestion = 1;
-                            //need to only get gradings for students that answered this question
-                            List<AssessmentGradingData> filteredGradings =
+                            if(questionScores.getNumResponses() != 0){
+                                //need to only get gradings for students that answered this question
+                                List<AssessmentGradingData> filteredGradings =
                             		filterGradingData(submissionsSortedForDiscrim, questionScores.getItemId());
-                            for (int i = 0; i < percent27ForThisQuestion; i++) {
-                            	lowerQuartileStudents.add(((AssessmentGradingData)
+                                for (int i = 0; i < percent27ForThisQuestion; i++) {
+                                    lowerQuartileStudents.add(((AssessmentGradingData)
                                 	filteredGradings.get(i)).getAgentId());
-                                upperQuartileStudents.add(((AssessmentGradingData)
-                                	filteredGradings.get(questionScores.getNumResponses()-1-i)).getAgentId());
-                            }
+                                    //
+                                    upperQuartileStudents.add(((AssessmentGradingData)
+                                    	filteredGradings.get(questionScores.getNumResponses()-1-i)).getAgentId());
+                                }
+                             }
                           }
-						  int numStudentsWithAllCorrectFromUpperQuartile = 0;
-						  int numStudentsWithAllCorrectFromLowerQuartile = 0;
-						  Iterator studentsIter = studentsWithAllCorrect.iterator();
-						  while (studentsIter.hasNext()) {
+						  if(questionScores.getNumResponses() != 0){
+                              int numStudentsWithAllCorrectFromUpperQuartile = 0;
+                              int numStudentsWithAllCorrectFromLowerQuartile = 0;
+                              Iterator studentsIter = studentsWithAllCorrect.iterator();
+                              while (studentsIter.hasNext()) {
 							  String agentId = (String) studentsIter.next();
 							  if (upperQuartileStudents.contains(agentId)) {
 								  numStudentsWithAllCorrectFromUpperQuartile++;
@@ -437,33 +443,37 @@ public class HistogramListener
 							  if (lowerQuartileStudents.contains(agentId)) {
 								  numStudentsWithAllCorrectFromLowerQuartile++;
 							  }
-						  }
+                              }
 						  
-						  float percentCorrectFromUpperQuartileStudents = 
+                              float percentCorrectFromUpperQuartileStudents =
 							  ((float) numStudentsWithAllCorrectFromUpperQuartile / 
 									  (float) percent27ForThisQuestion) * 100f;
 
-						  float percentCorrectFromLowerQuartileStudents = 
+                              float percentCorrectFromLowerQuartileStudents =
 							  ((float) numStudentsWithAllCorrectFromLowerQuartile / 
 									  (float) percent27ForThisQuestion) * 100f;
 
-						  questionScores.setPercentCorrectFromUpperQuartileStudents(
+                              questionScores.setPercentCorrectFromUpperQuartileStudents(
 								  Integer.toString((int) percentCorrectFromUpperQuartileStudents));
-						  questionScores.setPercentCorrectFromLowerQuartileStudents(
+                              questionScores.setPercentCorrectFromLowerQuartileStudents(
 								  Integer.toString((int) percentCorrectFromLowerQuartileStudents));
-
-						  float discrimination = ((float)numStudentsWithAllCorrectFromUpperQuartile -								  
+                                                  
+                                                    float discrimination = ((float)numStudentsWithAllCorrectFromUpperQuartile -
 								  (float)numStudentsWithAllCorrectFromLowerQuartile)/(float)percent27ForThisQuestion ;
-						  
-						  // round to 2 decimals
-						  if (discrimination > 999999 || discrimination < -999999) {
+
+                              // round to 2 decimals
+                              if (discrimination > 999999 || discrimination < -999999) {
 							  questionScores.setDiscrimination("NaN");
-						  }
-						  else {
+                              }
+                              else {
 							  discrimination = ((int) (discrimination*100.00f)) / 100.00f;
 							  questionScores.setDiscrimination(Float.toString(discrimination));
-						  }
-
+                              }
+                          }else{
+                              questionScores.setPercentCorrectFromUpperQuartileStudents(rbEval.getString("na"));
+                              questionScores.setPercentCorrectFromLowerQuartileStudents(rbEval.getString("na"));
+                              questionScores.setDiscrimination(rbEval.getString("na"));
+                          }
 					  }
 					  // above - gopalrc Nov 2007
 
@@ -633,13 +643,14 @@ public class HistogramListener
     ArrayList scores)
   {
 	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
-    if (scores.isEmpty())
-    {
-      qbean.setHistogramBars(new HistogramBarBean[0]);
-      qbean.setNumResponses(0);
-      qbean.setPercentCorrect(rb.getString("no_responses"));
-      return;
-    }
+//    Don't return here. This will cause questions to be displayed inconsistently on the stats page
+//    if (scores.isEmpty())
+//    {
+//      qbean.setHistogramBars(new HistogramBarBean[0]);
+//      qbean.setNumResponses(0);
+//      qbean.setPercentCorrect(rb.getString("no_responses"));
+//      return;
+//    }
 
     PublishedAssessmentService pubService  =  new PublishedAssessmentService();
     //build a hashMap (publishedItemId, publishedItem)
@@ -648,7 +659,7 @@ public class HistogramListener
     HashMap publishedAnswerHash = pubService.preparePublishedAnswerHash(pub);
 
     //int numAnswers = 0;
-    ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(((ItemGradingData) scores.toArray()[0]).getPublishedItemId());
+    ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(qbean.getItemId());
     ArrayList text = item.getItemTextArraySorted();
     ArrayList answers = null;
     if (!qbean.getQuestionType().equals("9")) // matching
