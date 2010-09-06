@@ -1156,6 +1156,7 @@ public class DeliveryActionListener
     int j = 1;
     while (key1.hasNext())
     {
+    	
       // We need to store the answers in an arraylist in case they're
       // randomized -- we assign labels here, and then step through
       // them again later, and we have to make sure the order is the
@@ -1164,6 +1165,13 @@ public class DeliveryActionListener
       // get duplicates.
       ItemTextIfc text = (ItemTextIfc) key1.next();
       Iterator key2 = null;
+
+      //gopalrc - added for EMI - Sept 2010	
+      if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS))
+      {
+    	  key = text.getSequence() + ":";
+      }
+
       
       // Never randomize Fill-in-the-blank or Numeric Response, always randomize matching
       if (randomize && !(item.getTypeId().equals(TypeIfc.FILL_IN_BLANK)||item.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC)) || item.getTypeId().equals(TypeIfc.MATCHING))
@@ -1243,12 +1251,6 @@ public class DeliveryActionListener
                 addition = Integer.toString(j++) + ":";
               }
 
-              if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS))
-              {
-                addition = text.getSequence() + ":";
-              }
-
-              
               if ("".equals(key))
               {
                 key += addition + answer.getLabel();
@@ -1260,6 +1262,13 @@ public class DeliveryActionListener
             }
           }
           
+          
+          //gopalrc - added for EMI - Sept 2010	
+          if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS))
+          {
+        	  key += answer.getLabel();
+          }
+
           
           if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) &&
               answer.getIsCorrect() != null &&
@@ -1472,16 +1481,13 @@ public class DeliveryActionListener
       //i.e. ones which do not contain actual question-answer combos
  	  if (!text.isEmiQuestionItemText()) continue;
 
-      
       MatchingBean mbean = new MatchingBean();
       newAnswers = new ArrayList();
-      //mbean.setText(Integer.toString(j++) + ". " + text.getText());
       mbean.setText(text.getSequence() + ". " + text.getText());
 
       mbean.setItemText(text);
       mbean.setItemContentsBean(bean);
 
-//      ArrayList choices = new ArrayList();
       Iterator itemTextAnwersIter = text.getAnswerArraySorted().iterator();
      
       int i = 0;
@@ -1491,31 +1497,6 @@ public class DeliveryActionListener
   		rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.DeliveryMessages");
   	  }
      
-      // TODO sort out the itemgrading responses
-      //Now populate the choices (anwers) for each sub-question
-      //Each choice is represented by a FibBean
-/*      
-      FibBean fibBean = null;
-      while (itemTextAnwersIter.hasNext())
-      {
-        AnswerIfc answer = (AnswerIfc) itemTextAnwersIter.next();
-        newAnswers.add(Character.toString(alphabet.charAt(i)) +
-                       ". " + answer.getText());
-
-        // Now Possible to choose any number of answers from the options (Aug 2010)
-        //if (answer.getIsCorrect()) {
-        	fibBean = new FibBean();
-        	fibBean.setItemContentsBean(bean);
-        	fibBean.setSubQuestionContainer(mbean);
-        	
-        	// Perhaps required for new structure (Aug 2010) 
-        	fibBean.setAnswer(answer); //- for EMI the fibBean is not associated with any specific answer until the user enters a value
-
-	        choices.add(fibBean);
-        //} // end if answer.isCorrect()       
-      }
-*/      
-      
       
       // Now add the user responses (ItemGrading)
       int responseCount = 0;
@@ -1532,11 +1513,6 @@ public class DeliveryActionListener
             if (pubAnswer != null) {
             	userResponseLabels.add(pubAnswer.getLabel());
             	data.setPublishedAnswer(pubAnswer);
-//	        	fibBean = ((FibBean)choices.get(responseCount++));
-//	          	fibBean.setItemGradingData(data);
-//	        	fibBean.setAnswer(pubAnswer);
-	            // We found an existing grading data for this Answer
-//	            fibBean.setResponse(pubAnswer.getLabel());
             }
         }
       }
@@ -1549,34 +1525,6 @@ public class DeliveryActionListener
     	  previousResponse += sortedLabels.next().toString();
       }
       mbean.setResponse(previousResponse);
-      
-      //Now Sort the choices according to answer-options selected
-/*      
-      HashMap choicesMap = new HashMap();
-      Iterator choicesIter = choices.iterator();
-      int z = 0;
-      while (choicesIter.hasNext()) {
-    	  fibBean = (FibBean)choicesIter.next();
-    	  if (fibBean.getAnswer() == null) {
-    		  choicesMap.put("zz" + z++, fibBean);
-    	  }
-    	  else {
-    		  choicesMap.put(fibBean.getAnswer().getLabel() + z++, fibBean);
-    	  }
-      }
-      ArrayList choicesSorted = new ArrayList();
-      choicesSorted.addAll(choicesMap.keySet());
-      Collections.sort(choicesSorted);
-      choices.clear();
-      choicesIter = choicesSorted.iterator();
-      while (choicesIter.hasNext()) {
-    	  choices.add(choicesMap.get(choicesIter.next()));
-      }
-      
-      mbean.setChoices(choices); // Set the A/B/C... choices
-*/      
-
-      
       beans.add(mbean);
     }
     

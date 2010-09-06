@@ -271,7 +271,7 @@ public class ItemAddListener
 
 		  String missingLabel = missingLabelbuf.toString();
 
-		  //gopalrc TODO - more validation required if rich options
+		  //gopalrc TODO - more validation required if rich options ???
 		  if (item.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_RICH.toString())) return;
 		  
 		  if(!error){
@@ -1050,24 +1050,24 @@ public class ItemAddListener
 					AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
 					
-					/*
-					if (isCorrect) {
-						numberOfCorrectAnswers++;
+					Float discount = 0.0F;
+					if (!isCorrect) {
+						discount = Float.valueOf(bean.getItemDiscount());
 					}
-					*/
-	
 					AnswerIfc actualAnswer = new Answer(itemText,
 							selectOption.getText(), selectOption
 							.getSequence(), selectOption.getLabel(),
 							isCorrect, null, null, null,
-							Float.valueOf(bean.getItemDiscount()), null);
+							discount, null);
 
+/*					
 					HashSet answerFeedbackSet1 = new HashSet();
 					answerFeedbackSet1.add(new AnswerFeedback(actualAnswer,
 							AnswerFeedbackIfc.GENERAL_FEEDBACK,
 							stripPtags(qaCombo.getFeedback())));
 					actualAnswer.setAnswerFeedbackSet(answerFeedbackSet1);
-
+*/
+					
 					answerSet.add(actualAnswer);
 				}
 			}
@@ -1076,21 +1076,23 @@ public class ItemAddListener
 				for (int i=0; i<answerOptionsCount; i++) {
 					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i, i+1);
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
-					/*
-					if (isCorrect) {
-						numberOfCorrectAnswers++;
+
+					Float discount = 0.0F;
+					if (!isCorrect) {
+						discount = Float.valueOf(bean.getItemDiscount());
 					}
-					*/
 					AnswerIfc actualAnswer = new Answer(itemText,
 							label, Long.valueOf(i), label,
 							isCorrect, null, null, null,
-							Float.valueOf(bean.getItemDiscount()), null);
+							discount, null);
 					
+/*					
 					HashSet answerFeedbackSet1 = new HashSet();
 					answerFeedbackSet1.add(new AnswerFeedback(actualAnswer,
 							AnswerFeedbackIfc.GENERAL_FEEDBACK,
 							stripPtags(qaCombo.getFeedback())));
 					actualAnswer.setAnswerFeedbackSet(answerFeedbackSet1);
+*/
 					
 					answerSet.add(actualAnswer);
 				}
@@ -1873,23 +1875,22 @@ public class ItemAddListener
 					AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
 
-					/*
-					if (isCorrect) {
-						numberOfCorrectAnswers++;
+					Float discount = 0.0F;
+					if (!isCorrect) {
+						discount = Float.valueOf(bean.getItemDiscount());
 					}
-					 */
-	
 					AnswerIfc actualAnswer = new PublishedAnswer(itemText,
 							selectOption.getText(), selectOption
 							.getSequence(), selectOption.getLabel(),
 							isCorrect, null, null, null,
-							Float.valueOf(bean.getItemDiscount()), null);
-					
+							discount, null);
+/*					
 					HashSet answerFeedbackSet = new HashSet();
 				    answerFeedbackSet.add(new PublishedAnswerFeedback(actualAnswer,
 				                                             AnswerFeedbackIfc.GENERAL_FEEDBACK,
 				                                             stripPtags(qaCombo.getFeedback())));
 				    actualAnswer.setAnswerFeedbackSet(answerFeedbackSet);
+*/	
 					
 					answerSet.add(actualAnswer);
 				}
@@ -1900,23 +1901,22 @@ public class ItemAddListener
 					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i, i+1);
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
 					
-					/*
-					if (isCorrect) {
-						numberOfCorrectAnswers++;
+					Float discount = 0.0F;
+					if (!isCorrect) {
+						discount = Float.valueOf(bean.getItemDiscount());
 					}
-					*/
-					
 					AnswerIfc actualAnswer = new PublishedAnswer(itemText,
 							label, Long.valueOf(i), label,
 							isCorrect, null, null, null,
-							Float.valueOf(bean.getItemDiscount()), null);
-					
+							discount, null);
+	
+/*					
 					HashSet answerFeedbackSet = new HashSet();
 				    answerFeedbackSet.add(new PublishedAnswerFeedback(actualAnswer,
 				                                             AnswerFeedbackIfc.GENERAL_FEEDBACK,
 				                                             stripPtags(qaCombo.getFeedback())));
 				    actualAnswer.setAnswerFeedbackSet(answerFeedbackSet);
-
+*/
 				    answerSet.add(actualAnswer);
 				}
 			}

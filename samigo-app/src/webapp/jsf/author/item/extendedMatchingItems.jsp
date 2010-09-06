@@ -86,7 +86,7 @@
   <!-- QUESTION PROPERTIES -->
   <!-- this is for creating emi questions -->
   
-  <!-- 1 POINTS -->
+  <!-- 1 POINTS and DISCOUNT -->
 <div class="tier2">
      <div class="shorttext"> <h:outputLabel value="#{authorMessages.answer_point_value}" />
     <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}"required="true" size="6" >
@@ -95,6 +95,17 @@
 <h:message for="answerptr" styleClass="validate"/>
 </div>
 <br/>
+
+
+<div id="discountDiv" class="shorttext">
+  <h:outputLabel value="#{authorMessages.negative_point_value}"/>
+  <h:inputText id="answerdsc" value="#{itemauthor.currentItem.itemDiscount}" required="true"  size="6" onchange="toPoint(this.id);">
+    <f:validateDoubleRange />
+  </h:inputText>
+  <h:message for="answerdsc" styleClass="validate"/>
+</div>
+<br/>
+
 
 
   <!-- 2 QUESTION THEME TEXT -->

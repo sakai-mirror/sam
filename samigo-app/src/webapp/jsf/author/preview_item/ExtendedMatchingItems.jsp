@@ -33,10 +33,11 @@ should be included in file importing DeliveryMessages
 
 
       
+  <!-- THEME TEXT -->
       <h:outputText escape="false" value="#{question.itemData.themeText}" />
       <f:verbatim><br/><br/></f:verbatim>
 
-
+   <!-- SIMPLE TEXT - EMI SIMPLE TEXT OPTIONS-->
       <h:dataTable value="#{question.itemData.emiAnswerOptions}" var="option"  rendered="#{question.itemData.isAnswerOptionsSimple}"  styleClass="simpleBorder">
         <h:column> 
             <h:outputText escape="false" value="#{option.label}. " /> 
@@ -70,12 +71,14 @@ should be included in file importing DeliveryMessages
 
 
       
+  <!-- LEAD IN TEXT -->
       <f:verbatim><br/><br/></f:verbatim>
       <h:outputText escape="false" value="#{question.itemData.leadInText}" />
       <f:verbatim><br/><br/></f:verbatim>
       
       
 
+  <!-- EMI ITEMS -->
       <h:dataTable value="#{question.itemData.emiQuestionAnswerCombinations}" var="item" styleClass="simpleBorder">
 
         <h:column> 
@@ -95,6 +98,9 @@ should be included in file importing DeliveryMessages
 		</h:panelGroup>
         </h:column>
       </h:dataTable>
+      
+      <h:outputText escape="false" value="(#{item.requiredOptionsCount} #{authorMessages.answers_required})" rendered="#{item.requiredOptionsCount>0}"/>
+      
         </h:column>
 
         <h:column> 
@@ -120,9 +126,8 @@ should be included in file importing DeliveryMessages
   <!-- ATTACHMENTS ABOVE - EMI ITEMTEXT ATTACHMENTS-->
            
          </h:panelGroup>
+         
         </h:column>
-        
-        
 
       </h:dataTable>
       

@@ -793,11 +793,12 @@ public class GradingService
         //itemGrading.setSubmittedDate(new Date());
         itemGrading.setAgentId(agent);
         itemGrading.setOverrideScore(Float.valueOf(0));
+
         // note that totalItems & fibAnswersMap would be modified by the following method
         autoScore = getScoreByQuestionType(itemGrading, item, itemType, publishedItemTextHash, 
                                totalItems, fibAnswersMap, publishedAnswerHash, regrade);
         log.debug("**!regrade, autoScore="+autoScore);
-        if (!(TypeIfc.MULTIPLE_CORRECT).equals(itemType))
+        if (!(TypeIfc.MULTIPLE_CORRECT).equals(itemType) && !(TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType))
           totalItems.put(itemId, Float.valueOf(autoScore));
         
         if (regrade && TypeIfc.AUDIO_RECORDING.equals(itemType))
@@ -807,6 +808,7 @@ public class GradingService
       }
 
       log.debug("****x3. "+(new Date()).getTime());
+      
       // the following procedure ensure total score awarded per question is no less than 0
       // this probably only applies to MCMR question type - daisyf
       iter = itemGradingSet.iterator();
@@ -817,6 +819,9 @@ public class GradingService
         ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(itemId);
         Long itemType2 = item.getTypeId();
         //float autoScore = (float) 0;
+        
+        //gopalrc - this does not apply to EMI - handled differently below
+        if ((TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) continue;
 
         float eachItemScore = ((Float) totalItems.get(itemId)).floatValue();
         if((eachItemScore < 0) && !((TypeIfc.MULTIPLE_CHOICE).equals(itemType2)||(TypeIfc.TRUE_FALSE).equals(itemType2)))
@@ -824,6 +829,49 @@ public class GradingService
         	itemGrading.setAutoScore( Float.valueOf(0));
         }
       }
+      
+      log.debug("****x3.1 "+(new Date()).getTime());
+      // the following procedure ensure total score awarded per EMI item 
+      // is no less than 0 and no more than allowed by the requiredOptionsCount
+      // this currently only applies to EMI question type - gopalrc
+      iter = itemGradingSet.iterator();
+      HashMap processedCorrectGradingsPerItemText = new HashMap();
+      while(iter.hasNext())
+      {
+        ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
+        Long itemId = itemGrading.getPublishedItemId();
+        ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(itemId);
+        Long itemType2 = item.getTypeId();
+        if (!(TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) continue;
+        
+        HashMap totalItemTextScores = (HashMap)totalItems.get(itemId);
+        
+        Long itemTextId = itemGrading.getPublishedItemTextId();
+        ItemTextIfc itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
+        
+        Long answerId  = itemGrading.getPublishedAnswerId();
+        AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(answerId);
+
+        float itemTextScore = ((Float) totalItemTextScores.get(itemTextId)).floatValue();
+        Integer requiredCorrectOptions = itemText.getRequiredOptionsCount();
+        if(itemTextScore < 0) {
+        	itemGrading.setAutoScore( Float.valueOf(0));
+        }
+        else if (requiredCorrectOptions>0 && answer.getIsCorrect()) {
+        	if (processedCorrectGradingsPerItemText.get(itemTextId)==null) {
+        		processedCorrectGradingsPerItemText.put(itemTextId, 0);
+        	}
+        	else {
+        		Integer numProcessed = (Integer)processedCorrectGradingsPerItemText.get(itemTextId);
+        		processedCorrectGradingsPerItemText.put(itemTextId, numProcessed + 1);
+        		if (numProcessed>requiredCorrectOptions) {
+                	itemGrading.setAutoScore( Float.valueOf(0));
+        		}
+        	}
+        	
+        }
+      }
+      
       log.debug("****x4. "+(new Date()).getTime());
 
       // save#1: this itemGrading Set is a partial set of answers submitted. it contains new answers and
@@ -1017,11 +1065,27 @@ public class GradingService
           break;
 
       case 13: //gopalrc EMI
+    	  if (!totalItems.containsKey(itemId)){
+              totalItems.put(itemId, new HashMap());
+    	  }
+    
           autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
           //overridescore
           if (itemGrading.getOverrideScore() != null)
             autoScore += itemGrading.getOverrideScore().floatValue();
-          totalItems.put(itemId,  Float.valueOf(autoScore));
+          ItemTextIfc iText = (ItemTextIfc) publishedItemTextHash.get(itemGrading.getPublishedItemTextId());
+          Long itemTextId = iText.getId();
+          
+          //totalItems.put(iText.getId(),  Float.valueOf(autoScore));
+
+          HashMap totalItemTextScores = (HashMap)totalItems.get(itemId);
+          if (!totalItemTextScores.containsKey(itemTextId))
+        	  totalItemTextScores.put(itemTextId, Float.valueOf(autoScore));
+          else {
+              accumelateScore = ((Float)totalItemTextScores.get(itemTextId)).floatValue();
+              accumelateScore += autoScore;
+              totalItemTextScores.put(itemTextId, Float.valueOf(accumelateScore));
+          }
           break;
           
           
@@ -1075,6 +1139,10 @@ public class GradingService
     return answer.getScore().floatValue();
   }
 
+
+
+  
+  
   public void notifyGradebook(AssessmentGradingIfc data, PublishedAssessmentIfc pub) throws GradebookServiceException {
     // If the assessment is published to the gradebook, make sure to update the scores in the gradebook
     String toGradebook = pub.getEvaluationModel().getToGradeBook();
