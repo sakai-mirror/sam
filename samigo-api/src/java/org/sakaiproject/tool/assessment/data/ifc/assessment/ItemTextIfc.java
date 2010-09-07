@@ -76,6 +76,7 @@ public interface ItemTextIfc
 	// gopalrc - added Aug 2010
 	public Integer getRequiredOptionsCount();
 	public void setRequiredOptionsCount(Integer requiredOptionsCount);
+	public String getEmiCorrectOptionLabels();
   
   
 }

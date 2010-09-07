@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
@@ -177,6 +179,22 @@ public class ItemText
 	// gopalrc - added Aug 2010
 	public void setRequiredOptionsCount(Integer requiredOptionsCount) {
 		this.requiredOptionsCount = requiredOptionsCount;
+	}
+	
+	// gopalrc - added Aug 2010
+	public String getEmiCorrectOptionLabels() {
+		if (!item.getTypeId().equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
+		if (!this.isEmiQuestionItemText()) return null;
+		if (answerSet==null) return null;
+		String correctOptionLabels = "";
+		Iterator iter = answerSet.iterator();
+		while (iter.hasNext()) {
+			AnswerIfc answer = (AnswerIfc)iter.next();
+			if (answer.getIsCorrect()) {
+				correctOptionLabels += answer.getLabel();
+			}
+		}
+		return correctOptionLabels;	
 	}
 
 }

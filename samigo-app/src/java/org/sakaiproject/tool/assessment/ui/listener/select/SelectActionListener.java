@@ -702,7 +702,7 @@ public class SelectActionListener
     String showScore = "na";
     // must meet 2 conditions: hasFeedback==true && feedback.getShowStudentScore()==true
     AssessmentFeedbackIfc f= (AssessmentFeedbackIfc)feedbackHash.get(a.getPublishedAssessmentId());
-    if (f!=null){
+    if (f!=null && f.getFeedbackComponentOption()!=null) { //gopalrc - TODO : check this - Sept 2010 - added second condition - Was getting error
       boolean showScorecore = (Boolean.TRUE).equals(f.getShowStudentScore()) || f.getFeedbackComponentOption().equals(new Integer(1));
       if (showScorecore && "show".equals(hasFeedback))
         showScore = "show";
@@ -756,7 +756,7 @@ public class SelectActionListener
   private String getFeedbackComponentOption(Long publishedAssessmentId, HashMap publishedAssessmentHash){
 	    PublishedAssessmentFacade p = (PublishedAssessmentFacade)publishedAssessmentHash.
 	        get(publishedAssessmentId);
-	    if (p!=null)
+	    if (p!=null && p.getFeedbackComponentOption()!=null) //gopalrc - TODO : check this - Sept 2010 - added second condition - Was getting error
 	      return p.getFeedbackComponentOption().toString();
 	    else
 	      return null;

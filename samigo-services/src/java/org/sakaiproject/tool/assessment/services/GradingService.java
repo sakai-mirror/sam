@@ -809,6 +809,7 @@ public class GradingService
 
       log.debug("****x3. "+(new Date()).getTime());
       
+      ArrayList emiItemGradings = new ArrayList();
       // the following procedure ensure total score awarded per question is no less than 0
       // this probably only applies to MCMR question type - daisyf
       iter = itemGradingSet.iterator();
@@ -820,8 +821,12 @@ public class GradingService
         Long itemType2 = item.getTypeId();
         //float autoScore = (float) 0;
         
-        //gopalrc - this does not apply to EMI - handled differently below
-        if ((TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) continue;
+        // gopalrc - this does not apply to EMI
+        // just create a short-list and handle differently below
+        if ((TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) {
+            emiItemGradings.add(itemGrading);
+        	continue;
+        }
 
         float eachItemScore = ((Float) totalItems.get(itemId)).floatValue();
         if((eachItemScore < 0) && !((TypeIfc.MULTIPLE_CHOICE).equals(itemType2)||(TypeIfc.TRUE_FALSE).equals(itemType2)))
@@ -831,18 +836,23 @@ public class GradingService
       }
       
       log.debug("****x3.1 "+(new Date()).getTime());
-      // the following procedure ensure total score awarded per EMI item 
-      // is no less than 0 and no more than allowed by the requiredOptionsCount
+
+      // Loop 1: the following procedure ensure total score awarded per EMI item 
+      // is no more than allowed by the requiredOptionsCount
+      // to ensure no cross-effects unfortunately this needs to be processed in 2 loops
       // this currently only applies to EMI question type - gopalrc
-      iter = itemGradingSet.iterator();
+      iter = emiItemGradings.iterator();
       HashMap processedCorrectGradingsPerItemText = new HashMap();
+      HashMap totalItemTextScores2 = new HashMap();
       while(iter.hasNext())
       {
         ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
         Long itemId = itemGrading.getPublishedItemId();
+        /*
         ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(itemId);
         Long itemType2 = item.getTypeId();
-        if (!(TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) continue;
+        if (!(TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) continue; // gopalrc - unlikely, since we are dealing with a filtered list
+        */
         
         HashMap totalItemTextScores = (HashMap)totalItems.get(itemId);
         
@@ -853,24 +863,59 @@ public class GradingService
         AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(answerId);
 
         float itemTextScore = ((Float) totalItemTextScores.get(itemTextId)).floatValue();
-        Integer requiredCorrectOptions = itemText.getRequiredOptionsCount();
-        if(itemTextScore < 0) {
-        	itemGrading.setAutoScore( Float.valueOf(0));
-        }
-        else if (requiredCorrectOptions>0 && answer.getIsCorrect()) {
+        int requiredCorrectOptions = itemText.getRequiredOptionsCount().intValue();
+        if (requiredCorrectOptions>0 && answer.getIsCorrect()) {
         	if (processedCorrectGradingsPerItemText.get(itemTextId)==null) {
-        		processedCorrectGradingsPerItemText.put(itemTextId, 0);
+        		processedCorrectGradingsPerItemText.put(itemTextId, 1);
         	}
         	else {
-        		Integer numProcessed = (Integer)processedCorrectGradingsPerItemText.get(itemTextId);
-        		processedCorrectGradingsPerItemText.put(itemTextId, numProcessed + 1);
+        		int numProcessed = ((Integer)processedCorrectGradingsPerItemText.get(itemTextId)).intValue();
+        		numProcessed++;
+        		processedCorrectGradingsPerItemText.put(itemTextId, Integer.valueOf(numProcessed));
         		if (numProcessed>requiredCorrectOptions) {
                 	itemGrading.setAutoScore( Float.valueOf(0));
         		}
         	}
-        	
+        }
+        
+        //save updated scores for final processing below
+        float accumulateScore=(float)0;
+        if (!totalItemTextScores2.containsKey(itemTextId))
+      	  totalItemTextScores2.put(itemTextId, Float.valueOf(itemGrading.getAutoScore()));
+        else {
+        	accumulateScore = ((Float)totalItemTextScores2.get(itemTextId)).floatValue();
+        	accumulateScore += itemGrading.getAutoScore().floatValue();
+            totalItemTextScores2.put(itemTextId, Float.valueOf(accumulateScore));
         }
       }
+      
+
+      // Loop 2: this procedure ensure total score awarded per EMI item 
+      // is no less than 0
+      // to ensure no cross-effects unfortunately this needs to be processed in 2 loops
+      // this currently only applies to EMI question type - gopalrc
+      iter = emiItemGradings.iterator();
+      while(iter.hasNext())
+      {
+        ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
+        /*
+        Long itemId = itemGrading.getPublishedItemId();
+        ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(itemId);
+        Long itemType2 = item.getTypeId();
+        if (!(TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) continue; // gopalrc - unlikely, since we are dealing with a filtered list
+        */
+        
+        Long itemTextId = itemGrading.getPublishedItemTextId();
+        ItemTextIfc itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
+        
+        float itemTextScore = ((Float) totalItemTextScores2.get(itemTextId)).floatValue();
+        int requiredCorrectOptions = itemText.getRequiredOptionsCount().intValue();
+        if(itemTextScore < 0) {
+        	itemGrading.setAutoScore( Float.valueOf(0));
+        }
+      }
+      
+      
       
       log.debug("****x4. "+(new Date()).getTime());
 

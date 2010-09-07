@@ -82,24 +82,12 @@ should be included in file importing DeliveryMessages
       <h:dataTable value="#{question.itemData.emiQuestionAnswerCombinations}" var="item" styleClass="simpleBorder">
 
         <h:column> 
-      <h:dataTable value="#{item.answerArraySorted}" var="answerOption" styleClass="noBorder">
-        <h:column>
-         <h:panelGroup rendered="#{answerOption.text != null && answerOption.text ne '' && answerOption.isCorrect}">
-          <h:outputText escape="false" value="#{answerOption.label}" /> 
-        </h:panelGroup>
-        </h:column><h:column>
-        <h:panelGroup rendered="#{answerOption.text ne null && answerOption.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answerOption.generalAnswerFbIsNotEmpty}">    
-         <h:outputLabel value=" #{authorMessages.feedback}: " />
-         <h:outputText escape="false" value="#{answerOption.generalAnswerFeedback}" />
-		</h:panelGroup>
-        <h:panelGroup rendered="#{answerOption.text ne null && answerOption.text ne '' && !author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1' && answerOption.generalAnswerFbIsNotEmpty}">    
-         <h:outputLabel value=" #{authorMessages.feedback}: " />
-         <h:outputText escape="false" value="#{answerOption.generalAnswerFeedback}" />
-		</h:panelGroup>
-        </h:column>
-      </h:dataTable>
+        
+        #{item.emiCorrectOptionLabels}
+        
+            <h:outputText escape="false" value="#{item.emiCorrectOptionLabels}"/>
       
-      <h:outputText escape="false" value="(#{item.requiredOptionsCount} #{authorMessages.answers_required})" rendered="#{item.requiredOptionsCount>0}"/>
+            <h:outputText escape="false" value="(#{item.requiredOptionsCount} #{authorMessages.answers_required})" rendered="#{item.requiredOptionsCount>0}"/>
       
         </h:column>
 
