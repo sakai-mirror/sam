@@ -1150,6 +1150,8 @@ public class DeliveryActionListener
 
     ArrayList myanswers = new ArrayList();
     ResourceLoader rb = null;
+	rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.DeliveryMessages");
+
     // Generate the answer key
     String key = "";
     Iterator key1 = item.getItemTextArraySorted().iterator();
@@ -1167,9 +1169,16 @@ public class DeliveryActionListener
       Iterator key2 = null;
 
       //gopalrc - added for EMI - Sept 2010	
-      if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS))
+      if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) && text.isEmiQuestionItemText())
       {
-    	  key = text.getSequence() + ":";
+    	  String required=null;
+    	  if (text.getRequiredOptionsCount()==null || text.getRequiredOptionsCount().intValue()==0) {
+    		  required=rb.getString("all");
+    	  }
+    	  else {
+    		  required=text.getRequiredOptionsCount().toString();
+    	  }
+    	  key += " | " + text.getSequence() + ": " + required + " " + rb.getString("of") + " ";
       }
 
       
@@ -1264,7 +1273,8 @@ public class DeliveryActionListener
           
           
           //gopalrc - added for EMI - Sept 2010	
-          if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS))
+          if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) && text.isEmiQuestionItemText()
+        		  && answer.getIsCorrect())
           {
         	  key += answer.getLabel();
           }
@@ -1311,6 +1321,13 @@ public class DeliveryActionListener
         }
       }
     }
+    
+    //gopalrc - added for EMI - Sept 2010	
+    if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS))
+    {
+  	  key += " | ";
+    }
+
     itemBean.setKey(key);
 
     // Delete this

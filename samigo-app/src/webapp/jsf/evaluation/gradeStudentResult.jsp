@@ -84,7 +84,7 @@ document.location='../evaluation/gradeStudentResult';
 </script>
 
 
-**************** GOPALRC - TEST/TEMP - gradeStudentResults.jsp  (includes the displayXXXX.jsp files for different question types) ***************
+**************** GOPALRC - TEST/TEMP - gradeStudentResults.jsp  (includes the deliverXXXX.jsp files for different question types) ***************
 
 
  <div class="portletBody">
@@ -263,6 +263,13 @@ document.location='../evaluation/gradeStudentResult';
                 <%@ include file="/jsf/delivery/item/deliverTrueFalse.jsp" %>
               </f:subview>
             </h:panelGroup>
+            
+            <h:panelGroup rendered="#{question.itemData.typeId == 13}">
+              <f:subview id="deliverExtendedMatchingItems">
+                <%@ include file="/jsf/delivery/item/deliverExtendedMatchingItems.jsp" %>
+              </f:subview>
+            </h:panelGroup>
+            
           <f:verbatim></div></f:verbatim>
 
           <f:verbatim><div class="tier2"></f:verbatim>

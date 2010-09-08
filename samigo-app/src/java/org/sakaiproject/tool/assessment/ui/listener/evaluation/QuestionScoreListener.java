@@ -552,6 +552,12 @@ public class QuestionScoreListener implements ActionListener,
 						else {
 							answerText = gdata.getAnswerText();
 						}
+						
+						//gopalrc - EMI
+						if (bean.getTypeId().equals("13")) {
+							answerText = gdataPubItemText.getSequence() + ": " + gdataAnswer.getLabel();
+						}
+						
 					}
 
 					if ("4".equals(bean.getTypeId())) {

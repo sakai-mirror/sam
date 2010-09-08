@@ -253,7 +253,7 @@ public class PublishedItemText
 			if (!this.isEmiQuestionItemText()) return null;
 			if (answerSet==null) return null;
 			String correctOptionLabels = "";
-			Iterator iter = answerSet.iterator();
+			Iterator iter = getAnswerArraySorted().iterator();
 			while (iter.hasNext()) {
 				AnswerIfc answer = (AnswerIfc)iter.next();
 				if (answer.getIsCorrect()) {

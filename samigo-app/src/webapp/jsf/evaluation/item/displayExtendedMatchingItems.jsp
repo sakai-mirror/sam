@@ -80,7 +80,10 @@ include file for displaying Extended Matching Items questions
       <h:dataTable value="#{question.emiQuestionAnswerCombinations}" var="option" styleClass="simpleBorder">
         <h:column> 
           <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
-            <h:outputText escape="false" value="#{option.sequence}. #{option.text}  #{authorMessages.correct_options}:#{option.emiCorrectOptionLabels} (#{option.requiredOptionsCount} #{authorMessages.answers_required})" /> 
+            <h:outputText escape="false" value="#{option.sequence}. #{option.text}" /> 
+            <h:outputLabel value="#{authorMessages.correct_options}:" /> 
+            <h:outputText escape="false" value="#{option.emiCorrectOptionLabels}" /> 
+            <h:outputText escape="false" value="(#{option.requiredOptionsCount} #{authorMessages.answers_required})" rendered="#{option.requiredOptionsCount>0}"/> 
           </h:panelGroup>
         </h:column>
       </h:dataTable>

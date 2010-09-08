@@ -46,6 +46,7 @@ import org.sakaiproject.tool.assessment.ui.bean.evaluation.TotalScoresBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.DeliveryBean;
 
 /**
@@ -363,7 +364,7 @@ public class HistogramListener
 							  + " (" + type + ")");
 					  
 					  //gopalrc - Jan 2010 - added condition
-					  if (item.getTypeId().intValue() == 13) { // emi question
+					  if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) { // emi question
 						  questionScores.setQuestionText(item.getLeadInText());
 					  }
 					  else {
@@ -488,11 +489,11 @@ public class HistogramListener
 						  || questionScores.getQuestionType().equals("2")
 						  || questionScores.getQuestionType().equals("3")
 						  || questionScores.getQuestionType().equals("4")
-						  || questionScores.getQuestionType().equals("13") //gopalrc - Jan 2010 - EMI
+						  || questionScores.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString()) //gopalrc - Jan 2010 - EMI
 				  ) {
 					  questionScores.setShowIndividualAnswersInDetailedStatistics(true);
 					  detailedStatistics.add(questionScores);
-					  if (questionScores.getHistogramBars() != null && !questionScores.getQuestionType().equals("13")) {
+					  if (questionScores.getHistogramBars() != null && !questionScores.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString())) {
 						  maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
 					  }
 					  
@@ -507,7 +508,7 @@ public class HistogramListener
 				  // gopalrc Jan 2010 - EMI (NB. apply this AS WELL AS above)
 				  //i.e. for EMI questions we add detailed stats for the whole
 				  //question as well as for the sub-questions
-				  if (questionScores.getQuestionType().equals("13") 
+				  if (questionScores.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString()) 
 				  ) {
 					  questionScores.setShowIndividualAnswersInDetailedStatistics(false);
 					  detailedStatistics.addAll(questionScores.getInfo());
@@ -641,7 +642,7 @@ public class HistogramListener
         qbean.getQuestionType().equals("4") || // tf
         qbean.getQuestionType().equals("9") || // matching
         qbean.getQuestionType().equals("8") || // Fill in the blank
-        qbean.getQuestionType().equals("13") || // Extended Matching Items
+        qbean.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString()) || // Extended Matching Items
     	qbean.getQuestionType().equals("11"))  //  Numeric Response
       doAnswerStatistics(pub, qbean, itemScores);
     if (qbean.getQuestionType().equals("5") || // essay
@@ -683,7 +684,7 @@ public class HistogramListener
     ArrayList answers = null;
     
     //gopalrc - added Jan 2010
-    if (qbean.getQuestionType().equals("13")) { //EMI
+    if (qbean.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString())) { //EMI
     	answers = new ArrayList();
     	for (int i=0; i<text.size(); i++) { 
     	    ItemTextIfc iText = (ItemTextIfc) publishedItemTextHash.get(((ItemTextIfc) text.toArray()[i]).getId());
@@ -718,7 +719,7 @@ public class HistogramListener
       getMatchingScores(publishedItemTextHash, publishedAnswerHash, scores, qbean, text);
     
     //gopalrc - added Jan 2010
-    else if (qbean.getQuestionType().equals("13"))
+    else if (qbean.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString()))
         getEMIScores(publishedItemHash, publishedAnswerHash, scores, qbean, answers);
   }
 
@@ -2469,7 +2470,7 @@ public class HistogramListener
 	  if (typeId == 11) {
 		  return rb.getString("q_fin");
 	  }
-	  if (typeId == 13) {
+	  if (typeId == TypeIfc.EXTENDED_MATCHING_ITEMS.intValue()) {
 		  return rb.getString("q_emi");
 	  }
 	  return "";
@@ -2634,11 +2635,17 @@ public class HistogramListener
     	
     	
     	for (int i=0; i<questionBean.getHistogramBars().length; i++) {
-    		if (questionBean.getHistogramBars()[i].getIsCorrect()) {
-           		statsLine.add(ExportResponsesBean.FORMAT_BOLD);
+    		if (questionBean.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString())
+    				&& !questionBean.getQuestionLabel().contains("-")) {
+				statsLine.add(" ");
     		}
-       		dVal = Double.parseDouble("" + questionBean.getHistogramBars()[i].getNumStudents() );
-       		statsLine.add(dVal);
+    		else {
+	    		if (questionBean.getHistogramBars()[i].getIsCorrect()) {
+	           		statsLine.add(ExportResponsesBean.FORMAT_BOLD);
+	    		}
+	       		dVal = Double.parseDouble("" + questionBean.getHistogramBars()[i].getNumStudents() );
+	       		statsLine.add(dVal);
+    		}
     	}
     	
     	spreadsheetRows.add(statsLine);

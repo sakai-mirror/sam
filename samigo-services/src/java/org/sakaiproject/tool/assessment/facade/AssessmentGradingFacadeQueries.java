@@ -2052,6 +2052,35 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
 						  count++;
 					  }
+					  else if (typeId.equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) { //gopalrc - Sept 2010 - EMI
+						  log.debug("EXTENDED_MATCHING_ITEMS");
+						  String thistext = "";
+
+						  // for some question types we have another text field
+						  Long answerid = grade.getPublishedAnswerId();
+						  String temptext = "No Answer";
+						  Long sequence = null;
+						  if (answerid != null) {
+							  AnswerIfc answer  = (AnswerIfc)publishedAnswerHash.get(answerid);
+							  temptext = answer.getLabel();
+							  if (temptext == null) {
+								  temptext = "No Answer";
+							  }
+							  sequence = answer.getItemText().getSequence();
+						  }
+						  else {
+							  ItemTextIfc itemTextIfc = (ItemTextIfc) publishedItemTextHash.get(grade.getPublishedItemTextId());
+							  sequence = itemTextIfc.getSequence();
+						  }
+						  thistext = sequence + ": " + temptext;
+
+						  if (count == 0)
+							  maintext = thistext;
+						  else
+							  maintext = maintext + "|" + thistext;
+
+						  count++;
+					  }
 					  else if (typeId.equals(TypeIfc.AUDIO_RECORDING)) {
 						  log.debug("AUDIO_RECORDING");
 						  maintext = audioMessage;
@@ -2223,21 +2252,38 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 			Long aanswerid = agrade.getPublishedAnswerId();
 			Long banswerid = bgrade.getPublishedAnswerId();
 
+			AnswerIfc aanswer=null;
+			AnswerIfc banswer=null;
+			
 			if (aanswerid != null && banswerid != null) {
-				AnswerIfc aanswer = (AnswerIfc) publishedAnswerHash
+				aanswer = (AnswerIfc) publishedAnswerHash
 						.get(aanswerid);
-				AnswerIfc banswer = (AnswerIfc) publishedAnswerHash
+				banswer = (AnswerIfc) publishedAnswerHash
 						.get(banswerid);
 				aindex = aanswer.getSequence();
 				bindex = banswer.getSequence();
 			}
+			
 
-			if (aindex < bindex)
-				return -1;
-			else if (aindex > bindex)
-				return 1;
-			else
-				return 0;
+			if (aanswer.getItem().getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) &&
+				banswer.getItem().getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) {
+				Long aTextSeq = aanswer.getItemText().getSequence();
+				Long bTextSeq = banswer.getItemText().getSequence();
+				if (!aTextSeq.equals(bTextSeq)) {
+					return aTextSeq.compareTo(bTextSeq);
+				}
+				else {
+					return aanswer.getLabel().compareToIgnoreCase(banswer.getLabel());
+				}
+			}
+			else {
+				if (aindex < bindex)
+					return -1;
+				else if (aindex > bindex)
+					return 1;
+				else
+					return 0;
+			}
 
 		}
 	}

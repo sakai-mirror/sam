@@ -848,12 +848,6 @@ public class GradingService
       {
         ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
         Long itemId = itemGrading.getPublishedItemId();
-        /*
-        ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(itemId);
-        Long itemType2 = item.getTypeId();
-        if (!(TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) continue; // gopalrc - unlikely, since we are dealing with a filtered list
-        */
-        
         HashMap totalItemTextScores = (HashMap)totalItems.get(itemId);
         
         Long itemTextId = itemGrading.getPublishedItemTextId();
@@ -898,16 +892,8 @@ public class GradingService
       while(iter.hasNext())
       {
         ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
-        /*
-        Long itemId = itemGrading.getPublishedItemId();
-        ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(itemId);
-        Long itemType2 = item.getTypeId();
-        if (!(TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) continue; // gopalrc - unlikely, since we are dealing with a filtered list
-        */
-        
         Long itemTextId = itemGrading.getPublishedItemTextId();
         ItemTextIfc itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
-        
         float itemTextScore = ((Float) totalItemTextScores2.get(itemTextId)).floatValue();
         int requiredCorrectOptions = itemText.getRequiredOptionsCount().intValue();
         if(itemTextScore < 0) {
