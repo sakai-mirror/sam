@@ -186,7 +186,19 @@ public class MatchingBean
   
   //gopalrc - Aug 2010
   public void setResponseEMI(String newresp) {
-		response = newresp.toUpperCase();
+	  	newresp = newresp.toUpperCase().trim();
+		String label=null;
+		
+		// remove white space and delimiter characters
+		for (int i=0; i<newresp.length(); i++) {
+			label = newresp.substring(i, i+1);
+			if (label.equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(label)) continue;
+			response += label;
+		}
+		
+		// a blank response is OK ??
+		if (response.equals("")) return;
+		
 		String processedResponses = "";
 		ArrayList itemGradingList = parent.getItemGradingDataArray();
 		ArrayList newItemGradingList = new ArrayList();
@@ -245,32 +257,39 @@ public class MatchingBean
 	public void validateEmiResponse(FacesContext context, 
           UIComponent toValidate,
           Object value) {
-/*		
-		String response = ((String) value).trim().toUpperCase();
 
-		if (response.length() > 1 || (response.length() != 0 && !parent.getItemData().isValidEmiAnswerOptionLabel(response)) ) {
-			((UIInput)toValidate).setValid(false);
-			String invalid_response = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","invalid_response");     
-			String please_select_from_available = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","please_select_from_available");     
-			FacesMessage message = new FacesMessage(invalid_response + " '" + response + "' " + please_select_from_available);
-			context.addMessage(toValidate.getClientId(context), message);
+		String response = ((String) value).trim().toUpperCase();
+		
+		String processed = "";
+		
+		((UIInput)toValidate).setValid(true);
+
+		// Assuming that the user can elect not to answer - i.e. a blank response is OK
+		if (response.length() == 0) return;
+		
+		if (response.length() != 0) {
+			for (int i=0; i<response.length(); i++) {
+				String label = response.substring(i, i+1).trim();
+				if (label.equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(label)) continue;
+				String q = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","q");     
+				if (!parent.getItemData().isValidEmiAnswerOptionLabel(label)) {
+					((UIInput)toValidate).setValid(false);
+					String invalid_response = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","invalid_response");     
+					String please_select_from_available = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","please_select_from_available");     
+					FacesMessage message = new FacesMessage(invalid_response + " '" + response + "' " + please_select_from_available + " - " + q + " " + parent.getNumber() + "(" + itemText.getSequence() + ")" );
+					context.addMessage(toValidate.getClientId(context), message);
+					break;
+				}
+				if (processed.contains(label)) {
+					((UIInput)toValidate).setValid(false);
+					String duplicate_responses = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","duplicate_responses");     
+					FacesMessage message = new FacesMessage(duplicate_responses + " '" + response + "' - " + q + " " + parent.getNumber() + "(" + itemText.getSequence() + ")" );
+					context.addMessage(toValidate.getClientId(context), message);
+					break;
+				}
+				processed += label;
+			}
 		}
-		else {
-		      Iterator iter = subQuestionContainer.getChoices().iterator();
-		      while (iter.hasNext()) {
-		    	  FibBean fibBean = (FibBean) iter.next();
-		    	  if (fibBean.getResponse()!=null && fibBean.getResponse().equals(response) && 
-		    			  !fibBean.equals(this)) 
-		    	  	{
-						((UIInput)toValidate).setValid(false);
-						String duplicate_responses = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","duplicate_responses");     
-						String for_sub_question = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","for_sub_question");     
-						FacesMessage message = new FacesMessage(duplicate_responses + " '" + response + "'  " + for_sub_question + " " + subQuestionContainer.getItemText().getSequence() );
-						context.addMessage(toValidate.getClientId(context), message);
-		    	  	}
-		      }
-		}
-*/		
 	}
 
   

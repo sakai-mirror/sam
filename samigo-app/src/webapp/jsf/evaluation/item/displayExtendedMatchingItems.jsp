@@ -23,8 +23,6 @@ include file for displaying Extended Matching Items questions
 --%>
 -->
 
-******** GOPALRC - TEST/TEMP - displayExtendedMatchingItems.jsp ************
-
 
   <h:outputText value="#{question.class.name}"  escape="false"/>
       <f:verbatim><br/><br/></f:verbatim>

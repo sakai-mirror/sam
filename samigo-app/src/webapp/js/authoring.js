@@ -58,6 +58,7 @@
  */
 
 
+//gopalrc - global vars
 var highestOptionId = +25;
 var highestItemId = +25;
 var maxAvailableItems = +10;
@@ -66,7 +67,7 @@ var additionalItemsGroupSize = +3;
 var removeLabel = "X";
 var maxErrorsDisplayed = +20;
 
-
+//gopalrc - jQuery functions
 $(document).ready(function(){
 	
 	//************* VALIDATION *****************
@@ -100,7 +101,7 @@ $(document).ready(function(){
 		}
 		
 		
-		//Validate Answer Point Value
+		//Validate Theme Text
 		var themeText = $("input[name=itemForm:themetext]").val();
 		if (themeText.trim()=="") {
 			errorMessages[errorNumber++] = theme_text_error;

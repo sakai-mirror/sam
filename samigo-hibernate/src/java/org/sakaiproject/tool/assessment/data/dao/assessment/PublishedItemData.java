@@ -79,7 +79,7 @@ public class PublishedItemData
   private String themeText;
   private String leadInText;
   //gopalrc - All available answer options for EMI question
-  private String emiAnswerOptionLabels;
+  private String emiAnswerOptionLabels=null;
   
   //gopalrc - added 27 Nov 2009
   private ArrayList emiAnswerOptions;
@@ -822,15 +822,14 @@ public class PublishedItemData
 	public boolean isValidEmiAnswerOptionLabel(String label) {
 		if (label == null) return false;
 		String validOptionLabels = getEmiAnswerOptionLabels();
-		if (label.length()==1 && validOptionLabels.indexOf(label) != -1) {
+		if (label.length()==1 && validOptionLabels.contains(label)) {
 			return true;
 		}
 		return false;
 	}
 	
+	
 	  //gopalrc - Aug 2010
-	  //TODO - For elegance this should probably be moved up to [Published]ItemData
-	  // as it applies only to the first (seq=0) ItemText
 	  public ArrayList getEmiAnswerOptions() {
 		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
 		  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE);  
@@ -838,37 +837,6 @@ public class PublishedItemData
 			    return itemText.getAnswerArraySorted();
 		  }
 		  return null;
-/*		  
-		  
-		  if (emiAnswerOptions != null) {
-			  return emiAnswerOptions;
-		  }
-		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
-		  ItemTextIfc itemText = null;  
-		  Iterator itemTextIter = itemTextSet.iterator();
-		  while (itemTextIter.hasNext()) {
-			  itemText = (ItemTextIfc) itemTextIter.next();
-			  if (itemText.getSequence().equals(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE)) {
-				  //TODO - move entire function up here to [Published]ItemData
-				  
-				    ArrayList list = itemText.getAnswerArray();
-				    emiAnswerOptions = new ArrayList();
-				    if (list == null) {
-				    	return emiAnswerOptions;
-				    }
-				    Iterator iter = list.iterator();
-				    while (iter.hasNext()) {
-				    	PublishedAnswer answer = (PublishedAnswer) iter.next();
-				    	//if (answer.getLabel() != null && answer.getLabel().matches("[A-Za-z]")) {
-				    		emiAnswerOptions.add(answer);
-				    	//}
-				    }
-				    Collections.sort(emiAnswerOptions);
-				    return emiAnswerOptions;
-			  }
-		  }
-		  return null;
-*/		  
 	  }
 	  
 

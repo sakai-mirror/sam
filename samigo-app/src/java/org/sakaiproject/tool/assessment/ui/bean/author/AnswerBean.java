@@ -174,6 +174,13 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
   //gopalrc Jan 2010 - for EMI questions
   public void setCorrectOptionLabels(String correctOptionLabels) {
 	if (correctOptionLabels != null) correctOptionLabels = correctOptionLabels.trim().toUpperCase();  
+	String optionLabel = null;
+	// remove white space and delimiter characters
+	for (int i=0; i<correctOptionLabels.length(); i++) {
+		optionLabel = correctOptionLabels.substring(i, i+1);
+		if (optionLabel.equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(optionLabel)) continue;
+		correctOptionLabels += optionLabel;
+	}
     this.correctOptionLabels = correctOptionLabels;
   }
 
@@ -199,44 +206,49 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	public void validateCorrectOptionLabels(FacesContext context, 
             UIComponent toValidate,
             Object value) {
-		/*
+		
+		String q = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","q");     
+
+		
 		if (value == null || ((String) value).trim().equals("")) {
 			((UIInput)toValidate).setValid(false);
 			FacesMessage message = new FacesMessage("Please provide a set of correct option labels for sub-question: " + getSequence());
 			context.addMessage(toValidate.getClientId(context), message);
 			return;
 		}
-		*/
-		/*
+		
 		String optionLabels = ((String) value).trim().toUpperCase();
-		String[] optionLabelsArray = optionLabels.split(",");
+		String processed = "";
+//		String[] optionLabelsArray = optionLabels.split(",");
 		
 	    ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 	    ItemBean itemBean = itemauthorbean.getCurrentItem();
-		for (int i=0; i<optionLabelsArray.length; i++) {
-			String optionLabel = optionLabelsArray[i].trim();
+	    
+		for (int i=0; i<optionLabels.length(); i++) {
+			String optionLabel = optionLabels.substring(i, i+1);
+			if (optionLabel.equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(optionLabel)) continue;
+
 			if (!itemBean.isValidEmiAnswerOptionLabel(optionLabel)) {
 				((UIInput)toValidate).setValid(false);
-				FacesMessage message = new FacesMessage("Invalid option: '" + optionLabel + "' in: '" + optionLabels + "' for sub-question: " + getSequence() + ". Please provide options from the available set of options only." );
+				String invalid_response = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","invalid_response");     
+				String please_select_from_available = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","please_select_from_available");     
+				FacesMessage message = new FacesMessage(invalid_response + " '" + optionLabels + "' " + please_select_from_available + " - " + q + " " + itemauthorbean.getItemNo() + "(" + getSequence() + ")" );
 				context.addMessage(toValidate.getClientId(context), message);
 				return;
 			}
+
+			if (processed.contains(optionLabel)) {
+				((UIInput)toValidate).setValid(false);
+				String duplicate_responses = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","duplicate_responses");     
+				FacesMessage message = new FacesMessage(duplicate_responses + " '" + optionLabel + "' - " + q + " " + itemauthorbean.getItemNo() + "(" + getSequence() + ")" );
+				context.addMessage(toValidate.getClientId(context), message);
+				break;
+			}
+			
+			processed += optionLabel;
+			
 		}
 		
-		for (int i=0; i<optionLabelsArray.length; i++) {
-			String optionLabel1 = optionLabelsArray[i].trim();
-			
-			for (int j=0; j<optionLabelsArray.length; j++) {
-				String optionLabel2 = optionLabelsArray[j].trim();
-				if (i != j && optionLabel1.equals(optionLabel2)) {
-					((UIInput)toValidate).setValid(false);
-					FacesMessage message = new FacesMessage("Duplicate option: '" + optionLabel1 + "' in: '" + optionLabels + "' for sub-question: " + getSequence() + ". Please provide only unique options from the available set of options." );
-					context.addMessage(toValidate.getClientId(context), message);
-					return;
-				}
-			}
-		}
-		*/
 	}
 
 

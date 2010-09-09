@@ -7,7 +7,7 @@
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!--
-* $Id: multipleChoice.jsp 59352 2009-03-31 16:59:41Z arwhyte@umich.edu $
+* $Id: extendedMatchingItems.jsp 59352 2009-03-31 16:59:41Z gopal@zestware.com $
 <%--
 ***********************************************************************************
 *
@@ -30,11 +30,6 @@
 -->
 
 
-***** GOPAL TEST/TEMP - /jsf/author/item/extendedMatchingItems.jsp ************************
-
-
-
-<%-- "checked in wysiwyg code but disabled, added in lydia's changes between 1.9 and 1.10" --%>
   <f:view>
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head><%= request.getAttribute("html.head") %>
@@ -89,10 +84,9 @@
   <!-- 1 POINTS and DISCOUNT -->
 <div class="tier2">
      <div class="shorttext"> <h:outputLabel value="#{authorMessages.answer_point_value}" />
-    <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}"required="true" size="6" >
-<f:validateDoubleRange /></h:inputText>
-
-<h:message for="answerptr" styleClass="validate"/>
+    <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}"required="true" size="6" onchange="toPoint(this.id);">
+	<f:validateDoubleRange /></h:inputText>
+	<h:message for="answerptr" styleClass="validate"/>
 </div>
 <br/>
 
@@ -124,8 +118,8 @@
   <h:outputLabel value="#{authorMessages.select_appropriate_format}" />
   <f:verbatim><br/></f:verbatim>
   <h:selectOneRadio id="emiAnswerOptionsSimpleOrRich" value="#{itemauthor.currentItem.answerOptionsSimpleOrRich}" layout="pageDirection" required="yes">
-    <f:selectItem itemLabel="Simple text – for a list of items with no formatting" itemValue="0"/>
-    <f:selectItem itemLabel="Rich text / attachments – for styled text, tables, labelled images" itemValue="1"/>
+    <f:selectItem itemLabel="#{authorMessages.simple_text_option_label}" itemValue="0"/>
+    <f:selectItem itemLabel="#{authorMessages.rich_text_option_label}" itemValue="1"/>
   </h:selectOneRadio>
 
   <f:verbatim><br/></f:verbatim>
@@ -266,7 +260,6 @@
      <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options_paste}"/></div>
      <h:inputTextarea id="emiAnswerOptionsPaste" rows="6" cols="50" value="#{itemauthor.currentItem.emiAnswerOptionsPaste}">
      </h:inputTextarea>
-     <!-- gopalrc TODO - Move population with pasted text from ItemBean into ItemAddListener -->
    </h:panelGrid>
    
 

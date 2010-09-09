@@ -25,8 +25,6 @@ should be included in file importing DeliveryMessages
 --%>
 -->
 
-***** GOPAL TEST/TEMP - /jsf/delivery/item/deliverExtendedMatchingItem.jsp (question = ItemContentsBean) XX************************
-
 
   <h:outputText value="#{question.themeText}"  escape="false"/>
   <f:verbatim><br /><br /></f:verbatim>

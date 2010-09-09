@@ -195,8 +195,9 @@ public interface ItemDataIfc extends java.io.Serializable {
   public Integer getAnswerOptionsRichCount();
   public void setAnswerOptionsRichCount(Integer answerOptionsRichCount);
   
-  //gopalrc
+  //gopalrc - for EMI
   public static final String ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  public static final String ANSWER_OPTION_VALID_DELIMITERS = " ,;:.";
   public static final Integer ANSWER_OPTIONS_SIMPLE = 0;
   public static final Integer ANSWER_OPTIONS_RICH = 1;
   public Integer getAnswerOptionsSimpleOrRich();

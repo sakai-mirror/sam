@@ -60,7 +60,7 @@ public class ItemData
   private String themeText;
   private String leadInText;
   //gopalrc - All available answer option labels for EMI question
-  private String emiAnswerOptionLabels;
+  private String emiAnswerOptionLabels=null;
 
   //gopalrc - added Aug 2010
   private Integer answerOptionsRichCount;
@@ -906,13 +906,12 @@ public ItemData() {}
 	public boolean isValidEmiAnswerOptionLabel(String label) {
 		if (label == null) return false;
 		String validOptionLabels = getEmiAnswerOptionLabels();
-		if (label.length()==1 && validOptionLabels.indexOf(label) != -1) {
+		if (label.length()==1 && validOptionLabels.contains(label)) {
 			return true;
 		}
 		return false;
 	}
 
-	
 
 	  //gopalrc - Aug 2010
 	  public ArrayList getEmiAnswerOptions() {
