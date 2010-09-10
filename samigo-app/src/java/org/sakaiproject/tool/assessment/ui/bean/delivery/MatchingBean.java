@@ -188,15 +188,17 @@ public class MatchingBean
   public void setResponseEMI(String newresp) {
 	  	newresp = newresp.toUpperCase().trim();
 		String label=null;
+		String temp = "";
 		
 		// remove white space and delimiter characters
 		for (int i=0; i<newresp.length(); i++) {
 			label = newresp.substring(i, i+1);
-			if (label.equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(label)) continue;
-			response += label;
+			if (label.trim().equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(label)) continue;
+			temp += label;
 		}
 		
 		// a blank response is OK ??
+		response = temp;
 		if (response.equals("")) return;
 		
 		String processedResponses = "";

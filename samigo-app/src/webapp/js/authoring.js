@@ -66,6 +66,7 @@ var additionalOptionsGroupSize = +3;
 var additionalItemsGroupSize = +3;
 var removeLabel = "X";
 var maxErrorsDisplayed = +20;
+var ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 //gopalrc - jQuery functions
 $(document).ready(function(){
@@ -80,6 +81,9 @@ $(document).ready(function(){
 	var blank_or_non_integer_item_sequence_error = $("input[id=blank_or_non_integer_item_sequence_error]").val();
 	var correct_option_labels_error = $("input[id=correct_option_labels_error]").val();
 	var item_text_not_entered_error = $("input[id=item_text_not_entered_error]").val();
+	var correct_option_labels_invalid_error = $("input[id=correct_option_labels_invalid_error]").val();
+	
+	
 	
 	
 	var $errorMessageDialog = $('<div></div>')
@@ -110,6 +114,7 @@ $(document).ready(function(){
 		
 		//Validate Options
 		var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]").val();
+		var optionLabels = "";
 		
 		if (simpleOrRichAnswerOptions==0) { //simple
 			var pastedOptions = $("textarea[id=itemForm:emiAnswerOptionsPaste]").val();
@@ -120,13 +125,18 @@ $(document).ready(function(){
 						errorMessages[errorNumber++] = simple_text_options_blank_error;
 						break;
 					}
+					var label = $("input[id=itemForm:emiAnswerOptions:" + j + ":Label]").val();
+					optionLabels+=label;
 				}
 			}
 		}
-		else {
-			var richAnswerOptionsCount = $("select[id=itemForm:answerOptionsRichCount]").val();
-			if (richAnswerOptionsCount == "0") {
+		else { // Rich
+			var richAnswerOptionsCount = +$("select[id=itemForm:answerOptionsRichCount]").val();
+			if (richAnswerOptionsCount == 0) {
 				errorMessages[errorNumber++] = number_of_rich_text_options_error;
+			}
+			else {
+				optionLabels = ANSWER_OPTION_LABELS.substring(0, richAnswerOptionsCount);
 			}
 		}
 		
@@ -145,6 +155,16 @@ $(document).ready(function(){
 					errorMessages[errorNumber++] = correct_option_labels_error + labelInput.val();
 					itemError = true;
 				}
+				if (optionLabels.length > 0) {
+					for (i=0; i<correctOptionLabels.length; i++) {
+						thisLabel = correctOptionLabels.subString(i, i+1);
+						if (optionLabels.indexOf(thisLabel)==-1) {
+							errorMessages[errorNumber++] = correct_option_labels_invalid_error + labelInput.val();
+							itemError = true;
+						}
+					}
+				}
+				
 				var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").val();
 				if (itemText.trim()=="") {
 					errorMessages[errorNumber++] = item_text_not_entered_error + labelInput.val();
@@ -292,8 +312,7 @@ $(document).ready(function(){
 	});
 	
 
-	
-	//Update RequiredOptionsCount based on CorrectOptionsLabels
+	//Update CorrectOptionsLabels and RequiredOptionsCount 
 	var all_option = $("input[id=all]").val();
 	for (i=0; i<=highestItemId; i++) {
 		var emiCorrectOptionLabelsInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":correctOptionLabels]");
@@ -302,10 +321,13 @@ $(document).ready(function(){
 			var itemId = +($(this).attr("id").split(":")[2]);
 			var requiredOptionsCountSelect = $("select[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":requiredOptionsCount]");
 			var currentSelection = requiredOptionsCountSelect.val();
-			var changedCorrectOptions = $(this).val().split(",");
+			
+			//var changedCorrectOptions = $(this).val().split(",");
+			var maxOptions = $(this).val().length;
+			
 			requiredOptionsCountSelect.empty();
 			requiredOptionsCountSelect.append('<option value="0">' + all_option + '</option>');
-			for (j=1; j<=changedCorrectOptions.length; j++) {
+			for (j=1; j<=maxOptions; j++) {
 				if (j == currentSelection) {
 					requiredOptionsCountSelect.append('<option selected="selected" value="'+ j +'">'+ j +'</option>');
 				}
@@ -317,7 +339,6 @@ $(document).ready(function(){
 	    });
 		emiCorrectOptionLabelsInput.trigger('change');
 	}
-	
 	
 	//trigger startup events
 	var radioChecked = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked");

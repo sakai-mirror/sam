@@ -1879,7 +1879,7 @@ public class ItemBean
 	public boolean isValidEmiAnswerOptionLabel(String label) {
 		if (label == null) return false;
 		String simpleOrRich = this.getAnswerOptionsSimpleOrRich();
-		if (simpleOrRich == ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString()) {
+		if (simpleOrRich.equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString())) {
 			Iterator iter = getEmiAnswerOptionsClean().iterator();
 			while (iter.hasNext()) {
 				AnswerBean answerBean = (AnswerBean) iter.next();

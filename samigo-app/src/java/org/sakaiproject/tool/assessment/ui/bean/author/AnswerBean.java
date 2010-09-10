@@ -175,13 +175,14 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
   public void setCorrectOptionLabels(String correctOptionLabels) {
 	if (correctOptionLabels != null) correctOptionLabels = correctOptionLabels.trim().toUpperCase();  
 	String optionLabel = null;
+	String temp = "";
 	// remove white space and delimiter characters
 	for (int i=0; i<correctOptionLabels.length(); i++) {
 		optionLabel = correctOptionLabels.substring(i, i+1);
-		if (optionLabel.equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(optionLabel)) continue;
-		correctOptionLabels += optionLabel;
+		if (optionLabel.trim().equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(optionLabel)) continue;
+		temp += optionLabel;
 	}
-    this.correctOptionLabels = correctOptionLabels;
+    this.correctOptionLabels = temp;
   }
 
   
@@ -202,24 +203,24 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	
 	
 	//gopalrc - added for EMI - Jan 2010
-	//TODO - Move validation to JavaScript/JQuery
+	/*
 	public void validateCorrectOptionLabels(FacesContext context, 
             UIComponent toValidate,
             Object value) {
-		
+	*/
+	//Now Called from ItemAddListener because of cross-field validation
+	public boolean validateCorrectOptionLabels(FacesContext context){
+		boolean isValid = true;
 		String q = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","q");     
-
 		
-		if (value == null || ((String) value).trim().equals("")) {
-			((UIInput)toValidate).setValid(false);
+		if (correctOptionLabels == null || correctOptionLabels.trim().equals("")) {
+			isValid = false;
 			FacesMessage message = new FacesMessage("Please provide a set of correct option labels for sub-question: " + getSequence());
-			context.addMessage(toValidate.getClientId(context), message);
-			return;
+			context.addMessage(null, message);
 		}
 		
-		String optionLabels = ((String) value).trim().toUpperCase();
+		String optionLabels = correctOptionLabels.trim().toUpperCase();
 		String processed = "";
-//		String[] optionLabelsArray = optionLabels.split(",");
 		
 	    ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 	    ItemBean itemBean = itemauthorbean.getCurrentItem();
@@ -229,26 +230,26 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 			if (optionLabel.equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(optionLabel)) continue;
 
 			if (!itemBean.isValidEmiAnswerOptionLabel(optionLabel)) {
-				((UIInput)toValidate).setValid(false);
-				String invalid_response = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","invalid_response");     
-				String please_select_from_available = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","please_select_from_available");     
+				isValid=false;
+				String invalid_response = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","invalid_response");     
+				String please_select_from_available = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","please_select_from_available");     
 				FacesMessage message = new FacesMessage(invalid_response + " '" + optionLabels + "' " + please_select_from_available + " - " + q + " " + itemauthorbean.getItemNo() + "(" + getSequence() + ")" );
-				context.addMessage(toValidate.getClientId(context), message);
-				return;
+				context.addMessage(null, message);
+				break;
 			}
 
 			if (processed.contains(optionLabel)) {
-				((UIInput)toValidate).setValid(false);
-				String duplicate_responses = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","duplicate_responses");     
+				isValid=false;
+				String duplicate_responses = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","duplicate_responses");     
 				FacesMessage message = new FacesMessage(duplicate_responses + " '" + optionLabel + "' - " + q + " " + itemauthorbean.getItemNo() + "(" + getSequence() + ")" );
-				context.addMessage(toValidate.getClientId(context), message);
+				context.addMessage(null, message);
 				break;
 			}
 			
 			processed += optionLabel;
 			
 		}
-		
+		return isValid;
 	}
 
 

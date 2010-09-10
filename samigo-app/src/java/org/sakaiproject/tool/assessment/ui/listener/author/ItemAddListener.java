@@ -224,80 +224,107 @@ public class ItemAddListener
     
 
   //gopalrc - added 25 Nov 2009
-  public void checkEMI(){
-	  ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
-	  ItemBean item =itemauthorbean.getCurrentItem();
-	  int countAnswerText=0;
-	  int indexLabel= 0;
-	  
-	  if (item.getEmiAnswerOptionsClean()==null || item.getEmiAnswerOptionsClean().size()==0) {
-		  if (item.getEmiAnswerOptionsPaste()!=null && !item.getEmiAnswerOptionsPaste().trim().equals("")) {
-			  item.populateEmiAnswerOptionsFromPasted();
-		  }
-	  }
-	  
-	  Iterator iter = item.getEmiAnswerOptionsClean().iterator();
-	  boolean missingchoices=false;
+	public void checkEMI() {
+		ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil
+				.lookupBean("itemauthor");
+		ItemBean item = itemauthorbean.getCurrentItem();
+		int countAnswerText = 0;
+		int indexLabel = 0;
+		FacesContext context = FacesContext.getCurrentInstance();
 
-	  StringBuilder missingLabelbuf = new StringBuilder();
-	  String txt="";
-	  String label="";
-	  FacesContext context=FacesContext.getCurrentInstance();
-	  int counter=0;
-	  if(item.getEmiAnswerOptions()!=null){
-		  while (iter.hasNext()) {
-			  AnswerBean answerbean = (AnswerBean) iter.next();
-			  String answerTxt=ContextUtil.stringWYSIWYG(answerbean.getText());
-			  if(answerTxt.toLowerCase().replaceAll("<^[^(img)]*?>", "").trim().equals("")) {
-				  answerbean.setText("");
-			  }
-			  label = answerbean.getLabel();
-			  txt=answerbean.getText();
+		boolean missingchoices = false;
+		String missingLabel = null;
+		
+		// gopalrc TODO - more validation required if rich options ???
+		if (item.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString())) {
 
-			  if ((txt!=null)&& (!txt.equals(""))) {
-				  countAnswerText++;
+			if (item.getEmiAnswerOptionsClean() == null
+					|| item.getEmiAnswerOptionsClean().size() == 0) {
+				if (item.getEmiAnswerOptionsPaste() != null
+						&& !item.getEmiAnswerOptionsPaste().trim().equals("")) {
+					item.populateEmiAnswerOptionsFromPasted();
+				}
+			}
+			
+			StringBuilder missingLabelbuf = new StringBuilder();
+			String txt = "";
+			String label = "";
+			int counter = 0;
+			List answerOptions = (List) item.getEmiAnswerOptionsClean();
+			Iterator iter = answerOptions.iterator();
+			while (iter.hasNext()) {
+				AnswerBean answerbean = (AnswerBean) iter.next();
+				String answerTxt = ContextUtil.stringWYSIWYG(answerbean.getText());
+				if (answerTxt.toLowerCase().replaceAll("<^[^(img)]*?>", "").trim()
+						.equals("")) {
+					answerbean.setText("");
+				}
+				label = answerbean.getLabel();
+				txt = answerbean.getText();
+	
+				if ((txt != null) && (!txt.equals(""))) {
+					countAnswerText++;
+	
+					if (!label.equals(AnswerBean.getChoiceLabels()[indexLabel])) {
+						missingchoices = true;
+						if ("".equals(missingLabelbuf.toString()))
+							missingLabelbuf.append(" "
+									+ AnswerBean.getChoiceLabels()[indexLabel]);
+						else
+							missingLabelbuf.append(", "
+									+ AnswerBean.getChoiceLabels()[indexLabel]);
+						indexLabel++;
+					}
+					indexLabel++;
+				}
+			} // end of while
+	
+			missingLabel = missingLabelbuf.toString();
+		}
+		else { // Rich Options
+			if (item.getAnswerOptionsRichCount().equals("0")) {
+				
+			}
+		}
+		
+		// Validate Correct Option Labels here because these require cross-field
+		// validation
+		List qaCombos = (List) item.getEmiQuestionAnswerCombinationsClean();
+		Iterator qaCombosIter = qaCombos.iterator();
+		while (qaCombosIter.hasNext()) {
+			AnswerBean qaCombo = (AnswerBean) qaCombosIter.next();
+			qaCombo.validateCorrectOptionLabels(context);
+		}
 
-				  if(!label.equals(AnswerBean.getChoiceLabels()[indexLabel])){
-					  missingchoices= true;
-					  if( "".equals(missingLabelbuf.toString()))
-						  missingLabelbuf.append(" "+AnswerBean.getChoiceLabels()[indexLabel]);
-					  else
-						  missingLabelbuf.append(", "+AnswerBean.getChoiceLabels()[indexLabel]);           
-					  indexLabel++;
-				  }
-				  indexLabel++;
-			  }
-		  } // end of while
 
-		  String missingLabel = missingLabelbuf.toString();
+		if (!error) {
+			if (countAnswerText <= 1) {
+				String answerList_err = ContextUtil
+						.getLocalizedString(
+								"org.sakaiproject.tool.assessment.bundle.AuthorMessages",
+								"answerList_error");
+				context.addMessage(null, new FacesMessage(answerList_err));
+				error = true;
 
-		  //gopalrc TODO - more validation required if rich options ???
-		  if (item.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_RICH.toString())) return;
-		  
-		  if(!error){
-			  if(countAnswerText<=1){
-				  String answerList_err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","answerList_error");
-				  context.addMessage(null,new FacesMessage(answerList_err));
-				  error=true;
+			} else if (missingchoices) {
+				String selectionError = ContextUtil
+						.getLocalizedString(
+								"org.sakaiproject.tool.assessment.bundle.AuthorMessages",
+								"missingChoices_error");
+				context.addMessage(null, new FacesMessage(selectionError
+						+ missingLabel));
+				error = true;
 
-			  }
-			  else if(missingchoices){
-				  String selectionError=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","missingChoices_error");
-				  context.addMessage(null,new FacesMessage(selectionError+missingLabel));
-				  error=true;
+			}
+		}
 
-			  }
-		  }
-	  }
-	  if(error){
-		  item.setOutcome("emiItem");
-		  item.setPoolOutcome("emiItem");
-	  }
-  }
+		if (error) {
+			item.setOutcome("emiItem");
+			item.setPoolOutcome("emiItem");
+		}
+	}  
   
-  
-  
-  
+	
   public void checkMC(boolean isSingleSelect){
 	  ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 	  ItemBean item =itemauthorbean.getCurrentItem();

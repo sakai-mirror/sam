@@ -522,6 +522,10 @@
     <h:inputHidden id="blank_or_non_integer_item_sequence_error" value="#{authorMessages.blank_or_non_integer_item_sequence_error}" />
     <h:inputHidden id="correct_option_labels_error" value="#{authorMessages.correct_option_labels_error}" />
     <h:inputHidden id="item_text_not_entered_error" value="#{authorMessages.item_text_not_entered_error}" />
+    <h:inputHidden id="correct_option_labels_invalid_error" value="#{authorMessages.correct_option_labels_invalid_error}" />
+
+
+
 
 <!-- end content -->
 </div>
