@@ -366,9 +366,7 @@
   <h:panelGroup>
     <h:outputLabel value="#{authorMessages.correct_option_labels}" />
     <f:verbatim><br/></f:verbatim>
-    <h:inputText id="correctOptionLabels" value="#{answer.correctOptionLabels}" size="6" style="text-transform:uppercase;"
-       validator="#{answer.validateCorrectOptionLabels}"/>
-       
+    <h:inputText id="correctOptionLabels" value="#{answer.correctOptionLabels}" size="6" style="text-transform:uppercase;"/>
     <f:verbatim><br/><br/></f:verbatim>
        
     <h:outputText value="#{authorMessages.required_options_count}" />

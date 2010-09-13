@@ -209,7 +209,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
             Object value) {
 	*/
 	//Now Called from ItemAddListener because of cross-field validation
-	public boolean validateCorrectOptionLabels(FacesContext context){
+	public boolean isValidCorrectOptionLabels(String emiAnswerOptionLabels, FacesContext context){
 		boolean isValid = true;
 		String q = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","q");     
 		
@@ -228,8 +228,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 		for (int i=0; i<optionLabels.length(); i++) {
 			String optionLabel = optionLabels.substring(i, i+1);
 			if (optionLabel.equals("") || ItemDataIfc.ANSWER_OPTION_VALID_DELIMITERS.contains(optionLabel)) continue;
-
-			if (!itemBean.isValidEmiAnswerOptionLabel(optionLabel)) {
+			if (!emiAnswerOptionLabels.contains(optionLabel)) {
 				isValid=false;
 				String invalid_response = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","invalid_response");     
 				String please_select_from_available = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","please_select_from_available");     
@@ -237,7 +236,6 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 				context.addMessage(null, message);
 				break;
 			}
-
 			if (processed.contains(optionLabel)) {
 				isValid=false;
 				String duplicate_responses = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","duplicate_responses");     

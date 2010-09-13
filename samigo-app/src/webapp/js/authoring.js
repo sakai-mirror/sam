@@ -125,9 +125,14 @@ $(document).ready(function(){
 						errorMessages[errorNumber++] = simple_text_options_blank_error;
 						break;
 					}
-					var label = $("input[id=itemForm:emiAnswerOptions:" + j + ":Label]").val();
-					optionLabels+=label;
+					else if (optionText.is(':visible')) {
+						var label = ANSWER_OPTION_LABELS.substring(j, j+1);
+						optionLabels+=label;
+					}
 				}
+			}
+			else if (pastedOptions.split("\n").length < 2) {
+				errorMessages[errorNumber++] = "At least 2 pasted options required";
 			}
 		}
 		else { // Rich
@@ -150,16 +155,16 @@ $(document).ready(function(){
 					errorMessages[errorNumber++] = blank_or_non_integer_item_sequence_error + labelInput.val();
 					itemError = true;
 				}
-				var correctOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]").val();
+				var correctOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]").val().toUpperCase();
 				if (correctOptionLabels.trim()=="" || /[^a-z,]/gi.test(correctOptionLabels)) {
-					errorMessages[errorNumber++] = correct_option_labels_error + labelInput.val();
+					errorMessages[errorNumber++] = correct_option_labels_error + labelInput.val() + "(" + correctOptionLabels + ")";
 					itemError = true;
 				}
 				if (optionLabels.length > 0) {
 					for (i=0; i<correctOptionLabels.length; i++) {
-						thisLabel = correctOptionLabels.subString(i, i+1);
+						thisLabel = correctOptionLabels.substring(i, i+1);
 						if (optionLabels.indexOf(thisLabel)==-1) {
-							errorMessages[errorNumber++] = correct_option_labels_invalid_error + labelInput.val();
+							errorMessages[errorNumber++] = correct_option_labels_invalid_error + labelInput.val() + "(" + correctOptionLabels + ")";
 							itemError = true;
 						}
 					}

@@ -1449,12 +1449,15 @@ public class ItemBean
     	// build or extend the list of items 26 a-z
     	// for efficiency, these will now be shown/hidden using javascript
 		if (emiAnswerOptions.size() < defaultlength) {
+			ArrayList list = new ArrayList();
+			list.addAll(emiAnswerOptions);
 			for (int i=emiAnswerOptions.size(); i<defaultlength; i++ ) {
     			AnswerBean answerbean = new AnswerBean();
            		answerbean.setSequence( Long.valueOf(i+1));
 				answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
-				emiAnswerOptions.add(answerbean);
+				list.add(answerbean);
 			}
+			emiAnswerOptions = list;
 		}
 		return emiAnswerOptions;
     }
@@ -1474,6 +1477,7 @@ public class ItemBean
 				break;
 			}
 		}
+		emiAnswerOptions = list;
 		return list;
     }    
     
@@ -1638,22 +1642,6 @@ public class ItemBean
     public void setEmiQuestionAnswerCombinationsUI(ArrayList list)
     {
     	this.emiQuestionAnswerCombinations = list;
-    	/*
-    	ArrayList cleanSortedList = new ArrayList();
-    	for (int i=0; i<list.size(); i++) {
-    		AnswerBean emiItem = (AnswerBean)list.get(i);
-    		if (emiItem==null || emiItem.getText()==null || emiItem.getText().trim().equals("")) continue;
-    		emiItem.setSequence(Long.valueOf(emiItem.getLabel()));
-    		cleanSortedList.add(emiItem);
-    	}
-    	Collections.sort(cleanSortedList);
-    	for (int i=0; i<cleanSortedList.size(); i++) {
-    		AnswerBean emiItem = (AnswerBean)cleanSortedList.get(i);
-    		emiItem.setSequence(Long.valueOf(i));
-    		emiItem.setLabel(emiItem.getSequence().toString());
-    	}
-    	this.emiQuestionAnswerCombinations = cleanSortedList;
-    	*/
     }
 
     //gopalrc - added 23 Nov 2009
@@ -1667,41 +1655,19 @@ public class ItemBean
     	// build or extend the list of items 26 a-z
     	// for efficiency, these will now be shown/hidden using javascript
 		if (emiQuestionAnswerCombinations.size() < defaultlength) {
-			for (int i=emiQuestionAnswerCombinations.size(); i<defaultlength; i++ ) {
+			ArrayList list = new ArrayList();
+			list.addAll(emiQuestionAnswerCombinations);
+			for (int i=list.size(); i<defaultlength; i++ ) {
     			AnswerBean answerbean = new AnswerBean();
            		answerbean.setSequence(Long.valueOf(i+1));
 				answerbean.setLabel(answerbean.getSequence().toString());
-				emiQuestionAnswerCombinations.add(answerbean);
+				list.add(answerbean);
 			}
+			emiQuestionAnswerCombinations=list;
 		}
 		return emiQuestionAnswerCombinations;
     }
     
-    
-    
-    //gopalrc - added 23 Nov 2009
-/*    
-     public ArrayList getEmiQuestionAnswerCombinations() {
-    	ArrayList list = new ArrayList();
-    	// build a default list of 4 choices, a, b, c, d,
-    	// modify
-    	if (emiQuestionAnswerCombinations!=null) {
-    		return emiQuestionAnswerCombinations;
-     	}
-    	// new
-    	else {
-	    	int defaultlength = 4;
-	    	for (int i=0; i<defaultlength; i++){
-				AnswerBean answerbean = new AnswerBean();
-	       		answerbean.setSequence( Long.valueOf(i+1));
-				answerbean.setLabel(answerbean.getSequence().toString());
-				list.add(answerbean);
-	       	}
-	    	setEmiQuestionAnswerCombinations(list);
-    	}// else
-        return list;
-    }
-*/    	
     
     public ArrayList getEmiQuestionAnswerCombinationsClean() {
     	String removeLabel = "X";
@@ -1724,25 +1690,8 @@ public class ItemBean
     		emiItem.setSequence(Long.valueOf(seq));
     		emiItem.setLabel(""+seq);
     	}
+    	emiQuestionAnswerCombinations=cleanSortedList;
     	return cleanSortedList;
-    	
-    	/*
-    	ArrayList list = new ArrayList();
-    	if (emiQuestionAnswerCombinations!=null) {
-        	list.addAll(emiQuestionAnswerCombinations);
-    	}
-		for (int i=list.size()-1; i>=0; i--) {
-			AnswerBean answerbean = (AnswerBean)list.get(i);
-			if (answerbean.getText() == null || answerbean.getText().trim().equals("")) {
-				list.remove(i);
-			}
-			else {
-				break;
-			}
-		}
-		return list;
-		*/
-    	
     }    
 
     
@@ -1873,62 +1822,91 @@ public class ItemBean
 		this.totalMCAsnwers = this.multipleChoiceAnswers.size();
 	}
 	
-	
-	
-	//gopalrc - Jan 2010
-	public boolean isValidEmiAnswerOptionLabel(String label) {
-		if (label == null) return false;
+
+	public String getEmiAnwerOptionLabels() {
 		String simpleOrRich = this.getAnswerOptionsSimpleOrRich();
+		String emiAnswerOptionLabels = "";
 		if (simpleOrRich.equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString())) {
 			Iterator iter = getEmiAnswerOptionsClean().iterator();
 			while (iter.hasNext()) {
 				AnswerBean answerBean = (AnswerBean) iter.next();
-				if (answerBean.getLabel().equals(label)) {
-					return true;
-				}
+				emiAnswerOptionLabels += answerBean.getLabel();
 			}
 		}
 		else { // ANSWER_OPTIONS_RICH
-			String optionLabels = ItemDataIfc.ANSWER_OPTION_LABELS.substring(0, Integer.valueOf(this.getAnswerOptionsRichCount()));
-			if (optionLabels.contains(label)) {
-				return true;
-			}
+			emiAnswerOptionLabels = ItemDataIfc.ANSWER_OPTION_LABELS.substring(0, Integer.valueOf(this.getAnswerOptionsRichCount()));
 		}
-			
+		return emiAnswerOptionLabels.toUpperCase();
+	}
+	
+	public String getEmiAnswerOptionLabelsSorted() {
+		String emiAnswerOptionLabels = getEmiAnwerOptionLabels();
+		if (emiAnswerOptionLabels.trim() == "") return emiAnswerOptionLabels;
+		// Rich Options are Generated - So will always be sorted
+		if (getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_RICH.toString())) return emiAnswerOptionLabels;
+		
+		ArrayList optionLabels = new ArrayList();
+		for (int i=0; i<emiAnswerOptionLabels.length(); i++) {
+			optionLabels.add(emiAnswerOptionLabels.substring(i, i+1));
+		}
+		Collections.sort(optionLabels);
+		String emiAnswerOptionLabelsSorted = "";
+		for (int i=0; i<emiAnswerOptionLabels.length(); i++) {
+			emiAnswerOptionLabelsSorted += optionLabels.get(i).toString();
+		}
+		return emiAnswerOptionLabelsSorted;
+	}
+	
+	//gopalrc - Jan 2010
+/*	
+ * very process-expensive to do it this way
+	public boolean isValidEmiAnswerOptionLabel(String label) {
+		if (label == null) return false;
+		String emiAnswerOptionLabels = getEmiAnwerOptionLabels();
+		if (emiAnswerOptionLabels.contains(label)) {
+			return true;
+		}
 		return false;
 	}
-
+*/
 
 	//gopalrc - July 2010
 	public String getEmiAnswerOptionsRich() {
 		return emiAnswerOptionsRich;
 	}
 
+	//gopalrc - July 2010
 	public void setEmiAnswerOptionsRich(String emiAnswerOptionsRich) {
 		this.emiAnswerOptionsRich = emiAnswerOptionsRich;
 	}
 
+	//gopalrc - July 2010
 	public String getEmiAnswerOptionsPaste() {
 		return emiAnswerOptionsPaste;
 	}
 
+	//gopalrc - July 2010
 	public void setEmiAnswerOptionsPaste(String emiAnswerOptionsPaste) {
 		this.emiAnswerOptionsPaste = emiAnswerOptionsPaste;
 	}
 
+	//gopalrc - July 2010
 	public String getAnswerOptionsSimpleOrRich() {
 		return answerOptionsSimpleOrRich;
 	}
 
+	//gopalrc - July 2010
 	public void setAnswerOptionsSimpleOrRich(String answerOptionsSimpleOrRich) {
 		this.answerOptionsSimpleOrRich = answerOptionsSimpleOrRich;
 	}
 
 	
+	//gopalrc - July 2010
 	public String getAnswerOptionsRichCount() {
 		return answerOptionsRichCount;
 	}
 
+	//gopalrc - July 2010
 	public void setAnswerOptionsRichCount(String answerOptionsRichCount) {
 		this.answerOptionsRichCount = answerOptionsRichCount;
 	}

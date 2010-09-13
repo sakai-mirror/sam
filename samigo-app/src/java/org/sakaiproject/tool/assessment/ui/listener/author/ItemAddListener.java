@@ -228,62 +228,57 @@ public class ItemAddListener
 		ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil
 				.lookupBean("itemauthor");
 		ItemBean item = itemauthorbean.getCurrentItem();
-		int countAnswerText = 0;
 		int indexLabel = 0;
 		FacesContext context = FacesContext.getCurrentInstance();
 
-		boolean missingchoices = false;
-		String missingLabel = null;
+		boolean missingOrInvalidAnswerOptionLabels = false;
+		boolean blankSimpleOptionText = false;
+		boolean tooFewAnswerOptions = false;
+		boolean richTextOptionsError = false;
+		
+		String availableOptionLabels = item.getEmiAnswerOptionLabelsSorted();
+		if (availableOptionLabels.length()<2) {
+			tooFewAnswerOptions = true;
+		}
+		else if (!availableOptionLabels.startsWith("A") || !ItemDataIfc.ANSWER_OPTION_LABELS.contains(availableOptionLabels)) {
+			missingOrInvalidAnswerOptionLabels = true;
+		}
 		
 		// gopalrc TODO - more validation required if rich options ???
 		if (item.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString())) {
 
-			if (item.getEmiAnswerOptionsClean() == null
-					|| item.getEmiAnswerOptionsClean().size() == 0) {
+			List answerOptions = (List) item.getEmiAnswerOptionsClean();
+			if (answerOptions == null
+					|| answerOptions.size() == 0) {
 				if (item.getEmiAnswerOptionsPaste() != null
 						&& !item.getEmiAnswerOptionsPaste().trim().equals("")) {
 					item.populateEmiAnswerOptionsFromPasted();
 				}
 			}
 			
-			StringBuilder missingLabelbuf = new StringBuilder();
+			//StringBuilder missingLabelbuf = new StringBuilder();
 			String txt = "";
 			String label = "";
 			int counter = 0;
-			List answerOptions = (List) item.getEmiAnswerOptionsClean();
 			Iterator iter = answerOptions.iterator();
 			while (iter.hasNext()) {
 				AnswerBean answerbean = (AnswerBean) iter.next();
-				String answerTxt = ContextUtil.stringWYSIWYG(answerbean.getText());
-				if (answerTxt.toLowerCase().replaceAll("<^[^(img)]*?>", "").trim()
-						.equals("")) {
-					answerbean.setText("");
-				}
 				label = answerbean.getLabel();
-				txt = answerbean.getText();
-	
-				if ((txt != null) && (!txt.equals(""))) {
-					countAnswerText++;
-	
-					if (!label.equals(AnswerBean.getChoiceLabels()[indexLabel])) {
-						missingchoices = true;
-						if ("".equals(missingLabelbuf.toString()))
-							missingLabelbuf.append(" "
-									+ AnswerBean.getChoiceLabels()[indexLabel]);
-						else
-							missingLabelbuf.append(", "
-									+ AnswerBean.getChoiceLabels()[indexLabel]);
-						indexLabel++;
-					}
-					indexLabel++;
+				txt = answerbean.getText().trim();
+				if ((txt == null) || (txt.equals(""))) {
+					blankSimpleOptionText = true;
 				}
 			} // end of while
 	
-			missingLabel = missingLabelbuf.toString();
 		}
 		else { // Rich Options
-			if (item.getAnswerOptionsRichCount().equals("0")) {
-				
+			String richText = ContextUtil.stringWYSIWYG(item.getEmiAnswerOptionsRich());;
+			if (richText.toLowerCase().replaceAll("<^[^(img)]*?>", "").trim()
+					.equals("")) {
+				item.setEmiAnswerOptionsRich("");
+			}
+			if (item.getEmiAnswerOptionsRich().equals("") && !itemauthorbean.getHasAttachment()) {
+				richTextOptionsError = false;
 			}
 		}
 		
@@ -291,14 +286,26 @@ public class ItemAddListener
 		// validation
 		List qaCombos = (List) item.getEmiQuestionAnswerCombinationsClean();
 		Iterator qaCombosIter = qaCombos.iterator();
+		int invalidQACombos = 0;
 		while (qaCombosIter.hasNext()) {
 			AnswerBean qaCombo = (AnswerBean) qaCombosIter.next();
-			qaCombo.validateCorrectOptionLabels(context);
+			boolean isValidQACombo = qaCombo.isValidCorrectOptionLabels(availableOptionLabels, context);
+			if (!isValidQACombo) invalidQACombos++;
 		}
 
 
 		if (!error) {
-			if (countAnswerText <= 1) {
+			if (blankSimpleOptionText) {
+				String simpleTextOptionsBlank_err = ContextUtil
+						.getLocalizedString(
+								"org.sakaiproject.tool.assessment.bundle.AuthorMessages",
+								"simple_text_options_blank_error");
+				context.addMessage(null, new FacesMessage(simpleTextOptionsBlank_err));
+				error = true;
+
+			}			
+			
+			if (tooFewAnswerOptions) {
 				String answerList_err = ContextUtil
 						.getLocalizedString(
 								"org.sakaiproject.tool.assessment.bundle.AuthorMessages",
@@ -306,16 +313,32 @@ public class ItemAddListener
 				context.addMessage(null, new FacesMessage(answerList_err));
 				error = true;
 
-			} else if (missingchoices) {
-				String selectionError = ContextUtil
+			} 
+			
+			if (missingOrInvalidAnswerOptionLabels) {
+				String answerOptionLabelError = ContextUtil
 						.getLocalizedString(
 								"org.sakaiproject.tool.assessment.bundle.AuthorMessages",
-								"missingChoices_error");
-				context.addMessage(null, new FacesMessage(selectionError
-						+ missingLabel));
+								"missing_or_invalid_answer_options_labels_error");
+				context.addMessage(null, new FacesMessage(answerOptionLabelError + ": "
+						+ availableOptionLabels));
 				error = true;
 
 			}
+			
+			if (richTextOptionsError) {
+				String richOptions_err = ContextUtil
+						.getLocalizedString(
+								"org.sakaiproject.tool.assessment.bundle.AuthorMessages",
+								"rich_text_options_error");
+				context.addMessage(null, new FacesMessage(richOptions_err));
+				error = true;
+			}			
+			
+			if (invalidQACombos > 0) {
+				error = true;
+			}			
+
 		}
 
 		if (error) {
