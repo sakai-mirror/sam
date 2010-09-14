@@ -60,7 +60,7 @@ public class ItemData
   private String themeText;
   private String leadInText;
   //gopalrc - All available answer option labels for EMI question
-  private String emiAnswerOptionLabels=null;
+  //private String emiAnswerOptionLabels=null;
 
   //gopalrc - added Aug 2010
   private Integer answerOptionsRichCount;
@@ -889,8 +889,9 @@ public ItemData() {}
 	
 	//gopalrc - available option labels for EMI answers
 	public String getEmiAnswerOptionLabels() {
+		String emiAnswerOptionLabels = null;
 		if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId())) {
-			if (emiAnswerOptionLabels == null) {
+			if (getIsAnswerOptionsSimple()) {
 				emiAnswerOptionLabels = "";
 				Iterator iter = getEmiAnswerOptions().iterator();
 				while (iter.hasNext()) {
@@ -898,9 +899,13 @@ public ItemData() {}
 					emiAnswerOptionLabels += answer.getLabel();
 				}
 			}
+			else { // Rich
+				emiAnswerOptionLabels = ItemDataIfc.ANSWER_OPTION_LABELS.substring(0, getAnswerOptionsRichCount().intValue());
+			}
 		}
 		return emiAnswerOptionLabels;
 	}
+	
 	
 	//gopalrc - Jan 2010
 	public boolean isValidEmiAnswerOptionLabel(String label) {

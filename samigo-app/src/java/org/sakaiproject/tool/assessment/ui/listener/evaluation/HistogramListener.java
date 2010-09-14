@@ -683,15 +683,32 @@ public class HistogramListener
     ArrayList text = item.getItemTextArraySorted();
     ArrayList answers = null;
     
+    //gopalrc - added Sept 2010
+	//keys number of correct answers required by sub-question (ItemText)
+	HashMap emiRequiredCorrectAnswersCount = null;
     //gopalrc - added Jan 2010
     if (qbean.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString())) { //EMI
+    	emiRequiredCorrectAnswersCount = new HashMap();
     	answers = new ArrayList();
     	for (int i=0; i<text.size(); i++) { 
     	    ItemTextIfc iText = (ItemTextIfc) publishedItemTextHash.get(((ItemTextIfc) text.toArray()[i]).getId());
-    		// all except for the EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE (seq=0) and EMI_LEAD_IN_TEXT_SEQUENCE (seq=-1)itemTexts
-    	    //if (!(iText.getSequence().equals(ItemTextIfc.EMI_THEME_TEXT_AND_ANSWER_OPTIONS_SEQUENCE) || iText.getSequence().equals(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE))) {
         	if (iText.isEmiQuestionItemText()) {
-    	    	answers.addAll(iText.getAnswerArraySorted());
+        		boolean requireAllCorrectAnswers = true;
+        		int numCorrectAnswersRequired = 0;
+        		if (iText.getRequiredOptionsCount()!=null && iText.getRequiredOptionsCount().intValue()>0) {
+        			requireAllCorrectAnswers = false;
+        			numCorrectAnswersRequired = iText.getRequiredOptionsCount().intValue();
+        		}
+        		if (iText.getAnswerArraySorted() == null) continue;
+        		Iterator ansIter = iText.getAnswerArraySorted().iterator();
+        		while (ansIter.hasNext()) {
+        			AnswerIfc answer = (AnswerIfc)ansIter.next();
+        			answers.add(answer);
+        			if (requireAllCorrectAnswers && answer.getIsCorrect()) {
+        				numCorrectAnswersRequired++;
+        			}
+        		}
+    			emiRequiredCorrectAnswersCount.put(iText.getId(), Integer.valueOf(numCorrectAnswersRequired));
     	    }
     	}
     }
@@ -720,7 +737,7 @@ public class HistogramListener
     
     //gopalrc - added Jan 2010
     else if (qbean.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString()))
-        getEMIScores(publishedItemHash, publishedAnswerHash, scores, qbean, answers);
+        getEMIScores(publishedItemHash, publishedAnswerHash, emiRequiredCorrectAnswersCount, scores, qbean, answers);
   }
 
   
@@ -731,16 +748,17 @@ public class HistogramListener
    * calculates statistics for EMI questions
    */
   private void getEMIScores(HashMap publishedItemHash,
-			HashMap publishedAnswerHash, ArrayList scores,
+			HashMap publishedAnswerHash, HashMap emiRequiredCorrectAnswersCount, ArrayList scores,
 			HistogramQuestionScoresBean qbean, ArrayList answers) {
 		ResourceLoader rb = new ResourceLoader(
 				"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
-		HashMap texts = new HashMap();
+		
+		// Answers keyed by answer-id
+		HashMap answersById = new HashMap();
 		
 		//keys the number of student responses selecting a particular answer
 		//by the Answer ID
 		HashMap results = new HashMap();
-		
 		
 		
 		//keys Answer-IDs by subQuestion/ItemTextSequence-answerSequence (concatenated)
@@ -757,7 +775,7 @@ public class HistogramListener
 		Iterator iter = answers.iterator();
 		while (iter.hasNext()) {
 			AnswerIfc answer = (AnswerIfc) iter.next();
-			texts.put(answer.getId(), answer);
+			answersById.put(answer.getId(), answer);
 			results.put(answer.getId(), Integer.valueOf(0));
 			sequenceMap.put(answer.getItemText().getSequence() + "-" + answer.getSequence(), answer.getId());
 			Long subQuestionSequence = answer.getItemText().getSequence();
@@ -777,7 +795,7 @@ public class HistogramListener
 		//Iterate through the student answers (ItemGradingData)
 		iter = scores.iterator();
 		//Create a map that keys all the responses (ItemGradingData) 
-		//for this question from a specific student (or assessment)
+		//for this question from a specific student (assessment)
 		//by the id of that assessment (AssessmentGradingData)
 		HashMap numStudentRespondedMap = new HashMap();
 		//and do the same for seperate sub-questions
@@ -790,7 +808,7 @@ public class HistogramListener
 			//This should always be the case as only valid responses 
 			//from the list of available options are allowed 
 			if (answer != null) {
-				// log.info("Rachel: looking for " + answer.getId());
+				// log.info("Gopal: looking for " + answer.getId());
 				// found a response
 				Integer num = null;
 				// num is a counter for the number of responses that select this published answer
@@ -839,6 +857,8 @@ public class HistogramListener
 		
 		HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
 		int[] numarray = new int[results.keySet().size()];
+		
+		//List of "AnswerText.sequence-Answer.sequence"
 		ArrayList sequenceList = new ArrayList();
 		iter = answers.iterator();
 		while (iter.hasNext()) {
@@ -855,7 +875,7 @@ public class HistogramListener
 		while (iter.hasNext()) {
 			String sequenceId = (String) iter.next();
 			Long answerId = (Long) sequenceMap.get(sequenceId);
-			AnswerIfc answer = (AnswerIfc) texts.get(answerId);
+			AnswerIfc answer = (AnswerIfc) answersById.get(answerId);
 			int num = ((Integer) results.get(answerId)).intValue();
 			numarray[i] = num;
 			bars[i] = new HistogramBarBean();
@@ -865,6 +885,9 @@ public class HistogramListener
 				bars[i].setIsCorrect(answer.getIsCorrect());
 			}
 
+			/* gopalrc - Processing exactly the same - why the condition check?
+			 * Also how would you ever get fewer than zero students selecting an answer
+			 * TODO - check this logic?? - doesn't seem to make sense but perhaps I'm missing something.
 			if ((num > 1) || (num == 0)) {
 				bars[i].setNumStudentsText(num + " "
 						+ rb.getString("responses"));
@@ -874,9 +897,12 @@ public class HistogramListener
 								+ rb.getString("response"));
 
 			}
+			*/
+			
+			bars[i].setNumStudentsText(num + " " + rb.getString("responses"));
 			bars[i].setNumStudents(num);
 			i++;
-		}
+		}// end while
 
 		responses = numStudentRespondedMap.size();
 		
@@ -939,7 +965,10 @@ public class HistogramListener
 			}
 			// gopalrc - Dec 2007
 			qbean.addStudentResponded(((ItemGradingData)resultsForOneStudent.get(0)).getAgentId()); 
-		}
+		} // end for - number of students with all correct responses for the whole question
+		
+		
+		
 		// NEW
 		int[] heights = calColumnHeight(numarray, responses);
 		// int[] heights = calColumnHeight(numarray);
@@ -963,6 +992,7 @@ public class HistogramListener
 		
 
 		//Determine the number of students with all correct reponses per sub-question
+		/*
 		HashMap correctAnswersPerSubQuestion = new HashMap();
 		Integer numCorrectSubQuestionAnswers = null;
 		Iterator answeriter = answers.iterator();
@@ -979,6 +1009,7 @@ public class HistogramListener
 				correctAnswersPerSubQuestion.put(answerchoice.getItemText().getId(), numCorrectSubQuestionAnswers);
 			}
 		}
+		*/
 		
 		HashMap numStudentsWithAllCorrectPerSubQuestion = new HashMap();
 		HashMap studentsWithAllCorrectPerSubQuestion = new HashMap();
@@ -997,9 +1028,10 @@ public class HistogramListener
 				studentsResponded.add(response1.getAgentId());
 				studentsRespondedPerSubQuestion.put(subQuestionId, studentsResponded);
 				
-				
 				boolean hasIncorrect = false;
-				numCorrectSubQuestionAnswers = (Integer) correctAnswersPerSubQuestion.get(subQuestionId);
+				//numCorrectSubQuestionAnswers = (Integer) correctAnswersPerSubQuestion.get(subQuestionId);
+				Integer numCorrectSubQuestionAnswers = (Integer) emiRequiredCorrectAnswersCount.get(subQuestionId);
+				
 				if (studentResponseListForSubQuestion.size() < numCorrectSubQuestionAnswers.intValue()) {
 					hasIncorrect = true;
 					continue;

@@ -36,6 +36,7 @@
       <title><h:outputText value="#{authorMessages.item_display_author}"/></title>
       <!-- AUTHORING -->
 	  <link type="text/css" href="/samigo-app/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />	
+	  <script type="text/javascript">var emiAuthoring=true</script>
       <samigo:script path="/js/jquery-1.3.2.min.js"/>
       <samigo:script path="/js/jquery-ui-1.7.2.custom.min.js"/>
       <samigo:script path="/js/authoring.js"/>
@@ -257,7 +258,7 @@
 
 
    <h:panelGrid>
-     <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options_paste}"/></div>
+     <div class="longtext"><h:outputLabel id="pasteLabel" value="#{authorMessages.answer_options_paste}"/></div>
      <h:inputTextarea id="emiAnswerOptionsPaste" rows="6" cols="50" value="#{itemauthor.currentItem.emiAnswerOptionsPaste}">
      </h:inputTextarea>
    </h:panelGrid>

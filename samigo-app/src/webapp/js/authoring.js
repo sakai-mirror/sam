@@ -71,6 +71,9 @@ var ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 //gopalrc - jQuery functions
 $(document).ready(function(){
 	
+	//only applies to EMI authoring
+	if (!emiAuthoring) return;
+	
 	//************* VALIDATION *****************
 	var error_dialog_title_line1 = $("input[id=error_dialog_title_line1]").val();
 	var error_dialog_title_line2 = $("input[id=error_dialog_title_line2]").val();
@@ -113,7 +116,8 @@ $(document).ready(function(){
 		
 		
 		//Validate Options
-		var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]").val();
+		//var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]").val();
+		var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked").val();
 		var optionLabels = "";
 		
 		if (simpleOrRichAnswerOptions==0) { //simple
@@ -155,27 +159,31 @@ $(document).ready(function(){
 					errorMessages[errorNumber++] = blank_or_non_integer_item_sequence_error + labelInput.val();
 					itemError = true;
 				}
-				var correctOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]").val().toUpperCase();
-				if (correctOptionLabels.trim()=="" || /[^a-z,]/gi.test(correctOptionLabels)) {
-					errorMessages[errorNumber++] = correct_option_labels_error + labelInput.val() + "(" + correctOptionLabels + ")";
-					itemError = true;
-				}
-				if (optionLabels.length > 0) {
-					for (i=0; i<correctOptionLabels.length; i++) {
-						thisLabel = correctOptionLabels.substring(i, i+1);
-						if (optionLabels.indexOf(thisLabel)==-1) {
-							errorMessages[errorNumber++] = correct_option_labels_invalid_error + labelInput.val() + "(" + correctOptionLabels + ")";
-							itemError = true;
-						}
-					}
-				}
-				
+
 				var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").val();
 				if (itemText.trim()=="") {
 					errorMessages[errorNumber++] = item_text_not_entered_error + labelInput.val();
 					itemError = true;
 				}
-				if (itemError) break;
+
+				var correctOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]").val().toUpperCase();
+				if (correctOptionLabels.trim()=="" || /[^a-z,]/gi.test(correctOptionLabels)) {
+					errorMessages[errorNumber++] = correct_option_labels_error + labelInput.val();
+					itemError = true;
+				}
+				
+				if (optionLabels.length > 0) {
+					for (i=0; i<correctOptionLabels.length; i++) {
+						thisLabel = correctOptionLabels.substring(i, i+1);
+						if (optionLabels.indexOf(thisLabel)==-1) {
+							errorMessages[errorNumber++] = correct_option_labels_invalid_error + labelInput.val();
+							itemError = true;
+							break;
+						}
+					}
+				}
+				
+				//if (itemError) break;
 			}
 		}
 		
@@ -261,6 +269,22 @@ $(document).ready(function(){
 	});
 	
 
+	//Hide Pasted if Option Text Entered
+	for (i=0; i<=highestOptionId; i++) {
+		var emiOptionText = $("input[id=itemForm:emiAnswerOptions:" + i + ":Text]");
+		emiOptionText.bind('change', function() {
+			if ($(this).val().trim() != "") {
+				$("textarea[id=itemForm:emiAnswerOptionsPaste]").hide();
+				$("textarea[id=itemForm:emiAnswerOptionsPaste]").val("");
+				$("label[id=itemForm:pasteLabel]").hide();
+			}
+			return false;
+	    });
+		emiOptionText.trigger('change');
+	}
+	
+	
+	
 	//************* ITEMS ********************
 	//Remove Items
 	for (i=0; i<=highestItemId; i++) {
@@ -346,8 +370,8 @@ $(document).ready(function(){
 	}
 	
 	//trigger startup events
-	var radioChecked = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked");
-	radioChecked.trigger('click');
+	var radioSimpleOrRichChecked = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked");
+	radioSimpleOrRichChecked.trigger('click');
 	
 	
 	//hide excess Options at start

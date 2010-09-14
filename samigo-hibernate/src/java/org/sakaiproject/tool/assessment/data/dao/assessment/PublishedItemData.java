@@ -805,8 +805,9 @@ public class PublishedItemData
 	
 	//gopalrc - available option labels for EMI answers
 	public String getEmiAnswerOptionLabels() {
+		String emiAnswerOptionLabels = null;
 		if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId())) {
-			if (emiAnswerOptionLabels == null) {
+			if (getIsAnswerOptionsSimple()) {
 				emiAnswerOptionLabels = "";
 				Iterator iter = getEmiAnswerOptions().iterator();
 				while (iter.hasNext()) {
@@ -814,9 +815,13 @@ public class PublishedItemData
 					emiAnswerOptionLabels += answer.getLabel();
 				}
 			}
+			else { // Rich
+				emiAnswerOptionLabels = ItemDataIfc.ANSWER_OPTION_LABELS.substring(0, getAnswerOptionsRichCount().intValue());
+			}
 		}
 		return emiAnswerOptionLabels;
 	}
+	
 	
 	//gopalrc - Jan 2010
 	public boolean isValidEmiAnswerOptionLabel(String label) {

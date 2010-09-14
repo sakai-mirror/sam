@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -211,12 +212,14 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	//Now Called from ItemAddListener because of cross-field validation
 	public boolean isValidCorrectOptionLabels(String emiAnswerOptionLabels, FacesContext context){
 		boolean isValid = true;
-		String q = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","q");     
+		String q = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","q");  
 		
 		if (correctOptionLabels == null || correctOptionLabels.trim().equals("")) {
 			isValid = false;
-			FacesMessage message = new FacesMessage("Please provide a set of correct option labels for sub-question: " + getSequence());
+			String correct_option_labels_error = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","correct_option_labels_error");     
+			FacesMessage message = new FacesMessage(correct_option_labels_error + getSequence());
 			context.addMessage(null, message);
+			return isValid;
 		}
 		
 		String optionLabels = correctOptionLabels.trim().toUpperCase();

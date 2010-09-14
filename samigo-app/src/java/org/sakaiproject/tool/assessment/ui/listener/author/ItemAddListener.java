@@ -236,13 +236,6 @@ public class ItemAddListener
 		boolean tooFewAnswerOptions = false;
 		boolean richTextOptionsError = false;
 		
-		String availableOptionLabels = item.getEmiAnswerOptionLabelsSorted();
-		if (availableOptionLabels.length()<2) {
-			tooFewAnswerOptions = true;
-		}
-		else if (!availableOptionLabels.startsWith("A") || !ItemDataIfc.ANSWER_OPTION_LABELS.contains(availableOptionLabels)) {
-			missingOrInvalidAnswerOptionLabels = true;
-		}
 		
 		// gopalrc TODO - more validation required if rich options ???
 		if (item.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString())) {
@@ -278,9 +271,19 @@ public class ItemAddListener
 				item.setEmiAnswerOptionsRich("");
 			}
 			if (item.getEmiAnswerOptionsRich().equals("") && !itemauthorbean.getHasAttachment()) {
-				richTextOptionsError = false;
+				richTextOptionsError = true;
 			}
 		}
+		
+		
+		String availableOptionLabels = item.getEmiAnswerOptionLabelsSorted();
+		if (availableOptionLabels.length()<2) {
+			tooFewAnswerOptions = true;
+		}
+		else if (!availableOptionLabels.startsWith("A") || !ItemDataIfc.ANSWER_OPTION_LABELS.contains(availableOptionLabels)) {
+			missingOrInvalidAnswerOptionLabels = true;
+		}
+		
 		
 		// Validate Correct Option Labels here because these require cross-field
 		// validation

@@ -23,15 +23,8 @@ should be included in file importing DeliveryMessages
 **********************************************************************************/
 --%>
 -->
-  ***** GOPAL TEST/TEMP - /jsf/author/preview_item/ExtendedMatchingItem.jsp *****
-  ***** Included In /jsf/author/previewAssessment.jsp ************
   
   
-  <h:outputText escape="false" value="#{question.class.name}" />
-  
-
-
-
       
   <!-- THEME TEXT -->
       <h:outputText escape="false" value="#{question.itemData.themeText}" />
