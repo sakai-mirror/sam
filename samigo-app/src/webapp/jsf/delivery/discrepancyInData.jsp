@@ -51,7 +51,7 @@
 	  </h:panelGrid>
 		<f:verbatim></ol></f:verbatim>
 
-    <h:outputText value="#{deliveryMessages.data_discrepancy_4} <b>#{deliveryMessages.save_and_continue}</b> #{deliveryMessages.text_or} <b>#{deliveryMessages.button_save_for_later}</b>#{deliveryMessages.text_period}" escape="false"/>
+    <h:outputText value="#{deliveryMessages.data_discrepancy_4}" escape="false"/>
     <h:outputText value="#{deliveryMessages.data_discrepancy_5} <b>#{deliveryMessages.button_return}</b> #{deliveryMessages.data_discrepancy_6}" escape="false"/>
   </h:panelGrid>
 
@@ -59,13 +59,13 @@
 
  <h:form id="discrepancyInData">
  <p class="act">
-       <h:commandButton accesskey="#{deliveryMessages.a_return}" value="#{deliveryMessages.button_return}" type="submit"
+       <h:commandButton value="#{deliveryMessages.button_return}" type="submit"
          styleClass="active" action="select" rendered="#{delivery.actionString=='takeAssessment'}">
           <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
        </h:commandButton>
 
-    <h:commandButton accesskey="#{deliveryMessages.a_return}" value="#{deliveryMessages.button_return}" type="button" 
+    <h:commandButton value="#{deliveryMessages.button_return}" type="button" 
        rendered="#{delivery.actionString=='takeAssessmentViaUrl'}"
        style="act" onclick="javascript:window.open('#{delivery.selectURL}','_top')" onkeypress="javascript:window.open('#{delivery.selectURL}','_top')" />
  </p>
