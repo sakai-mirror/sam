@@ -2039,8 +2039,11 @@ public class HistogramListener
 	    headerList.add(rb.getString("lower_pct")); 
 	    headerList.add(""); 
     }
-    headerList.add("-");
+
+    // No Answer
+    headerList.add(rb.getString("no_answer"));
     
+    // Label the response options A, B, C, ...
     int aChar = 65;
     for (char colHeader=65; colHeader < 65+bean.getMaxNumberOfAnswers(); colHeader++) {
         headerList.add(String.valueOf(colHeader));

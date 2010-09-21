@@ -199,7 +199,7 @@ Below added by gopalrc Nov 2007
 
     <h:column rendered="#{histogramScores.maxNumberOfAnswers>0}">
         <f:facet name="header">
-            <h:outputText escape="false" value="-" /> 
+            <h:outputText escape="false" value="#{evaluationMessages.no_answer}" /> 
         </f:facet>
         <h:outputText value="#{item.numberOfStudentsWithZeroAnswers}" escape="false" />
     </h:column>
