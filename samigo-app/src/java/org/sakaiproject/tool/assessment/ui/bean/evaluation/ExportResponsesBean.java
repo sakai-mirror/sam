@@ -1,6 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/sam/trunk/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/bean/evaluation/TotalScoresBean.java $
- * $Id: TotalScoresBean.java 29431 2007-04-22 05:20:55Z ktsao@stanford.edu $
+ * $URL$
+ * $Id$
  ***********************************************************************************
  *
  * Copyright (c) 2007, 2008, 2009 The Sakai Foundation
