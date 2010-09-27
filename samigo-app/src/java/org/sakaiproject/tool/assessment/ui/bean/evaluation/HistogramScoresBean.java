@@ -35,6 +35,7 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
@@ -968,7 +969,10 @@ publishedId = ppublishedId;
 	
   public boolean getShowDiscriminationColumn() {
 	  try {
-		  return getTotalScore() == null ? false : Float.parseFloat(getTotalScore())!=0.0f;
+              if(String.valueOf(EvaluationModelIfc.ALL_SCORE).equals(allSubmissions)){
+                  return false;
+              }
+              return getTotalScore() == null ? false : Float.parseFloat(getTotalScore())!=0.0f;
 	  }
 	  catch (NumberFormatException ex) {
 		  return false;

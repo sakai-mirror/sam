@@ -111,16 +111,16 @@ $Id: histogramScores.jsp 38982 2007-12-06 13:05:38Z gopal.ramasammycook@gmail.co
 
      <h:selectOneMenu value="#{histogramScores.allSubmissions}" id="allSubmissionsL"
         required="true" onchange="document.forms[0].submit();" rendered="#{totalScores.scoringOption eq '2'}">
-      <f:selectItem itemValue="3" itemLabel="#{evaluationMessages.all_sub}" />
       <f:selectItem itemValue="2" itemLabel="#{evaluationMessages.last_sub}" />
+      <f:selectItem itemValue="3" itemLabel="#{evaluationMessages.all_sub}" />
       <f:valueChangeListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.HistogramListener" />
      </h:selectOneMenu>
 
      <h:selectOneMenu value="#{histogramScores.allSubmissions}" id="allSubmissionsH"
         required="true" onchange="document.forms[0].submit();" rendered="#{totalScores.scoringOption eq '1'}">
-      <f:selectItem itemValue="3" itemLabel="#{evaluationMessages.all_sub}" />
       <f:selectItem itemValue="1" itemLabel="#{evaluationMessages.highest_sub}" />
+      <f:selectItem itemValue="3" itemLabel="#{evaluationMessages.all_sub}" />
       <f:valueChangeListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.HistogramListener" />
      </h:selectOneMenu>

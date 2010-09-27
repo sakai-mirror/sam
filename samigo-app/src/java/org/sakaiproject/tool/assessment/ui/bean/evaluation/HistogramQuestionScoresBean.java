@@ -24,6 +24,7 @@
 package org.sakaiproject.tool.assessment.ui.bean.evaluation;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -33,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
-import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 
 /**
  * <p>
@@ -68,6 +68,7 @@ public class HistogramQuestionScoresBean
   private String totalScore; //total possible score
   private String adjustedScore;
   private boolean allSubmissions;
+  private String questionLabelFormat;
   private String questionNumber;
   private String questionText;
   private String questionType;
@@ -967,16 +968,24 @@ public class HistogramQuestionScoresBean
   
   
   public String getQuestionLabel() {
-      String label = "Q" + questionNumber;
-      if(randomType && poolName != null){
-          label = label + "-Pool:" + poolName;
-      }
+      if(questionLabelFormat == null){
+        String label = "Q" + questionNumber;
+        if(randomType && poolName != null){
+            label = label + "-Pool:" + poolName;
+        }
 	  if (getNumberOfParts() > 1) {
 		  return "P" + partNumber + "-" + label;
 	  }
 	  else {
 		  return label;
 	  }
+      }else{
+          return MessageFormat.format(questionLabelFormat, questionNumber, partNumber, poolName);
+      }
+  }
+
+  public void setQuestionLabelFormat(String questionLabelFormat){
+      this.questionLabelFormat = questionLabelFormat;
   }
   
   public void addStudentWithAllCorrect(String agentId) {
