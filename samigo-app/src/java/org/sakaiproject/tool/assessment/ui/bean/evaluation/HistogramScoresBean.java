@@ -1052,6 +1052,10 @@ publishedId = ppublishedId;
         return selectItemParts;
     }
 
+    public int getAssesmentPartCount(){
+        return (assesmentParts==null?0:assesmentParts.size());
+    }
+
     /**
      * This method will filter the info (HistogramQuestionScoresBean)
      * to only show the questions for the active part.
