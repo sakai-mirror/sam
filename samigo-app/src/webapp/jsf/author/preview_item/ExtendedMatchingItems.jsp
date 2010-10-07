@@ -76,8 +76,6 @@ should be included in file importing DeliveryMessages
 
         <h:column> 
         
-        #{item.emiCorrectOptionLabels}
-        
             <h:outputText escape="false" value="#{item.emiCorrectOptionLabels}"/>
       
             <h:outputText escape="false" value="(#{item.requiredOptionsCount} #{authorMessages.answers_required})" rendered="#{item.requiredOptionsCount>0}"/>

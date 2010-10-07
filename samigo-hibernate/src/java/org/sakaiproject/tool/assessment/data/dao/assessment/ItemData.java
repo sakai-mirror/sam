@@ -64,7 +64,7 @@ public class ItemData
 
   //gopalrc - added Aug 2010
   private Integer answerOptionsRichCount;
-  private Integer answerOptionsSimpleOrRich;
+  private Integer answerOptionsSimpleOrRich = ItemDataIfc.ANSWER_OPTIONS_SIMPLE;
   
 
   
@@ -970,6 +970,9 @@ public ItemData() {}
 	  
   //gopalrc - Aug 2010
 	public Integer getAnswerOptionsSimpleOrRich() {
+		if (answerOptionsSimpleOrRich==null) {
+			answerOptionsSimpleOrRich = ItemDataIfc.ANSWER_OPTIONS_SIMPLE;
+		}
 		return answerOptionsSimpleOrRich;
 	}
 

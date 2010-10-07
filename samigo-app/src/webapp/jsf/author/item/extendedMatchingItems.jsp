@@ -186,24 +186,24 @@
     <h:outputText value="#{authorMessages.answer_options_count}" />
     <h:selectOneMenu  id="answerOptionsRichCount"  value="#{itemauthor.currentItem.answerOptionsRichCount}" >
       <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
-      <f:selectItem itemLabel="2" itemValue="2"/>
-      <f:selectItem itemLabel="3" itemValue="3"/>
-      <f:selectItem itemLabel="4" itemValue="4"/>
-      <f:selectItem itemLabel="5" itemValue="5"/>
-      <f:selectItem itemLabel="6" itemValue="6"/>
-      <f:selectItem itemLabel="7" itemValue="7"/>
-      <f:selectItem itemLabel="8" itemValue="8"/>
-      <f:selectItem itemLabel="9" itemValue="9"/>
-      <f:selectItem itemLabel="10" itemValue="10"/>
-      <f:selectItem itemLabel="11" itemValue="11"/>
-      <f:selectItem itemLabel="12" itemValue="12"/>
-      <f:selectItem itemLabel="13" itemValue="13"/>
-      <f:selectItem itemLabel="14" itemValue="14"/>
-      <f:selectItem itemLabel="15" itemValue="15"/>
-      <f:selectItem itemLabel="16" itemValue="16"/>
-      <f:selectItem itemLabel="17" itemValue="17"/>
-      <f:selectItem itemLabel="18" itemValue="18"/>
-      <f:selectItem itemLabel="19" itemValue="19"/>
+      <f:selectItem itemLabel="A-B(2)" itemValue="2"/>
+      <f:selectItem itemLabel="A-C(3)" itemValue="3"/>
+      <f:selectItem itemLabel="A-D(4)" itemValue="4"/>
+      <f:selectItem itemLabel="A-E(5)" itemValue="5"/>
+      <f:selectItem itemLabel="A-F(6)" itemValue="6"/>
+      <f:selectItem itemLabel="A-G(7)" itemValue="7"/>
+      <f:selectItem itemLabel="A-H(8)" itemValue="8"/>
+      <f:selectItem itemLabel="A-I(9)" itemValue="9"/>
+      <f:selectItem itemLabel="A-J(10)" itemValue="10"/>
+      <f:selectItem itemLabel="A-B(11" itemValue="11"/>
+      <f:selectItem itemLabel="A-B(12" itemValue="12"/>
+      <f:selectItem itemLabel="A-B(13" itemValue="13"/>
+      <f:selectItem itemLabel="A-B(14" itemValue="14"/>
+      <f:selectItem itemLabel="A-B(15" itemValue="15"/>
+      <f:selectItem itemLabel="A-B(16" itemValue="16"/>
+      <f:selectItem itemLabel="A-B(17" itemValue="17"/>
+      <f:selectItem itemLabel="A-B(18" itemValue="18"/>
+      <f:selectItem itemLabel="A-B(19" itemValue="19"/>
       <f:selectItem itemLabel="20" itemValue="20"/>
       <f:selectItem itemLabel="21" itemValue="21"/>
       <f:selectItem itemLabel="22" itemValue="22"/>

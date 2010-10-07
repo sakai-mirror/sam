@@ -96,17 +96,26 @@ $(document).ready(function(){
 		title: error_dialog_title_line1+'<br/>'+error_dialog_title_line2
 	});
 	
+	var $messageDialog = $('<div></div>')
+	.html('')
+	.dialog({
+		autoOpen: false,
+		title: "Warning Message"
+	});
+	
+	
 	var buttonSave = $("input[value=Save]");
 	buttonSave.bind('click', function(){
 		var errorMessages = new Array(maxErrorsDisplayed);
 		var errorNumber=+0;
 
 		//Validate Answer Point Value
+		/*
 		var answerPointValue = $("input[name=itemForm:answerptr]").val();
 		if (answerPointValue.trim()=="" || +answerPointValue==0) {
 			errorMessages[errorNumber++] = answer_point_value_error;
 		}
-		
+		*/
 		
 		//Validate Theme Text
 		var themeText = $("input[name=itemForm:themetext]").val();
@@ -154,18 +163,22 @@ $(document).ready(function(){
 		for (j=0; j<highestItemId; j++) {
 			var itemError = false;
 			var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
-			if (labelInput && labelInput.is(':visible') && labelInput.val() !== removeLabel)  {
+			var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").val();
+			if (labelInput && labelInput.is(':visible') && labelInput.val() !== removeLabel 
+					&& itemText && itemText.trim()!=="")  {
 				if (labelInput.val().trim()=="" || /[^0-9]/g.test(labelInput.val())) {
 					errorMessages[errorNumber++] = blank_or_non_integer_item_sequence_error + labelInput.val();
 					itemError = true;
 				}
 
+/*				
 				var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").val();
 				if (itemText.trim()=="") {
 					errorMessages[errorNumber++] = item_text_not_entered_error + labelInput.val();
 					itemError = true;
 				}
-
+*/
+				
 				var correctOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]").val().toUpperCase();
 				if (correctOptionLabels.trim()=="" || /[^a-z,]/gi.test(correctOptionLabels)) {
 					errorMessages[errorNumber++] = correct_option_labels_error + labelInput.val();
@@ -198,7 +211,6 @@ $(document).ready(function(){
 			messageHTML += "<ul/></font>";
 			$errorMessageDialog.html(messageHTML);
 			$errorMessageDialog.dialog('open');
-			//alert(errorMessages);
 			return false;
 		}
 		else {
@@ -322,7 +334,8 @@ $(document).ready(function(){
 				$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();
 				availableItems++;
 				if (availableItems>=maxAvailableItems) {
-					alert("Maximum Number of Items Added");
+					//alert("Maximum Number of Items Added");
+					//messageDialog("Maximum Number of Items Added");
 					return false;
 				}
 				if (++j==additionalItemsGroupSize) return false;
@@ -332,11 +345,13 @@ $(document).ready(function(){
 			}
 			
 			if (availableItems>=maxAvailableItems) {
-				alert("Maximum Number of Items Added");
+				//alert("Maximum Number of Items Added");
+				//messageDialog("Maximum Number of Items Added");
 				return false;
 			}
 		}
-		alert("Please save accumulated changes before adding additional items.");
+		//alert("Please save accumulated changes before adding additional items.");
+		messageDialog("Please save accumulated changes before adding additional items.");
 		return false;
 	});
 	
@@ -420,11 +435,23 @@ $(document).ready(function(){
 	
 	$("div[id=portletContent]").css('display','block');
 	
+
 	
+	function messageDialog(message) {
+		$messageDialog.dialog('close');
+		var messageHTML = "<font color='red'><ul>";
+		messageHTML += message;
+		messageHTML += "<ul/></font>";
+		$messageDialog.html(messageHTML);
+		$messageDialog.dialog('open');
+	}
+
 	
 });
 
 //*************** JQuery Functions Above ******************
+
+
 
 
 
@@ -573,9 +600,6 @@ document.links[newindex].onclick();
 
 //gopalrc - added 23 Nov 2009
 function clickAddEmiAnswerOptionsLink(){
-	
-	//alert("clickAddEmiAnswerOptionsLink");
-
 	var newindex = 0;
 	for (i=0; i<document.links.length; i++) {
 	  if ( document.links[i].id.indexOf("hiddenAddEmiAnswerOptionsActionlink") >=0){
@@ -590,9 +614,6 @@ function clickAddEmiAnswerOptionsLink(){
 
 //gopalrc - added 23 Nov 2009
 function clickAddEmiQuestionAnswerCombinationsLink(){
-
-	//alert("clickAddEmiQuestionAnswerCombinationsLink");
-
 	var newindex = 0;
 	for (i=0; i<document.links.length; i++) {
 	  if ( document.links[i].id.indexOf("hiddenAddEmiQuestionAnswerCombinationsActionlink") >=0){
@@ -603,76 +624,6 @@ function clickAddEmiQuestionAnswerCombinationsLink(){
 
 	document.links[newindex].onclick();
 }
-
-
-
-/*
-
-//gopalrc - added Jul 2010
-function setEmiAnswerOptionsSimpleOrRich() {
-	//var isSimple = document.forms['itemForm']['itemForm:emiAnswerOptionsSimpleOrRich'][0].checked;
-	var isSimple = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:eq(0):checked");
-	if (isSimple) {
-		$("#emiAnswerOptionsRich").hide();
-		$("#emiAnswerOptionsSimple").show();
-	}
-	else {
-		$("#emiAnswerOptionsSimple").hide();
-		$("#emiAnswerOptionsRich").show();
-	}
-}
-
-
-//gopalrc - added Jul 2010
-function showLayer(whichLayer)
-{
-  var elem, vis;
-  elem = getElementWithId(whichLayer);
-  vis = elem.style;
-  vis.display = 'block';
-}
-
-//gopalrc - added Jul 2010
-function hideLayer(whichLayer)
-{
-  var elem, vis;
-  elem = getElementWithId(whichLayer);
-  vis = elem.style;
-  vis.display = 'none';
-}
-
-
-//gopalrc - added Jul 2010
-function getElementWithId(id){
-    var obj;
-    if(document.getElementById){
-         Prefer the widely supported W3C DOM method, if
-           available:-
-        
-        obj = document.getElementById(id);
-    }else if(document.all){
-         Branch to use document.all on document.all only
-           browsers. Requires that IDs are unique to the page
-           and do not coincide with NAME attributes on other
-           elements:-
-        
-        obj = document.all[id];
-    }else if(document.layers){
-         Branch to use document.layers, but that will only work for
-           CSS positioned elements and LAYERs that are not nested. A
-           recursive method might be used instead to find positioned
-           elements within positioned elements but most DOM nodes on
-           document.layers browsers cannot be referenced at all.
-        
-        obj = document.layers[id];
-    }
-     If no appropriate/functional element retrieval mechanism
-       exists on this browser this function returns null:-
-    
-    return obj||null;
-}
-*/
-
 
 
 function countNum(){
@@ -726,124 +677,5 @@ function toPoint(id)
   document.getElementById(id).value=x.replace(',','.')
 }
 
-/*	
-for (i=0; i<=highestItemId; i++) {
-	var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
-	emiItemRemoveLink.bind('click', function() {
-		var itemId = +($(this).attr("id").split(":")[2]);
-		var lastVisible = 0;
-		
-		// Have to do this in 2 loops, because the attributes like visibility are also copied
-		for (x=itemId; x<highestItemId; x++) {
-			y = +x+1;
-			var remLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + x + ":RemoveLink]");
-			var remLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + y + ":RemoveLink]");
-			//if reached the visible-invisible boundary, hide the last visible row
-			if (remLink1.is(':visible') && !remLink2.is(':visible')) {
-				lastVisible=x;
-				break;
-			}
-		}
-alert("A");			
-		for (j=itemId; j<highestItemId; j++) {
-			var k = +j+1;
-
-			var removeLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + j + ":RemoveLink]");
-			var removeLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + k + ":RemoveLink]");
-
-alert("B");			
-			
-			var row1 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent();
-			var row2 = $("table[id=itemForm:emiQuestionAnswerCombinations:" + k + ":Row]").parent().parent();
-			row1.html(row2.clone(true).html());
-
-alert("C");			
-			
-			//if reached the visible-invisible boundary, hide the last visible row
-			if (j === lastVisible) {
-alert("D1");			
-                row1.hide();
-                row1.html(backupEMIItemRow.clone(true).html());
-alert("D2");			
-                
-				break;
-			}
-		}
-		
-		lastRow = $("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent();
-alert("E");			
-
-		lastRow.hide();
-		lastRow.html(backupEMIItemRow.clone(true).html());
-		return false;
-    });
-}
-*/	
 
 
-/*	
-for (i=0; i<=highestItemId; i++) {
-	var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
-	emiItemRemoveLink.bind('click', function() {
-		var itemId = +($(this).attr("id").split(":")[2]);
-		for (j=itemId; j<highestItemId; j++) {
-			var k = +j+1;
-
-			var removeLink1 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + j + ":RemoveLink]");
-			var removeLink2 = $("a[id=itemForm:emiQuestionAnswerCombinations:" + k + ":RemoveLink]");
-
-			var itemText1 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]");
-			var itemText2 = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + k +":]");
-			itemText1.val(itemText2.val());
-			var itemTextId1 = itemText1.attr("id");
-			var itemTextId2 = itemText2.attr("id");
-			var fckEditor1;
-			var fckEditor2;
-			
-			if (typeof FCKeditorAPI !== "undefined" && itemText1 !== null && itemText2 !== null) {
-			    fckEditor1 = FCKeditorAPI.GetInstance(itemTextId1);
-			    fckEditor2 = FCKeditorAPI.GetInstance(itemTextId2);
-			    if (fckEditor1 && fckEditor2) {
-			    	fckEditor1.SetHTML(fckEditor2.GetHTML());
-			    }
-			    else if (fckEditor1) {
-			    	fckEditor1.SetHTML(itemText2.val());
-			    }
-			}
-			var correctOptionLabels1 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]");
-			var correctOptionLabels2 = $("input[id=itemForm:emiQuestionAnswerCombinations:" + k + ":correctOptionLabels]");
-			correctOptionLabels1.val(correctOptionLabels2.val());
-			
-			var requiredAnswersCount1 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + j +":requiredOptionsCount]");
-			var requiredAnswersCount2 = $("select[id=itemForm:emiQuestionAnswerCombinations:" + k +":requiredOptionsCount]");
-			requiredAnswersCount1.val(requiredAnswersCount2.val());
-			//if reached the visible-invisible boundary, hide the last visible row
-			
-			if (removeLink1.is(':visible') && !removeLink2.is(':visible')) {
-				itemText1.val("");
-				if (typeof FCKeditorAPI !== "undefined") {
-					if (fckEditor1) fckEditor1.SetHTML("");
-				}
-                $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]").parent().parent().hide();
-				break;
-			}
-		}
-		
-		var lastItemText = $("input[id^=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":]");
-		lastItemText.val("");
-		var lastCorrectOptionLabels = $("textarea[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":correctOptionLabels]");
-		lastCorrectOptionLabels.val("");
-		var lastRequiredAnswersCount = $("select[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId +":requiredOptionsCount]");
-		lastRequiredAnswersCount.val("0");
-
-		if (typeof FCKeditorAPI !== "undefined" && lastItemText !== null) {
-		    lastFckEditor = FCKeditorAPI.GetInstance(lastItemText.attr("id"));
-		    if (lastFckEditor) lastFckEditor.SetHTML("");
-		}
-		
-		
-		$("table[id=itemForm:emiQuestionAnswerCombinations:" + highestItemId + ":Row]").parent().parent().hide();
-		return false;
-    });
-}
-*/	

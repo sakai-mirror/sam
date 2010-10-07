@@ -1678,8 +1678,10 @@ public class ItemBean
     	ArrayList cleanSortedList = new ArrayList();
     	for (int i=0; i<list.size(); i++) {
     		AnswerBean emiItem = (AnswerBean)list.get(i);
-    		if (emiItem==null || emiItem.getText()==null || emiItem.getText().trim().equals("") 
-    				|| emiItem.getLabel().trim().equals(removeLabel)) continue;
+    		if (emiItem==null || emiItem.getLabel().trim().equals(removeLabel)) continue;
+    		//must have either text or attachment
+    		if ((emiItem.getText()==null || emiItem.getText().trim().equals(""))
+    			&& !emiItem.getHasAttachment()) continue;
     		emiItem.setSequence(Long.valueOf(emiItem.getLabel()));
     		cleanSortedList.add(emiItem);
     	}
