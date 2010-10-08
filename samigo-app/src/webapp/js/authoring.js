@@ -60,7 +60,7 @@
 
 //gopalrc - global vars
 var highestOptionId = +25;
-var highestItemId = +25;
+var highestItemId = +29;
 var maxAvailableItems = +10;
 var additionalOptionsGroupSize = +3;
 var additionalItemsGroupSize = +3;
@@ -254,6 +254,8 @@ $(document).ready(function(){
 			var lastOptionText = $("input[id=itemForm:emiAnswerOptions:" + highestOptionId + ":Text]");
 			lastOptionText.val("");
 			$("table[id=itemForm:emiAnswerOptions:" + highestOptionId + ":Row]").parent().parent().hide();
+			$("a[id=itemForm:addEmiAnswerOptionsLink]").show();
+			setContainerHeight();
 			return false;
 	    });
 	}
@@ -273,10 +275,17 @@ $(document).ready(function(){
 					if (l<=highestOptionId) {
 						$("table[id=itemForm:emiAnswerOptions:" + l + ":Row]").parent().parent().show();
 					}
+					else {
+						$("a[id=itemForm:addEmiAnswerOptionsLink]").hide();
+						break;
+					}
 				}
+				setContainerHeight();
 				return false;
 			}
 		}
+		$("a[id=itemForm:addEmiAnswerOptionsLink]").hide();
+		setContainerHeight();
 		return false;
 	});
 	
@@ -315,6 +324,8 @@ $(document).ready(function(){
 					labelInput.val(seq++);
 				}
 			}
+			$("a[id=itemForm:addEmiQuestionAnswerCombinationsLink]").show();
+			setContainerHeight();
 			return false;
 	    });
 	}
@@ -336,9 +347,14 @@ $(document).ready(function(){
 				if (availableItems>=maxAvailableItems) {
 					//alert("Maximum Number of Items Added");
 					//messageDialog("Maximum Number of Items Added");
+					$("a[id=itemForm:addEmiQuestionAnswerCombinationsLink]").hide();
+					setContainerHeight();
 					return false;
 				}
-				if (++j==additionalItemsGroupSize) return false;
+				if (++j==additionalItemsGroupSize) {
+					setContainerHeight();
+					return false;
+				}
 			}
 			else {
 				availableItems++;
@@ -347,11 +363,14 @@ $(document).ready(function(){
 			if (availableItems>=maxAvailableItems) {
 				//alert("Maximum Number of Items Added");
 				//messageDialog("Maximum Number of Items Added");
+				$("a[id=itemForm:addEmiQuestionAnswerCombinationsLink]").hide();
+				setContainerHeight();
 				return false;
 			}
 		}
 		//alert("Please save accumulated changes before adding additional items.");
 		messageDialog("Please save accumulated changes before adding additional items.");
+		setContainerHeight();
 		return false;
 	});
 	
@@ -432,7 +451,8 @@ $(document).ready(function(){
 	//Vertically Align the Pasted Options Table Container
 	$("textarea[id=itemForm:emiAnswerOptionsPaste]").parent().parent().parent().parent().parent().css('vertical-align','top');
 	$("table[id=itemForm:emiAnswerOptions]").parent().css('vertical-align','top');
-	
+
+	//Make the container visible after all processing
 	$("div[id=portletContent]").css('display','block');
 	
 
@@ -445,6 +465,12 @@ $(document).ready(function(){
 		$messageDialog.html(messageHTML);
 		$messageDialog.dialog('open');
 	}
+	
+	function setContainerHeight() {
+		var containerFrame = $("iframe[class=portletMainIframe]", parent.document.body);
+		containerFrame.height($(document.body).height() + 30);
+	}
+
 
 	
 });

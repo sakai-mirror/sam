@@ -88,6 +88,8 @@ public class ItemBean
   private String answerOptionsRichCount = "0";
   private String answerOptionsSimpleOrRich = ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString();
 
+  public static final int DEFAULT_MAX_NUMBER_EMI_OPTIONS_FOR_UI = 26; 
+  public static final int DEFAULT_MAX_NUMBER_EMI_ITEMS_FOR_UI = 60; //Twice the actual number to allow for javascript add/delete 
   
 
   private int totalMCAsnwers;
@@ -1445,7 +1447,7 @@ public class ItemBean
     	if (emiAnswerOptions==null) {
     		emiAnswerOptions = new ArrayList();
     	}
-    	int defaultlength = 26;
+    	int defaultlength = DEFAULT_MAX_NUMBER_EMI_OPTIONS_FOR_UI;
     	// build or extend the list of items 26 a-z
     	// for efficiency, these will now be shown/hidden using javascript
 		if (emiAnswerOptions.size() < defaultlength) {
@@ -1651,7 +1653,7 @@ public class ItemBean
     	if (emiQuestionAnswerCombinations==null) {
     		emiQuestionAnswerCombinations = new ArrayList();
     	}
-    	int defaultlength = 26;
+    	int defaultlength = DEFAULT_MAX_NUMBER_EMI_ITEMS_FOR_UI;
     	// build or extend the list of items 26 a-z
     	// for efficiency, these will now be shown/hidden using javascript
 		if (emiQuestionAnswerCombinations.size() < defaultlength) {

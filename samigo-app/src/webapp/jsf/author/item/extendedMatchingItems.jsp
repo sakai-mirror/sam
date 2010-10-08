@@ -163,14 +163,14 @@
   </h:panelGroup>
 
   <h:panelGroup rendered="#{!itemauthor.hasAttachment}">
-    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="true">
+    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="false">
        <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
        <h:outputText value="#{authorMessages.add_attachments}"/>
     </h:commandLink>
   </h:panelGroup>
 
   <h:panelGroup rendered="#{itemauthor.hasAttachment}">
-    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="true">
+    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="false">
        <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
        <h:outputText value="#{authorMessages.add_remove_attachments}"/>
     </h:commandLink>
@@ -195,22 +195,22 @@
       <f:selectItem itemLabel="A-H(8)" itemValue="8"/>
       <f:selectItem itemLabel="A-I(9)" itemValue="9"/>
       <f:selectItem itemLabel="A-J(10)" itemValue="10"/>
-      <f:selectItem itemLabel="A-B(11" itemValue="11"/>
-      <f:selectItem itemLabel="A-B(12" itemValue="12"/>
-      <f:selectItem itemLabel="A-B(13" itemValue="13"/>
-      <f:selectItem itemLabel="A-B(14" itemValue="14"/>
-      <f:selectItem itemLabel="A-B(15" itemValue="15"/>
-      <f:selectItem itemLabel="A-B(16" itemValue="16"/>
-      <f:selectItem itemLabel="A-B(17" itemValue="17"/>
-      <f:selectItem itemLabel="A-B(18" itemValue="18"/>
-      <f:selectItem itemLabel="A-B(19" itemValue="19"/>
-      <f:selectItem itemLabel="20" itemValue="20"/>
-      <f:selectItem itemLabel="21" itemValue="21"/>
-      <f:selectItem itemLabel="22" itemValue="22"/>
-      <f:selectItem itemLabel="23" itemValue="23"/>
-      <f:selectItem itemLabel="24" itemValue="24"/>
-      <f:selectItem itemLabel="25" itemValue="25"/>
-      <f:selectItem itemLabel="26" itemValue="26"/>
+      <f:selectItem itemLabel="A-K(11)" itemValue="11"/>
+      <f:selectItem itemLabel="A-L(12)" itemValue="12"/>
+      <f:selectItem itemLabel="A-M(13)" itemValue="13"/>
+      <f:selectItem itemLabel="A-N(14)" itemValue="14"/>
+      <f:selectItem itemLabel="A-O(15)" itemValue="15"/>
+      <f:selectItem itemLabel="A-P(16)" itemValue="16"/>
+      <f:selectItem itemLabel="A-Q(17)" itemValue="17"/>
+      <f:selectItem itemLabel="A-R(18)" itemValue="18"/>
+      <f:selectItem itemLabel="A-S(19)" itemValue="19"/>
+      <f:selectItem itemLabel="A-T(20)" itemValue="20"/>
+      <f:selectItem itemLabel="A-Y(21)" itemValue="21"/>
+      <f:selectItem itemLabel="A-V(22)" itemValue="22"/>
+      <f:selectItem itemLabel="A-W(23)" itemValue="23"/>
+      <f:selectItem itemLabel="A-X(24)" itemValue="24"/>
+      <f:selectItem itemLabel="A-Y(25)" itemValue="25"/>
+      <f:selectItem itemLabel="A-Z(26)" itemValue="26"/>
     </h:selectOneMenu>
   </div>
 
@@ -344,14 +344,14 @@
   </h:panelGroup>
 
   <h:panelGroup rendered="#{!answer.hasAttachment}">
-    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="true">
+    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="false">
        <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
        <h:outputText value="#{authorMessages.add_attachments}"/>
     </h:commandLink>
   </h:panelGroup>
 
   <h:panelGroup rendered="#{answer.hasAttachment}">
-    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="true">
+    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="false">
        <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
        <h:outputText value="#{authorMessages.add_remove_attachments}"/>
     </h:commandLink>
