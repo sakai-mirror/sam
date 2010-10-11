@@ -322,6 +322,8 @@
       <f:validateLength maximum="64000"/>
     </samigo:wysiwyg>
     
+    <h:inputHidden id="hasAttachment" value="#{answer.hasAttachment}" />
+    
     
  <!-- ATTACHMENTS BELOW - ITEMS-->
  <div class="longtext">
@@ -522,7 +524,8 @@
     <h:inputHidden id="correct_option_labels_error" value="#{authorMessages.correct_option_labels_error}" />
     <h:inputHidden id="item_text_not_entered_error" value="#{authorMessages.item_text_not_entered_error}" />
     <h:inputHidden id="correct_option_labels_invalid_error" value="#{authorMessages.correct_option_labels_invalid_error}" />
-
+    <h:inputHidden id="at_least_two_options_required_error" value="#{authorMessages.at_least_two_options_required_error}" />
+    <h:inputHidden id="at_least_two_pasted_options_required_error" value="#{authorMessages.at_least_two_pasted_options_required_error}" />
 
 
 

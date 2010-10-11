@@ -60,8 +60,9 @@
 
 //gopalrc - global vars
 var highestOptionId = +25;
-var highestItemId = +29;
-var maxAvailableItems = +10;
+var highestItemId = +59;
+var maxAvailableItems = +30;
+var minOptions = +2;
 var additionalOptionsGroupSize = +3;
 var additionalItemsGroupSize = +3;
 var removeLabel = "X";
@@ -85,7 +86,8 @@ $(document).ready(function(){
 	var correct_option_labels_error = $("input[id=correct_option_labels_error]").val();
 	var item_text_not_entered_error = $("input[id=item_text_not_entered_error]").val();
 	var correct_option_labels_invalid_error = $("input[id=correct_option_labels_invalid_error]").val();
-	
+	var at_least_two_options_required_error = $("input[id=at_least_two_options_required_error]").val();
+	var at_least_two_pasted_options_required_error = $("input[id=at_least_two_pasted_options_required_error]").val();
 	
 	
 	
@@ -128,6 +130,7 @@ $(document).ready(function(){
 		//var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]").val();
 		var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked").val();
 		var optionLabels = "";
+		var numOptions = +0;
 		
 		if (simpleOrRichAnswerOptions==0) { //simple
 			var pastedOptions = $("textarea[id=itemForm:emiAnswerOptionsPaste]").val();
@@ -135,17 +138,21 @@ $(document).ready(function(){
 				for (j=0; j<highestOptionId; j++) {
 					var optionText = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
 					if (optionText.is(':visible') && (optionText.val()==null || optionText.val().trim()=="") ) {
-						errorMessages[errorNumber++] = simple_text_options_blank_error;
-						break;
+						//errorMessages[errorNumber++] = simple_text_options_blank_error;
+						//break;
 					}
 					else if (optionText.is(':visible')) {
 						var label = ANSWER_OPTION_LABELS.substring(j, j+1);
 						optionLabels+=label;
+						numOptions++;
 					}
 				}
+				if (numOptions < minOptions) {
+					errorMessages[errorNumber++] = at_least_two_options_required_error;
+				}
 			}
-			else if (pastedOptions.split("\n").length < 2) {
-				errorMessages[errorNumber++] = "At least 2 pasted options required";
+			else if (pastedOptions.split("\n").length < minOptions) {
+				errorMessages[errorNumber++] = at_least_two_pasted_options_required_error;
 			}
 		}
 		else { // Rich
@@ -411,7 +418,7 @@ $(document).ready(function(){
 	//hide excess Options at start
 	var firstOptionText = $("input[id=itemForm:emiAnswerOptions:" + 0 + ":Text]");
 	var isAllNull = true;
-	for (i=25; i>=0; i--) {
+	for (i=highestOptionId; i>=0; i--) {
 		var optionText = $("input[id=itemForm:emiAnswerOptions:" + i + ":Text]");
 		if (optionText.val() === "" || optionText.val() === null) {
 			$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().hide();
@@ -431,9 +438,10 @@ $(document).ready(function(){
 	//hide excess Items at start
 	var firstItemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:0]");
 	isAllNull = true;
-	for (i=25; i>=0; i--) {
+	for (i=highestItemId; i>=0; i--) {
 		var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + i +"]");
-		if (itemText.val() === "") {
+		var hasAttachment = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":hasAttachment]");
+		if (itemText.val() === "" && hasAttachment.val()==="false") {
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().hide();
 		}
 		else {

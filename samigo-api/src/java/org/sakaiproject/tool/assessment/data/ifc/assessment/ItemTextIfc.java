@@ -77,6 +77,7 @@ public interface ItemTextIfc
 	public Integer getRequiredOptionsCount();
 	public void setRequiredOptionsCount(Integer requiredOptionsCount);
 	public String getEmiCorrectOptionLabels();
-  
+	public boolean getHasAttachment();
+
   
 }

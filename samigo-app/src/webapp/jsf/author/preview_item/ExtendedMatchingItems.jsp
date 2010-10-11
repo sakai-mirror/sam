@@ -83,7 +83,7 @@ should be included in file importing DeliveryMessages
         </h:column>
 
         <h:column> 
-         <h:panelGroup rendered="#{item.text != null && item.text ne ''}">
+         <h:panelGroup rendered="#{(item.text != null && item.text ne '') || item.hasAttachment}">
           <h:outputText escape="false" value="#{item.sequence}. #{item.text}" />
           
   <!-- ATTACHMENTS BELOW - EMI ITEMTEXT ATTACHMENTS-->

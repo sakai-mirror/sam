@@ -162,6 +162,14 @@ public class ItemText
 		return list;
 	}
   
+	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
+	  public boolean getHasAttachment(){
+	    if (itemTextAttachmentSet != null && itemTextAttachmentSet.size() >0)
+	      return true;
+	    else
+	      return false;    
+	  }
+	
   
 	  //gopalrc - added Aug 2010
 	  //This is an actual EMI Question Item 
