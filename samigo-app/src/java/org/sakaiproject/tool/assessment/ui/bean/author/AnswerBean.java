@@ -282,6 +282,12 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	      return false;    
 	  }
 	  
+ 	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level
+	  public void setHasAttachment(boolean hasAttachment) {
+		  // Do nothing - required by jsf
+		  // gopalrc TODO - see if there is a more elegant solution
+	  }
+	  
 	  //gopalrc
 	  public String getOutcome()
 	  {
