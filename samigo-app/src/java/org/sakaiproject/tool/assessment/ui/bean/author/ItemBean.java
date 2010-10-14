@@ -81,12 +81,14 @@ public class ItemBean
   private String leadInStatement;
   private ArrayList emiQuestionAnswerCombinations;  //ArrayList of AnswerBean - store List of possible options for an EMI question's anwers
   private String additionalEmiQuestionAnswerCombinations = "3";  // additonal options for an EMI question's answers  - Jul 2010 forced to 3, no longer selected from a list
+  private String emiVisibleItems = "0"; //The number of visible EMI items
 
   //gopalrc - 20 July 2010 - EMI
   private String emiAnswerOptionsRich;
   private String emiAnswerOptionsPaste;
   private String answerOptionsRichCount = "0";
   private String answerOptionsSimpleOrRich = ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString();
+  
 
   public static final int DEFAULT_MAX_NUMBER_EMI_OPTIONS_FOR_UI = 26; 
   public static final int DEFAULT_MAX_NUMBER_EMI_ITEMS_FOR_UI = 60; //Twice the actual number to allow for javascript add/delete 
@@ -1521,10 +1523,12 @@ public class ItemBean
     	
     	ArrayList list = new ArrayList();
     	String[] pastedOptions = getEmiAnswerOptionsPaste().split("\n");
+    	int labelCount = 0;
 		for (int i=0; i<pastedOptions.length; i++) {
+			if (pastedOptions[i]==null || pastedOptions[i].trim().equals("")) continue;
 			AnswerBean answerbean = new AnswerBean();
        		answerbean.setSequence( Long.valueOf(i+1));
-       		answerbean.setLabel(AnswerBean.getChoiceLabels()[i]);
+       		answerbean.setLabel(AnswerBean.getChoiceLabels()[labelCount++]);
        		answerbean.setText(pastedOptions[i]);
       		list.add(answerbean);
 		}
@@ -1832,6 +1836,14 @@ public class ItemBean
 	//gopalrc - July 2010
 	public void setAnswerOptionsRichCount(String answerOptionsRichCount) {
 		this.answerOptionsRichCount = answerOptionsRichCount;
+	}
+
+	public void setEmiVisibleItems(String emiVisibleItems) {
+		this.emiVisibleItems = emiVisibleItems;
+	}
+
+	public String getEmiVisibleItems() {
+		return emiVisibleItems;
 	}
 
 }

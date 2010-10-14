@@ -108,6 +108,7 @@ public class ItemAddListener
 
     ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
     ItemBean item = itemauthorbean.getCurrentItem();
+    item.setEmiVisibleItems("0");
     String iText = ContextUtil.stringWYSIWYG(item.getItemText());
     String iInstruction = ContextUtil.stringWYSIWYG(item.getInstruction());
     String iType = item.getItemType();

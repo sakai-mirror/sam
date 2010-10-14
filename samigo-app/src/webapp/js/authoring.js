@@ -65,6 +65,7 @@ var maxAvailableItems = +30;
 var minOptions = +2;
 var additionalOptionsGroupSize = +3;
 var additionalItemsGroupSize = +3;
+var showAtStart = +4;
 var removeLabel = "X";
 var maxErrorsDisplayed = +20;
 var ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -112,12 +113,17 @@ $(document).ready(function(){
 		var errorNumber=+0;
 
 		//Validate Answer Point Value
-		/*
 		var answerPointValue = $("input[name=itemForm:answerptr]").val();
+		/*
 		if (answerPointValue.trim()=="" || +answerPointValue==0) {
 			errorMessages[errorNumber++] = answer_point_value_error;
 		}
 		*/
+		if (answerPointValue.val().trim()=="" || /[^0-9]/g.test(labelInput.val())) {
+			errorMessages[errorNumber++] = answer_point_value_error;
+			itemError = true;
+		}
+
 		
 		//Validate Theme Text
 		var themeText = $("input[name=itemForm:themetext]").val();
@@ -314,6 +320,9 @@ $(document).ready(function(){
 	
 	
 	//************* ITEMS ********************
+	var emiVisibleItems = $("input[id=emiVisibleItems]");
+
+	
 	//Remove Items
 	for (i=0; i<=highestItemId; i++) {
 		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
@@ -323,14 +332,16 @@ $(document).ready(function(){
 			var labelRemove = $("input[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":Label]");
 			labelRemove.val(removeLabel);
 			row.hide();
-			var seq=+1;
+			var seq=+0;
 			//Resequence items
 			for (j=0; j<highestItemId; j++) {
 				var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
 				if (labelInput && labelInput.is(':visible') && labelInput.val() !== removeLabel)  {
-					labelInput.val(seq++);
+					seq++;
+					labelInput.val(seq);
 				}
 			}
+			emiVisibleItems.val(seq);
 			$("a[id=itemForm:addEmiQuestionAnswerCombinationsLink]").show();
 			setContainerHeight();
 			return false;
@@ -349,8 +360,10 @@ $(document).ready(function(){
 			var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Label]");
 			//if reached the visible-invisible boundary, show additional rows
 			if (row && !row.is(':visible') && labelInput.val() !== removeLabel) {
-				$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();
 				availableItems++;
+				labelInput.val(availableItems);
+				emiVisibleItems.val(availableItems);
+				$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();
 				if (availableItems>=maxAvailableItems) {
 					//alert("Maximum Number of Items Added");
 					//messageDialog("Maximum Number of Items Added");
@@ -363,8 +376,10 @@ $(document).ready(function(){
 					return false;
 				}
 			}
-			else {
+			else if (row && row.is(':visible')) {
 				availableItems++;
+				labelInput.val(availableItems);
+				emiVisibleItems.val(availableItems);
 			}
 			
 			if (availableItems>=maxAvailableItems) {
@@ -429,14 +444,14 @@ $(document).ready(function(){
 		}
 	}
 	if (isAllNull) {
-		for (i=0; i<4; i++) {
+		for (i=0; i<showAtStart; i++) {
 			$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().show();
 		}
 	}
 	
 
 	//hide excess Items at start
-	var firstItemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:0]");
+	//var firstItemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:0]");
 	isAllNull = true;
 	for (i=highestItemId; i>=0; i--) {
 		var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + i +"]");
@@ -449,9 +464,20 @@ $(document).ready(function(){
 			break;
 		}
 	}
+	var itemsToShow=+0;
 	if (isAllNull) {
-		for (i=0; i<4; i++) {
+		itemsToShow = showAtStart;
+	}
+	else {
+		itemsToShow = +emiVisibleItems.val();
+	}
+	for (i=0; i<=highestItemId; i++) {
+		var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Label]");
+		if (labelInput.val() != removeLabel) {
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();
+			if (labelInput.val()==itemsToShow) {
+				break;
+			}
 		}
 	}
 

@@ -36,6 +36,8 @@
       <title><h:outputText value="#{authorMessages.item_display_author}"/></title>
       <!-- AUTHORING -->
 	  <link type="text/css" href="/samigo-app/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />	
+	  
+	  
 	  <script type="text/javascript">var emiAuthoring=true</script>
       <samigo:script path="/js/jquery-1.3.2.min.js"/>
       <samigo:script path="/js/jquery-ui-1.7.2.custom.min.js"/>
@@ -86,7 +88,8 @@
 <div class="tier2">
      <div class="shorttext"> <h:outputLabel value="#{authorMessages.answer_point_value}" />
     <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}"required="true" size="6" onchange="toPoint(this.id);">
-	<f:validateDoubleRange /></h:inputText>
+	  <f:validateDoubleRange minimum="0"/>
+	</h:inputText>
 	<h:message for="answerptr" styleClass="validate"/>
 </div>
 <br/>
@@ -95,7 +98,7 @@
 <div id="discountDiv" class="shorttext">
   <h:outputLabel value="#{authorMessages.negative_point_value}"/>
   <h:inputText id="answerdsc" value="#{itemauthor.currentItem.itemDiscount}" required="true"  size="6" onchange="toPoint(this.id);">
-    <f:validateDoubleRange />
+    <f:validateDoubleRange minimum="0"/>
   </h:inputText>
   <h:message for="answerdsc" styleClass="validate"/>
 </div>
@@ -186,31 +189,31 @@
     <h:outputText value="#{authorMessages.answer_options_count}" />
     <h:selectOneMenu  id="answerOptionsRichCount"  value="#{itemauthor.currentItem.answerOptionsRichCount}" >
       <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
-      <f:selectItem itemLabel="A-B(2)" itemValue="2"/>
-      <f:selectItem itemLabel="A-C(3)" itemValue="3"/>
-      <f:selectItem itemLabel="A-D(4)" itemValue="4"/>
-      <f:selectItem itemLabel="A-E(5)" itemValue="5"/>
-      <f:selectItem itemLabel="A-F(6)" itemValue="6"/>
-      <f:selectItem itemLabel="A-G(7)" itemValue="7"/>
-      <f:selectItem itemLabel="A-H(8)" itemValue="8"/>
-      <f:selectItem itemLabel="A-I(9)" itemValue="9"/>
-      <f:selectItem itemLabel="A-J(10)" itemValue="10"/>
-      <f:selectItem itemLabel="A-K(11)" itemValue="11"/>
-      <f:selectItem itemLabel="A-L(12)" itemValue="12"/>
-      <f:selectItem itemLabel="A-M(13)" itemValue="13"/>
-      <f:selectItem itemLabel="A-N(14)" itemValue="14"/>
-      <f:selectItem itemLabel="A-O(15)" itemValue="15"/>
-      <f:selectItem itemLabel="A-P(16)" itemValue="16"/>
-      <f:selectItem itemLabel="A-Q(17)" itemValue="17"/>
-      <f:selectItem itemLabel="A-R(18)" itemValue="18"/>
-      <f:selectItem itemLabel="A-S(19)" itemValue="19"/>
-      <f:selectItem itemLabel="A-T(20)" itemValue="20"/>
-      <f:selectItem itemLabel="A-Y(21)" itemValue="21"/>
-      <f:selectItem itemLabel="A-V(22)" itemValue="22"/>
-      <f:selectItem itemLabel="A-W(23)" itemValue="23"/>
-      <f:selectItem itemLabel="A-X(24)" itemValue="24"/>
-      <f:selectItem itemLabel="A-Y(25)" itemValue="25"/>
-      <f:selectItem itemLabel="A-Z(26)" itemValue="26"/>
+      <f:selectItem itemLabel="A-B (2)" itemValue="2"/>
+      <f:selectItem itemLabel="A-C (3)" itemValue="3"/>
+      <f:selectItem itemLabel="A-D (4)" itemValue="4"/>
+      <f:selectItem itemLabel="A-E (5)" itemValue="5"/>
+      <f:selectItem itemLabel="A-F (6)" itemValue="6"/>
+      <f:selectItem itemLabel="A-G (7)" itemValue="7"/>
+      <f:selectItem itemLabel="A-H (8)" itemValue="8"/>
+      <f:selectItem itemLabel="A-I (9)" itemValue="9"/>
+      <f:selectItem itemLabel="A-J (10)" itemValue="10"/>
+      <f:selectItem itemLabel="A-K (11)" itemValue="11"/>
+      <f:selectItem itemLabel="A-L (12)" itemValue="12"/>
+      <f:selectItem itemLabel="A-M (13)" itemValue="13"/>
+      <f:selectItem itemLabel="A-N (14)" itemValue="14"/>
+      <f:selectItem itemLabel="A-O (15)" itemValue="15"/>
+      <f:selectItem itemLabel="A-P (16)" itemValue="16"/>
+      <f:selectItem itemLabel="A-Q (17)" itemValue="17"/>
+      <f:selectItem itemLabel="A-R (18)" itemValue="18"/>
+      <f:selectItem itemLabel="A-S (19)" itemValue="19"/>
+      <f:selectItem itemLabel="A-T (20)" itemValue="20"/>
+      <f:selectItem itemLabel="A-Y (21)" itemValue="21"/>
+      <f:selectItem itemLabel="A-V (22)" itemValue="22"/>
+      <f:selectItem itemLabel="A-W (23)" itemValue="23"/>
+      <f:selectItem itemLabel="A-X (24)" itemValue="24"/>
+      <f:selectItem itemLabel="A-Y (25)" itemValue="25"/>
+      <f:selectItem itemLabel="A-Z (26)" itemValue="26"/>
     </h:selectOneMenu>
   </div>
 
@@ -508,6 +511,7 @@
 </p>
 </h:form>
 
+    <h:inputHidden id="emiVisibleItems" value="#{itemauthor.currentItem.emiVisibleItems}" />
 	
     <!-- TEXT for JavaScript Processing-->
     <h:inputHidden id="all" value="#{authorMessages.all}" />
