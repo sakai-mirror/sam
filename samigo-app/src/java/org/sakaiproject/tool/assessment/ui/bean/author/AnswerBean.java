@@ -340,18 +340,19 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	    		service = new PublishedItemService();
 	    	}
 	        ItemDataIfc itemData = null;
+	        ItemTextIfc itemText = null;
 		    ItemAuthorBean itemauthorbean = (ItemAuthorBean) ContextUtil.lookupBean("itemauthor");
 	        // itemId == null => new questiion
 	        if (itemauthorbean.getItemId()!=null){
 	          try{
 	            itemData = service.getItem(itemauthorbean.getItemId());
+	            itemText =itemData.getItemTextBySequence(getSequence());
 	          }
 	          catch(Exception e){
 	            log.warn(e.getMessage());
 	          }
 	        }
 
-	        ItemTextIfc itemText=itemData.getItemTextBySequence(getSequence());
 	        
 	    // list returns contains modified list of attachments, i.e. new 
 	    // and old attachments. This list will be 

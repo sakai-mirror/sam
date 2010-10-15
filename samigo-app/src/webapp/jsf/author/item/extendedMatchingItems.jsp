@@ -37,8 +37,8 @@
       <!-- AUTHORING -->
 	  <link type="text/css" href="/samigo-app/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />	
 	  
-	  
 	  <script type="text/javascript">var emiAuthoring=true</script>
+	  
       <samigo:script path="/js/jquery-1.3.2.min.js"/>
       <samigo:script path="/js/jquery-ui-1.7.2.custom.min.js"/>
       <samigo:script path="/js/authoring.js"/>
@@ -508,10 +508,12 @@
            type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
  </h:commandButton>
 
+ <h:inputText id="emiVisibleItems" value="#{itemauthor.currentItem.emiVisibleItems}" />
+
+
 </p>
 </h:form>
 
-    <h:inputHidden id="emiVisibleItems" value="#{itemauthor.currentItem.emiVisibleItems}" />
 	
     <!-- TEXT for JavaScript Processing-->
     <h:inputHidden id="all" value="#{authorMessages.all}" />

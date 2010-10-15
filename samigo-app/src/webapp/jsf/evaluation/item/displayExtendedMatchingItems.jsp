@@ -24,8 +24,6 @@ include file for displaying Extended Matching Items questions
 -->
 
 
-  <h:outputText value="#{question.class.name}"  escape="false"/>
-      <f:verbatim><br/><br/></f:verbatim>
 
   <h:outputText value="#{question.text}"  escape="false"/>
   

@@ -119,7 +119,7 @@ $(document).ready(function(){
 			errorMessages[errorNumber++] = answer_point_value_error;
 		}
 		*/
-		if (answerPointValue.val().trim()=="" || /[^0-9]/g.test(labelInput.val())) {
+		if (answerPointValue.trim()=="" || /[^0-9.]/g.test(answerPointValue)) {
 			errorMessages[errorNumber++] = answer_point_value_error;
 			itemError = true;
 		}
@@ -173,27 +173,28 @@ $(document).ready(function(){
 		
 
 		//Validate Items
-		for (j=0; j<highestItemId; j++) {
+		for (j=0; j<=highestItemId; j++) {
 			var itemError = false;
 			var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
 			var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").val();
+			var hasAttachment = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":hasAttachment]");
 			if (labelInput && labelInput.is(':visible') && labelInput.val() !== removeLabel 
-					&& itemText && itemText.trim()!=="")  {
+					&& ((itemText && itemText.trim()!=="") || hasAttachment.val()==="true") )  {
 				if (labelInput.val().trim()=="" || /[^0-9]/g.test(labelInput.val())) {
 					errorMessages[errorNumber++] = blank_or_non_integer_item_sequence_error + labelInput.val();
 					itemError = true;
 				}
 
-/*				
-				var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").val();
-				if (itemText.trim()=="") {
+				// Blank items are ignored and removed
+				/*
+                if (itemText.trim() === "" && hasAttachment.val()==="false") {
 					errorMessages[errorNumber++] = item_text_not_entered_error + labelInput.val();
 					itemError = true;
 				}
-*/
+				*/
 				
 				var correctOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]").val().toUpperCase();
-				if (correctOptionLabels.trim()=="" || /[^a-z,]/gi.test(correctOptionLabels)) {
+				if (correctOptionLabels.trim()=="" || /[^A-Z,]/gi.test(correctOptionLabels)) {
 					errorMessages[errorNumber++] = correct_option_labels_error + labelInput.val();
 					itemError = true;
 				}
@@ -320,7 +321,7 @@ $(document).ready(function(){
 	
 	
 	//************* ITEMS ********************
-	var emiVisibleItems = $("input[id=emiVisibleItems]");
+	var emiVisibleItems = $("input[id=itemForm:emiVisibleItems]");
 
 	
 	//Remove Items
@@ -334,7 +335,7 @@ $(document).ready(function(){
 			row.hide();
 			var seq=+0;
 			//Resequence items
-			for (j=0; j<highestItemId; j++) {
+			for (j=0; j<=highestItemId; j++) {
 				var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
 				if (labelInput && labelInput.is(':visible') && labelInput.val() !== removeLabel)  {
 					seq++;
@@ -456,22 +457,25 @@ $(document).ready(function(){
 	for (i=highestItemId; i>=0; i--) {
 		var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + i +"]");
 		var hasAttachment = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":hasAttachment]");
-		if (itemText.val() === "" && hasAttachment.val()==="false") {
+		var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Label]");
+		if ((itemText.val() === "" && hasAttachment.val()==="false") || labelInput.val()==removeLabel) {
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().hide();
 		}
 		else {
 			isAllNull = false;
-			break;
+			//break;
 		}
 	}
 	var itemsToShow=+0;
 	if (isAllNull) {
-		itemsToShow = showAtStart;
+		itemsToShow = +showAtStart;
+		emiVisibleItems.val(showAtStart);
 	}
 	else {
 		itemsToShow = +emiVisibleItems.val();
 	}
 	for (i=0; i<=highestItemId; i++) {
+		if (+itemsToShow == +0) break;
 		var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Label]");
 		if (labelInput.val() != removeLabel) {
 			$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();

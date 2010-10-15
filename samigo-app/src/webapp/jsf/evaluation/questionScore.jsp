@@ -70,7 +70,6 @@ document.location='../evaluation/questionScore';
 
 <!-- content... -->
 
-**************** GOPALRC - TEST/TEMP - questionScores.jsp  (includes the displayXXXX.jsp files for different question types) ***************
 
  <div class="portletBody">
 <h:form id="editTotalResults">
