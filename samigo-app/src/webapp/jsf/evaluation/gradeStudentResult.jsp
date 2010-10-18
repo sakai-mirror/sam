@@ -83,8 +83,9 @@ document.location='../evaluation/gradeStudentResult';
 
 </script>
 
-
+<!--   
 **************** GOPALRC - TEST/TEMP - gradeStudentResults.jsp  (includes the deliverXXXX.jsp files for different question types) ***************
+-->
 
 
  <div class="portletBody">

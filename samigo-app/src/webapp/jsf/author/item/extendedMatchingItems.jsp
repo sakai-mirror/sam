@@ -313,9 +313,10 @@
 
  <h:panelGrid id="Row" columns="4">
   <h:panelGroup>
-    <h:outputText id="XX_Label" value="#{answer.label}" rendered="false" />
-    <h:inputText id="Label" value="#{answer.label}" size="1"/>
-    
+    <div>
+    <span id="showItemLabel"></span>
+    <h:inputHidden id="Label" value="#{answer.label}"/>
+    </div>
     <f:verbatim><br/></f:verbatim>
   </h:panelGroup>
   
@@ -508,7 +509,7 @@
            type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
  </h:commandButton>
 
- <h:inputText id="emiVisibleItems" value="#{itemauthor.currentItem.emiVisibleItems}" />
+ <h:inputHidden id="emiVisibleItems" value="#{itemauthor.currentItem.emiVisibleItems}" />
 
 
 </p>

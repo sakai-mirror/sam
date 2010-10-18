@@ -47,6 +47,9 @@ private int numStudents;
   
   //gopalrc - Jan 2010 - for EMI
   private Long subQuestionSequence;
+  private String title;
+
+
 
 
 
@@ -168,6 +171,16 @@ private int numStudents;
  	this.subQuestionSequence = subQuestionSequence;
    }
 
+   //gopalrc - Jan 2010 - for EMI
+   public String getTitle() {
+		return title;
+	}
+
+
+   //gopalrc - Jan 2010 - for EMI
+	public void setTitle(String title) {
+		this.title = title;
+	}
    
    
 }

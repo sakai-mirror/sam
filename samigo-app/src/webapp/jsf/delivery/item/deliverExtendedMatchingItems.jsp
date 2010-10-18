@@ -89,9 +89,29 @@ should be included in file importing DeliveryMessages
    
 
    <h:column>
-      <h:inputText id="responseAnswer" value="#{matching.response}" style="text-transform:uppercase;"
-       disabled="#{delivery.actionString=='reviewAssessment'
+      <h:dataTable value="#{matching.emiResponseAndCorrectStatusList}" var="responseAndCorrectStatus"  styleClass="noBorder"
+       rendered="#{delivery.actionString=='reviewAssessment'
              || delivery.actionString=='gradeAssessment'}"
+      >
+        <h:column rendered="#{delivery.feedback eq 'true' &&
+           delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
+          <h:graphicImage id="image"
+            rendered="#{responseAndCorrectStatus.isCorrect eq 'true'}"
+            alt="#{deliveryMessages.alt_correct}" url="/images/checkmark.gif" >
+          </h:graphicImage>
+          <h:graphicImage id="image2"
+            rendered="#{responseAndCorrectStatus.isCorrect ne 'true'}"
+            width="16" height="16"
+            alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
+          </h:graphicImage>
+        </h:column>
+        <h:column>
+           <h:outputText value="#{responseAndCorrectStatus.answerLabel}" escape="false" />
+        </h:column>
+      </h:dataTable>
+      <h:inputText id="responseAnswer" value="#{matching.response}" style="text-transform:uppercase;"
+       rendered="#{delivery.actionString ne 'reviewAssessment'
+             && delivery.actionString ne 'gradeAssessment'}"
              validator="#{matching.validateEmiResponse}"> 
       </h:inputText>
    </h:column>

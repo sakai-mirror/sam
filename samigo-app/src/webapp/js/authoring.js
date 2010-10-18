@@ -425,6 +425,18 @@ $(document).ready(function(){
 	    });
 		emiCorrectOptionLabelsInput.trigger('change');
 	}
+
+	
+	//Validate Items
+	for (j=0; j<=highestItemId; j++) {
+		var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
+		labelInput.bind('change', function() {
+			$(this).parent().children("span[id=showItemLabel]").html($(this).val());
+		});
+		labelInput.trigger('change');
+	}
+	
+	
 	
 	//trigger startup events
 	var radioSimpleOrRichChecked = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked");

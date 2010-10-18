@@ -175,7 +175,7 @@ public class HistogramListener
         	log.error("SAK-16437 happens!! publishedId = " + publishedId + ", agentId = " + AgentFacade.getAgentString());
         }
         
-    	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
+    	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
         String assessmentName = "";
 
 		  // gopalrc Dec 2007
@@ -338,9 +338,9 @@ public class HistogramListener
 				  }
 				  if (section.getSequence() == null)
 					  section.setSequence(Integer.valueOf(secseq++));
-				  String title = rb.getString("p") + " "
+				  String title = rb.getString("part") + " "
 				  + section.getSequence().toString();
-				  title += ", " + rb.getString("q") + " ";
+				  title += ", " + rb.getString("question") + " ";
 				  ArrayList itemset = section.getItemArraySortedForGrading();
 				  int seq = 1;
 				  Iterator itemsIter = itemset.iterator();
@@ -881,7 +881,22 @@ public class HistogramListener
 			bars[i] = new HistogramBarBean();
 			if (answer != null) {
 				bars[i].setSubQuestionSequence(answer.getItemText().getSequence());
-				bars[i].setLabel(answer.getItemText().getSequence() + ". " + answer.getLabel() + "  " + answer.getText());
+				if (answer.getItem().getIsAnswerOptionsSimple()) {
+					bars[i].setLabel(answer.getItemText().getSequence() + ". " + answer.getLabel() + "  " + answer.getText());
+				}
+				else { //rich text or attachment options
+					bars[i].setLabel(answer.getItemText().getSequence() + ". " + answer.getLabel());
+				}
+
+				if (answer.getLabel().equals("A")) {
+					String title = rb.getString("item") + " " + answer.getItemText().getSequence();
+					String text = answer.getItemText().getText();
+					if (text != null && !text.equals(null)) {
+						title += " : " + text;
+						bars[i].setTitle(title);
+					}
+				}
+				
 				bars[i].setIsCorrect(answer.getIsCorrect());
 			}
 

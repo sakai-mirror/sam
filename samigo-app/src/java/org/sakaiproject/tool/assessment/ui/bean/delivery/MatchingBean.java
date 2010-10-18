@@ -55,6 +55,23 @@ public class MatchingBean
   private AnswerIfc answer;
   private boolean isCorrect;
 
+  public class AnswerLabelWithCorrectStatus {
+	  private boolean isCorrect;
+	  private String answerLabel;
+	  public AnswerLabelWithCorrectStatus(boolean correct, String label) {
+		  isCorrect = correct;
+		  answerLabel = label;
+	  }
+	  public boolean getIsCorrect() {
+		  return isCorrect;
+	  }
+	  public String getAnswerLabel() {
+		  return answerLabel;
+	  }
+  }
+
+  
+  
   public ItemContentsBean getItemContentsBean()
   {
     return parent;
@@ -255,6 +272,19 @@ public class MatchingBean
   }
   
   
+  public ArrayList getEmiResponseAndCorrectStatusList() {
+	  ArrayList responseList = new ArrayList();
+	  String resp = getResponse();
+	  if (resp == null || resp.trim().equals("")) return responseList;
+	  for (int i=0; i<resp.length(); i++) {
+		  String answerLabel = resp.substring(i, i+1);
+		  boolean correct = itemText.getEmiCorrectOptionLabels().contains(answerLabel);
+		  AnswerLabelWithCorrectStatus responseWithStatus = this.new AnswerLabelWithCorrectStatus(correct, answerLabel);
+		  responseList.add(responseWithStatus);
+	  }
+	  return responseList;
+  }
+  
 	//gopalrc - added for EMI - Aug 2010
 	public void validateEmiResponse(FacesContext context, 
           UIComponent toValidate,
@@ -294,6 +324,8 @@ public class MatchingBean
 		}
 	}
 
+	
+	
   
 
 }

@@ -37,8 +37,6 @@ $Id$
 -->
 <!-- content... -->
 
-***************** GOPALRC - TEST/TEMP - histogramScores.jsp *****************<br/>
-    <h:outputText value="#{histogramScores.class.name}"/>
 
  <div class="portletBody">
 <h:form id="histogram">
@@ -218,10 +216,6 @@ $Id$
     <h:column rendered="#{histogramScores.randomType =='false'}">
       <h:panelGroup>
 
-<!-- GOPALRC - TEST/TEMP  -->
- <h:outputText value="#{item.class.name}" escape="false" />
-      
-      
       
         <f:verbatim><h4></f:verbatim>
           <h:outputText value="#{item.title}" escape="false" />
@@ -234,15 +228,19 @@ $Id$
             <h:panelGrid columns="1">
               <h:panelGroup>
 
-<h:graphicImage id="image8" rendered="#{bar.isCorrect}" width="12" height="12"
+        <f:verbatim><h4></f:verbatim>
+          <h:outputText value="#{bar.title}" escape="false" rendered="#{bar.title ne ''}"/>
+        <f:verbatim></h4></f:verbatim>
+
+       <h:graphicImage id="image8" rendered="#{bar.isCorrect}" width="12" height="12"
         alt="#{evaluationMessages.alt_correct}" url="/images/delivery/checkmark.gif" >
        </h:graphicImage>
 
-<h:graphicImage id="image9" rendered="#{!bar.isCorrect}" width="12" height="12"
+       <h:graphicImage id="image9" rendered="#{!bar.isCorrect}" width="12" height="12"
         alt="#{evaluationMessages.alt_incorrect}" url="/images/delivery/spacer.gif" >
        </h:graphicImage>
 
-                <h:graphicImage url="/images/reddot.gif" height="12" width="#{bar.columnHeight}"/>
+       <h:graphicImage url="/images/reddot.gif" height="12" width="#{bar.columnHeight}"/>
                 <h:outputText value=" #{bar.numStudentsText}" />
               </h:panelGroup>
                <h:panelGroup>
