@@ -1090,7 +1090,7 @@ public class ItemAddListener
 			itemText.setText(qaCombo.getText());
 			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
 
-			Integer requiredOptions = Integer.valueOf(qaCombo.getRequiredOptionsCount());
+			int requiredOptions = (Integer.valueOf(qaCombo.getRequiredOptionsCount())).intValue();
 			if (requiredOptions == 0) {
 				requiredOptions = qaCombo.correctOptionsCount();
 			}
@@ -1159,7 +1159,7 @@ public class ItemAddListener
 
 		//now calculate and save the answer scores
 		if (numberOfCorrectAnswersRequired != 0) {
-			correctAnswerScore = Float.valueOf(bean.getItemScore()) / (float)numberOfCorrectAnswersRequired;
+			correctAnswerScore = (Float.valueOf(bean.getItemScore())).floatValue() / (float)numberOfCorrectAnswersRequired;
 		}
 		float answerScore = 0;
 		Iterator textSetIter = textSet.iterator();
@@ -1855,17 +1855,17 @@ public class ItemAddListener
 		// 1. save Theme and Lead-In Text and Answer Options
 		//  
 		// ///////////////////////////////////////////////////////////
-		ItemTextIfc textTheme = new ItemText();
+		ItemTextIfc textTheme = new PublishedItemText();
 		textTheme.setItem(item.getData());
 		textTheme.setSequence(ItemTextIfc.EMI_THEME_TEXT_SEQUENCE);
 		textTheme.setText(bean.getItemText());
 		
-		ItemTextIfc textAnswerOptions = new ItemText();
+		ItemTextIfc textAnswerOptions = new PublishedItemText();
 		textAnswerOptions.setItem(item.getData());
 		textAnswerOptions.setSequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE);
 		textAnswerOptions.setText(bean.getEmiAnswerOptionsRich());
 
-		ItemTextIfc textLeadIn = new ItemText();
+		ItemTextIfc textLeadIn = new PublishedItemText();
 		textLeadIn.setItem(item.getData());
 		textLeadIn.setSequence(ItemTextIfc.EMI_LEAD_IN_TEXT_SEQUENCE);
 		textLeadIn.setText(bean.getLeadInStatement());
@@ -1915,7 +1915,7 @@ public class ItemAddListener
 			itemText.setText(qaCombo.getText());
 			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
 			
-			Integer requiredOptions = Integer.valueOf(qaCombo.getRequiredOptionsCount());
+			int requiredOptions = (Integer.valueOf(qaCombo.getRequiredOptionsCount())).intValue();
 			if (requiredOptions == 0) {
 				requiredOptions = qaCombo.correctOptionsCount();
 			}
@@ -1981,7 +1981,7 @@ public class ItemAddListener
 
 		//now calculate and save the answer scores
 		if (numberOfCorrectAnswersRequired != 0) {
-			correctAnswerScore = Float.valueOf(bean.getItemScore()) / (float)numberOfCorrectAnswersRequired;
+			correctAnswerScore = (Float.valueOf(bean.getItemScore())).floatValue() / (float)numberOfCorrectAnswersRequired;
 		}
 		float answerScore = 0;
 		Iterator textSetIter = textSet.iterator();

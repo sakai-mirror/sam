@@ -178,7 +178,9 @@ $(document).ready(function(){
 			var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
 			var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").val();
 			var hasAttachment = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":hasAttachment]");
-			if (labelInput && labelInput.is(':visible') && labelInput.val() !== removeLabel 
+			var row = $("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]");
+
+			if (row && row.is(':visible') && labelInput.val() !== removeLabel 
 					&& ((itemText && itemText.trim()!=="") || hasAttachment.val()==="true") )  {
 				if (labelInput.val().trim()=="" || /[^0-9]/g.test(labelInput.val())) {
 					errorMessages[errorNumber++] = blank_or_non_integer_item_sequence_error + labelInput.val();
@@ -336,10 +338,12 @@ $(document).ready(function(){
 			var seq=+0;
 			//Resequence items
 			for (j=0; j<=highestItemId; j++) {
+				row = $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]");
 				var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
-				if (labelInput && labelInput.is(':visible') && labelInput.val() !== removeLabel)  {
+				if (row && row.is(':visible') && labelInput.val() !== removeLabel)  {
 					seq++;
 					labelInput.val(seq);
+					labelInput.trigger('change');
 				}
 			}
 			emiVisibleItems.val(seq);
@@ -363,8 +367,9 @@ $(document).ready(function(){
 			if (row && !row.is(':visible') && labelInput.val() !== removeLabel) {
 				availableItems++;
 				labelInput.val(availableItems);
+				labelInput.trigger('change');
 				emiVisibleItems.val(availableItems);
-				$("table[id=itemForm:emiQuestionAnswerCombinations:" + i + ":Row]").parent().parent().show();
+				row.parent().parent().show();
 				if (availableItems>=maxAvailableItems) {
 					//alert("Maximum Number of Items Added");
 					//messageDialog("Maximum Number of Items Added");
@@ -380,6 +385,7 @@ $(document).ready(function(){
 			else if (row && row.is(':visible')) {
 				availableItems++;
 				labelInput.val(availableItems);
+				labelInput.trigger('change');
 				emiVisibleItems.val(availableItems);
 			}
 			

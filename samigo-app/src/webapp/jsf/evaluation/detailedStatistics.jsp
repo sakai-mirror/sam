@@ -37,7 +37,9 @@ $Id: histogramScores.jsp 38982 2007-12-06 13:05:38Z gopal.ramasammycook@gmail.co
 -->
 <!-- content... -->
 
+<!-- 
 ******** GOPAL TEST/TEMP detailedStatistics.jsp *****************
+-->
 
  <div class="portletBody">
 <h:form id="histogram">

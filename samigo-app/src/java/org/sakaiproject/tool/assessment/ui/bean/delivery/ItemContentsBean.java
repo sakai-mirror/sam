@@ -57,6 +57,7 @@ import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.ItemFacade;
+import org.sakaiproject.tool.assessment.facade.TypeFacade;
 import org.sakaiproject.tool.assessment.ui.bean.author.AuthorBean;
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
 import org.sakaiproject.tool.assessment.services.GradingService;
@@ -1144,6 +1145,12 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
   }
 	 
   public void setUpdatedScore(Float score) {
+	  //gopalrc - added conditional processing November 2010
+	  if (itemData.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+		  setUpdatedScoreForEmi(score);
+		  return;
+	  }
+	  
 	  if (!score.equals(itemData.getScore())) {
 		  AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
 		  ItemService itemService = null;
@@ -1176,6 +1183,75 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
           itemData.setScore(score);
 	  }
   }
+  
+  //gopalrc - added November 2010
+  public void setUpdatedScoreForEmi(Float score) {
+	  if (!score.equals(itemData.getScore())) {
+		  AuthorBean author = (AuthorBean) ContextUtil.lookupBean("author");
+		  ItemService itemService = null;
+		  if (author.getIsEditPendingAssessmentFlow()) {
+			  itemService = new ItemService();
+		  }
+		  else {
+			  itemService = new PublishedItemService();
+		  }
+		  
+          ItemFacade item = itemService.getItem(itemData.getItemId(), AgentFacade.getAgentString());
+          item.setScore(score);
+
+   		int numberOfCorrectAnswersRequired = 0;
+		float correctAnswerScore = 0;
+
+          ItemDataIfc data = item.getData();
+          Set itemTextSet = data.getItemTextSet();
+          Iterator iter = itemTextSet.iterator();
+          while (iter.hasNext()) {
+              ItemTextIfc itemText = (ItemTextIfc) iter.next();
+              if (!itemText.isEmiQuestionItemText()) continue;
+              if (itemText.getRequiredOptionsCount() != null && itemText.getRequiredOptionsCount().intValue() > 0) {
+            	  numberOfCorrectAnswersRequired += itemText.getRequiredOptionsCount().intValue();
+              }
+              else {
+                  Set answerSet = itemText.getAnswerSet();
+                  Iterator iter2 = answerSet.iterator();
+                  while (iter2.hasNext()) {
+                      AnswerIfc answer = (AnswerIfc)iter2.next();
+                      log.debug("old value " + answer.getScore() +
+                                         "new value " + score);
+                      if (answer.getIsCorrect()) {
+                    	  numberOfCorrectAnswersRequired++;
+                      }
+                  }
+              }
+          }
+   		  if (numberOfCorrectAnswersRequired != 0) {
+			correctAnswerScore = score.floatValue() / (float)numberOfCorrectAnswersRequired;
+		  }
+   		  
+          iter = itemTextSet.iterator();
+          while (iter.hasNext()) {
+              ItemTextIfc itemText = (ItemTextIfc) iter.next();
+              if (!itemText.isEmiQuestionItemText()) continue;
+              
+              Set answerSet = itemText.getAnswerSet();
+              Iterator iter2 = answerSet.iterator();
+              while (iter2.hasNext()) {
+                  AnswerIfc answer = (AnswerIfc)iter2.next();
+                  log.debug("old value " + answer.getScore() +
+                                     "new value " + score);
+                  if (answer.getIsCorrect()) {
+                	  answer.setScore(correctAnswerScore);
+                  }
+              }
+              EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.revise", "itemId=" + itemData.getItemId(), true));
+          }
+          
+          itemService.saveItem(item);
+          itemData.setScore(score);
+	  }
+  }
+  
+  
 
   public boolean getHasNoMedia() {
 	return getMediaArray().size() < 1;

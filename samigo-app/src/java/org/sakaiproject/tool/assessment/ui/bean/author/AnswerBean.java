@@ -190,7 +190,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
   //gopalrc Jul 2010 - for EMI questions
   public int correctOptionsCount() {
 	  if (correctOptionLabels==null || correctOptionLabels.trim().equals("")) return 0;
-	  return correctOptionLabels.split(",").length;
+	  return correctOptionLabels.length();
   }
 
 	// --mustansar for partial credit

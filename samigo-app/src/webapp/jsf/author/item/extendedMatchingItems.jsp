@@ -313,10 +313,15 @@
 
  <h:panelGrid id="Row" columns="4">
   <h:panelGroup>
-    <div>
-    <span id="showItemLabel"></span>
+    <f:verbatim>
+       <div>
+       <span id="showItemLabel"></span>
+    </f:verbatim>
+    
     <h:inputHidden id="Label" value="#{answer.label}"/>
+    <f:verbatim>
     </div>
+    </f:verbatim>
     <f:verbatim><br/></f:verbatim>
   </h:panelGroup>
   
