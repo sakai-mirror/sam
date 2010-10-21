@@ -794,12 +794,12 @@ public class HistogramListener
 		
 		//Iterate through the student answers (ItemGradingData)
 		iter = scores.iterator();
-		//Create a map that keys all the responses (ItemGradingData) 
+		//Create a map that keys all the responses/answers (ItemGradingData) 
 		//for this question from a specific student (assessment)
 		//by the id of that assessment (AssessmentGradingData)
-		HashMap numStudentRespondedMap = new HashMap();
+		HashMap responsesPerStudentPerQuestionMap = new HashMap();
 		//and do the same for seperate sub-questions
-		HashMap numStudentRespondedPerSubQuestionMap = new HashMap();
+		HashMap responsesPerStudentPerSubQuestionMap = new HashMap();
 		while (iter.hasNext()) {
 			ItemGradingData data = (ItemGradingData) iter.next();
 			//Get the published answer that corresponds to the student's reponse
@@ -828,24 +828,24 @@ public class HistogramListener
 				//Now create a map that keys all the responses (ItemGradingData) 
 				//for this question from a specific student (or assessment)
 				//by the id of that assessment (AssessmentGradingData)
-				ArrayList studentResponseList = (ArrayList) numStudentRespondedMap
+				ArrayList studentResponseList = (ArrayList) responsesPerStudentPerQuestionMap
 						.get(data.getAssessmentGradingId());
 				if (studentResponseList == null) {
 					studentResponseList = new ArrayList();
 				}
 				studentResponseList.add(data);
-				numStudentRespondedMap.put(data.getAssessmentGradingId(),
+				responsesPerStudentPerQuestionMap.put(data.getAssessmentGradingId(),
 						studentResponseList);
 				
 				//Do the same for the sub-questions
 				String key = data.getAssessmentGradingId() + "-" + answer.getItemText().getId();
-				ArrayList studentResponseListForSubQuestion = (ArrayList) numStudentRespondedPerSubQuestionMap
+				ArrayList studentResponseListForSubQuestion = (ArrayList) responsesPerStudentPerSubQuestionMap
 					.get(key);
 				if (studentResponseListForSubQuestion == null) {
 					studentResponseListForSubQuestion = new ArrayList();
 				}
 				studentResponseListForSubQuestion.add(data);
-				numStudentRespondedPerSubQuestionMap.put(key, studentResponseListForSubQuestion);
+				responsesPerStudentPerSubQuestionMap.put(key, studentResponseListForSubQuestion);
 				
 				
 				results.put(answer.getId(), Integer.valueOf(
@@ -919,10 +919,10 @@ public class HistogramListener
 			i++;
 		}// end while
 
-		responses = numStudentRespondedMap.size();
+		responses = responsesPerStudentPerQuestionMap.size();
 		
 		//Determine the number of students with all correct responses for the whole question
-		for (Iterator it = numStudentRespondedMap.entrySet().iterator(); it.hasNext();) {
+		for (Iterator it = responsesPerStudentPerQuestionMap.entrySet().iterator(); it.hasNext();) {
 			Map.Entry entry = (Map.Entry) it.next();
 			ArrayList resultsForOneStudent = (ArrayList) entry.getValue();
 
@@ -1029,10 +1029,10 @@ public class HistogramListener
 		HashMap numStudentsWithAllCorrectPerSubQuestion = new HashMap();
 		HashMap studentsWithAllCorrectPerSubQuestion = new HashMap();
 		HashMap studentsRespondedPerSubQuestion = new HashMap();
-		Iterator studentSubquestionResponseKeyIter = numStudentRespondedPerSubQuestionMap.keySet().iterator();
+		Iterator studentSubquestionResponseKeyIter = responsesPerStudentPerSubQuestionMap.keySet().iterator();
 		while (studentSubquestionResponseKeyIter.hasNext()) {
 			String key = (String)studentSubquestionResponseKeyIter.next();
-			ArrayList studentResponseListForSubQuestion = (ArrayList) numStudentRespondedPerSubQuestionMap
+			ArrayList studentResponseListForSubQuestion = (ArrayList) responsesPerStudentPerSubQuestionMap
 			.get(key);
 			if (studentResponseListForSubQuestion != null && !studentResponseListForSubQuestion.isEmpty()) {
 				ItemGradingData response1 = (ItemGradingData)studentResponseListForSubQuestion.get(0);
@@ -1179,8 +1179,14 @@ public class HistogramListener
 			  HistogramScoresBean histogramScores = (HistogramScoresBean) ContextUtil.lookupBean(
                 "histogramScores");	
 			    
+			  
 			  // below - gopalrc Nov 2007
-			  int numSubmissions = scores.size();
+			  Iterator keys = responsesPerStudentPerSubQuestionMap.keySet().iterator();
+			  int numSubmissions = 0;
+			  while (keys.hasNext()) {
+				  String assessmentAndSubquestionId = (String)keys.next(); 
+				  if (assessmentAndSubquestionId.endsWith("-"+subQuestionId)) numSubmissions++;
+			  }
 			  int percent27 = numSubmissions*27/100; // rounded down
 			  if (percent27 == 0) percent27 = 1; // gopalrc - check this - only relevant for very small samples
 
