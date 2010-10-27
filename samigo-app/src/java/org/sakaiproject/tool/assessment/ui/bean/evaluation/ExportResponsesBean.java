@@ -454,6 +454,4 @@ public class ExportResponsesBean implements Serializable, PhaseAware {
 		return cell;
 	}
 	
-    
-    
 }
