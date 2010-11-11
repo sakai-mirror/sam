@@ -1,3 +1,4 @@
+
 /**********************************************************************************
  * $URL: https://source.sakaiproject.org/svn/sam/tags/sakai_2-4-0/samigo-app/src/java/org/sakaiproject/tool/assessment/ui/listener/author/ReorderPartsListener.java $
  * $Id: ReorderPartsListener.java 16897 2006-10-09 00:28:33Z ktsao@stanford.edu $
@@ -88,6 +89,7 @@ public class ActionSelectListener implements ValueChangeListener {
 			AuthorSettingsListener authorSettingsListener = new AuthorSettingsListener();
 			authorSettingsListener.processAction(null);
 			author.setFromPage("author");
+			author.setFirstFromPage("author");
 		}
 		else if ("publish".equals(newValue)) {
 			AuthorSettingsListener authorSettingsListener = new AuthorSettingsListener();
