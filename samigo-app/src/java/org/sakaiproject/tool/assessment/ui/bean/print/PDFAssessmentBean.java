@@ -67,6 +67,8 @@ public class PDFAssessmentBean implements Serializable {
 
 	private static ResourceBundle authorMessages = ResourceBundle.getBundle("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
 
+	private static ResourceBundle commonMessages = ResourceBundle.getBundle("org.sakaiproject.tool.assessment.bundle.CommonMessages");
+
 	private String intro = "";
 
 	private String title = "";
@@ -410,7 +412,7 @@ public class PDFAssessmentBean implements Serializable {
 			contentBuffer.append("<td colspan='9'>");
 			if (printSetting.getShowKeysFeedback()) {
 				contentBuffer.append("<h6>");
-				contentBuffer.append(printMessages.getString("feedback"));
+				contentBuffer.append(commonMessages.getString("feedback"));
 				contentBuffer.append(": ");
 
 				if (answer.getGeneralAnswerFeedback() != null && !answer.getGeneralAnswerFeedback().equals(""))
@@ -474,7 +476,7 @@ public class PDFAssessmentBean implements Serializable {
 					item.getItemData().getTypeId().equals(TypeIfc.AUDIO_RECORDING) ||
 					item.getItemData().getTypeId().equals(TypeIfc.FILE_UPLOAD)) {
 				contentBuffer.append("<br />");
-				contentBuffer.append(printMessages.getString("feedback"));
+				contentBuffer.append(commonMessages.getString("feedback"));
 				contentBuffer.append(": ");
 
 				if (item.getItemData().getGeneralItemFeedback() != null && !item.getItemData().getGeneralItemFeedback().equals(""))

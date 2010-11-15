@@ -149,7 +149,7 @@ var textuncheckall="<h:outputText value="#{questionPoolMessages.t_uncheckAll}"/>
 </h4>
   <div class="tier2">
 <div class="navIntraToolLink">
-  <h:commandButton id="removeSubmit"   rendered="#{questionpool.importToAuthoring == 'false'}"  action="#{questionpool.doit}" value="#{questionPoolMessages.remove}">
+  <h:commandButton id="removeSubmit"   rendered="#{questionpool.importToAuthoring == 'false'}"  action="#{questionpool.doit}" value="#{commonMessages.remove_action}">
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.questionpool.StartRemoveItemsListener" />
   </h:commandButton>
  
@@ -196,7 +196,7 @@ var textuncheckall="<h:outputText value="#{questionPoolMessages.t_uncheckAll}"/>
   <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.questionpool.ImportQuestionsToAuthoring" />
   </h:commandButton>
 
-  <h:commandButton style="act" value="#{questionPoolMessages.cancel}" action="poolList" immediate="true">
+  <h:commandButton style="act" value="#{commonMessages.cancel_action}" action="poolList" immediate="true">
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.questionpool.QuestionPoolListener" />
   </h:commandButton>
 

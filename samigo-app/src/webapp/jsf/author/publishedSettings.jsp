@@ -639,20 +639,20 @@ function uncheckOther(field){
 
   <!-- *** FEEDBACK *** -->
   <h:panelGroup rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable==true or publishedSettings.valueMap.feedbackType_isInstructorEditable==true or publishedSettings.valueMap.feedbackComponents_isInstructorEditable==true}" >
-  <samigo:hideDivision id="div9" title="#{assessmentSettingsMessages.t_feedback}" >
+  <samigo:hideDivision id="div9" title="#{commonMessages.feedback}" >
  
  <!-- FEEDBACK AUTHORING -->
   <f:verbatim><div class="tier2"></f:verbatim>
    <h:panelGroup rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable==true}">
     <f:verbatim><div class="longtext"></f:verbatim>
-	<h:outputLabel value="#{assessmentSettingsMessages.feedback_authoring}" />
+	<h:outputLabel value="#{commonMessages.feedback_authoring}" />
 	<f:verbatim></div><div class="tier3"></f:verbatim>
     <h:panelGroup>
       <h:panelGrid columns="1"  >
         <h:selectOneRadio id="feedbackAuthoring" 
              value="#{publishedSettings.feedbackAuthoring}"
            layout="pageDirection">
-          <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.questionlevel_feedback}"/>
+          <f:selectItem itemValue="1" itemLabel="#{commonMessages.question_level_feedback}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.sectionlevel_feedback}"/>
           <f:selectItem itemValue="3" itemLabel="#{assessmentSettingsMessages.both_feedback}"/>
         </h:selectOneRadio>
@@ -663,7 +663,7 @@ function uncheckOther(field){
   
 	<h:panelGroup rendered="#{publishedSettings.valueMap.feedbackType_isInstructorEditable==true}">
     <f:verbatim><div class="longtext"></f:verbatim>
-	<h:outputLabel value="#{assessmentSettingsMessages.feedback_delivery}" />
+	<h:outputLabel value="#{commonMessages.feedback_delivery}" />
 	<f:verbatim></div><div class="tier3"></f:verbatim>
     <h:panelGroup>
       <h:panelGrid columns="1" rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable!=true}" >
@@ -671,7 +671,7 @@ function uncheckOther(field){
              value="#{publishedSettings.feedbackDelivery}"
            layout="pageDirection">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.immediate_feedback}"/>
-          <f:selectItem itemValue="4" itemLabel="#{assessmentSettingsMessages.feedback_on_submission}"/>
+          <f:selectItem itemValue="4" itemLabel="#{commonMessages.feedback_on_submission}"/>
           <f:selectItem itemValue="3" itemLabel="#{assessmentSettingsMessages.no_feedback}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.feedback_by_date}"/>
         </h:selectOneRadio>
@@ -688,7 +688,7 @@ function uncheckOther(field){
              value="#{publishedSettings.feedbackDelivery}"
            layout="pageDirection" onclick="setBlockDivs();disableAllFeedbackCheck(this.value);">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.immediate_feedback}"/>
-		  <f:selectItem itemValue="4" itemLabel="#{assessmentSettingsMessages.feedback_on_submission}"/>
+		  <f:selectItem itemValue="4" itemLabel="#{commonMessages.feedback_on_submission}"/>
           <f:selectItem itemValue="3" itemLabel="#{assessmentSettingsMessages.no_feedback}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.feedback_by_date}"/>
         </h:selectOneRadio>
@@ -732,24 +732,24 @@ function uncheckOther(field){
        <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox11"
               value="#{publishedSettings.showStudentResponse}"/>
-          <h:outputText value="#{assessmentSettingsMessages.student_response}" />
+          <h:outputText value="#{commonMessages.student_response}" />
         </h:panelGroup>
        <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox12"
               value="#{publishedSettings.showQuestionLevelFeedback}"/>
-          <h:outputText value="#{assessmentSettingsMessages.question_level_feedback}" />
+          <h:outputText value="#{commonMessages.question_level_feedback}" />
        </h:panelGroup>
 
         <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox13"
               value="#{publishedSettings.showCorrectResponse}"/>
-          <h:outputText value="#{assessmentSettingsMessages.correct_response}" />
+          <h:outputText value="#{commonMessages.correct_response}" />
         </h:panelGroup>
 
        <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox14"
              value="#{publishedSettings.showSelectionLevelFeedback}"/>
-          <h:outputText value="#{assessmentSettingsMessages.selection_level_feedback}" />
+          <h:outputText value="#{commonMessages.selection_level_feedback}" />
         </h:panelGroup>
 
         <h:panelGroup>
@@ -773,7 +773,7 @@ function uncheckOther(field){
         <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox18"
               value="#{publishedSettings.showStatistics}"/>
-          <h:outputText value="#{assessmentSettingsMessages.statistics_and_histogram}" />
+          <h:outputText value="#{commonMessages.statistics_and_histogram}" />
         </h:panelGroup>
    
       </h:panelGrid>
@@ -784,24 +784,24 @@ function uncheckOther(field){
        <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox21" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
               value="#{publishedSettings.showStudentResponse}"/>
-          <h:outputText value="#{assessmentSettingsMessages.student_response}" />
+          <h:outputText value="#{commonMessages.student_response}" />
         </h:panelGroup>
        <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox22" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
               value="#{publishedSettings.showQuestionLevelFeedback}"/>
-          <h:outputText value="#{assessmentSettingsMessages.question_level_feedback}" />
+          <h:outputText value="#{commonMessages.question_level_feedback}" />
        </h:panelGroup>
 
         <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox23" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
               value="#{publishedSettings.showCorrectResponse}"/>
-          <h:outputText value="#{assessmentSettingsMessages.correct_response}" />
+          <h:outputText value="#{commonMessages.correct_response}" />
         </h:panelGroup>
 
        <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox24" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
              value="#{publishedSettings.showSelectionLevelFeedback}"/>
-          <h:outputText value="#{assessmentSettingsMessages.selection_level_feedback}" />
+          <h:outputText value="#{commonMessages.selection_level_feedback}" />
         </h:panelGroup>
 
         <h:panelGroup>
@@ -825,7 +825,7 @@ function uncheckOther(field){
         <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox28" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
               value="#{publishedSettings.showStatistics}"/>
-          <h:outputText value="#{assessmentSettingsMessages.statistics_and_histogram}" />
+          <h:outputText value="#{commonMessages.statistics_and_histogram}" />
         </h:panelGroup>
    
       </h:panelGrid>
@@ -955,11 +955,11 @@ function uncheckOther(field){
   </h:commandButton>
   
   <!-- Cancel button -->
-  <h:commandButton value="#{assessmentSettingsMessages.button_cancel}" type="submit" action="#{author.getFromPage}" rendered="#{author.fromPage != 'editAssessment'}">
+  <h:commandButton value="#{commonMessages.cancel_action}" type="submit" action="#{author.getFromPage}" rendered="#{author.fromPage != 'editAssessment'}">
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ResetPublishedAssessmentAttachmentListener" />
   </h:commandButton>
 
-  <h:commandButton value="#{assessmentSettingsMessages.button_cancel}" type="submit" action="editAssessment" rendered="#{author.fromPage == 'editAssessment'}">
+  <h:commandButton value="#{commonMessages.cancel_action}" type="submit" action="editAssessment" rendered="#{author.fromPage == 'editAssessment'}">
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ResetPublishedAssessmentAttachmentListener" />
 	  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
   </h:commandButton>
