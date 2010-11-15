@@ -101,6 +101,7 @@ public class AuthorBean implements Serializable
   private boolean isGradeable;
   private boolean isEditable;
   
+  private String protocol;
   
   /**
    * @return the id
@@ -726,4 +727,12 @@ public class AuthorBean implements Serializable
     return isErrorInSettings;
   }
   
+  public String getProtocol(){
+	  return protocol;
+  }
+  
+  public void setProtocol(String protocol){
+	  this.protocol = protocol;
+  }
+
 }
