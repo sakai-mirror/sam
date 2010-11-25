@@ -64,7 +64,7 @@ remove the javascript onclick stuff.
 <h:panelGroup rendered="#{delivery.actionString=='previewAssessment'}">
  <f:verbatim><div class="validation"></f:verbatim>
      <h:outputText value="#{deliveryMessages.ass_preview}" />
-     <h:commandButton accesskey="#{deliveryMessages.a_done}" value="#{deliveryMessages.done}" action="#{person.cleanResourceIdListInPreview}" type="submit"/>
+     <h:commandButton value="#{deliveryMessages.done}" action="#{person.cleanResourceIdListInPreview}" type="submit"/>
  <f:verbatim></div></f:verbatim>
 </h:panelGroup>
 
@@ -110,23 +110,10 @@ function saveTime()
 
   <h:panelGroup styleClass="validation">
     <h:panelGrid border="0">
-	  <h:outputText value="#{deliveryMessages.submit_warning_1}" />
-	  <h:panelGroup>
-	    <h:outputText value="#{deliveryMessages.submit_warning_2}" />
-        <h:outputText value=" <b>#{deliveryMessages.button_submit_grading}</b> "  escape="false"/>
-	    <h:outputText value="#{deliveryMessages.submit_warning_3}" />
-	  </h:panelGroup>
-	  <h:panelGroup rendered="#{delivery.navigation ne '1'}">
-	    <h:outputText value="#{deliveryMessages.submit_warning_4}" />
-	    <h:outputText value=" <b>#{deliveryMessages.previous}</b> " escape="false"/>
-	    <h:outputText value="#{deliveryMessages.submit_warning_5}" />
-	  </h:panelGroup>
-
-         <h:panelGroup rendered="#{delivery.navigation eq '1'}">
-            <h:outputText value="#{deliveryMessages.submit_warning_4}" />
-            <h:outputText value=" <b>#{deliveryMessages.button_cancel}</b> " escape="false"/>
-            <h:outputText value="#{deliveryMessages.submit_warning_6}" />
-          </h:panelGroup>
+	  <h:outputText value="#{deliveryMessages.submit_warning_1}" escape="false"/>
+	  <h:outputText value="#{deliveryMessages.submit_warning_2}" escape="false"/>
+	  <h:outputText value="#{deliveryMessages.submit_warning_3_non_linear}" rendered="#{delivery.navigation ne '1'}" escape="false"/>
+	  <h:outputText value="#{deliveryMessages.submit_warning_3_linear}" rendered="#{delivery.navigation eq '1'}" escape="false"/>
 	</h:panelGrid>
   </h:panelGroup>
 
@@ -145,7 +132,7 @@ function saveTime()
 <p class="act">
 
   <%-- SUBMIT FOR GRADE --%>
-  <h:commandButton id="submitforGrade" accesskey="#{deliveryMessages.a_submit}" type="submit" value="#{deliveryMessages.button_submit_grading}"
+  <h:commandButton id="submitForGrade" type="submit" value="#{deliveryMessages.button_submit_grading}"
     action="#{delivery.submitForGrade}" styleClass="active" 
     rendered="#{(delivery.actionString=='takeAssessment' || delivery.actionString=='previewAssessment') 
              && delivery.navigation ne '1' 
@@ -154,7 +141,7 @@ function saveTime()
     onclick="disableSubmitForGrade()" onkeypress="" />
 
   <%-- SUBMIT FOR GRADE FOR LINEAR ACCESS --%>
-  <h:commandButton accesskey="#{deliveryMessages.a_submit}" type="submit" value="#{deliveryMessages.button_submit_grading}"
+  <h:commandButton type="submit" value="#{deliveryMessages.button_submit_grading}"
       action="#{delivery.submitForGrade}"  id="submitForm" styleClass="active"
       rendered="#{(delivery.actionString=='takeAssessment'
 				   || delivery.actionString=='previewAssessment')
@@ -178,7 +165,7 @@ function saveTime()
     onclick="disablePrevious()" onkeypress="" />
 
   <!-- Previous button for linear assessments -->
-  <h:commandButton type="submit" value="#{deliveryMessages.button_cancel}"
+  <h:commandButton type="submit" value="#{commonMessages.cancel_action}"
     action="select" id="cancel"
     rendered="#{(delivery.actionString=='previewAssessment'  
                  || delivery.actionString=='takeAssessment'
@@ -191,7 +178,7 @@ function saveTime()
 <h:panelGroup rendered="#{delivery.actionString=='previewAssessment'}">
  <f:verbatim><div class="validation"></f:verbatim>
      <h:outputText value="#{deliveryMessages.ass_preview}" />
-     <h:commandButton accesskey="#{deliveryMessages.a_done}" value="#{deliveryMessages.done}" action="#{person.cleanResourceIdListInPreview}" type="submit"/>
+     <h:commandButton value="#{deliveryMessages.done}" action="#{person.cleanResourceIdListInPreview}" type="submit"/>
  <f:verbatim></div></f:verbatim>
 </h:panelGroup>
 

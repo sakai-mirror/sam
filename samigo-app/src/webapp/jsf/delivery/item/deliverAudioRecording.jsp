@@ -43,24 +43,14 @@ should be included in file importing DeliveryMessages
 
   <h:panelGrid cellpadding="10" columns="1">
     <h:panelGroup>
-      <h:outputText escape="false" value="
-	    <object classid=\"clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B\"  codebase=\"http://www.apple.com/qtactivex/qtplugin.cab\" width=\"300\" height=\"25\">
-		    <param id=\"mediaSrc#{question.itemData.itemId}\" name=\"src\" value=\"#{delivery.protocol}/samigo-app/servlet/ShowMedia?mediaId=#{question.mediaArray[0].mediaId}\" /> 
-		    <param name=\"controller\" value=\"true\" /> 
-		    <param name=\"autoplay\" value=\"false\" />
-
-		<!--[if !IE]>-->
-
-		<object type=\"audio/basic\"
-			    id=\"object#{question.itemData.itemId}\" 
-		        data=\"#{delivery.protocol}/samigo-app/servlet/ShowMedia?mediaId=#{question.mediaArray[0].mediaId}\" 
-		        width=\"300\" height=\"25\">
-		        <param name=\"autoplay\" value=\"false\" />
-		        <param name=\"controller\" value=\"true\" />
-		        </object>
-		<!--<![endif]-->
-		    </object>
-         " />
+		<h:outputText escape="false" value="
+        	<object>
+        		<param name=\"autostart\" value=\"false\"/>
+        		<param name=\"autoplay\" value=\"false\"/>
+        		<param name=\"controller\" value=\"true\"/>         
+        		<embed src=\"#{delivery.protocol}/samigo-app/servlet/ShowMedia?mediaId=#{question.mediaArray[0].mediaId}\" volume=\"50\" height=\"25\" width=\"300\" autostart=\"false\" autoplay=\"false\" controller=\"true\" type=\"audio/basic\"/>
+        	</object>" 
+        />
 
       <f:verbatim><br /></f:verbatim>
       <h:outputText value="#{deliveryMessages.open_bracket}"/>
@@ -73,9 +63,9 @@ should be included in file importing DeliveryMessages
       <f:verbatim></span></f:verbatim>
       <h:outputText value="#{deliveryMessages.close_bracket}"/>
       <f:verbatim><br /></f:verbatim>
-      <h:outputText value="#{deliveryMessages.can_you_hear_1}"  escape="false"/>
-      <f:verbatim><a id="</f:verbatim><h:outputText value="link#{question.itemData.itemId}" /><f:verbatim>" href="</f:verbatim><h:outputText value="#{delivery.protocol}/samigo-app/servlet/ShowMedia?mediaId=#{question.mediaArray[0].mediaId}&setMimeType=false" /><f:verbatim>" ></f:verbatim><h:outputText value=" #{deliveryMessages.can_you_hear_2} " escape="false" /><f:verbatim></a></f:verbatim>
-      <h:outputText value="#{deliveryMessages.can_you_hear_3}"  escape="false"/>
+      <h:outputFormat value=" #{deliveryMessages.can_you_hear}" escape="false">
+		<f:param value="<a href=\"#{delivery.protocol}/samigo-app/servlet/ShowMedia?mediaId=#{question.mediaArray[0].mediaId}&setMimeType=false\"/> #{deliveryMessages.can_you_hear_2}</a>" />
+      </h:outputFormat>
     </h:panelGroup>
   </h:panelGrid>
 <f:verbatim></div></f:verbatim>
@@ -104,7 +94,7 @@ should be included in file importing DeliveryMessages
   <h:panelGroup rendered="#{delivery.feedbackComponent.showItemLevel && question.feedbackIsNotEmpty}">
     <f:verbatim><br /></f:verbatim>
     <f:verbatim><b></f:verbatim>
-    <h:outputLabel for="feedSC" value="#{deliveryMessages.feedback}#{deliveryMessages.column} " />
+    <h:outputLabel for="feedSC" value="#{commonMessages.feedback}#{deliveryMessages.column} " />
     <f:verbatim></b></f:verbatim>
     <h:outputText id="feedSC" value="#{question.feedback}" escape="false"/>
   </h:panelGroup>

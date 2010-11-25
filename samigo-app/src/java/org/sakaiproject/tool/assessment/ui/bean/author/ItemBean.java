@@ -1507,6 +1507,7 @@ public class ItemBean
 	    
 		if (Boolean.parseBoolean(switchEvent)) {
 			setPartialCreditFlag("true");
+			this.resetPartialCreditValues();
 		}
 		else if ("False".equalsIgnoreCase(switchEvent)) {
 			setPartialCreditFlag("false");
@@ -1718,8 +1719,11 @@ public class ItemBean
 		// checking whether the answer is correct simply leads to NPE.
 		while (iter.hasNext()) {
 			AnswerBean answerBean = (AnswerBean) iter.next();
-			if (answerBean.getPartialCredit().floatValue() < 100.00) {
-				answerBean.setPartialCredit(0f);
+			if (Integer.parseInt(answerBean.getPartialCredit()) < 100) {
+				answerBean.setPartialCredit("0");
+			}
+			else {
+				answerBean.setPartialCredit("100");
 			}
 		}
 		this.setMultipleChoiceAnswers(answersList);
@@ -1735,7 +1739,7 @@ public class ItemBean
 		// simply leads to NPE.
 		while (iter.hasNext()) {
 			AnswerBean answerBean = (AnswerBean) iter.next();
-			answerBean.setPartialCredit(0f);
+			answerBean.setPartialCredit("0");
 		}
 		this.setMultipleChoiceAnswers(answersList);
 		return null;

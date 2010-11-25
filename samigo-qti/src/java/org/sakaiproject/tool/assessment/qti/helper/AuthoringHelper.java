@@ -474,7 +474,7 @@ public class AuthoringHelper
   
   public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, boolean isRespondus, ArrayList failedMatchingQuestions)
   {
-    return createImportedAssessment(document, unzipLocation, null, isRespondus, failedMatchingQuestions);
+    return createImportedAssessment(document, unzipLocation, null, isRespondus, failedMatchingQuestions, null);
   }
 
 	  /**
@@ -482,17 +482,12 @@ public class AuthoringHelper
 	   * @param document the assessment XML document in QTI format
 	   * @return a persisted assessment
 	   */
-  public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, String templateId)
+  public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, String templateId, String siteId)
   {
-	  return createImportedAssessment(document, unzipLocation, templateId, false);
+	  return createImportedAssessment(document, unzipLocation, templateId, false, null, siteId);
   }
-  
-  public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, String templateId, boolean isRespondus)
-  {
-	  return createImportedAssessment(document, unzipLocation, templateId, isRespondus, null);
-  }
-  
-  public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, String templateId, boolean isRespondus, ArrayList failedMatchingQuestions)
+
+  public AssessmentFacade createImportedAssessment(Document document, String unzipLocation, String templateId, boolean isRespondus, ArrayList failedMatchingQuestions, String siteId)
   {
 	AssessmentFacade assessment = null;
 
@@ -506,12 +501,15 @@ public class AuthoringHelper
       ExtractionHelper exHelper = new ExtractionHelper(this.qtiVersion);
       exHelper.setUnzipLocation(unzipLocation);
       ItemService itemService = new ItemService();
-      Assessment assessmentXml = new Assessment(document);
+      // we need to remove a default namespace if present
+      Document removeNamespace = exHelper.getTransformDocument(exHelper.REMOVE_NAMESPACE_TRANSFORM);
+      Document flatNamespaceXml = XmlUtil.transformDocument(document, removeNamespace);
+      Assessment assessmentXml = new Assessment(flatNamespaceXml);
       Map assessmentMap = exHelper.mapAssessment(assessmentXml, isRespondus);
       String description = (String) assessmentMap.get("description");
       String title = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, (String) assessmentMap.get("title"));
       assessment = assessmentService.createAssessmentWithoutDefaultSection(
-        title, exHelper.makeFCKAttachment(description), null, templateId);
+        title, exHelper.makeFCKAttachment(description), null, templateId, siteId);
 
       // now make sure we have a unique name for the assessment
       String baseId = assessment.getAssessmentBaseId().toString();

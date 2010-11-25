@@ -45,25 +45,25 @@
 <%@ include file="/jsf/author/item/itemHeadings.jsp" %>
 <h:form id="itemForm" onsubmit="return editorCheck();">
 <p class="act">
-  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getOutcome}" styleClass="active">
+  <h:commandButton rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getOutcome}" styleClass="active">
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
   </h:commandButton>
 
-  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getPoolOutcome}"  styleClass="active">
+  <h:commandButton rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getPoolOutcome}"  styleClass="active">
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
   </h:commandButton>
 
 
-  <h:commandButton accesskey="#{authorMessages.a_cancel}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_cancel}" action="editAssessment" immediate="true">
+  <h:commandButton rendered="#{itemauthor.target=='assessment'}" value="#{commonMessages.cancel_action}" action="editAssessment" immediate="true">
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
   </h:commandButton>
 
- <h:commandButton rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_cancel}" action="editPool" immediate="true">
+ <h:commandButton rendered="#{itemauthor.target=='questionpool'}" value="#{commonMessages.cancel_action}" action="editPool" immediate="true">
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
  </h:commandButton>
@@ -90,6 +90,9 @@
 <!-- 1 ANSWER -->
 <div class="longtext">
   <h:outputLabel value="#{authorMessages.answer} " />  
+    <h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('/samigo-app/jsf/author/mcWhatsThis.faces','MCWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('/samigo-app/jsf/author/mcWhatsThis.faces','MCWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" >
+    <h:outputText  value=" (#{assessmentSettingsMessages.whats_this_link})"/>
+  </h:outputLink>
 </div>
 <!-- need to add a listener, for the radio button below,to toggle between single and multiple correct-->
 <div  id= class="tier2">
@@ -98,9 +101,9 @@
                     onkeypress="this.form.onsubmit();this.form.submit();"
                     value="#{itemauthor.currentItem.itemType}"
 	                valueChangeListener="#{itemauthor.currentItem.toggleChoiceTypes}" >
-    <f:selectItem itemValue="1" itemLabel="#{authorMessages.single}" />  
-    <f:selectItem itemValue="12" itemLabel="#{authorMessages.multipl_mc_ss}" />
-    <f:selectItem itemValue="2"   itemLabel="#{authorMessages.multipl_mc_ms}" />
+    <f:selectItem itemValue="1" itemLabel="#{commonMessages.multiple_choice_sin}" />  
+    <f:selectItem itemValue="12" itemLabel="#{commonMessages.multipl_mc_ss}" />
+    <f:selectItem itemValue="2"   itemLabel="#{commonMessages.multipl_mc_ms}" />
   </h:selectOneRadio>
 </div>
 <!-- partial credit vs negative marking -->
@@ -119,7 +122,7 @@
   <h:panelGroup>
 	<h:outputText value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" escape="false" />
     <h:commandLink  title="#{authorMessages.reset_grading_logic}"
-					id="resetlink"
+					id="resetlink" 
 					rendered="#{itemauthor.currentItem.itemType == 1}"
 					onkeypress="this.form.onsubmit();this.form.submit();"
 					action="#{itemauthor.currentItem.resetToDefaultGradingLogic}">
@@ -187,7 +190,7 @@
         </h:selectManyCheckbox>
 
 <h:commandLink title="#{authorMessages.t_removeC}" id="removelink" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeChoices}" rendered="#{itemauthor.currentItem.multipleCorrect}">
-  <h:outputText id="text" value="#{authorMessages.button_remove}"/>
+  <h:outputText id="text" value="#{commonMessages.remove_action}"/>
   <f:param name="answerid" value="#{answer.label}"/>
 </h:commandLink>		 
 
@@ -201,7 +204,7 @@
 </h:selectOneRadio>
 
 <h:commandLink title="#{authorMessages.t_removeC}" id="removelinkSingle" onfocus="document.forms[1].onsubmit();" action="#{itemauthor.currentItem.removeChoicesSingle}" rendered="#{!itemauthor.currentItem.multipleCorrect}">
-  <h:outputText id="textSingle" value="#{authorMessages.button_remove}"/>
+  <h:outputText id="textSingle" value="#{commonMessages.remove_action}"/>
   <f:param name="answeridSingle" value="#{answer.label}"/>
 </h:commandLink>
  </h:panelGroup>
@@ -213,7 +216,7 @@
    </samigo:wysiwyg>
  </h:panelGrid>
 			
-         <h:outputText value="#{authorMessages.feedback_optional}" rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}" />
+         <h:outputText value="#{commonMessages.feedback_optional}" rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}" />
 
         <!-- WYSIWYG -->
   <h:panelGrid rendered="#{itemauthor.target == 'questionpool' || (itemauthor.target != 'questionpool' && (author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1') || (!author.isEditPendingAssessmentFlow && publishedSettings.feedbackAuthoring ne '1'))}">
@@ -237,9 +240,8 @@
 	<f:verbatim ><br/><br/></f:verbatim>
 	
 	<!-- Begin changes made for Partial Credit --> 
-	<h:outputText value="#{authorMessages.percentange_vaue}" />
-	    <h:inputText id="partialCredit" size="2" value="#{answer.partialCredit}" onchange="toPoint(this.id);">
-	    <f:validateDoubleRange  minimum="0.00" maximum="100.00"/> </h:inputText>
+	<h:outputText value="#{authorMessages.percentage_value}" />
+	    <h:inputText id="partialCredit" size="2" value="#{answer.partialCredit}" validator="#{answer.validatePartialCredit}"/>
 	    <h:outputText id="partialCreditReminder" value="#{authorMessages.enter_new_pc_value}" style="visibility:hidden;" />
 	    <h:message for="partialCredit" styleClass="validate"/>
 	<!-- end of partial credit -->
@@ -361,25 +363,25 @@
 </div>
 
 <p class="act">
-  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getOutcome}" styleClass="active">
+  <h:commandButton rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getOutcome}" styleClass="active">
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
   </h:commandButton>
 
-  <h:commandButton accesskey="#{authorMessages.a_save}" rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getPoolOutcome}"  styleClass="active">
+  <h:commandButton rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getPoolOutcome}"  styleClass="active">
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.ItemAddListener" />
   </h:commandButton>
 
 
-  <h:commandButton accesskey="#{authorMessages.a_cancel}" rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_cancel}" action="editAssessment" immediate="true">
+  <h:commandButton rendered="#{itemauthor.target=='assessment'}" value="#{commonMessages.cancel_action}" action="editAssessment" immediate="true">
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
   </h:commandButton>
 
- <h:commandButton rendered="#{itemauthor.target=='questionpool'}" value="#{authorMessages.button_cancel}" action="editPool" immediate="true">
+ <h:commandButton rendered="#{itemauthor.target=='questionpool'}" value="#{commonMessages.cancel_action}" action="editPool" immediate="true">
         <f:actionListener
            type="org.sakaiproject.tool.assessment.ui.listener.author.ResetItemAttachmentListener" />
  </h:commandButton>

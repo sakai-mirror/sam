@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -70,6 +71,7 @@ import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentS
 import org.sakaiproject.tool.assessment.ui.bean.shared.PersonBean;
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
 import org.sakaiproject.tool.assessment.ui.listener.delivery.DeliveryActionListener;
+import org.sakaiproject.tool.assessment.ui.listener.delivery.LinearAccessDeliveryActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.delivery.SubmitToGradingActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
@@ -158,6 +160,7 @@ public class DeliveryBean
   private String instructorName;
   private ContentsDeliveryBean pageContents;
   private int submissionsRemaining;
+  private int totalSubmissions;  
   private boolean forGrade;
   private String password;
   private int numberRetake;
@@ -184,6 +187,7 @@ public class DeliveryBean
   private String showScore;
   private boolean hasTimeLimit;
   private boolean isMoreThanOneQuestion;
+  private Integer scoringType;
   
   // daisyf added for servlet Login.java, to support anonymous login with
   // publishedUrl
@@ -217,10 +221,15 @@ public class DeliveryBean
   private AgentFacade deliveryAgent;
 
   private String display_dateFormat= ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","output_date_no_sec");
-  //private String display_dateFormat= "yyyy-MMM-dd hh:mm aaa";
-
   private SimpleDateFormat displayFormat = new SimpleDateFormat(display_dateFormat);
-
+  private static String[] strDays = new String[] { 
+	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","sunday"),
+	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","monday"),
+	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","tuesday"),
+	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","wednesday"),
+	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","thusday"),
+	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","friday"),
+	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","saturday")};
   private boolean noQuestions = false;
 
   // this assessmentGradingId is used to generate seed in getSeed(...) of DeliveryActaionListener.java
@@ -962,6 +971,20 @@ public class DeliveryBean
     }
     return dateString;
   }
+  
+  public String getDueDateDayOfWeek()
+  {
+    String dayOfWeek = "";
+    if (dueDate == null) {
+      return dayOfWeek;
+    }
+    
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(dueDate);
+    dayOfWeek = strDays[cal.get(Calendar.DAY_OF_WEEK) - 1];
+    
+    return dayOfWeek;
+  }
 
   public void setDueDate(java.util.Date dueDate)
   {
@@ -1260,6 +1283,16 @@ public class DeliveryBean
   {
     this.submissionsRemaining = submissionsRemaining;
   }
+  
+  public int getTotalSubmissions()
+  {
+    return totalSubmissions;
+  }
+
+  public void setTotalSubmissions(int totalSubmissions)
+  {
+    this.totalSubmissions = totalSubmissions;
+  }
 
   public String getInstructorName()
   {
@@ -1281,54 +1314,77 @@ public class DeliveryBean
     forGrade = newfor;
   }
 
+  public String submitForGradeFromTimer()
+  {
+	    return submitForGrade(true);
+  }
+  
   public String submitForGrade()
   {
-	if (this.actionMode == PREVIEW_ASSESSMENT) {
-	  return "editAssessment";
-	}	  
-    String nextAction = checkBeforeProceed(true);
-    log.debug("***** next Action="+nextAction);
-    if (!("safeToProceed").equals(nextAction)){
-      return nextAction;
-    }
-
-    setForGrade(true);
-    SessionUtil.setSessionTimeout(FacesContext.getCurrentInstance(), this, false);
-    
-    SubmitToGradingActionListener listener = new SubmitToGradingActionListener();
-    // submission remaining and totalSubmissionPerAssessmentHash is updated inside 
-    // SubmitToGradingListener
-    listener.processAction(null);
-    
-    // We don't need to call completeItemGradingData to create new ItemGradingData for linear access
-    // because each ItemGradingData is created when it is viewed/answered 
-    if (!"1".equals(navigation)) {
-    	GradingService gradingService = new GradingService();
-    	gradingService.completeItemGradingData(adata);
-    }
-    
-    syncTimeElapsedWithServer();
-
-    String returnValue="submitAssessment";
-    if (this.actionMode == TAKE_ASSESSMENT_VIA_URL) // this is for accessing via published url
-    {
-      returnValue="anonymousThankYou";
-      PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
-      String siteId = publishedAssessmentService.getPublishedAssessmentOwner(adata.getPublishedAssessmentId());
-      EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.submit.via_url", "submissionId=" + adata.getAssessmentGradingId(), siteId, true, NotificationService.NOTI_REQUIRED));      
-    }
-    else {
-        EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.submit", "submissionId=" + adata.getAssessmentGradingId(), true));
-    }
-    forGrade = false;
-    SelectActionListener l2 = new SelectActionListener();
-    l2.processAction(null);
-    reload = true;
-
-    // finish within time limit, clean timedAssessment from queue
-    removeTimedAssessmentFromQueue();
-    return returnValue;
+    return submitForGrade(false);
   }
+  
+  private String submitForGrade(boolean isFromTimer) {
+	  if (this.actionMode == PREVIEW_ASSESSMENT) {
+		  return "editAssessment";
+	  }	  
+	  String nextAction = checkBeforeProceed(true);
+	  log.debug("***** next Action="+nextAction);
+	  if (!("safeToProceed").equals(nextAction)){
+		  return nextAction;
+	  }
+
+	  setForGrade(true);
+	  SessionUtil.setSessionTimeout(FacesContext.getCurrentInstance(), this, false);
+
+	  SubmitToGradingActionListener listener = new SubmitToGradingActionListener();
+	  // submission remaining and totalSubmissionPerAssessmentHash is updated inside 
+	  // SubmitToGradingListener
+	  listener.processAction(null);
+
+	  // We don't need to call completeItemGradingData to create new ItemGradingData for linear access
+	  // because each ItemGradingData is created when it is viewed/answered 
+	  if (!"1".equals(navigation)) {
+		  GradingService gradingService = new GradingService();
+		  gradingService.completeItemGradingData(adata);
+	  }
+
+	  syncTimeElapsedWithServer();
+	  String returnValue="submitAssessment";
+	  if (!isFromTimer) {
+		  if (this.actionMode == TAKE_ASSESSMENT_VIA_URL) // this is for accessing via published url
+		  {
+			  returnValue="anonymousThankYou";
+			  PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+			  String siteId = publishedAssessmentService.getPublishedAssessmentOwner(adata.getPublishedAssessmentId());
+			  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.submit.via_url", "submissionId=" + adata.getAssessmentGradingId(), siteId, true, NotificationService.NOTI_REQUIRED));      
+		  }
+		  else {
+			  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.submit", "submissionId=" + adata.getAssessmentGradingId(), true));
+		  }
+	  }
+	  else {
+		  if (this.actionMode == TAKE_ASSESSMENT_VIA_URL) // this is for accessing via published url
+		  {
+			  returnValue="anonymousThankYou";
+			  PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+			  String siteId = publishedAssessmentService.getPublishedAssessmentOwner(adata.getPublishedAssessmentId());
+			  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.timer_submit.url", "submissionId=" + adata.getAssessmentGradingId(), siteId, true, NotificationService.NOTI_REQUIRED));      
+		  }
+		  else {
+			  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.timer_submit", "submissionId=" + adata.getAssessmentGradingId(), true));
+		  }
+	  }
+	  forGrade = false;
+	  SelectActionListener l2 = new SelectActionListener();
+	  l2.processAction(null);
+	  reload = true;
+
+	  // finish within time limit, clean timedAssessment from queue
+	  removeTimedAssessmentFromQueue();
+	  return returnValue;
+  }
+  
 
   public String confirmSubmit()
   {
@@ -1450,6 +1506,10 @@ public class DeliveryBean
     DeliveryActionListener l2 = new DeliveryActionListener();
     l2.processAction(null);
 
+    if ("1".equals(navigation) && this.actionMode != PREVIEW_ASSESSMENT) {
+    	LinearAccessDeliveryActionListener linearAccessDeliveryActionListener = new LinearAccessDeliveryActionListener();
+    	linearAccessDeliveryActionListener.saveLastVisitedPosition(this, partIndex, questionIndex);
+    }
     reload = false;
     return "takeAssessment";
   }
@@ -1995,7 +2055,14 @@ public class DeliveryBean
     gradingService.saveItemGrading(itemGradingData);
     // 3. if saveToDB, remove file from file system
     try{
-      if (SAVETODB) media.delete();
+      	if (SAVETODB) {
+		boolean success = media.delete();
+    		if (!success){
+      		log.warn("Error: media.delete() failed for mediaId =" + mediaId);
+		}
+  	}
+
+
     }
     catch(Exception e){
       log.warn(e.getMessage());
@@ -3102,6 +3169,63 @@ public class DeliveryBean
 	      String studentRichText = ServerConfigurationService.getString("samigo.studentRichText", "true");
 		  return Boolean.parseBoolean(studentRichText);
 	  } 
+
+	  public void setDisplayFormat()
+	  {
+		  display_dateFormat= ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","output_date_no_sec");
+		  displayFormat = new SimpleDateFormat(display_dateFormat);
+	  }
+
+	  public Integer getScoringType()
+	  {
+	      return scoringType;
+	  }
+
+	  public void setScoringType(Integer scoringType)
+	  {
+	    this.scoringType = scoringType;
+	  }
+
+	  public String getSelectHrfURL(){
+		  String toolId = null;	  
+		  StringBuilder url = new StringBuilder(ServerConfigurationService.getString("portalPath"));
+		  PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+		  String currentSiteId = publishedAssessmentService.getPublishedAssessmentSiteId(getAssessmentId()); 
+		  toolId = getCurrentToolId(currentSiteId);
+		  url.append("/tool/");
+		  url.append(toolId);
+		  url.append("/jsf/index/mainIndex");
+		  return url.toString();
+	  }  
+
+	  private String getCurrentToolId(String id) {
+		  Site currentSite = getCurrentSite(id);
+		  if (currentSite == null) {
+			  return "";
+		  }
+		  SitePage page = null;
+		  String toolId = null;
+		  String toolUrlId = null;
+		  try {
+			  List pageList = currentSite.getPages();
+			  for (int i = 0; i < pageList.size(); i++) {
+				  page = (SitePage) pageList.get(i);
+				  List pageToolList = page.getTools();		
+				  if (pageToolList.get(0)==null && ((ToolConfiguration) pageToolList.get(0)).getTool()==null) {
+					  continue;
+				  }
+				  toolId = ((ToolConfiguration) pageToolList.get(0)).getToolId();
+				  toolUrlId = ((ToolConfiguration) pageToolList.get(0)).getId();
+				  if (toolId.equalsIgnoreCase("sakai.samigo")) {		
+					  return toolUrlId;
+				  }
+			  }
+		  } catch (Exception e) {
+			  log.warn(e.getMessage());
+		  }
+		  return "";
+	  }
+
 
 }
 

@@ -65,6 +65,7 @@ import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacadeQueries;
 import org.sakaiproject.tool.assessment.integration.context.IntegrationContextFactory;
 import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceHelper;
 import org.sakaiproject.tool.assessment.services.GradingService;
+import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentBean;
@@ -209,6 +210,31 @@ implements ActionListener
 			context.addMessage(null,new FacesMessage(retractDateErr));
 			error=true;
 		}
+		
+		Date startDate = assessmentSettings.getStartDate();
+	    Date dueDate = assessmentSettings.getDueDate();
+	    Date retractDate = assessmentSettings.getRetractDate();
+	    boolean isRetractEarlierThanAvaliable = false;
+	    if ((dueDate != null && startDate != null && dueDate.before(startDate)) ||
+	    	(dueDate != null && startDate == null && dueDate.before(new Date()))) {
+	    	String dateError1 = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages","due_earlier_than_avaliable");
+	    	context.addMessage(null,new FacesMessage(FacesMessage.SEVERITY_WARN, dateError1, null));
+	    	error=true;
+	    	assessmentSettings.setStartDate(new Date());
+	    }
+	    if ((retractDate != null && startDate != null && retractDate.before(startDate)) ||
+	    	(retractDate != null && startDate == null && retractDate.before(new Date()))) {
+	    	String dateError2 = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages","retract_earlier_than_avaliable");
+	    	context.addMessage(null,new FacesMessage(FacesMessage.SEVERITY_WARN, dateError2, null));
+	    	error=true;
+	    	isRetractEarlierThanAvaliable = true;
+	    	assessmentSettings.setStartDate(new Date());
+	    }
+	    if (!isRetractEarlierThanAvaliable && (retractDate != null && dueDate != null && retractDate.before(dueDate))) {
+	    	String dateError3 = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages","retract_earlier_than_due");
+	    	context.addMessage(null,new FacesMessage(FacesMessage.SEVERITY_WARN, dateError3, null));
+	    	error=true;
+	    }
 
 		// if timed assessment, does it has value for time
 		Object time = assessmentSettings.getValueMap().get("hasTimeAssessment");
@@ -321,7 +347,7 @@ implements ActionListener
 			if ("1".equals(nav)) {
 				assessmentSettings.setAssessmentFormat("1");
 			}
-			control.setItemNavigation(new Integer(nav));
+			control.setItemNavigation(Integer.valueOf(nav));
 		}
 		if (assessmentSettings.getAssessmentFormat() != null ) {
 			control.setAssessmentFormat(new Integer(assessmentSettings.getAssessmentFormat()));
@@ -346,19 +372,25 @@ implements ActionListener
 	    }
 
 		// set Submissions
-		if (assessmentSettings.getUnlimitedSubmissions()!=null){
-			if (!assessmentSettings.getUnlimitedSubmissions().
-					equals(AssessmentAccessControlIfc.UNLIMITED_SUBMISSIONS.toString())) {
-				control.setUnlimitedSubmissions(Boolean.FALSE);
-				if (assessmentSettings.getSubmissionsAllowed() != null)
-					control.setSubmissionsAllowed(new Integer(assessmentSettings.
-							getSubmissionsAllowed()));
-				else
-					control.setSubmissionsAllowed(new Integer("1"));
-			}
-			else {
-				control.setUnlimitedSubmissions(Boolean.TRUE);
-				control.setSubmissionsAllowed(null);
+		if (control.getItemNavigation() != null && control.getItemNavigation().equals(Integer.valueOf(1))) {
+			control.setUnlimitedSubmissions(Boolean.FALSE);
+			control.setSubmissionsAllowed(Integer.valueOf("1"));
+		}
+		else {
+			if (assessmentSettings.getUnlimitedSubmissions()!=null){
+				if (!assessmentSettings.getUnlimitedSubmissions().
+						equals(AssessmentAccessControlIfc.UNLIMITED_SUBMISSIONS.toString())) {
+					control.setUnlimitedSubmissions(Boolean.FALSE);
+					if (assessmentSettings.getSubmissionsAllowed() != null)
+						control.setSubmissionsAllowed(new Integer(assessmentSettings.
+								getSubmissionsAllowed()));
+					else
+						control.setSubmissionsAllowed(Integer.valueOf("1"));
+				}
+				else {
+					control.setUnlimitedSubmissions(Boolean.TRUE);
+					control.setSubmissionsAllowed(null);
+				}
 			}
 		}
 
@@ -541,6 +573,12 @@ implements ActionListener
 						try {
 							AssessmentGradingData ag = (AssessmentGradingData)list.get(i);
 							log.debug("ag.scores " + ag.getTotalAutoScore());
+							// Send the average score if average was selected for multiple submissions
+							if (scoringType.equals(EvaluationModelIfc.AVERAGE_SCORE)) {
+								Float averageScore = PersistenceService.getInstance().getAssessmentGradingFacadeQueries().
+								getAverageSubmittedAssessmentGrading(Long.valueOf(assessment.getPublishedAssessmentId()), ag.getAgentId());
+								ag.setFinalScore(averageScore);
+							}
 							gbsHelper.updateExternalAssessmentScore(ag, g);
 						}
 						catch (Exception e) {
@@ -569,7 +607,9 @@ implements ActionListener
 			PublishedAssessmentService assessmentService) {
 		AuthorActionListener authorActionListener = new AuthorActionListener();
 		GradingService gradingService = new GradingService();
-		authorActionListener.prepareAllPublishedAssessmentsList(author, gradingService, assessmentService);
+		ArrayList publishedAssessmentList = assessmentService.getBasicInfoOfAllPublishedAssessments2(
+				  PublishedAssessmentFacadeQueries.TITLE, true, AgentFacade.getCurrentSiteId());
+		authorActionListener.prepareAllPublishedAssessmentsList(author, gradingService, publishedAssessmentList);
 	}
 }
 

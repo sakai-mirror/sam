@@ -30,9 +30,8 @@
   <f:view>
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
+      <%= request.getAttribute("html.head") %>
       <%-- designed to be in  popup window --%>
-      <samigo:stylesheet path="/css/tool.css"/>
-      <samigo:stylesheet path="/css/tool_base.css"/>
       <title><h:outputText value="#{authorImportExport.export_a}" /></title>
       </head>
       <body onload="<%= request.getAttribute("html.body.onload") %>">
@@ -61,7 +60,7 @@
 
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ExportAssessmentListener" />
     </h:commandButton>
-   <h:commandButton value="#{authorImportExport.export_cancel_action}" type="reset"
+   <h:commandButton value="#{commonMessages.cancel_action}" type="reset"
      onclick="window.close()" style="act" action="author" />
   </p>
  </h:form>

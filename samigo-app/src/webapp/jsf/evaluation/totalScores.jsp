@@ -32,7 +32,7 @@
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head><%= request.getAttribute("html.head") %>
       <title><h:outputText
-        value="#{evaluationMessages.title_total}" /></title>
+        value="#{commonMessages.total_scores}" /></title>
 		<style type="text/css">
 			.disabled
 			{
@@ -95,7 +95,7 @@ return;
   <%@ include file="/jsf/evaluation/evaluationHeadings.jsp" %>
 
   <h3>
-    <h:outputText value="#{evaluationMessages.title_total}"/>
+    <h:outputText value="#{commonMessages.total_scores}"/>
     <h:outputText value="#{evaluationMessages.column} "/>
     <h:outputText value="#{totalScores.assessmentName} " escape="false"/> 
   </h3>
@@ -113,7 +113,7 @@ return;
     </h:commandLink>
 
     <h:outputText value=" #{evaluationMessages.separator} " />
-    <h:outputText value="#{evaluationMessages.title_total}" />
+    <h:outputText value="#{commonMessages.total_scores}" />
 
     <h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne ''}" />
     <h:commandLink title="#{evaluationMessages.t_questionScores}" action="questionScores" immediate="true"
@@ -128,9 +128,9 @@ return;
         type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreListener" />
     </h:commandLink>
 
-    <h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne '' && !totalScores.hasRandomDrawPart}" />
+    <h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne ''}" />
     <h:commandLink title="#{evaluationMessages.t_histogram}" action="histogramScores" immediate="true"
-      rendered="#{totalScores.firstItem ne '' && !totalScores.hasRandomDrawPart}" >
+      rendered="#{totalScores.firstItem ne ''}" >
       <h:outputText value="#{evaluationMessages.stat_view}" />
       <f:param name="hasNav" value="true"/>
       <f:actionListener
@@ -138,9 +138,9 @@ return;
     </h:commandLink>
 
 
-    <h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne '' && !totalScores.hasRandomDrawPart}" />
+    <h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne ''}" />
     <h:commandLink title="#{evaluationMessages.t_itemAnalysis}" action="detailedStatistics" immediate="true"
-      rendered="#{totalScores.firstItem ne '' && !totalScores.hasRandomDrawPart}" >
+      rendered="#{totalScores.firstItem ne ''}" >
       <h:outputText value="#{evaluationMessages.item_analysis}" />
       <f:param name="hasNav" value="true"/>
       <f:actionListener
@@ -149,8 +149,8 @@ return;
 
 
     <h:outputText value=" #{evaluationMessages.separator} " />
-    <h:commandLink title="#{evaluationMessages.t_export}" action="exportResponses" immediate="true">
-      <h:outputText value="#{evaluationMessages.export}" />
+    <h:commandLink title="#{commonMessages.export_action}" action="exportResponses" immediate="true">
+      <h:outputText value="#{commonMessages.export_action}" />
   	  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ExportResponsesListener" />
     </h:commandLink>
 
@@ -667,20 +667,20 @@ return;
     </h:column>
 
     <!-- TIME -->
-    <h:column rendered="#{totalScores.isTimedAssessment && totalScores.sortType!='time'}">
+    <h:column rendered="#{totalScores.isTimedAssessment && totalScores.sortType!='timeElapsed'}">
       <f:facet name="header">
         <h:commandLink title="#{evaluationMessages.t_sortTime}" id="time" action="totalScores">
           <h:outputText value="#{evaluationMessages.time}" />
           <f:actionListener
              type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
-        <f:param name="sortBy" value="time" />
+        <f:param name="sortBy" value="timeElapsed" />
         <f:param name="sortAscending" value="true"/>
         </h:commandLink>
       </f:facet>
       <h:outputText value="#{description.formatedTimeElapsed}" />
     </h:column>
 
-	<h:column rendered="#{totalScores.isTimedAssessment && totalScores.sortType=='time' && totalScores.sortAscending}">
+	<h:column rendered="#{totalScores.isTimedAssessment && totalScores.sortType=='timeElapsed' && totalScores.sortAscending}">
       <f:facet name="header">
         <h:commandLink title="#{evaluationMessages.t_sortTime}" action="totalScores">
           <h:outputText value="#{evaluationMessages.time}" />
@@ -693,7 +693,7 @@ return;
       <h:outputText value="#{description.formatedTimeElapsed}" />
     </h:column>
     
-    <h:column rendered="#{totalScores.isTimedAssessment && totalScores.sortType=='time'  && !totalScores.sortAscending}">
+    <h:column rendered="#{totalScores.isTimedAssessment && totalScores.sortType=='timeElapsed'  && !totalScores.sortAscending}">
       <f:facet name="header">
       <h:commandLink title="#{evaluationMessages.t_sortTime}" action="totalScores">
         <h:outputText value="#{evaluationMessages.time}" />
@@ -908,7 +908,7 @@ return;
 <p class="act">
 
    <%-- <h:commandButton value="#{evaluationMessages.save_exit}" action="author"/> --%>
-   <h:commandButton accesskey="#{evaluationMessages.a_save}" styleClass="active" value="#{evaluationMessages.save_cont}" action="totalScores" type="submit" >
+   <h:commandButton styleClass="active" value="#{evaluationMessages.save_cont}" action="totalScores" type="submit" >
       <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreUpdateListener" />
       <f:actionListener
@@ -916,7 +916,7 @@ return;
       <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
    </h:commandButton>
-   <h:commandButton value="#{evaluationMessages.cancel}" action="author"/>
+   <h:commandButton value="#{commonMessages.cancel_action}" action="author"/>
 
 </p>
 </div>

@@ -26,6 +26,7 @@ package org.sakaiproject.tool.assessment.ui.listener.author;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -75,7 +76,7 @@ public class SaveAssessmentSettings
 {
   private static Log log = LogFactory.getLog(SaveAssessmentSettings.class);
 
-  public AssessmentFacade save(AssessmentSettingsBean assessmentSettings)
+  public AssessmentFacade save(AssessmentSettingsBean assessmentSettings, boolean isFromConfirmPublishAssessmentListener)
   {
     // create an assessment based on the title entered and the assessment
     // template selected
@@ -103,7 +104,17 @@ public class SaveAssessmentSettings
       control.setAssessmentBase(assessment.getData());
     }
     // a. LATER set dueDate, retractDate, startDate, releaseTo
-    control.setStartDate(assessmentSettings.getStartDate());
+    if (isFromConfirmPublishAssessmentListener) {
+    	if (assessmentSettings.getStartDate() != null) {
+    		control.setStartDate(assessmentSettings.getStartDate());
+    	}
+    	else {
+    		control.setStartDate(new Date());
+    	}
+    }
+    else {
+    	control.setStartDate(assessmentSettings.getStartDate());
+    }
     control.setDueDate(assessmentSettings.getDueDate());
     control.setRetractDate(assessmentSettings.getRetractDate());
     control.setFeedbackDate(assessmentSettings.getFeedbackDate());
@@ -125,7 +136,7 @@ public class SaveAssessmentSettings
     	if ("1".equals(nav)) {
     		assessmentSettings.setAssessmentFormat("1");
     	}
-    	control.setItemNavigation(new Integer(nav));
+    	control.setItemNavigation(Integer.valueOf(nav));
     }
     if (assessmentSettings.getItemNumbering()!=null)
       control.setItemNumbering(new Integer(assessmentSettings.getItemNumbering()));
@@ -139,20 +150,26 @@ public class SaveAssessmentSettings
     }
 
     // d. set Submissions
-    if (assessmentSettings.getUnlimitedSubmissions()!=null){
-      if (!assessmentSettings.getUnlimitedSubmissions().
-          equals(AssessmentAccessControlIfc.UNLIMITED_SUBMISSIONS.toString())) {
-        control.setUnlimitedSubmissions(Boolean.FALSE);
-        if (assessmentSettings.getSubmissionsAllowed() != null)
-          control.setSubmissionsAllowed(new Integer(assessmentSettings.
-              getSubmissionsAllowed()));
-        else
-          control.setSubmissionsAllowed(new Integer("1"));
-      }
-      else {
-        control.setUnlimitedSubmissions(Boolean.TRUE);
-        control.setSubmissionsAllowed(null);
-      }
+    if (control.getItemNavigation() != null && control.getItemNavigation().equals(Integer.valueOf(1))) {
+    	control.setUnlimitedSubmissions(Boolean.FALSE);
+    	control.setSubmissionsAllowed(Integer.valueOf("1"));
+    }
+    else {
+    	if (assessmentSettings.getUnlimitedSubmissions()!=null){
+    		if (!assessmentSettings.getUnlimitedSubmissions().
+    				equals(AssessmentAccessControlIfc.UNLIMITED_SUBMISSIONS.toString())) {
+    			control.setUnlimitedSubmissions(Boolean.FALSE);
+    			if (assessmentSettings.getSubmissionsAllowed() != null)
+    				control.setSubmissionsAllowed(new Integer(assessmentSettings.
+    						getSubmissionsAllowed()));
+    			else
+    				control.setSubmissionsAllowed(Integer.valueOf("1"));
+    		}
+    		else {
+    			control.setUnlimitedSubmissions(Boolean.TRUE);
+    			control.setSubmissionsAllowed(null);
+    		}
+    	}
     }
     //log.info("**unlimited submission="+assessmentSettings.getUnlimitedSubmissions());
     //log.info("**allowed="+control.getSubmissionsAllowed());
@@ -220,20 +237,18 @@ public class SaveAssessmentSettings
       // need to fix evaluation so it can take AssessmentFacade later
       evaluation.setAssessmentBase(assessment.getData());
     }
-    if (assessmentSettings.getAnonymousGrading()!=null)
-      evaluation.setAnonymousGrading(new Integer(assessmentSettings.getAnonymousGrading()));
     
-    // If there is value set for toDefaultGradebook, we reset it
-    // Otherwise, do nothing
-    if (assessmentSettings.getToDefaultGradebook() != null ) {
-    	String firstTargetSelected = assessmentSettings.getFirstTargetSelected();
-    	if ("Anonymous Users".equals(firstTargetSelected)) {
-    		evaluation.setToGradeBook("2");
-    	}
-    	else {
-    		evaluation.setToGradeBook(assessmentSettings.getToDefaultGradebook());
-    	}
-    }
+    String firstTargetSelected = assessmentSettings.getFirstTargetSelected();
+	if ("Anonymous Users".equals(firstTargetSelected)) {
+		evaluation.setAnonymousGrading(Integer.valueOf("1"));
+		evaluation.setToGradeBook("2");
+	}
+	else {
+		if (assessmentSettings.getAnonymousGrading() != null)
+		      evaluation.setAnonymousGrading(Integer.valueOf(assessmentSettings.getAnonymousGrading()));
+		if (assessmentSettings.getToDefaultGradebook() != null)
+			evaluation.setToGradeBook(assessmentSettings.getToDefaultGradebook());
+	}
     
     if (assessmentSettings.getScoringType()!=null)
       evaluation.setScoringType(new Integer(assessmentSettings.getScoringType()));
@@ -445,19 +460,19 @@ public class SaveAssessmentSettings
 		  }
 	  }
 	  Collections.sort(releaseToGroups);
-	  String releaseToGroupsAsString = "";
+	  StringBuffer releaseToGroupsAsString = new StringBuffer();
 	  if (releaseToGroups != null && releaseToGroups.size()!=0 ) {
 		  String lastGroup = (String) releaseToGroups.get(releaseToGroups.size()-1);
 		  Iterator releaseToGroupsIter = releaseToGroups.iterator();
 		  while (releaseToGroupsIter.hasNext()) {
 			  String group = (String) releaseToGroupsIter.next();
-			  releaseToGroupsAsString += group;
+			  releaseToGroupsAsString.append(group);
 			  if (!group.equals(lastGroup) ) {
-				  releaseToGroupsAsString += ", ";
+				  releaseToGroupsAsString.append(", ");
 			  }
 		  }
 	  }	
 
-	  return releaseToGroupsAsString;
+	  return releaseToGroupsAsString.toString();
   }
 }

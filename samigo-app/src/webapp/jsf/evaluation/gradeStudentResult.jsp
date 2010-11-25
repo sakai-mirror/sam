@@ -34,7 +34,7 @@ $Id$
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head><%= request.getAttribute("html.head") %>
       <title><h:outputText
-        value="#{evaluationMessages.title_total}" /></title>
+        value="#{commonMessages.total_scores}" /></title>
     <samigo:script path="/jsf/widget/hideDivision/hideDivision.js" />
 
       </head>
@@ -115,7 +115,7 @@ document.location='../evaluation/gradeStudentResult';
     <h:commandLink title="#{evaluationMessages.t_totalScores}" action="totalScores" immediate="true">
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ResetTotalScoreListener" />
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
-      <h:outputText value="#{evaluationMessages.title_total}" />
+      <h:outputText value="#{commonMessages.total_scores}" />
     </h:commandLink>
     <h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne ''}"  />
     <h:commandLink title="#{evaluationMessages.t_questionScores}" action="questionScores" immediate="true"
@@ -290,17 +290,17 @@ document.location='../evaluation/gradeStudentResult';
 <h:outputText value="#{author.updateFormTime}" />
 <h:inputHidden value="#{author.currentFormTime}" />
 
-<h:outputLink id="createEmail1" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{studentScores.firstName} #{studentScores.lastName}\", \"#{studentScores.email}\", \"#{totalScores.assessmentName}\");" value="#"> 
+<h:outputLink tabindex="-1" id="createEmail1" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{studentScores.firstName} #{studentScores.lastName}\", \"#{studentScores.email}\", \"#{totalScores.assessmentName}\");" value="#"> 
   <h:outputText value="  #{evaluationMessages.email} #{studentScores.firstName}" rendered="#{studentScores.email != null && studentScores.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
 </h:outputLink>
 
-<h:commandLink id="hiddenlink1" value="" action="studentScores">
+<h:commandLink tabindex="-1" id="hiddenlink1" value="" action="studentScores">
   <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.util.EmailListener" />
   <f:param name="toUserId" value="#{studentScores.studentId}" />
 </h:commandLink>
 
 <p class="act">
-   <h:commandButton accesskey="#{evaluationMessages.a_save}" styleClass="active" value="#{evaluationMessages.save_cont}" action="totalScores" type="submit">
+   <h:commandButton styleClass="active" value="#{evaluationMessages.save_cont}" action="totalScores" type="submit">
       <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.StudentScoreUpdateListener" />
       <f:actionListener
@@ -310,7 +310,7 @@ document.location='../evaluation/gradeStudentResult';
       <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
    </h:commandButton>
-   <h:commandButton accesskey="#{evaluationMessages.a_cancel}" value="#{evaluationMessages.cancel}" action="totalScores" immediate="true">
+   <h:commandButton value="#{commonMessages.cancel_action}" action="totalScores" immediate="true">
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ResetTotalScoreListener" />
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
    </h:commandButton>

@@ -19,8 +19,6 @@
  *
  **********************************************************************************/
 
-
-
 package org.sakaiproject.tool.assessment.ui.listener.author;
 
 import java.util.ArrayList;
@@ -30,6 +28,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -77,7 +77,6 @@ import org.sakaiproject.tool.assessment.ui.bean.questionpool.QuestionPoolBean;
 import org.sakaiproject.tool.assessment.ui.bean.questionpool.QuestionPoolDataBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.util.TextFormat;
-import org.sakaiproject.util.FormattedText;
 
 /**
  * <p>Title: Samigo</p>
@@ -1332,10 +1331,9 @@ public class ItemAddListener
 		else if (item.getTypeId().equals(TypeFacade.FILL_IN_BLANK)) {
 			// this is for fill in blank
 			String entiretext = bean.getItemText();
-			String fibtext = entiretext.replaceAll("[\\{][^\\}]*[\\}]", "{}");
-			text1.setText(fibtext);
-			// log.info(" new text without answer is = " + fibtext);
-			Object[] fibanswers = getFIBanswers(entiretext).toArray();
+			String processedText [] = processFIBFINText(entiretext);
+			text1.setText(processedText[0]);;
+			Object[] fibanswers = getFIBFINanswers(processedText[1]).toArray();
 			for (int i = 0; i < fibanswers.length; i++) {
 				String oneanswer = (String) fibanswers[i];
 				Answer answer1 = new Answer(text1, oneanswer, Long.valueOf(i + 1),
@@ -1352,10 +1350,9 @@ public class ItemAddListener
 		else if (item.getTypeId().equals(TypeFacade.FILL_IN_NUMERIC)) {
 			// this is for fill in numeric
 			String entiretext = bean.getItemText();
-			String fintext = entiretext.replaceAll("[\\{][^\\}]*[\\}]", "{}");
-			text1.setText(fintext);
-			// log.info(" new text without answer is = " + fintext);
-			Object[] finanswers = getFINanswers(entiretext).toArray();
+			String processedText [] = processFIBFINText(entiretext);
+			text1.setText(processedText[0]);;
+			Object[] finanswers = getFIBFINanswers(processedText[1]).toArray();
 			for (int i = 0; i < finanswers.length; i++) {
 				String oneanswer = (String) finanswers[i];
 				Answer answer1 = new Answer(text1, oneanswer, Long.valueOf(i + 1),
@@ -1387,7 +1384,7 @@ public class ItemAddListener
 							Boolean.TRUE, null, Float.valueOf(bean.getItemScore()), Float.valueOf(100f), Float.valueOf(bean.getItemDiscount()), null);
 				} else {
 					if (item.getTypeId().equals(TypeFacade.MULTIPLE_CHOICE) && item.getPartialCreditFlag()){
-						Float pc =  answerbean.getPartialCredit(); //--mustansar
+						Float pc =  Float.valueOf(answerbean.getPartialCredit()); //--mustansar
 						if (pc == null) {
 							pc = Float.valueOf(0f);
 						}
@@ -1561,19 +1558,15 @@ public class ItemAddListener
 		Set textSet = item.getItemTextSet();
 		ItemTextIfc text = null;
 		String entiretext = bean.getItemText();
-		String updatedText = entiretext.replaceAll("[\\{][^\\}]*[\\}]", "{}");
+		String processedText [] = processFIBFINText(entiretext);
+		String updatedText = processedText[0];
 		log.debug(" new text without answer is = " + updatedText);
 		Iterator iter = textSet.iterator();
 		while (iter.hasNext()) {
 			text = (ItemTextIfc) iter.next();
 			text.setText(updatedText);
 			Object[] answers;
-			if (isFIB) {
-				answers = getFIBanswers(entiretext).toArray();
-			}
-			else {
-				answers = getFINanswers(entiretext).toArray();
-			}
+			answers = getFIBFINanswers(processedText[1]).toArray();
 			int newAnswersSize = answers.length;
 			int i = 0;
 			HashSet toBeRemovedSet = new HashSet();
@@ -1635,7 +1628,7 @@ public class ItemAddListener
 					answer.setScore(Float.valueOf(bean.getItemScore()));
 					answerBean = (AnswerBean) newAnswerMap.get(Long.valueOf(String.valueOf(i)));
 					String oneAnswer = stripPtags(answerBean.getText());
-					answer.setPartialCredit(answerBean.getPartialCredit());
+					answer.setPartialCredit(Float.valueOf(answerBean.getPartialCredit()));
 					String oneLabel = answerBean.getLabel();
 					log.debug("oneAnswer = " + oneAnswer);
 					log.debug("oneLabel = " + oneLabel);
@@ -1671,7 +1664,7 @@ public class ItemAddListener
 					else {
 						answer = new PublishedAnswer(text, oneAnswer,
 								Long.valueOf(j), oneLabel, Boolean.FALSE, null,
-								Float.valueOf(bean.getItemScore()), answerBean.getPartialCredit(), Float.valueOf(bean.getItemDiscount()), null);
+								Float.valueOf(bean.getItemScore()), Float.valueOf(answerBean.getPartialCredit()), Float.valueOf(bean.getItemDiscount()), null);
 					}
 					HashSet answerFeedbackSet = new HashSet();
 				    answerFeedbackSet.add(new PublishedAnswerFeedback(answer,
@@ -1779,7 +1772,7 @@ public class ItemAddListener
 					log.debug("oneLabel = " + oneLabel);
 					answer.setText(oneAnswer);
 					answer.setLabel(oneLabel);
-					if (choiceSequence == matchSequence) {
+					if (choiceSequence.longValue() == matchSequence.longValue()) {
 						answer.setIsCorrect(Boolean.TRUE);
 					} else {
 						answer.setIsCorrect(Boolean.FALSE);
@@ -2177,83 +2170,39 @@ public class ItemAddListener
 	  return itemMetaDataSet;
 	}
 
-  private static ArrayList getFIBanswers(String entiretext) {
-	String fixedText = entiretext.replaceAll("&nbsp;", " "); // replace &nbsp
-																// to " "
-																// (instead of
-																// "") just want
-																// to reserve
-																// the original
-																// input
-    String[] tokens = fixedText.split("[\\}][^\\{]*[\\{]");
-    ArrayList list = new ArrayList();
-    if (tokens.length==1) {
-        String[] afteropen= tokens[0].split("\\{");
-        if (afteropen.length>1) {
-// must have text in between {}
-          String[] lastpart = afteropen[1].split("\\}");
-          String answer = lastpart[0].replaceAll("&lt;.*?&gt;", "");
-          list.add(answer);
-        }
-    }
-    else {
-      for (int i = 0; i < tokens.length; i++) {
-      if (i == 0) {
-        String[] firstpart = tokens[i].split("\\{");
-	  if (firstpart.length>1) {
-		String answer = firstpart[1].replaceAll("&lt;.*?&gt;", "");
-          list.add(answer);
-        }
-      }
-      else if (i == (tokens.length - 1)) {
-        String[] lastpart = tokens[i].split("\\}");
-        String answer = lastpart[0].replaceAll("&lt;.*?&gt;", "");
-        list.add(answer);
-      }
-      else {
-    	String answer = tokens[i].replaceAll("&lt;.*?&gt;", "");
-        list.add(answer);
-      }
-      }
-    } // token.length>1
+  private static ArrayList getFIBFINanswers(String entiretext) {
+	  String fixedText = entiretext.replaceAll("&nbsp;", " "); // replace &nbsp to " " (instead of "") just want to reserve the original input
+	  String[] tokens = fixedText.split("[\\}][^\\{]*[\\{]");
+	  ArrayList list = new ArrayList();
+	  if (tokens.length==1) {
+		  String[] afteropen= tokens[0].split("\\{");
+		  if (afteropen.length>1) {
+			  //	 must have text in between {}
+			  String[] lastpart = afteropen[1].split("\\}");
+			  list.add(lastpart[0]);
+		  }
+	  }
+	  else {
+		  for (int i = 0; i < tokens.length; i++) {
+			  if (i == 0) {
+				  String[] firstpart = tokens[i].split("\\{");
+				  if (firstpart.length>1) {
+					  list.add(firstpart[1]);
+				  }
+			  }
+			  else if (i == (tokens.length - 1)) {
+				  String[] lastpart = tokens[i].split("\\}");
+				  list.add(lastpart[0]);
+			  }
+			  else {
+				  list.add(tokens[i]);
+			  }
+		  }
+	  } // token.length>1
 
-    return list;
+	  return list;
 
   }
-
-  private static ArrayList getFINanswers(String entiretext) {
-		String fixedText = entiretext.replaceAll("&nbsp;", " "); // replace &nbsp to " " (instead of "") just want to reserve the original input
-	    String[] tokens = fixedText.split("[\\}][^\\{]*[\\{]");
-	    ArrayList list = new ArrayList();
-	    if (tokens.length==1) {
-	        String[] afteropen= tokens[0].split("\\{");
-	        if (afteropen.length>1) {
-//	 must have text in between {}
-	          String[] lastpart = afteropen[1].split("\\}");
-	          list.add(lastpart[0]);
-	        }
-	    }
-	    else {
-	      for (int i = 0; i < tokens.length; i++) {
-	      if (i == 0) {
-	        String[] firstpart = tokens[i].split("\\{");
-		if (firstpart.length>1) {
-	          list.add(firstpart[1]);
-	        }
-	      }
-	      else if (i == (tokens.length - 1)) {
-	        String[] lastpart = tokens[i].split("\\}");
-	        list.add(lastpart[0]);
-	      }
-	      else {
-	        list.add(tokens[i]);
-	      }
-	      }
-	    } // token.length>1
-
-	    return list;
-
-	  }
   
   /**
    ** returns if the multile choice label is the correct choice,
@@ -2345,11 +2294,12 @@ public class ItemAddListener
     // all answer sets have to be identical, case insensitive
 
      String entiretext = bean.getItemText();
-     entiretext = entiretext.replaceAll("[\\{][^\\}]*[\\}]", "{}");
-
-Object[] fibanswers = getFIBanswers(entiretext).toArray();
+     String processedText [] = processFIBFINText(entiretext);
+     log.debug("processedText[1]=" + processedText[1]);
+     Object[] fibanswers = getFIBFINanswers(processedText[1]).toArray();
       List blanklist = new  ArrayList();
       for (int i = 0; i < fibanswers.length; i++) {
+    	log.debug("fibanswers[" + i + "]=" + fibanswers[i]);
         String oneanswer = (String) fibanswers[i];
         String[] oneblank = oneanswer.split("\\|");
         Set oneblankset = new HashSet();
@@ -2359,7 +2309,7 @@ Object[] fibanswers = getFIBanswers(entiretext).toArray();
         blanklist.add(oneblankset);
 
       }
-      // now check if there are at least 2 sets, and make sure they are identically, all should contain only lowercase strings. 
+      // now check if there are at leastF 2 sets, and make sure they are identically, all should contain only lowercase strings. 
       boolean invalid= false;
       if (blanklist.size()<=1){
            invalid = true;
@@ -2529,5 +2479,57 @@ Object[] fibanswers = getFIBanswers(entiretext).toArray();
 		  choices[9] = "10";
 	  }
 	  return choices;
+  }
+
+  private String [] processFIBFINText(String entiretext) {
+	  String[] processedText = new String[2];
+	  Pattern pattern1 = Pattern.compile("[\\{][^\\}]*[\\}]");
+	  Matcher matcher1 = pattern1.matcher(entiretext);
+	  StringBuilder textStringBuilder1 = new StringBuilder(); 
+	  String tmpString1 = null;
+	  int index1 = 0;
+	  while (matcher1.find()) {
+		  String group = matcher1.group();
+		  textStringBuilder1.append(entiretext.substring(index1, matcher1.start()));
+		  tmpString1 = group.replaceAll("<.*?>", "");
+		  textStringBuilder1.append(tmpString1);
+		  index1 = matcher1.end();
+	  }
+	  textStringBuilder1.append(entiretext.substring(index1));
+	  String modifiedText = textStringBuilder1.toString();
+
+	  //String[] tmpString = modifiedText.split("(<([a-z]\\w*)\\b[^>]*>(.*?)</\\1\\s*>)|(<([a-z]\\w*)\\b[^>]*/>)");
+	  Pattern pattern2 = Pattern.compile("(<([a-z]\\w*)\\b[^>]*>(.*?)</\\1\\s*>)|(<([a-z]\\w*)\\b[^>]*/>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	  Matcher matcher2 = pattern2.matcher(modifiedText);
+	  int index2 = 0;
+	  StringBuilder textStringBuilder2 = new StringBuilder(); 
+	  StringBuilder textStringBuilder3 = new StringBuilder();
+	  String tmpString2 = null;
+	  while (matcher2.find()) {
+		  String group = matcher2.group();
+		  log.debug("group" + group);
+		  tmpString2 = modifiedText.substring(index2, matcher2.start());
+		  log.debug("tmpString2" + tmpString2);
+		  if (tmpString2 != null) {
+			  textStringBuilder2.append(tmpString2.replaceAll("[\\{][^\\}]*[\\}]", "{}"));
+			  textStringBuilder3.append(tmpString2);
+			  log.debug("textStringBuilder2=" + textStringBuilder2);
+			  log.debug("textStringBuilder3=" + textStringBuilder3);
+		  }
+		  textStringBuilder2.append(group);
+		  index2 = matcher2.end();
+		  log.debug("index2=" + index2);
+	  }
+	  tmpString2 = modifiedText.substring(index2);
+	  if (tmpString2 != null) {
+		  textStringBuilder2.append(tmpString2.replaceAll("[\\{][^\\}]*[\\}]", "{}"));
+		  textStringBuilder3.append(tmpString2);
+		  log.debug("textStringBuilder2=" + textStringBuilder2);
+		  log.debug("textStringBuilder3=" + textStringBuilder3);
+	  }
+	  processedText[0] = textStringBuilder2.toString();
+	  processedText[1] = textStringBuilder3.toString();
+
+	  return processedText;
   }
 }

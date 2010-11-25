@@ -43,7 +43,7 @@ should be included in file importing DeliveryMessages
     target="jsf/upload_tmp/assessment#{delivery.assessmentId}/question#{question.itemData.itemId}/#{person.eid}"
     valueChangeListener="#{delivery.addMediaToItemGrading}" />
   <f:verbatim>&nbsp;&nbsp;</f:verbatim>
-  <h:commandButton id="upl" accesskey="#{deliveryMessages.a_upload}" value="#{deliveryMessages.upload}" action="#{delivery.getOutcome}" onclick="showNotif('submitnotif',this.name,'takeAssessmentForm');"/>
+  <h:commandButton id="upl" value="#{deliveryMessages.upload}" action="#{delivery.getOutcome}" onclick="showNotif('submitnotif',this.name,'takeAssessmentForm');"/>
 </h:panelGroup>
 <h:outputText escape="false" value="<span id=\"submitnotif\" style=\"visibility:hidden\"> #{deliveryMessages.processing}</span>"/>
 <h:panelGroup rendered="#{delivery.actionString=='previewAssessment' 
@@ -56,9 +56,9 @@ should be included in file importing DeliveryMessages
   <!-- please check the valueChangeListener to get the final destination -->
   <h:inputText size="50" />
   <h:outputText value="  " />
-  <h:commandButton accesskey="#{deliveryMessages.a_browse}" value="#{deliveryMessages.browse}" type="button"/>
+  <h:commandButton value="#{deliveryMessages.browse}" type="button"/>
   <h:outputText value="  " />
-  <h:commandButton accesskey="#{deliveryMessages.a_upload}" value="#{deliveryMessages.upload}" type="button"/>
+  <h:commandButton value="#{deliveryMessages.upload}" type="button"/>
 </h:panelGroup>
 
 <f:verbatim><br /></f:verbatim>
@@ -81,7 +81,7 @@ should be included in file importing DeliveryMessages
                            || delivery.actionString=='takeAssessmentViaUrl'}">
           <h:commandLink title="#{deliveryMessages.t_removeMedia}" action="confirmRemoveMedia"
             id="removeMedia" onmouseup="saveTime();">
-            <h:outputText value="#{deliveryMessages.remove}" />
+            <h:outputText value="#{commonMessages.remove_action}" />
             <f:param name="mediaId" value="#{media.mediaId}"/>
             <f:param name="mediaUrl" value="/samigo-app/servlet/ShowMedia?mediaId=#{media.mediaId}"/>
             <f:param name="mediaFilename" value="#{media.filename}"/>
@@ -107,7 +107,7 @@ should be included in file importing DeliveryMessages
   <h:panelGroup rendered="#{delivery.feedbackComponent.showItemLevel && question.feedbackIsNotEmpty}">
     <f:verbatim><br /></f:verbatim>
     <f:verbatim><b></f:verbatim>
-    <h:outputLabel for="feedSC" value="#{deliveryMessages.feedback}: " />
+    <h:outputLabel for="feedSC" value="#{commonMessages.feedback}: " />
     <f:verbatim></b></f:verbatim>
     <h:outputText id="feedSC" value="#{question.feedback}" escape="false" />
   </h:panelGroup>

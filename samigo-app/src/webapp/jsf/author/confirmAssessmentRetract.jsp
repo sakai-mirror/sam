@@ -39,17 +39,17 @@
   <h3><h:outputText value="#{assessmentSettingsMessages.retract_conf}"/></h3>
  <h:form id="retractAssessmentForm">
    <h:inputHidden id="templateId" value="#{template.idString}"/>
+	<br/>
+     <div>
+       <h:outputText value="#{assessmentSettingsMessages.retract_for_sure}" styleClass="messageConfirmation" />
 
-     <div class="validation tier1">
-       <h:outputText value="#{assessmentSettingsMessages.retract_for_sure}" />
-     </div>
        <p class="act">
-       <h:commandButton id="retract" accesskey="#{assessmentSettingsMessages.a_retract}" value="#{assessmentSettingsMessages.button_retract}" type="submit"
+       <h:commandButton id="retract" value="#{assessmentSettingsMessages.button_retract}" type="submit"
          styleClass="active" action="author" >
           <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.author.SavePublishedSettingsListener" />
        </h:commandButton>
-       <h:commandButton value="#{assessmentSettingsMessages.button_cancel}" type="submit" style="act" action="editPublishedAssessmentSettings" />
+       <h:commandButton value="#{commonMessages.cancel_action}" type="submit" style="act" action="editPublishedAssessmentSettings" />
        </p>
 
  </h:form>

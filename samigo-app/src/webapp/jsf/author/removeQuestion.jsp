@@ -44,11 +44,11 @@
   </div>
 
 <p class="act">
-       <h:commandButton accesskey="#{authorMessages.a_remove}" immediate="true" value="#{authorMessages.button_remove}" type="submit" action="#{itemauthor.deleteItem}" styleClass="active">
+       <h:commandButton immediate="true" value="#{commonMessages.remove_action}" type="submit" action="#{itemauthor.deleteItem}" styleClass="active">
        </h:commandButton>
-       <h:commandButton accesskey="#{authorMessages.a_cancel}" value="#{authorMessages.button_cancel}" type="submit"
+       <h:commandButton value="#{commonMessages.cancel_action}" type="submit"
          action="editAssessment" rendered="#{itemauthor.target=='assessment'}"/>
-       <h:commandButton accesskey="#{authorMessages.a_cancel}" value="#{authorMessages.button_cancel}" type="submit"
+       <h:commandButton value="#{commonMessages.cancel_action}" type="submit"
          action="editPool" rendered="#{itemauthor.target=='questionpool'}"/>
    </p>
 

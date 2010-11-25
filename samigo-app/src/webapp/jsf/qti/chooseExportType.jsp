@@ -39,7 +39,7 @@ function getSelectedType(qtiUrl, cpUrl){
     if ( tables[i].id.indexOf("exportType") >=0){
 	  if (tables[i].getElementsByTagName("INPUT")[0].checked) {
 		//alert("qti");
-		window.open( qtiUrl, '_qti_export', 'toolbar=no,menubar=yes,personalbar=no,width=600,height=190,scrollbars=no,resizable=no');
+		window.open( qtiUrl, '_qti_export', 'toolbar=yes,menubar=yes,personalbar=no,width=600,height=190,scrollbars=yes,resizable=yes');
 	  }
 	  else {
 	    //alert("cp.....");
@@ -71,7 +71,7 @@ function getSelectedType(qtiUrl, cpUrl){
 		<h:outputText value="#{authorImportExport.choose_type_3}" escape="true" />
     </div>
     <br />
-    <h:panelGrid columns="2">
+    <h:panelGrid columns="2" border="0">
      <h:outputText value="#{authorImportExport.choose_export_type}"/>
      <h:selectOneRadio id="exportType" layout="lineDirection" value="1">
        <f:selectItem itemLabel="#{authorImportExport.qti12}"
@@ -79,6 +79,12 @@ function getSelectedType(qtiUrl, cpUrl){
        <f:selectItem itemLabel="#{authorImportExport.content_packaging}"
          itemValue="2"/>
      </h:selectOneRadio>
+     <h:outputText value=""/>
+     <!-- For formatting -->
+     <h:panelGrid columns="2">
+       <h:outputText value=" "/>
+       <h:outputText value="#{authorImportExport.cp_message}"/>
+     </h:panelGrid>
     </h:panelGrid>
 
     <br/>
@@ -87,7 +93,7 @@ function getSelectedType(qtiUrl, cpUrl){
      <h:commandButton value="#{authorImportExport.export}" type="submit"
        style="act" onclick="getSelectedType( '../qti/exportAssessment.faces?exportAssessmentId=#{assessmentBean.assessmentId}','/samigo-app/servlet/DownloadCP?&assessmentId=#{assessmentBean.assessmentId}'); return false;" />
      <%-- immediate=true bypasses the valueChangeListener --%>
-     <h:commandButton value="#{authorImportExport.export_cancel_action}" type="submit"
+     <h:commandButton value="#{commonMessages.cancel_action}" type="submit"
        style="act" action="author" immediate="true"/>
 
   </div>

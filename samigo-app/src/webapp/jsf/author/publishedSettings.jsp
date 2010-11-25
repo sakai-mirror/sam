@@ -252,7 +252,7 @@ function uncheckOther(field){
   <%@ include file="/jsf/author/allHeadings.jsp" %>
 
 <p>
-  <h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+  <h:messages infoClass="validation" warnClass="messageValidation" errorClass="validation" fatalClass="validation"/>
 </p>
 
     <h3>
@@ -310,20 +310,40 @@ function uncheckOther(field){
   <!-- *** DELIVERY DATES *** -->
   <samigo:hideDivision id="div2" title="#{assessmentSettingsMessages.t_deliveryDates}" >
     <f:verbatim><div class="tier2"></f:verbatim>
-    <h:panelGrid columns="2" columnClasses="shorttext"
-      summary="#{templateMessages.delivery_dates_sec}">
+    <h:panelGrid columns="2" columnClasses="shorttext" summary="#{templateMessages.delivery_dates_sec}" border="0">
 
-      <h:outputText value="#{assessmentSettingsMessages.assessment_available_date}" />
+      <h:outputLabel value="#{assessmentSettingsMessages.assessment_available_date}" />
       <samigo:datePicker value="#{publishedSettings.startDateString}" size="25" id="startDate" />
-
-      <h:outputText value="#{assessmentSettingsMessages.assessment_due_date}" />
+      <h:outputText value="" />
+      <h:outputText value="#{assessmentSettingsMessages.available_date_note}" />
+	
+	<!-- For formatting -->
+	<h:outputText value="" />
+	<h:outputText value="" />
+	<h:outputText value="" />
+	<h:outputText value="" />
+	  
+      <h:outputLabel value="#{assessmentSettingsMessages.assessment_due_date}" />
       <samigo:datePicker value="#{publishedSettings.dueDateString}" size="25" id="endDate"/>
-
-      <h:outputText value="#{assessmentSettingsMessages.assessment_retract_date}"/>
+      <h:outputText value="" />
+	  <h:outputText value="#{assessmentSettingsMessages.assessment_due_date_note}" />
+	  	
+	<!-- For formatting -->
+	<h:outputText value="" />
+	<h:outputText value="" />
+	<h:outputText value="" />
+	<h:outputText value="" />
+	  
+      <h:outputLabel value="#{assessmentSettingsMessages.assessment_retract_date}"/>
+  	  <h:panelGroup>
       <samigo:datePicker value="#{publishedSettings.retractDateString}" size="25" id="retractDate" />
-
-      <h:commandButton accesskey="#{assessmentSettingsMessages.a_retract}" type="submit" value="#{assessmentSettingsMessages.button_retract_now}" action="confirmAssessmentRetract"  styleClass="active" />
-
+      <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+	  <h:outputText value="#{assessmentSettingsMessages.word_or}"/>
+	  <f:verbatim>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</f:verbatim>
+      <h:commandButton type="submit" value="#{assessmentSettingsMessages.button_retract_now}" action="confirmAssessmentRetract"  styleClass="active" />
+      </h:panelGroup>
+      <h:outputText value="" />
+      <h:outputText value="#{assessmentSettingsMessages.assessment_retract_date_note}" />
 
     </h:panelGrid>
     <f:verbatim></div></f:verbatim>
@@ -518,18 +538,27 @@ function uncheckOther(field){
 	 <f:verbatim></div><div class="tier3"></f:verbatim>
 	 <f:verbatim><table><tr><td></f:verbatim>
 
-        <h:selectOneRadio id="unlimitedSubmissions" 
+        <h:selectOneRadio id="unlimitedSubmissions1" rendered="#{publishedSettings.itemNavigation!=1}"
             value="#{publishedSettings.unlimitedSubmissions}" layout="pageDirection">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.unlimited_submission}"/>
           <f:selectItem itemValue="0" itemLabel="#{assessmentSettingsMessages.only}" />
-
         </h:selectOneRadio>
-             <f:verbatim></td><td valign="bottom"></f:verbatim>
-            <h:panelGroup>
-              <h:inputText size="5" 
-                  value="#{publishedSettings.submissionsAllowed}" />
-              <h:outputLabel value="#{assessmentSettingsMessages.limited_submission}" />
-            </h:panelGroup>
+        <h:selectOneRadio id="unlimitedSubmissions2" disabled="true" rendered="#{publishedSettings.itemNavigation==1}"
+            value="0" layout="pageDirection">
+          <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.unlimited_submission}"/>
+          <f:selectItem itemValue="0" itemLabel="#{assessmentSettingsMessages.only}" />
+        </h:selectOneRadio>
+        <f:verbatim></td><td valign="bottom"></f:verbatim>
+        
+        <h:panelGroup rendered="#{publishedSettings.itemNavigation!=1}">
+          <h:inputText size="5" value="#{publishedSettings.submissionsAllowed}"/>
+          <h:outputLabel value="#{assessmentSettingsMessages.limited_submission}" />
+        </h:panelGroup>
+        <h:panelGroup rendered="#{publishedSettings.itemNavigation==1}">
+          <h:inputText size="5" value="1" disabled="true"/>
+          <h:outputLabel value="#{assessmentSettingsMessages.limited_submission}" />
+        </h:panelGroup>
+
     <f:verbatim></td></tr></table></f:verbatim>
      <f:verbatim></div></f:verbatim>
    </h:panelGroup>
@@ -610,20 +639,20 @@ function uncheckOther(field){
 
   <!-- *** FEEDBACK *** -->
   <h:panelGroup rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable==true or publishedSettings.valueMap.feedbackType_isInstructorEditable==true or publishedSettings.valueMap.feedbackComponents_isInstructorEditable==true}" >
-  <samigo:hideDivision id="div9" title="#{assessmentSettingsMessages.t_feedback}" >
+  <samigo:hideDivision id="div9" title="#{commonMessages.feedback}" >
  
  <!-- FEEDBACK AUTHORING -->
   <f:verbatim><div class="tier2"></f:verbatim>
    <h:panelGroup rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable==true}">
     <f:verbatim><div class="longtext"></f:verbatim>
-	<h:outputLabel value="#{assessmentSettingsMessages.feedback_authoring}" />
+	<h:outputLabel value="#{commonMessages.feedback_authoring}" />
 	<f:verbatim></div><div class="tier3"></f:verbatim>
     <h:panelGroup>
       <h:panelGrid columns="1"  >
         <h:selectOneRadio id="feedbackAuthoring" 
              value="#{publishedSettings.feedbackAuthoring}"
            layout="pageDirection">
-          <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.questionlevel_feedback}"/>
+          <f:selectItem itemValue="1" itemLabel="#{commonMessages.question_level_feedback}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.sectionlevel_feedback}"/>
           <f:selectItem itemValue="3" itemLabel="#{assessmentSettingsMessages.both_feedback}"/>
         </h:selectOneRadio>
@@ -634,7 +663,7 @@ function uncheckOther(field){
   
 	<h:panelGroup rendered="#{publishedSettings.valueMap.feedbackType_isInstructorEditable==true}">
     <f:verbatim><div class="longtext"></f:verbatim>
-	<h:outputLabel value="#{assessmentSettingsMessages.feedback_delivery}" />
+	<h:outputLabel value="#{commonMessages.feedback_delivery}" />
 	<f:verbatim></div><div class="tier3"></f:verbatim>
     <h:panelGroup>
       <h:panelGrid columns="1" rendered="#{publishedSettings.valueMap.feedbackAuthoring_isInstructorEditable!=true}" >
@@ -642,7 +671,7 @@ function uncheckOther(field){
              value="#{publishedSettings.feedbackDelivery}"
            layout="pageDirection">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.immediate_feedback}"/>
-          <f:selectItem itemValue="4" itemLabel="#{assessmentSettingsMessages.feedback_on_submission}"/>
+          <f:selectItem itemValue="4" itemLabel="#{commonMessages.feedback_on_submission}"/>
           <f:selectItem itemValue="3" itemLabel="#{assessmentSettingsMessages.no_feedback}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.feedback_by_date}"/>
         </h:selectOneRadio>
@@ -659,7 +688,7 @@ function uncheckOther(field){
              value="#{publishedSettings.feedbackDelivery}"
            layout="pageDirection" onclick="setBlockDivs();disableAllFeedbackCheck(this.value);">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.immediate_feedback}"/>
-		  <f:selectItem itemValue="4" itemLabel="#{assessmentSettingsMessages.feedback_on_submission}"/>
+		  <f:selectItem itemValue="4" itemLabel="#{commonMessages.feedback_on_submission}"/>
           <f:selectItem itemValue="3" itemLabel="#{assessmentSettingsMessages.no_feedback}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.feedback_by_date}"/>
         </h:selectOneRadio>
@@ -703,24 +732,24 @@ function uncheckOther(field){
        <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox11"
               value="#{publishedSettings.showStudentResponse}"/>
-          <h:outputText value="#{assessmentSettingsMessages.student_response}" />
+          <h:outputText value="#{commonMessages.student_response}" />
         </h:panelGroup>
        <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox12"
               value="#{publishedSettings.showQuestionLevelFeedback}"/>
-          <h:outputText value="#{assessmentSettingsMessages.question_level_feedback}" />
+          <h:outputText value="#{commonMessages.question_level_feedback}" />
        </h:panelGroup>
 
         <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox13"
               value="#{publishedSettings.showCorrectResponse}"/>
-          <h:outputText value="#{assessmentSettingsMessages.correct_response}" />
+          <h:outputText value="#{commonMessages.correct_response}" />
         </h:panelGroup>
 
        <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox14"
              value="#{publishedSettings.showSelectionLevelFeedback}"/>
-          <h:outputText value="#{assessmentSettingsMessages.selection_level_feedback}" />
+          <h:outputText value="#{commonMessages.selection_level_feedback}" />
         </h:panelGroup>
 
         <h:panelGroup>
@@ -744,7 +773,7 @@ function uncheckOther(field){
         <h:panelGroup>
           <h:selectBooleanCheckbox  disabled="true" id="feedbackCheckbox18"
               value="#{publishedSettings.showStatistics}"/>
-          <h:outputText value="#{assessmentSettingsMessages.statistics_and_histogram}" />
+          <h:outputText value="#{commonMessages.statistics_and_histogram}" />
         </h:panelGroup>
    
       </h:panelGrid>
@@ -755,24 +784,24 @@ function uncheckOther(field){
        <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox21" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
               value="#{publishedSettings.showStudentResponse}"/>
-          <h:outputText value="#{assessmentSettingsMessages.student_response}" />
+          <h:outputText value="#{commonMessages.student_response}" />
         </h:panelGroup>
        <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox22" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
               value="#{publishedSettings.showQuestionLevelFeedback}"/>
-          <h:outputText value="#{assessmentSettingsMessages.question_level_feedback}" />
+          <h:outputText value="#{commonMessages.question_level_feedback}" />
        </h:panelGroup>
 
         <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox23" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
               value="#{publishedSettings.showCorrectResponse}"/>
-          <h:outputText value="#{assessmentSettingsMessages.correct_response}" />
+          <h:outputText value="#{commonMessages.correct_response}" />
         </h:panelGroup>
 
        <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox24" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
              value="#{publishedSettings.showSelectionLevelFeedback}"/>
-          <h:outputText value="#{assessmentSettingsMessages.selection_level_feedback}" />
+          <h:outputText value="#{commonMessages.selection_level_feedback}" />
         </h:panelGroup>
 
         <h:panelGroup>
@@ -796,7 +825,7 @@ function uncheckOther(field){
         <h:panelGroup>
           <h:selectBooleanCheckbox id="feedbackCheckbox28" disabled="#{publishedSettings.feedbackDelivery==3 || publishedSettings.feedbackComponentOption ==1}"
               value="#{publishedSettings.showStatistics}"/>
-          <h:outputText value="#{assessmentSettingsMessages.statistics_and_histogram}" />
+          <h:outputText value="#{commonMessages.statistics_and_histogram}" />
         </h:panelGroup>
    
       </h:panelGrid>
@@ -811,8 +840,14 @@ function uncheckOther(field){
   <f:verbatim><div class="tier2"></f:verbatim>
   <h:panelGroup rendered="#{publishedSettings.valueMap.testeeIdentity_isInstructorEditable==true}"> <f:verbatim> <div class="longtext"></f:verbatim>  <h:outputLabel value="#{assessmentSettingsMessages.student_identity}" />
   <f:verbatim></div><div class="tier3"> </f:verbatim>
-        <h:panelGrid columns="2"  >
-          <h:selectOneRadio id="anonymousGrading" value="#{publishedSettings.anonymousGrading}"  layout="pageDirection" disabled="#{publishedSettings.editPubAnonyGradingRestricted}">
+        <h:panelGrid columns="2" rendered="#{publishedSettings.firstTargetSelected != 'Anonymous Users'}">
+          <h:selectOneRadio id="anonymousGrading1" value="#{publishedSettings.anonymousGrading}"  layout="pageDirection" disabled="#{publishedSettings.editPubAnonyGradingRestricted}">
+            <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.not_anonymous}"/>
+            <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.anonymous}"/>
+          </h:selectOneRadio>
+        </h:panelGrid>
+        <h:panelGrid columns="2" rendered="#{publishedSettings.firstTargetSelected == 'Anonymous Users'}">
+          <h:selectOneRadio id="anonymousGrading2" value="1"  layout="pageDirection" disabled="true">
             <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.not_anonymous}"/>
             <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.anonymous}"/>
           </h:selectOneRadio>
@@ -828,14 +863,14 @@ function uncheckOther(field){
         <h:selectOneRadio id="toDefaultGradebook1"
             value="#{publishedSettings.toDefaultGradebook}"  layout="pageDirection">
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.to_no_gradebook}"/>
-          <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.to_default_gradebook} #{assessmentSettingsMessages.gradebook_note_g}"/>
+          <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.to_default_gradebook}"/>
         </h:selectOneRadio>
       </h:panelGrid>
 
       <h:panelGrid columns="2" rendered="#{publishedSettings.firstTargetSelected == 'Anonymous Users'}">
         <h:selectOneRadio id="toDefaultGradebook2" disabled="true" value="2"  layout="pageDirection">
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.to_no_gradebook}"/>
-          <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.to_default_gradebook} #{assessmentSettingsMessages.gradebook_note_g}"/>
+          <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.to_default_gradebook}"/>
         </h:selectOneRadio>
       </h:panelGrid>
 
@@ -915,16 +950,16 @@ function uncheckOther(field){
 <p class="act">
 
   <!-- Save button -->
-  <h:commandButton accesskey="#{assessmentSettingsMessages.a_saveSettings}" type="submit" value="#{assessmentSettingsMessages.button_save_settings}" action="#{publishedSettings.getOutcome}"  styleClass="active" onclick="setBlockDivs();" >
+  <h:commandButton type="submit" value="#{assessmentSettingsMessages.button_save_settings}" action="#{publishedSettings.getOutcome}"  styleClass="active" onclick="setBlockDivs();" >
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SavePublishedSettingsListener" />
   </h:commandButton>
   
   <!-- Cancel button -->
-  <h:commandButton value="#{assessmentSettingsMessages.button_cancel}" type="submit" action="#{author.getFromPage}" rendered="#{author.fromPage != 'editAssessment'}">
+  <h:commandButton value="#{commonMessages.cancel_action}" type="submit" action="#{author.getFromPage}" rendered="#{author.fromPage != 'editAssessment'}">
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ResetPublishedAssessmentAttachmentListener" />
   </h:commandButton>
 
-  <h:commandButton value="#{assessmentSettingsMessages.button_cancel}" type="submit" action="editAssessment" rendered="#{author.fromPage == 'editAssessment'}">
+  <h:commandButton value="#{commonMessages.cancel_action}" type="submit" action="editAssessment" rendered="#{author.fromPage == 'editAssessment'}">
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ResetPublishedAssessmentAttachmentListener" />
 	  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
   </h:commandButton>

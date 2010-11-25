@@ -95,15 +95,15 @@ document.location='../evaluation/questionScore';
     <h:commandLink title="#{evaluationMessages.t_totalScores}" action="totalScores" immediate="true">
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ResetTotalScoreListener" />
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
-      <h:outputText value="#{evaluationMessages.title_total}" />
+      <h:outputText value="#{commonMessages.total_scores}" />
     </h:commandLink>
 
     <h:outputText value=" #{evaluationMessages.separator} " />
     <h:outputText value="#{evaluationMessages.q_view}" />
 
-	<h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne '' && !totalScores.hasRandomDrawPart}" />
+	<h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne ''}" />
     <h:commandLink title="#{evaluationMessages.t_histogram}" action="histogramScores" immediate="true"
-      rendered="#{totalScores.firstItem ne '' && !totalScores.hasRandomDrawPart}" >
+      rendered="#{totalScores.firstItem ne ''}" >
       <h:outputText value="#{evaluationMessages.stat_view}" />
       <f:param name="hasNav" value="true"/>
       <f:actionListener
@@ -111,9 +111,9 @@ document.location='../evaluation/questionScore';
     </h:commandLink>
 
 
-	<h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne '' && !totalScores.hasRandomDrawPart}" />
+	<h:outputText value=" #{evaluationMessages.separator} " rendered="#{totalScores.firstItem ne ''}" />
     <h:commandLink title="#{evaluationMessages.t_itemAnalysis}" action="detailedStatistics" immediate="true"
-      rendered="#{totalScores.firstItem ne '' && !totalScores.hasRandomDrawPart}" >
+      rendered="#{totalScores.firstItem ne ''}" >
       <h:outputText value="#{evaluationMessages.item_analysis}" />
       <f:param name="hasNav" value="true"/>
       <f:actionListener
@@ -122,8 +122,8 @@ document.location='../evaluation/questionScore';
 
 
     <h:outputText value=" #{evaluationMessages.separator} " />
-    <h:commandLink title="#{evaluationMessages.t_export}" action="exportResponses" immediate="true">
-      <h:outputText value="#{evaluationMessages.export}" />
+    <h:commandLink title="#{commonMessages.export_action}" action="exportResponses" immediate="true">
+      <h:outputText value="#{commonMessages.export_action}" />
   	  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ExportResponsesListener" />
     </h:commandLink>
 
@@ -150,7 +150,11 @@ document.location='../evaluation/questionScore';
 	    </h:column>
       </samigo:dataLine>
 
-	  <h:outputText value="#{evaluationMessages.random_draw_info_1} #{partinit.numberQuestionsDraw} #{evaluationMessages.random_draw_info_2} #{partinit.numberQuestionsTotal} #{evaluationMessages.random_draw_info_3} " rendered="#{partinit.isRandomDrawPart}" />
+	  <h:outputFormat value="#{evaluationMessages.random_draw_info}" >
+	  	<f:param value="#{partinit.numberQuestionsDraw}" />
+		<f:param value="#{partinit.numberQuestionsTotal}" />
+	  </h:outputFormat>
+
 	  <samigo:dataLine value="#{partinit.questionNumberList}" var="iteminit" separator=" | " first="0" rows="#{partinit.numberQuestionsTotal}" rendered="#{partinit.isRandomDrawPart}" >
         <h:column>
           <h:commandLink title="#{evaluationMessages.t_questionScores}"action="questionScores" immediate="true" >
@@ -189,7 +193,7 @@ document.location='../evaluation/questionScore';
          <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_match}"/>
      </h:panelGroup>
      <h:panelGroup rendered="#{questionScores.typeId == '2'}">
-         <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_mult_mult_ms}"/>
+         <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{commonMessages.multipl_mc_ms}"/>
      </h:panelGroup>
      <h:panelGroup rendered="#{questionScores.typeId == '4'}">
          <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_tf}"/>
@@ -202,15 +206,14 @@ document.location='../evaluation/questionScore';
          <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_mult_surv}"/>
      </h:panelGroup>
      <h:panelGroup rendered="#{questionScores.typeId == '1'}">
-    <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_mult_sing}"/>
+    <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{commonMessages.multiple_choice_sin}"/>
       </h:panelGroup>
-    <h:panelGroup rendered="#{questionScores.typeId == '12'}">
-      <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_mult_mult_ss}"/>
-    </h:panelGroup>
+     <h:panelGroup rendered="#{questionScores.typeId == '12'}">
+    <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{commonMessages.multipl_mc_ss}"/>
+      </h:panelGroup>
     <h:panelGroup rendered="#{questionScores.typeId == '13'}">
       <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_emi}"/>
-    </h:panelGroup>
-    
+    </h:panelGroup>    
  </h:column>
 
   <!-- following columns are for formatting -->
@@ -822,10 +825,10 @@ document.location='../evaluation/questionScore';
     <h:column rendered="#{questionScores.sortType!='answer'}">
       <f:facet name="header">
         <h:panelGroup>
-		  <h:outputText value="#{evaluationMessages.stud_resp}" 
+		  <h:outputText value="#{commonMessages.student_response}" 
              rendered="#{questionScores.typeId == '6' || questionScores.typeId == '7' }"/>
           <h:commandLink title="#{evaluationMessages.t_sortResponse}" id="answer" action="questionScores" >
-            <h:outputText value="#{evaluationMessages.stud_resp}" 
+            <h:outputText value="#{commonMessages.student_response}" 
                rendered="#{questionScores.typeId != '6' && questionScores.typeId != '7' }"/>
             <f:actionListener
                type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreUpdateListener" />
@@ -888,10 +891,10 @@ document.location='../evaluation/questionScore';
     <h:column rendered="#{questionScores.sortType eq 'answer' && questionScores.sortAscending}">
       <f:facet name="header">
       <h:panelGroup>
-		  <h:outputText value="#{evaluationMessages.stud_resp}" 
+		  <h:outputText value="#{commonMessages.student_response}" 
              rendered="#{questionScores.typeId == '6' || questionScores.typeId == '7' }"/>
           <h:commandLink title="#{evaluationMessages.t_sortResponse}" action="questionScores" >
-            <h:outputText value="#{evaluationMessages.stud_resp}" 
+            <h:outputText value="#{commonMessages.student_response}" 
                rendered="#{questionScores.typeId != '6' && questionScores.typeId != '7' }"/>
           <f:param name="sortAscending" value="false" />
           <h:graphicImage alt="#{evaluationMessages.alt_sortResponseDescending}" rendered="#{questionScores.sortAscending && questionScores.typeId != '6' && questionScores.typeId != '7'}" url="/images/sortascending.gif"/>
@@ -948,10 +951,10 @@ document.location='../evaluation/questionScore';
     <h:column rendered="#{questionScores.sortType eq 'answer' && !questionScores.sortAscending}">
       <f:facet name="header">
 		  <h:panelGroup>
-		  <h:outputText value="#{evaluationMessages.stud_resp}" 
+		  <h:outputText value="#{commonMessages.student_response}" 
              rendered="#{questionScores.typeId == '6' || questionScores.typeId == '7' }"/>
           <h:commandLink title="#{evaluationMessages.t_sortResponse}" action="questionScores" >
-            <h:outputText value="#{evaluationMessages.stud_resp}" 
+            <h:outputText value="#{commonMessages.student_response}" 
                rendered="#{questionScores.typeId != '6' && questionScores.typeId != '7' }"/>
           <f:param name="sortAscending" value="true" />
           <h:graphicImage alt="#{evaluationMessages.alt_sortResponseAscending}" rendered="#{!questionScores.sortAscending && questionScores.typeId != '6' && questionScores.typeId != '7'}" url="/images/sortdescending.gif"/>
@@ -1082,13 +1085,13 @@ document.location='../evaluation/questionScore';
 
 <p class="act">
    <%-- <h:commandButton value="#{evaluationMessages.save_exit}" action="author"/> --%>
-   <h:commandButton accesskey="#{evaluationMessages.a_update}" styleClass="active" value="#{evaluationMessages.save_cont}" action="questionScores" type="submit" >
+   <h:commandButton styleClass="active" value="#{evaluationMessages.save_cont}" action="questionScores" type="submit" >
       <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreUpdateListener" />
       <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreListener" />
    </h:commandButton>
-   <h:commandButton accesskey="#{evaluationMessages.a_cancel}" value="#{evaluationMessages.cancel}" action="totalScores" immediate="true"/>
+   <h:commandButton value="#{commonMessages.cancel_action}" action="totalScores" immediate="true"/>
 </div>
 </h:form>
 </div>

@@ -44,14 +44,14 @@
        <h:outputText value="#{evaluationMessages.retake_confirmation_1} #{retakeAssessment.studentName} #{evaluationMessages.retake_confirmation_2}" />
      </div>
        <p class="act">
-       <h:commandButton id="retake" accesskey="#{evaluationMessages.a_retake}" value="#{evaluationMessages.retake}" type="submit"
+       <h:commandButton id="retake" value="#{evaluationMessages.retake}" type="submit"
          styleClass="active" action="submissionStatus" >
           <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.evaluation.RetakeAssessmentListener" />
           <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.evaluation.SubmissionStatusListener" />
        </h:commandButton>
-       <h:commandButton value="#{evaluationMessages.cancel}" type="submit" style="act" action="author" />
+       <h:commandButton value="#{commonMessages.cancel_action}" type="submit" style="act" action="author" />
        </p>
 
  </h:form>

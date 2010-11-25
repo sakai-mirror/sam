@@ -38,6 +38,7 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedFeedback;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentFeedbackIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.PublishedAssessmentIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
@@ -77,7 +78,7 @@ public class BeginDeliveryActionListener implements ActionListener
 
     // get managed bean and set its action accordingly
     DeliveryBean delivery = (DeliveryBean) ContextUtil.lookupBean("delivery");
-    log.info("****DeliveryBean= "+delivery);
+    log.debug("****DeliveryBean= "+delivery);
     String actionString = ContextUtil.lookupParam("actionString");
     if (actionString != null && !actionString.trim().equals("")) {
       // if actionString is null, likely that action & actionString has been set already, 
@@ -85,6 +86,9 @@ public class BeginDeliveryActionListener implements ActionListener
       // preview and take assessment is set by the parameter in the jsp pages
       delivery.setActionString(actionString);
     }
+    
+    delivery.setDisplayFormat();
+    
     int action = delivery.getActionMode();
     PublishedAssessmentFacade pub = getPublishedAssessmentBasedOnAction(action, delivery);
     
@@ -121,8 +125,6 @@ public class BeginDeliveryActionListener implements ActionListener
     	sizeMax_float = sizeMax.floatValue()/1024;
     }
     delivery.setFileUploadSizeMax(sizeMax_float);
-
-
     delivery.setPublishedAssessment(pub);
     
     // populate backing bean from published assessment
@@ -155,7 +157,7 @@ public class BeginDeliveryActionListener implements ActionListener
     PublishedAssessmentFacade pubAssessment)
   {
     AssessmentAccessControlIfc control = (AssessmentAccessControlIfc)pubAssessment.getAssessmentAccessControl();
-
+    
     // populate deliveryBean, settingsBean and feedbackComponent .
     // deliveryBean contains settingsBean & feedbackComponent)
     populateDelivery(delivery, pubAssessment);
@@ -172,6 +174,10 @@ public class BeginDeliveryActionListener implements ActionListener
     if (component.getShowDateFeedback() && control.getFeedbackDate()!= null && currentDate.after(control.getFeedbackDate())) {
       delivery.setFeedbackOnDate(true); 
     }
+    
+    EvaluationModelIfc eval = (EvaluationModelIfc) pubAssessment.getEvaluationModel();
+    delivery.setScoringType(eval.getScoringType());
+    
     delivery.setAttachmentList(pubAssessment.getAssessmentAttachmentList());
   }
 
@@ -248,6 +254,7 @@ public class BeginDeliveryActionListener implements ActionListener
     // #1 - set submission remains
     int totalSubmissions = (service.getTotalSubmission(AgentFacade.getAgentString(),
         publishedAssessmentId.toString())).intValue();
+    delivery.setTotalSubmissions(totalSubmissions);
     if (!(Boolean.TRUE).equals(control.getUnlimitedSubmissions())){
       // when there are retaks, we always display 1 as number of remaining submission	
       int submissionsRemaining = control.getSubmissionsAllowed().intValue() - totalSubmissions;

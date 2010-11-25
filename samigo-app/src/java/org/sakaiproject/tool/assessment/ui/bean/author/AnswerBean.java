@@ -29,8 +29,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.util.ResourceLoader;
@@ -53,14 +51,15 @@ import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.cover.SessionManager;
  
-import javax.faces.context.ExternalContext;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
-import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 
 
 
+@SuppressWarnings("deprecation")
 public class AnswerBean implements Serializable, Comparable{
 
   private static final long serialVersionUID = 7526471155622776147L;
@@ -81,11 +80,9 @@ public class AnswerBean implements Serializable, Comparable{
 
   //gopalrc - for navigation
   private String outcome;
-
-
-private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
   
   private static Log log = LogFactory.getLog(AnswerBean.class);
+  private String partialCredit = "0";  //to incorporate partial credit
   private static ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
 
   public static final String choiceLabels = rb.getString("choice_labels"); 
@@ -147,7 +144,7 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
   
   // additional constroctor for partial credit
 	public AnswerBean(String ptext, Long pseq, String plabel, String pfdbk,
-			Boolean pcorr, String pgrade, Float pscore, Float pCredit) {
+			Boolean pcorr, String pgrade, Float pscore, String pCredit) {
 		this.text = ptext;
 		this.sequence = pseq;
 		this.label = plabel;
@@ -194,15 +191,14 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
   }
 
 	// --mustansar for partial credit
-	public Float getPartialCredit() {
+	public String getPartialCredit() {
 		return partialCredit;
 	}
 
-	public void setPartialCredit(Float pCredit) {
+	public void setPartialCredit(String pCredit) {
 		this.partialCredit = pCredit;
 	}
-	
-	
+		
 	//gopalrc - added for EMI - Jan 2010
 	/*
 	public void validateCorrectOptionLabels(FacesContext context, 
@@ -476,5 +472,34 @@ private Float partialCredit = Float.valueOf(0);  //to incorporate partial credit
 	      this.resourceHash = resourceHash;
 	  }
 	
-	
+	public void validatePartialCredit(FacesContext context,  UIComponent toValidate,Object value){
+		Integer pCredit = null;
+		boolean isValid = true;
+		if ("0.0".equals(value.toString())) {
+			pCredit = 0;
+		}
+		else {
+			try {
+				pCredit = Integer.parseInt(value.toString());
+			}
+			catch (NumberFormatException e) {
+				isValid = false;
+			}
+		}
+		
+		if(isValid && (pCredit==null || pCredit<0 || pCredit>99 )){
+			isValid = false;
+		}
+		
+		if (!isValid) {
+			((UIInput)toValidate).setValid(false);
+			FacesMessage message=new FacesMessage();
+			message.setSeverity(FacesMessage.SEVERITY_ERROR);
+			String summary=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","partial_credit_limit_summary");
+			String detail =ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","partial_credit_limit_detail"); 
+			message.setSummary(summary) ;
+			message.setDetail(detail);   
+			context.addMessage(toValidate.getClientId(context), message);
+		}
+	}
 }

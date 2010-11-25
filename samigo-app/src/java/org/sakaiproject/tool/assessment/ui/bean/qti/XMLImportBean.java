@@ -37,6 +37,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.*;
+import org.xml.sax.SAXException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,6 +88,9 @@ public class XMLImportBean implements Serializable
   private ItemAuthorBean itemAuthorBean;
   private QuestionPoolBean questionPoolBean;
   private boolean isCP;
+  private String importType2;
+  private static final String VALIDATE_XSD_PATH =
+      "xml/xsd/";
   
   private static final GradebookServiceHelper gbsHelper =
       IntegrationContextFactory.getInstance().getGradebookServiceHelper();
@@ -106,7 +113,7 @@ public class XMLImportBean implements Serializable
   {
 	  String sourceType = ContextUtil.lookupParam("sourceType");
 	  String uploadFile = (String) e.getNewValue();
-	  if ("respondus".equals(sourceType)) {
+	  if ("2".equals(sourceType)) {
 		  if(uploadFile.toLowerCase().endsWith(".zip")) {
 			  isCP = true;
 			  importAssessment(uploadFile, true, true);
@@ -144,7 +151,7 @@ public class XMLImportBean implements Serializable
 	}
     try
     {
-      processFile(filename, isRespondus);
+      processFile(filename, uploadFile, isRespondus);
     }
     catch (FileNotFoundException fnfex)
     {
@@ -162,10 +169,14 @@ public class XMLImportBean implements Serializable
       // remove unsuccessful file
       log.debug("****Clean up file: "+filename);
       File f1 = new File(filename);
-      f1.delete();
+      boolean success = f1.delete();
+      if (!success)
+	log.error ("Failed to delete file " + filename);
       if (isCP) {
     	  File f2 = new File(uploadFile);
-    	  f2.delete();
+    	  success = f2.delete();
+          if (!success)
+	  log.error ("Failed to delete file " + uploadFile);
     	  File f3 = new File(unzipLocation);
     	  deleteDirectory(f3);
       }
@@ -229,8 +240,22 @@ public class XMLImportBean implements Serializable
   {
     this.importType = importType;
   }
+  
+  public String getImportType2()
+  {
+    return importType2;
+  }
 
-  private void processFile(String fileName, boolean isRespondus) throws Exception, RespondusMatchingException
+  /**
+   * A, S, I
+   * @param importType A, S, or I
+   */
+  public void setImportType2(String importType2)
+  {
+    this.importType2 = importType2;
+  }
+
+  private void processFile(String fileName, String uploadFile, boolean isRespondus) throws Exception, RespondusMatchingException
   {
     itemAuthorBean.setTarget(ItemAuthorBean.FROM_ASSESSMENT); // save to assessment
 
@@ -240,14 +265,21 @@ public class XMLImportBean implements Serializable
     AssessmentFacade assessment = createImportedAssessment(fileName, qtiVersion, isRespondus, failedMatchingQuestions);
     if (failedMatchingQuestions.size() > 0)
     {
+      String importedFilename = getImportedFilename(uploadFile);	
       ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorImportExport");
-      StringBuffer sb = new StringBuffer(rb.getString("respondus_matching_err"));
+      StringBuffer sb = new StringBuffer("\"");
+      sb.append(importedFilename);
+      sb.append("\" ");
+      sb.append(rb.getString("respondus_matching_err_1"));
+      sb.append(" ");
       for(int i = 0; i < failedMatchingQuestions.size() - 1; i++) {
     	  sb.append(" ");
     	  sb.append(failedMatchingQuestions.get(i));
     	  sb.append(", ");
       }
       sb.append(failedMatchingQuestions.get(failedMatchingQuestions.size() - 1));
+      sb.append(". ");
+      sb.append(rb.getString("respondus_matching_err_2"));
       FacesMessage message = new FacesMessage(sb.toString());
       FacesContext.getCurrentInstance().addMessage(null, message);
     }
@@ -296,6 +328,13 @@ public class XMLImportBean implements Serializable
     authorBean.setAssessments(list);
   }
   
+  private String getImportedFilename(String filename) {
+	  String temp_filename_1 = filename.substring(filename.lastIndexOf("/") + 1);
+	  String temp_filename_2 = temp_filename_1.substring(temp_filename_1.indexOf("."));
+	  String temp_filename_3 = temp_filename_1.substring(0, temp_filename_1.substring(0, temp_filename_1.indexOf(".")).lastIndexOf("_"));
+	  String final_filename = temp_filename_3 + temp_filename_2;
+	  return final_filename;
+  }
   private void deleteDirectory(File directory) {
 	  if(directory.exists()) {
 		  File[] files = directory.listFiles();
@@ -304,11 +343,15 @@ public class XMLImportBean implements Serializable
 				  deleteDirectory(files[i]);
 			  }
 			  else {
-				  files[i].delete();
+				boolean success = files[i].delete();
+    				if (!success)
+      					log.error("Delete Failed.");
 			  }
 		  }
 	  }
-	  directory.delete();
+		boolean success = directory.delete();
+    		if (!success)
+  			log.error("Delete Failed.");
   }
 
   /**
@@ -324,7 +367,16 @@ public class XMLImportBean implements Serializable
     //trim = true so that xml processing instruction at top line, even if not.
     Document document = null;
 	try {
-		document = XmlUtil.readDocument(fullFileName, true);
+		
+		// validate xml first 
+ 		boolean success = validateImportXml(fullFileName);
+ 		// now parse xml
+		if (success) {
+			document = XmlUtil.readDocument(fullFileName, true);
+		}
+		else {
+			throw( new RuntimeException("Invalid QTI XML format."));
+		}
 	} catch (Exception e) {
 		throw(e);
 	}
@@ -337,6 +389,35 @@ public class XMLImportBean implements Serializable
     }
   }
 
+  private boolean validateImportXml(String fullfilename) throws SAXException, IOException{
+      // 1. Lookup a factory for the W3C XML Schema language
+      SchemaFactory factory = 
+          SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+      
+      // 2. Compile the schema. 
+      // Here the schema is loaded from a java.io.File, but you could use 
+      // a java.net.URL or a javax.xml.transform.Source instead.
+      String schemaFile = VALIDATE_XSD_PATH + "qtiv1p2.xsd";
+      log.debug("schemaFile = " + schemaFile);
+      Schema schema = factory.newSchema(new StreamSource(XMLImportBean.class.getClassLoader().getResourceAsStream(schemaFile)));
+  
+      // 3. Get a validator from the schema.
+      Validator validator = schema.newValidator();
+      
+      // 4. Parse the document you want to check.
+      Source source = new StreamSource(fullfilename);
+      
+      // 5. Check the document
+      try {
+          validator.validate(source);
+          log.debug(fullfilename + " is valid.");
+          return true;
+      }
+      catch (SAXException ex) {
+    	  log.debug(fullfilename + " is not valid QTI format.");
+      }
+      return false;
+  }
   public AuthorBean getAuthorBean()
   {
     return authorBean;
@@ -413,7 +494,9 @@ public class XMLImportBean implements Serializable
     try{
       //System.out.println("****filename="+fileName);
       File upload = new File(fileName);
-      upload.delete();
+      boolean success = upload.delete();
+      if (!success)
+	log.error ("Failed to delete file " + fileName);
     }
     catch(Exception e){
 	e.printStackTrace();

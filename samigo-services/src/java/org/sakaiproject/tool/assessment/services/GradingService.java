@@ -1199,10 +1199,17 @@ public class GradingService
 
     int retryCount = PersistenceService.getInstance().getRetryCount().intValue();
     while (retryCount > 0){
-      try {
-        gbsHelper.updateExternalAssessmentScore(data, g);
-        retryCount = 0;
-      }
+    	try {
+    		// Send the average score if average was selected for multiple submissions
+    		Integer scoringType = pub.getEvaluationModel().getScoringType();
+    		if (scoringType.equals(EvaluationModelIfc.AVERAGE_SCORE)) {
+    			Float averageScore = PersistenceService.getInstance().getAssessmentGradingFacadeQueries().
+    			getAverageSubmittedAssessmentGrading(Long.valueOf(pub.getPublishedAssessmentId()), data.getAgentId());
+    			data.setFinalScore(averageScore);
+    		}
+    		gbsHelper.updateExternalAssessmentScore(data, g);
+    		retryCount = 0;
+    	}
       catch (org.sakaiproject.service.gradebook.shared.AssessmentNotFoundException ante) {
     	  log.warn("problem sending grades to gradebook: " + ante.getMessage());
           if (AssessmentIfc.RETRACT_FOR_EDIT_STATUS.equals(pub.getStatus())) {
@@ -1534,7 +1541,12 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
         }
         
         log.info("answer2Num= " + answer2Num);      
-        
+        // Can accept increasing and decreasing ranges
+        if (answer1Num > answer2Num) {
+          float swap = answer1Num;
+          answer1Num = answer2Num;
+          answer2Num = swap;
+        }
         
           if (data.getAnswerText() != null){
     	    studentanswer= data.getAnswerText().trim().replace(',','.');    // in Spain, comma is used as a decimal point
@@ -1797,6 +1809,27 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	    return results;
   }
   
+  public HashMap getSiteSubmissionCountHash(String siteId) {
+	  HashMap results = new HashMap();
+	    try {
+	    	results = PersistenceService.getInstance().
+	        getAssessmentGradingFacadeQueries().getSiteSubmissionCountHash(siteId);
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return results;
+  }  
+  
+  public HashMap getSiteInProgressCountHash(final String siteId) {
+	  HashMap results = new HashMap();
+	    try {
+	    	results = PersistenceService.getInstance().
+	        getAssessmentGradingFacadeQueries().getSiteInProgressCountHash(siteId);
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return results;
+  }
 
   public int getActualNumberRetake(Long publishedAssessmentId, String agentIdString) {
 	  	int actualNumberReatke = 0;
@@ -1818,8 +1851,19 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	      e.printStackTrace();
 	    }
 	    return actualNumberReatkeHash;
-}
-  
+  }
+    
+  public HashMap getSiteActualNumberRetakeHash(String siteIdString) {
+	  HashMap numberRetakeHash = new HashMap();
+	    try {
+	    	numberRetakeHash = PersistenceService.getInstance().
+	        getAssessmentGradingFacadeQueries().getSiteActualNumberRetakeHash(siteIdString);
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return numberRetakeHash;
+  }
+    
   public List getStudentGradingSummaryData(Long publishedAssessmentId, String agentIdString) {
 	  List results = null;
 	    try {
@@ -1854,6 +1898,17 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	    return numberRetakeHash;
   }
   
+  public HashMap getSiteNumberRetakeHash(String siteIdString) {
+	  HashMap siteActualNumberRetakeList = new HashMap();
+	    try {
+	    	siteActualNumberRetakeList = PersistenceService.getInstance().
+	        getAssessmentGradingFacadeQueries().getSiteNumberRetakeHash(siteIdString);
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return siteActualNumberRetakeList;
+  }
+    
   public void saveStudentGradingSummaryData(StudentGradingSummaryIfc studentGradingSummaryData) {
 	    try {
 	    	PersistenceService.getInstance().getAssessmentGradingFacadeQueries().saveStudentGradingSummaryData(studentGradingSummaryData);
@@ -1874,11 +1929,11 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	    return numberRetake;
   }
   
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String questionString, String textString, String rationaleString, Map useridMap) {
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String partString, String questionString, String textString, String rationaleString, Map useridMap) {
 	  List list = null;
 	    try {
 	    	list = PersistenceService.getInstance().
-	        getAssessmentGradingFacadeQueries().getExportResponsesData(publishedAssessmentId, anonymous,audioMessage, fileUploadMessage, noSubmissionMessage, showPartAndTotalScoreSpreadsheetColumns, questionString, textString, rationaleString, useridMap);
+	        getAssessmentGradingFacadeQueries().getExportResponsesData(publishedAssessmentId, anonymous,audioMessage, fileUploadMessage, noSubmissionMessage, showPartAndTotalScoreSpreadsheetColumns, poolString, partString, questionString, textString, rationaleString, useridMap);
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	    }
@@ -1933,6 +1988,17 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	    try {
 	    	list = PersistenceService.getInstance().
 	        getAssessmentGradingFacadeQueries().getUpdatedAssessmentList(agentId, siteId);
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return list;
+  }
+  
+  public List getSiteNeedResubmitList(String siteId) {
+	  List list = null;
+	    try {
+	    	list = PersistenceService.getInstance().
+	        getAssessmentGradingFacadeQueries().getSiteNeedResubmitList(siteId);
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	    }

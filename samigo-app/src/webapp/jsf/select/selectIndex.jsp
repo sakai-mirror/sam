@@ -156,6 +156,19 @@ sorting actions for table:
     </h:column>
     <h:column>
       <f:facet name="header">
+        <h:panelGroup>
+          <h:outputText value="#{selectIndexMessages.t_time_limit} " styleClass="currentSort"  />
+        </h:panelGroup>
+      </f:facet>
+	
+	<h:outputText value="#{takeable.timeLimit_hour} #{selectIndexMessages.hour} #{takeable.timeLimit_minute} #{selectIndexMessages.minutes}" styleClass="currentSort"  rendered="#{takeable.timeLimit_hour != 0 && takeable.timeLimit_minute != 0}"  escape="false"/>
+	<h:outputText value="#{takeable.timeLimit_hour} #{selectIndexMessages.hour}" styleClass="currentSort"  rendered="#{takeable.timeLimit_hour != 0 && takeable.timeLimit_minute == 0}"  escape="false"/>
+	<h:outputText value="#{takeable.timeLimit_minute} #{selectIndexMessages.minutes}" styleClass="currentSort"  rendered="#{takeable.timeLimit_hour == 0 && takeable.timeLimit_minute != 0}"  escape="false"/>
+	<h:outputText value="#{selectIndexMessages.na}" styleClass="currentSort"  rendered="#{takeable.timeLimit_hour == 0 && takeable.timeLimit_minute == 0}"  escape="false"/>
+	
+   </h:column>
+    <h:column>
+      <f:facet name="header">
        <h:panelGroup>
         <h:commandLink title="#{selectIndexMessages.t_sortDueDate}" id="takedue1" rendered="#{select.takeableSortOrder!='due'}" onmouseup="disableLinks(this);">
           <f:param name="takeableSortType" value="due" />
@@ -256,9 +269,11 @@ sorting actions for table:
           <h:outputText value="#{selectIndexMessages.title} " styleClass="currentSort"  />
         </h:panelGroup>
       </f:facet>
-
+	
 	<h:outputText value="#{reviewable.assessmentTitle}" styleClass="currentSort"  rendered="#{reviewable.isRecordedAssessment}"  escape="false"/>
-	<h:outputText value="#{selectIndexMessages.asterisk}" rendered="#{reviewable.isRecordedAssessment && reviewable.feedback == 'true' && !reviewable.isAssessmentRetractForEdit && reviewable.hasAssessmentBeenModified}" styleClass="validate"/> 
+	<h:outputText value="#{selectIndexMessages.asterisk}" rendered="#{reviewable.isRecordedAssessment && reviewable.feedback == 'show' && !reviewable.isAssessmentRetractForEdit && reviewable.hasAssessmentBeenModified}" styleClass="validate"/> 
+	<h:outputText value="#{selectIndexMessages.asterisk_2}" rendered="#{reviewable.isRecordedAssessment && reviewable.isAssessmentRetractForEdit}" styleClass="validate" />
+	
    </h:column>
 	
 	<!-- STATS creating separate column for stats -->
@@ -367,7 +382,13 @@ sorting actions for table:
 	    
   </h:dataTable>
 
+  <f:verbatim><br/></f:verbatim>
+  
+  <h:panelGrid>
   <h:outputText value="#{selectIndexMessages.asterisk} #{selectIndexMessages.has_been_modified}" rendered="#{select.hasAnyAssessmentBeenModified}" styleClass="validate"/> 
+  <h:outputText value="#{selectIndexMessages.asterisk_2} #{selectIndexMessages.currently_being_edited}" rendered="#{select.hasAnyAssessmentRetractForEdit}" styleClass="validate"/>
+  </h:panelGrid>
+
   </div></div>
   </h:form>
 </div>

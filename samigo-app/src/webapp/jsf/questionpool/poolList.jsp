@@ -62,9 +62,10 @@
          type="org.sakaiproject.tool.assessment.ui.listener.author.AuthorActionListener" />
    </h:commandLink>
                                        
-<f:verbatim></span></li>
-<li role="menuitem" ><span></f:verbatim>
-
+<f:verbatim></span></li></f:verbatim>
+<h:panelGroup rendered="#{authorization.adminTemplate and template.showAssessmentTypes}">
+<f:verbatim><li role="menuitem" ><span></f:verbatim>
+ 
    <h:commandLink title="#{generalMessages.t_template}" rendered="#{questionpool.importToAuthoring == 'false'}" action="template" immediate="true">
         <h:outputText value="#{generalMessages.template}"/>
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.TemplateListener" />
@@ -76,8 +77,9 @@
          type="org.sakaiproject.tool.assessment.ui.listener.questionpool.CancelImportToAssessmentListener" />
    </h:commandLink>
 
-<f:verbatim></span></li>
-<li role="menuitem" ><span></f:verbatim>
+<f:verbatim></span></li></f:verbatim>
+</h:panelGroup>
+<f:verbatim><li role="menuitem" ><span></f:verbatim>
 
         <h:outputText value="#{questionPoolMessages.qps}"/>
 
@@ -117,10 +119,10 @@
 
 <p class="act">
  
-<h:commandButton accesskey="#{questionPoolMessages.a_update}" rendered="#{questionpool.importToAuthoring == 'false' && authorization.deleteOwnQuestionPool}" type="submit" immediate="true" id="Submit" value="#{questionPoolMessages.update}" action="#{questionpool.startRemovePool}" styleClass="active" >
+<h:commandButton rendered="#{questionpool.importToAuthoring == 'false' && authorization.deleteOwnQuestionPool}" type="submit" immediate="true" id="Submit" value="#{questionPoolMessages.update}" action="#{questionpool.startRemovePool}" styleClass="active" >
   </h:commandButton>
 
-  <h:commandButton accesskey="#{questionPoolMessages.a_cancel}" rendered="#{questionpool.importToAuthoring == 'true'}"  type="submit" immediate="true" id="cancel" value="#{questionPoolMessages.cancel}" action="#{questionpool.cancelImport}"  >
+  <h:commandButton rendered="#{questionpool.importToAuthoring == 'true'}"  type="submit" immediate="true" id="cancel" value="#{questionPoolMessages.cancel}" action="#{questionpool.cancelImport}"  >
   </h:commandButton>
 </p>
 

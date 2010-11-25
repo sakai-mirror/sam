@@ -193,9 +193,15 @@ public interface AssessmentGradingFacadeQueriesAPI
   
   public List getAllAssessmentGradingByAgentId(Long publishedAssessmentId, String agentIdString);
   
+  public HashMap getSiteSubmissionCountHash(String siteId);
+  
+  public HashMap getSiteInProgressCountHash(String siteId) ;
+  
   public int getActualNumberRetake(Long publishedAssessmentId, String agentIdString);
   
   public HashMap getActualNumberRetakeHash(String agentIdString);
+  
+  public HashMap getSiteActualNumberRetakeHash(String siteIdString);
   
   public List getStudentGradingSummaryData(Long publishedAssessmentId, String agentIdString);
   
@@ -203,11 +209,13 @@ public interface AssessmentGradingFacadeQueriesAPI
   
   public HashMap getNumberRetakeHash(String agentIdString);
   
+  public HashMap getSiteNumberRetakeHash(String siteIdString);
+  
   public void saveStudentGradingSummaryData(StudentGradingSummaryIfc studentGradingSummaryData);
 
   public int getLateSubmissionsNumberByAgentId(Long publishedAssessmentId, String agentIdString, Date dueDate);
   
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String questionString, String textString, String rationaleString, Map useridMap);
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String sectionString, String questionString, String textString, String rationaleString, Map useridMap);
   
   public boolean getHasGradingData(Long publishedAssessmentId);
 
@@ -219,6 +227,8 @@ public interface AssessmentGradingFacadeQueriesAPI
   public String getFilename(Long itemGradingId, String agentId, String filename);
 
   public List getUpdatedAssessmentList(String agentId, String siteId);
+  
+  public List getSiteNeedResubmitList(String siteId);
   
   public void autoSubmitAssessments();
   

@@ -63,6 +63,8 @@ public class ActionSelectListener implements ValueChangeListener {
 		if ("edit_pending".equals(newValue)) {
 			EditAssessmentListener editAssessmentListener = new EditAssessmentListener();
 			editAssessmentListener.processAction(null);
+			author.setFirstFromPage("editAssessment");
+			author.setJustPublishedAnAssessment(false);
 		}
 		else if ("preview_pending".equals(newValue)) {
 			delivery.setActionString("previewAssessment");
@@ -71,35 +73,64 @@ public class ActionSelectListener implements ValueChangeListener {
 			BeginDeliveryActionListener beginDeliveryActionListener = new BeginDeliveryActionListener();
 			beginDeliveryActionListener.processAction(null);
 			author.setOutcome("beginAssessment");
+			author.setJustPublishedAnAssessment(false);
 		}
 		else if ("print_pending".equals(newValue) || "print_published".equals(newValue)) {
 			delivery.setActionString("previewAssessment");
 			author.setIsEditPendingAssessmentFlow(true);
 			if ("print_published".equals(newValue)) {
 				author.setIsEditPendingAssessmentFlow(false);
+				author.setJustPublishedAnAssessment(true);
+			}
+			else {
+				author.setJustPublishedAnAssessment(false);
 			}
 			PDFAssessmentBean pdfBean = (PDFAssessmentBean)ContextUtil.lookupBean("pdfAssessment");
 			pdfBean.prepPDF();
 			pdfBean.setActionString("author");
 			author.setOutcome("print");
 		}
-		else if ("settings_pending".equals(newValue) || "publish".equals(newValue)) {
+		else if ("settings_pending".equals(newValue)) {
 			AuthorSettingsListener authorSettingsListener = new AuthorSettingsListener();
 			authorSettingsListener.processAction(null);
+			author.setFromPage("author");
+			author.setFirstFromPage("author");
+			author.setJustPublishedAnAssessment(false);
+		}
+		else if ("publish".equals(newValue)) {
+			AuthorSettingsListener authorSettingsListener = new AuthorSettingsListener();
+			authorSettingsListener.processAction(null);
+			author.setIsErrorInSettings(false);
+			ConfirmPublishAssessmentListener confirmPublishAssessmentListener = new ConfirmPublishAssessmentListener();
+			confirmPublishAssessmentListener.setIsFromActionSelect(true);
+			confirmPublishAssessmentListener.processAction(null);
+			if (author.getIsErrorInSettings()) {
+				author.setOutcome("editAssessmentSettings");	
+			}
+			else {
+				PublishAssessmentListener publishAssessmentListener = new PublishAssessmentListener();
+				publishAssessmentListener.processAction(null);
+				author.setOutcome("saveSettingsAndConfirmPublish");		
+			}
+			author.setFromPage("author");
+			author.setFirstFromPage("author");
 		}
 		else if ("duplicate".equals(newValue)) {
 			ConfirmCopyAssessmentListener confirmCopyAssessmentListener = new ConfirmCopyAssessmentListener();
 			confirmCopyAssessmentListener.processAction(null);
 			author.setOutcome("confirmCopyAssessment");
+			author.setJustPublishedAnAssessment(false);
 		}
 		else if ("export".equals(newValue)) {
 			ChooseExportTypeListener chooseExportTypeListener = new ChooseExportTypeListener();
 			chooseExportTypeListener.processAction(null);
 			author.setOutcome("chooseExportType");
+			author.setJustPublishedAnAssessment(false);
 		}
 		else if ("remove_pending".equals(newValue)) {
 			ConfirmRemoveAssessmentListener confirmRemoveAssessmentListener = new ConfirmRemoveAssessmentListener();
 			confirmRemoveAssessmentListener.processAction(null);
+			author.setJustPublishedAnAssessment(false);
 		}
 		else if ("scores".equals(newValue)) {
 			delivery.setActionString("gradeAssessment");
@@ -107,11 +138,14 @@ public class ActionSelectListener implements ValueChangeListener {
 			resetTotalScoreListener.processAction(null);
 			TotalScoreListener totalScoreListener = new TotalScoreListener();
 			totalScoreListener.processAction(null);
+			author.setJustPublishedAnAssessment(true);
 		}
 		if ("edit_published".equals(newValue)) {
 			ConfirmEditPublishedAssessmentListener confirmEditPublishedAssessmentListener = new ConfirmEditPublishedAssessmentListener();
 			confirmEditPublishedAssessmentListener.processAction(null);
 			author.setOutcome("confirmEditPublishedAssessment");
+			author.setFromPage("author");
+			author.setJustPublishedAnAssessment(true);
 		}
 		else if ("preview_published".equals(newValue)) {
 			delivery.setActionString("previewAssessment");
@@ -120,14 +154,17 @@ public class ActionSelectListener implements ValueChangeListener {
 			BeginDeliveryActionListener beginDeliveryActionListener = new BeginDeliveryActionListener();
 			beginDeliveryActionListener.processAction(null);
 			author.setOutcome("beginAssessment");
+			author.setJustPublishedAnAssessment(true);
 		}
 		else if ("settings_published".equals(newValue)) {
 			EditPublishedSettingsListener editPublishedSettingsListener = new EditPublishedSettingsListener();
 			editPublishedSettingsListener.processAction(null);
+			author.setJustPublishedAnAssessment(true);
 		}
 		else if ("remove_published".equals(newValue)) {
 			ConfirmRemovePublishedAssessmentListener confirmRemovePublishedAssessmentListener = new ConfirmRemovePublishedAssessmentListener();
 			confirmRemovePublishedAssessmentListener.processAction(null);
+			author.setJustPublishedAnAssessment(true);
 		}
 	}
 }

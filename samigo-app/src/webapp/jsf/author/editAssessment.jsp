@@ -74,7 +74,7 @@ document.links[newindex].onclick();
 <!-- some back end stuff stubbed -->
 <h:form id="assesssmentForm">
 
-<h:messages styleClass="validation"/>
+<h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
   <h:panelGroup rendered="#{!author.isEditPendingAssessmentFlow}" styleClass="validation">
     <h:panelGrid  columns="1">
 	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_1}" />
@@ -115,28 +115,12 @@ document.links[newindex].onclick();
 
  </div>
   <p class="navViewAction">
-      <h:commandLink  title="#{authorMessages.t_preview}" action="beginAssessment" rendered="#{author.isEditPendingAssessmentFlow}">
-        <h:outputText value="#{authorMessages.subnav_preview}"/>
+      <h:commandLink  title="#{authorMessages.t_preview}" action="beginAssessment">
+        <h:outputText value="#{authorMessages.t_preview}"/>
         <f:param name="assessmentId" value="#{assessmentBean.assessmentId}"/>
         <f:param name="actionString" value="previewAssessment" />
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.delivery.BeginDeliveryActionListener" />
       </h:commandLink>
-    
-	<h:commandLink title="#{authorFrontDoorMessages.t_editSettings}" id="editPublishedAssessmentSettings_editAssessment" immediate="true"
-          rendered="#{!author.isEditPendingAssessmentFlow}"
-          action="#{author.getOutcome}">
-        <h:outputText  value="#{authorFrontDoorMessages.link_settings}" />
-        <f:param name="publishedAssessmentId" value="#{assessmentBean.assessmentId}"/>
-        <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.EditPublishedSettingsListener" />
-    </h:commandLink>
-
-    <h:outputText value=" #{authorMessages.separator} " rendered="#{author.isEditPendingAssessmentFlow}"/>
-
-  	<h:commandLink title="#{authorMessages.t_publish}" id="editAssessmentSettings_editAssessment2" action="editAssessmentSettings" immediate="true" rendered="#{author.isEditPendingAssessmentFlow}">
-      <h:outputText value="#{authorMessages.subnav_publish}" />
-      <f:param name="assessmentId" value="#{assessmentBean.assessmentId}"/>
-      <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.AuthorSettingsListener" />
-    </h:commandLink>
 
 	<h:outputText value=" #{authorMessages.separator} " rendered="#{assessmentBean.showPrintLink eq 'true'}"/>
 	
@@ -148,15 +132,36 @@ document.links[newindex].onclick();
 		<f:param name="actionString" value="editAssessment"/>
 		<h:outputText value="#{printMessages.print}" escape="false" />
 	</h:commandLink>
-	
-	<h:outputText value=" #{authorMessages.separator} " rendered="#{author.isEditPendingAssessmentFlow}"/>
+
+    <h:outputText value=" #{authorMessages.separator} " />
 	
 	<h:commandLink title="#{authorMessages.t_settings}" id="editAssessmentSettings_editAssessment" action="editAssessmentSettings" immediate="true" rendered="#{author.isEditPendingAssessmentFlow}">
-        <h:outputText value="#{authorMessages.subnav_settings}" />
+        <h:outputText value="#{commonMessages.settings_action}" />
 	    <f:param name="assessmentId" value="#{assessmentBean.assessmentId}"/>
 	    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.AuthorSettingsListener" />
+	    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SetFromPageAsEditAssessmentListener" />
 	</h:commandLink>
-  </p>
+
+	<h:commandLink title="#{authorFrontDoorMessages.t_editSettings}" id="editPublishedAssessmentSettings_editAssessment" immediate="true"
+          rendered="#{!author.isEditPendingAssessmentFlow}"
+          action="#{author.getOutcome}">
+        
+        <h:outputText  value="#{commonMessages.settings_action}" />
+        <f:param name="publishedAssessmentId" value="#{assessmentBean.assessmentId}"/>
+        <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.EditPublishedSettingsListener" />
+	    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SetFromPageAsEditAssessmentListener" />
+    </h:commandLink>
+    
+    <h:outputText value=" #{authorMessages.separator} " rendered="#{author.isEditPendingAssessmentFlow}"/>
+
+  	<h:commandLink title="#{commonMessages.publish_action}" id="editAssessmentSettings_editAssessment2" action="#{assessmentSettings.getOutcomePublish}" immediate="true" rendered="#{author.isEditPendingAssessmentFlow}">
+      <h:outputText value="#{commonMessages.publish_action}" />
+      <f:param name="assessmentId" value="#{assessmentBean.assessmentId}"/>
+      <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmPublishAssessmentListener" />
+      <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.PublishAssessmentListener" />
+      <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SetFromPageAsEditAssessmentListener" />
+    </h:commandLink>
+    </p>
 
 <h:panelGrid columns="2" width="100%" columnClasses="shortText,navList" border="0">
 <h:panelGroup rendered="#{author.isEditPendingAssessmentFlow}">
@@ -180,18 +185,20 @@ document.links[newindex].onclick();
   <h:commandButton id="republish" value="#{authorMessages.button_republish}" type="submit" styleClass="active" rendered="#{!author.isEditPendingAssessmentFlow}"
       action="#{author.getOutcome}" >
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRepublishAssessmentListener" />
+    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SetFromPageAsEditAssessmentListener" />
   </h:commandButton>
 
   <h:commandButton id="republishRegrade" value="#{authorMessages.button_republish_and_regrade}" type="submit" styleClass="active" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}"
       action="#{author.getOutcome}" >
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRepublishAssessmentListener" />
+    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SetFromPageAsEditAssessmentListener" />
   </h:commandButton>
 
 </h:panelGroup>
 </h:panelGrid>
 
 <h:panelGrid columns="1" width="100%" columnClasses="navList" border="0" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}">
-  <h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('regradeRepublishPopUp.faces','RegradeRepublish','width=400,height=400,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('regradeRepublishPopUp.faces','RegradeRepublishPopUp','width=400,height=400,scrollbars=yes, resizable=yes');" >
+  <h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('/samigo-app/jsf/author/regradeRepublishPopUp.faces','RegradeRepublish','width=400,height=400,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('/samigo-app/jsf/author/regradeRepublishPopUp.faces','RegradeRepublishPopUp','width=400,height=400,scrollbars=yes, resizable=yes');" >
     <h:outputText  value=" #{assessmentSettingsMessages.whats_this_link}"/>
   </h:outputLink>
 </h:panelGrid>
@@ -248,7 +255,8 @@ document.links[newindex].onclick();
         <h:outputText value=" #{authorMessages.separator} " rendered="#{partBean.number ne 1 && author.isEditPendingAssessmentFlow}"/>
 
         <h:commandLink title="#{authorMessages.t_editP}" id="editPart" immediate="true" action="editPart">
-          <h:outputText value="#{authorMessages.button_modify}" />
+         
+          <h:outputText value="#{commonMessages.edit_action}" />
           <f:param name="sectionId" value="#{partBean.sectionId}"/>
           <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.EditPartListener" />
         </h:commandLink>
@@ -302,9 +310,9 @@ document.links[newindex].onclick();
           <h:outputText value="#{question.number}: " rendered="#{!author.isEditPendingAssessmentFlow}"/>
 
 	<h:panelGroup >
-     <h:outputText rendered="#{question.itemData.typeId== 1}" value=" #{authorMessages.multiple_choice_sin}"/>
-     <h:outputText rendered="#{question.itemData.typeId== 2}" value=" #{authorMessages.multiple_correct_ms}"/>
-     <h:outputText rendered="#{question.itemData.typeId== 12}" value=" #{authorMessages.multiple_correct_ss}"/>
+     <h:outputText rendered="#{question.itemData.typeId== 1}" value=" #{commonMessages.multiple_choice_sin}"/>
+     <h:outputText rendered="#{question.itemData.typeId== 2}" value=" #{commonMessages.multipl_mc_ms}"/>
+     <h:outputText rendered="#{question.itemData.typeId== 12}" value=" #{commonMessages.multipl_mc_ss}"/>
      <h:outputText rendered="#{question.itemData.typeId== 3}" value=" #{authorMessages.multiple_choice_surv}"/>
      <h:outputText rendered="#{question.itemData.typeId== 4}" value=" #{authorMessages.true_false}"/>
      <h:outputText rendered="#{question.itemData.typeId== 5}" value=" #{authorMessages.short_answer_essay}"/>
@@ -317,7 +325,7 @@ document.links[newindex].onclick();
      
 
      <h:outputText value=" #{authorMessages.dash} " />
-     <h:inputText id="answerptr" value="#{question.updatedScore}" required="true" size="6" onkeydown="inIt()" onchange="toPoint(this.id);" >
+     <h:inputText id="answerptr" value="#{question.updatedScore}" required="true" size="6" onkeydown="inIt()" onchange="toPoint(this.id);" disabled="#{question.itemData.typeId== 3}">
 	<f:validateDoubleRange /></h:inputText>
 
 		<h:outputText rendered="#{question.itemData.score > 1}" value=" #{authorMessages.points_lower_case}"/>
@@ -329,12 +337,12 @@ document.links[newindex].onclick();
         </h:panelGroup>
           <h:panelGroup>
             <h:commandLink title="#{authorMessages.t_removeQ}" immediate="true" id="deleteitem" action="#{itemauthor.confirmDeleteItem}" rendered="#{author.isEditPendingAssessmentFlow}">
-              <h:outputText value="#{authorMessages.button_remove}" />
+              <h:outputText value="#{commonMessages.remove_action}" />
               <f:param name="itemid" value="#{question.itemData.itemIdString}"/>
             </h:commandLink>
             <h:outputText value=" #{authorMessages.separator} " rendered="#{author.isEditPendingAssessmentFlow}"/>
             <h:commandLink title="#{authorMessages.t_editQ}" id="modify" action="#{itemauthor.doit}" immediate="true">
-              <h:outputText value="#{authorMessages.button_modify}" />
+              <h:outputText value="#{commonMessages.edit_action}" />
               <f:actionListener
                   type="org.sakaiproject.tool.assessment.ui.listener.author.ItemModifyListener" />
               <f:param name="itemid" value="#{question.itemData.itemIdString}"/>
@@ -420,8 +428,9 @@ document.links[newindex].onclick();
   </h:column>
 </h:dataTable>
 
-<h:commandButton value="#{authorMessages.button_update_points}" id="pointsUpdate" action="editAssessment" />
-
+<h:commandButton value="#{authorMessages.button_update_points}" id="pointsUpdate" action="editAssessment" >
+  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.UpdateAssessmentTotalPointsListener" />
+</h:commandButton>
 </div>
 
 <p class="navList">
@@ -429,17 +438,19 @@ document.links[newindex].onclick();
   <h:commandButton id="republish1" value="#{authorMessages.button_republish}" type="submit" styleClass="active" rendered="#{!author.isEditPendingAssessmentFlow}"
       action="#{author.getOutcome}">
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRepublishAssessmentListener" />
+    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SetFromPageAsEditAssessmentListener" />
   </h:commandButton>
 
   <h:commandButton id="republishRegrade1" value="#{authorMessages.button_republish_and_regrade}" type="submit" styleClass="active" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}"
       action="#{author.getOutcome}">
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ConfirmRepublishAssessmentListener" />
+    <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.SetFromPageAsEditAssessmentListener" />
   </h:commandButton>
 </h:panelGroup>
 </p>
 
 <h:panelGrid columns="1" width="100%" columnClasses="navList" border="0" rendered="#{!author.isEditPendingAssessmentFlow && assessmentBean.hasGradingData}">
-  <h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('regradeRepublishPopUp.faces','RegradeRepublish','width=400,height=400,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('regradeRepublishPopUp.faces','RegradeRepublishPopUp','width=400,height=400,scrollbars=yes, resizable=yes');" >
+  <h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('/samigo-app/jsf/author/regradeRepublishPopUp.faces','RegradeRepublish','width=400,height=400,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('/samigo-app/jsf/author/regradeRepublishPopUp.faces','RegradeRepublishPopUp','width=400,height=400,scrollbars=yes, resizable=yes');" >
     <h:outputText  value=" #{assessmentSettingsMessages.whats_this_link}"/>
   </h:outputLink>
 </h:panelGrid>

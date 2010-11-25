@@ -126,12 +126,34 @@ public class LinearAccessDeliveryActionListener extends DeliveryActionListener
     	      	  
     	  int action = delivery.getActionMode();
     	  if (action == DeliveryBean.TAKE_ASSESSMENT) {
-    		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take", "publishedAssessmentId=" + delivery.getAssessmentId() + ", agentId=" + getAgentString(), true));
+    		  StringBuffer eventRef = new StringBuffer("publishedAssessmentId");
+    		  eventRef.append(delivery.getAssessmentId());
+    		  eventRef.append(", agentId=");
+    		  eventRef.append(getAgentString());
+    		  if (delivery.isTimeRunning()) {
+    			  eventRef.append(", elapsed=");
+    			  eventRef.append(delivery.getTimeElapse());
+    			  eventRef.append(", remaining=");
+    			  int timeRemaining = Integer.parseInt(delivery.getTimeLimit()) - Integer.parseInt(delivery.getTimeElapse());
+    			  eventRef.append(timeRemaining);
+    		  }
+    		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take", eventRef.toString(), true));
     	  }
     	  else if (action == DeliveryBean.TAKE_ASSESSMENT_VIA_URL) {
+    		  StringBuffer eventRef = new StringBuffer("publishedAssessmentId");
+    		  eventRef.append(delivery.getAssessmentId());
+    		  eventRef.append(", agentId=");
+    		  eventRef.append(getAgentString());
+    		  if (delivery.isTimeRunning()) {
+    			  eventRef.append(", elapsed=");
+    			  eventRef.append(delivery.getTimeElapse());
+    			  eventRef.append(", remaining=");
+    			  int timeRemaining = Integer.parseInt(delivery.getTimeLimit()) - Integer.parseInt(delivery.getTimeElapse());
+    			  eventRef.append(timeRemaining);
+    		  }
     		  PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
     		  String siteId = publishedAssessmentService.getPublishedAssessmentOwner(Long.valueOf(delivery.getAssessmentId()));
-    		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take.via_url", "publishedAssessmentId=" + delivery.getAssessmentId() + ", agentId=" + getAgentString(), siteId, true, NotificationService.NOTI_REQUIRED));
+    		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take.via_url", eventRef.toString(), siteId, true, NotificationService.NOTI_REQUIRED));
     	  }    	  
       }
       else {
@@ -163,14 +185,30 @@ public class LinearAccessDeliveryActionListener extends DeliveryActionListener
 	  GradingService gradingService = new GradingService();
 	  AssessmentGradingData assessmentGradingData = delivery.getAssessmentGrading();
 	  log.debug("assessmentGradingData.getAssessmentGradingId() = " + assessmentGradingData.getAssessmentGradingId());
-	  ArrayList alist = gradingService.getLastItemGradingDataPosition(assessmentGradingData.getAssessmentGradingId(), assessmentGradingData.getAgentId());
-	  int partIndex = ((Integer)alist.get(0)).intValue();
-	  if (partIndex == 0) {
-		  delivery.setPartIndex(0);
+	  if (assessmentGradingData.getLastVisitedPart() != null && assessmentGradingData.getLastVisitedQuestion() != null) {
+		  delivery.setPartIndex(assessmentGradingData.getLastVisitedPart().intValue());
+		  delivery.setQuestionIndex(assessmentGradingData.getLastVisitedQuestion().intValue());
 	  }
 	  else {
-		  delivery.setPartIndex(partIndex - 1);
+		  // For backward compatible
+		  ArrayList alist = gradingService.getLastItemGradingDataPosition(assessmentGradingData.getAssessmentGradingId(), assessmentGradingData.getAgentId());
+		  int partIndex = ((Integer)alist.get(0)).intValue();
+		  if (partIndex == 0) {
+			  delivery.setPartIndex(0);
+		  }
+		  else {
+			  delivery.setPartIndex(partIndex - 1);
+		  }
+		  delivery.setQuestionIndex(((Integer)alist.get(1)).intValue());
 	  }
-	  delivery.setQuestionIndex(((Integer)alist.get(1)).intValue());
+  }
+  
+  public void saveLastVisitedPosition(DeliveryBean delivery, int partNumber, int questionNumber) {
+	  GradingService gradingService = new GradingService();
+	  AssessmentGradingData assessmentGradingData = delivery.getAssessmentGrading();
+	  assessmentGradingData.setStatus(2);
+	  assessmentGradingData.setLastVisitedPart(partNumber);
+	  assessmentGradingData.setLastVisitedQuestion(questionNumber);
+	  gradingService.saveOrUpdateAssessmentGradingOnly(assessmentGradingData);
   }
 }

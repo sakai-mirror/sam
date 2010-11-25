@@ -606,7 +606,7 @@ public class SamLiteServiceImpl implements SamLiteService {
 				DisplayfeedbackType feedback2 = respCondition.addNewDisplayfeedback();
 				feedback2.setFeedbacktype(DisplayfeedbackType.Feedbacktype.RESPONSE);
 				feedback2.setLinkrefid("AnswerFeedback");
-				feedback2.setStringValue(cdata("null"));
+				feedback2.setStringValue(cdata(""));
 				
 				alpha++;
 			}

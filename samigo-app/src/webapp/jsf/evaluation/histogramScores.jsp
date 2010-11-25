@@ -67,7 +67,7 @@ $Id$
     <h:commandLink title="#{evaluationMessages.t_totalScores}" action="totalScores" immediate="true" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ResetTotalScoreListener" />
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreListener" />
-      <h:outputText value="#{evaluationMessages.title_total}" />
+      <h:outputText value="#{commonMessages.total_scores}" />
     </h:commandLink>
 
     <h:outputText value=" #{evaluationMessages.separator} " rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
@@ -95,8 +95,8 @@ $Id$
 
     <h:outputText value=" #{evaluationMessages.separator} "  rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}"/>
 
-    <h:commandLink title="#{evaluationMessages.t_export}" action="exportResponses" immediate="true"  rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
-      <h:outputText value="#{evaluationMessages.export}" />
+    <h:commandLink title="#{commonMessages.export_action}" action="exportResponses" immediate="true"  rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}">
+      <h:outputText value="#{commonMessages.export_action}" />
   	  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.ExportResponsesListener" />
     </h:commandLink>
 
@@ -134,13 +134,8 @@ $Id$
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.HistogramListener" />
      </h:selectOneMenu>
     </h:panelGroup>
-
-    <h:panelGroup rendered="#{histogramScores.randomType =='true'}">
-    <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
-      </h:panelGroup>
-
-
-    <h:panelGroup rendered="#{histogramScores.randomType =='false'}">
+       
+    <h:panelGroup>
  <f:verbatim><h4></f:verbatim>
   <h:outputText value="#{evaluationMessages.tot}" />
    <f:verbatim></h4><div class="tier2"></f:verbatim>
@@ -201,19 +196,28 @@ $Id$
 </h:panelGrid>
 </p>
 
+<h:panelGroup>
+    <f:verbatim><h4></f:verbatim>
+    <h:outputText value="#{evaluationMessages.q_view}" />
+    <f:verbatim></h4></f:verbatim>
+</h:panelGroup>
 
+<!-- The parts drop down. -->
+<h:panelGroup rendered="#{histogramScores.assesmentPartCount > 1 && (histogramScores.hasNav==null || histogramScores.hasNav=='true')}">
+    <h:outputText value="#{evaluationMessages.part} " />
+    <h:outputText value="#{evaluationMessages.column} " />
+    <h:selectOneMenu id="partNumber" onchange="document.forms[0].submit();"
+                     value="#{histogramScores.partNumber}" >
+	<f:selectItem itemValue="" itemLabel="#{evaluationMessages.all_parts}" />
+        <f:selectItems value="#{histogramScores.selectItemParts}"/>
+        <f:valueChangeListener
+            type="org.sakaiproject.tool.assessment.ui.listener.evaluation.HistogramListener" />
+    </h:selectOneMenu>
+</h:panelGroup>
 
-  <h:dataTable value="#{histogramScores.info}" var="item">
+  <h:dataTable value="#{histogramScores.partInfo}" var="item">
 
-<!-- need to add a randomtype property for histogramQuestionScoreBean (item) and if it's true, hide histogram  -->
-<%--
-    <h:column rendered="#{histogramScores.randomType =='true'}">
-      <h:outputText value="#{evaluationMessages.no_histogram_for_random}" />
-    </h:column>
---%>
-
-
-    <h:column rendered="#{histogramScores.randomType =='false'}">
+    <h:column>
       <h:panelGroup>
 
       
@@ -288,7 +292,7 @@ $Id$
 
 
 
-<h:commandButton accesskey="#{evaluationMessages.a_return}"value="#{evaluationMessages.return}" action="select" type="submit" rendered="#{histogramScores.hasNav=='false'}"/>
+<h:commandButton value="#{evaluationMessages.return}" action="select" type="submit" rendered="#{histogramScores.hasNav=='false'}"/>
 </div>
 </h:form>
 </div>

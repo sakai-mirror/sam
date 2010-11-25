@@ -201,7 +201,7 @@ public class DeliveryActionListener
               
               if (("true").equals(delivery.getFeedback())){
                 itemGradingHash = new HashMap();
-                if (delivery.getFeedbackComponent().getShowResponse() || delivery.getFeedbackComponent().getShowStudentQuestionScore() || delivery.getFeedbackComponent().getShowGraderComment())
+                if (delivery.getFeedbackComponent().getShowResponse() || delivery.getFeedbackComponent().getShowStudentQuestionScore())
                 	itemGradingHash = service.getSubmitData(id, agent, scoringoption, assessmentGradingId);
                 ag = setAssessmentGradingFromItemData(delivery, itemGradingHash, false);
                 delivery.setAssessmentGrading(ag);
@@ -320,13 +320,35 @@ public class DeliveryActionListener
             	  setTimer(delivery, publishedAssessment, true);
             	  setStatus(delivery, pubService, Long.valueOf(id));
             	  
-               	  if (action == DeliveryBean.TAKE_ASSESSMENT) {
-            		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take", "publishedAssessmentId=" + delivery.getAssessmentId() + ", agentId=" + getAgentString(), true));
+            	  if (action == DeliveryBean.TAKE_ASSESSMENT) {
+            		  StringBuffer eventRef = new StringBuffer("publishedAssessmentId");
+            		  eventRef.append(delivery.getAssessmentId());
+            		  eventRef.append(", agentId=");
+            		  eventRef.append(getAgentString());
+            		  if (delivery.isTimeRunning()) {
+            			  eventRef.append(", elapsed=");
+            			  eventRef.append(delivery.getTimeElapse());
+            			  eventRef.append(", remaining=");
+            			  int timeRemaining = Integer.parseInt(delivery.getTimeLimit()) - Integer.parseInt(delivery.getTimeElapse());
+            			  eventRef.append(timeRemaining);
+            		  }
+            		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take", eventRef.toString(), true));
             	  }
             	  else if (action == DeliveryBean.TAKE_ASSESSMENT_VIA_URL) {
+            		  StringBuffer eventRef = new StringBuffer("publishedAssessmentId");
+            		  eventRef.append(delivery.getAssessmentId());
+            		  eventRef.append(", agentId=");
+            		  eventRef.append(getAgentString());
+            		  if (delivery.isTimeRunning()) {
+            			  eventRef.append(", elapsed=");
+            			  eventRef.append(delivery.getTimeElapse());
+            			  eventRef.append(", remaining=");
+            			  int timeRemaining = Integer.parseInt(delivery.getTimeLimit()) - Integer.parseInt(delivery.getTimeElapse());
+            			  eventRef.append(timeRemaining);
+            		  }
             		  PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
             		  String siteId = publishedAssessmentService.getPublishedAssessmentOwner(Long.valueOf(delivery.getAssessmentId()));
-            		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take.via_url", "publishedAssessmentId=" + delivery.getAssessmentId() + ", agentId=" + getAgentString(), siteId, true, NotificationService.NOTI_REQUIRED));
+            		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take.via_url", eventRef.toString(), siteId, true, NotificationService.NOTI_REQUIRED));
             	  }
               }
               else {
@@ -1645,7 +1667,7 @@ public class DeliveryActionListener
     ItemTextIfc text = (ItemTextIfc) item.getItemTextArraySorted().toArray()[0];
     ArrayList fibs = new ArrayList();
     String alltext = text.getText();
-    ArrayList texts = extractFIBTextArray(alltext);
+    ArrayList texts = extractFIBFINTextArray(alltext);
     int i = 0;
     Iterator iter = text.getAnswerArraySorted().iterator();
     while (iter.hasNext())
@@ -1715,20 +1737,21 @@ public class DeliveryActionListener
     bean.setFibArray(fibs);
   }
 
-  private static ArrayList extractFIBTextArray(String alltext)
+  private static ArrayList extractFIBFINTextArray(String alltext)
   {
     ArrayList texts = new ArrayList();
 
-    while (alltext.indexOf("{") > -1)
+    while (alltext.indexOf("{}") > -1)
     {
-      int alltextLeftIndex = alltext.indexOf("{");
-      int alltextRightIndex = alltext.indexOf("}");
+      int alltextLeftIndex = alltext.indexOf("{}");
+      //int alltextRightIndex = alltext.indexOf("}");
 
       String tmp = alltext.substring(0, alltextLeftIndex);
-      alltext = alltext.substring(alltextRightIndex + 1);
+      alltext = alltext.substring(alltextLeftIndex + 2);
       texts.add(tmp);
-      // there are no more "}", exit loop
-      if (alltextRightIndex == -1)
+      // there are no more "{}", exit loop. 
+      // why do we this check? will it ever come to here?
+      if (alltextLeftIndex == -1)
       {
         break;
       }
@@ -1799,7 +1822,7 @@ public class DeliveryActionListener
     ItemTextIfc text = (ItemTextIfc) item.getItemTextArraySorted().toArray()[0];
     ArrayList fins = new ArrayList();
     String alltext = text.getText();
-    ArrayList texts = extractFINTextArray(alltext);
+    ArrayList texts = extractFIBFINTextArray(alltext);
     int i = 0;
     Iterator iter = text.getAnswerArraySorted().iterator();
     while (iter.hasNext())
@@ -1872,28 +1895,6 @@ public class DeliveryActionListener
     fins.add(fbean);
 
     bean.setFinArray(fins);
-  }
-
-  private static ArrayList extractFINTextArray(String alltext)
-  {
-    ArrayList texts = new ArrayList();
-
-    while (alltext.indexOf("{") > -1)
-    {
-      int alltextLeftIndex = alltext.indexOf("{");
-      int alltextRightIndex = alltext.indexOf("}");
-
-      String tmp = alltext.substring(0, alltextLeftIndex);
-      alltext = alltext.substring(alltextRightIndex + 1);
-      texts.add(tmp);
-      // there are no more "}", exit loop
-      if (alltextRightIndex == -1)
-      {
-        break;
-      }
-    }
-    texts.add(alltext);
-    return texts;
   }
 
   /**

@@ -140,62 +140,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 	public IdImpl getAssessmentTemplateId(long id) {
 		return new IdImpl(id);
 	}
-
-	public static void main(String[] args) throws DataFacadeException {
-		AssessmentFacadeQueriesAPI instance = new AssessmentFacadeQueries();
-		// add an assessmentTemplate
-		if (args[0].equals("addTemplate")) {
-			Long assessmentTemplateId = instance.addTemplate();
-			AssessmentTemplateData a = instance
-					.loadTemplate(assessmentTemplateId);
-			print(a);
-			AssessmentTemplateFacade af = new AssessmentTemplateFacade(a);
-			printFacade(af);
-		}
-		if (args[0].equals("removeT")) {
-			instance.removeTemplate(new Long(args[1]));
-		}
-		if (args[0].equals("addA")) {
-			Long assessmentId = instance.addAssessment(new Long(args[1]));
-			AssessmentData a = instance.loadAssessment(assessmentId);
-			print(a);
-		}
-		if (args[0].equals("loadT")) {
-			AssessmentTemplateData a = (AssessmentTemplateData) instance
-					.load(new Long(args[1]));
-			print(a);
-		}
-		if (args[0].equals("loadA")) {
-			AssessmentData a = (AssessmentData) instance
-					.load(new Long(args[1]));
-			print(a);
-		}
-		System.exit(0);
-	}
-
-	public static void print(AssessmentBaseData a) {
-		if (a.getIsTemplate().equals(Boolean.FALSE)) {
-		}
-		/*
-		 * log.debug("**assessment due date: " +
-		 * a.getAssessmentAccessControl().getDueDate()); log.debug("**assessment
-		 * control #" + a.getAssessmentAccessControl()); log.debug("**assessment
-		 * metadata" + a.getAssessmentMetaDataSet()); log.debug("**Objective not
-		 * lazy = " + a.getAssessmentMetaDataByLabel("ASSESSMENT_OBJECTIVES"));
-		 */
-	}
-
-	public static void printFacade(AssessmentTemplateFacade a) {
-		/*
-		 * log.debug("**assessmentId #" + a.getAssessmentTemplateId());
-		 * log.debug("**assessment due date: " +
-		 * a.getAssessmentAccessControl().getDueDate()); log.debug("**assessment
-		 * control #" + a.getAssessmentAccessControl()); log.debug("**assessment
-		 * metadata" + a.getAssessmentMetaDataSet()); log.debug("**Objective not
-		 * lazy = " + a.getAssessmentMetaDataByLabel("ASSESSMENT_OBJECTIVE"));
-		 */
-	}
-
+	
 	public Long addTemplate() {
 		AssessmentTemplateData assessmentTemplate = new AssessmentTemplateData(
 			 Long.valueOf(0), "title", "description", "comments",
@@ -589,11 +534,18 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 	 */
 	public AssessmentFacade createAssessmentWithoutDefaultSection(String title,
 			String description, Long typeId, Long templateId) throws Exception {
+		return createAssessmentWithoutDefaultSection(title, description, typeId, templateId, null);
+	}
+
+
+	public AssessmentFacade createAssessmentWithoutDefaultSection(String title,
+			String description, Long typeId, Long templateId, String siteId) throws Exception {
+
 		// this assessment came with one default section
 		AssessmentData assessment = null;
 		try {
 			assessment = prepareAssessment(title, description, typeId,
-					templateId);
+					templateId, siteId);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -601,12 +553,17 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		getHibernateTemplate().save(assessment);
 
 		// register assessmnet with current site
-		registerWithCurrentSite(assessment.getAssessmentId().toString());
+		registerWithSite(assessment.getAssessmentId().toString(), siteId);
 		return new AssessmentFacade(assessment);
 	}
 
 	private AssessmentData prepareAssessment(String title, String description,
 			Long typeId, Long templateId) throws Exception {
+		return prepareAssessment(title, description, typeId, templateId, null);
+	}
+
+	private AssessmentData prepareAssessment(String title, String description,
+			Long typeId, Long templateId, String siteId) throws Exception {
 		// #1 - get the template (a facade) and create Assessment based on it
 		AssessmentTemplateFacade template = getAssessmentTemplate(templateId);
 		AssessmentData assessment = cloneAssessmentFromTemplate((AssessmentTemplateData) template
@@ -615,18 +572,22 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		assessment.setDescription(description);
 		assessment.setTypeId(typeId);
 		AssessmentAccessControl control = (AssessmentAccessControl) assessment
-				.getAssessmentAccessControl();
+			.getAssessmentAccessControl();
 		if (control == null) {
 			control = new AssessmentAccessControl();
 		}
 
 		// set accessControl.releaseTo based on default setting in metaData
 		String defaultReleaseTo = template
-				.getAssessmentMetaDataByLabel("releaseTo");
+			.getAssessmentMetaDataByLabel("releaseTo");
 		if (("ANONYMOUS_USERS").equals(defaultReleaseTo)) {
 			control.setReleaseTo("Anonymous Users");
 		} else {
-			control.setReleaseTo(AgentFacade.getCurrentSiteName());
+			if (siteId == null || siteId.length() == 0) {
+				control.setReleaseTo(AgentFacade.getCurrentSiteName());
+			} else {
+				control.setReleaseTo(AgentFacade.getSiteName(siteId));
+			}
 		}
 
 		/*
@@ -635,13 +596,13 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		 * control.setReleaseTo(AgentFacade.getCurrentSiteName());
 		 */
 		EvaluationModel evaluation = (EvaluationModel) assessment
-				.getEvaluationModel();
+			.getEvaluationModel();
 		if (evaluation == null) {
 			evaluation = new EvaluationModel();
 		}
 		GradebookService g = null;
 		boolean integrated = IntegrationContextFactory.getInstance()
-				.isIntegrated();
+			.isIntegrated();
 		try {
 			if (integrated) {
 				g = (GradebookService) SpringBeanLocator.getInstance().getBean(
@@ -649,17 +610,16 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			}
 
 			GradebookServiceHelper gbsHelper = IntegrationContextFactory
-					.getInstance().getGradebookServiceHelper();
+			.getInstance().getGradebookServiceHelper();
 			if (!gbsHelper
-					.gradebookExists(GradebookFacade.getGradebookUId(), g))
+					.gradebookExists(GradebookFacade.getGradebookUId(siteId), g))
 				evaluation
-						.setToGradeBook(EvaluationModelIfc.GRADEBOOK_NOT_AVAILABLE
-								.toString());
+					.setToGradeBook(EvaluationModelIfc.GRADEBOOK_NOT_AVAILABLE
+						.toString());
 		} catch (HibernateQueryException e) {
 			log.warn("Gradebook Error: " + e.getMessage());
 			evaluation
-					.setToGradeBook(EvaluationModelIfc.GRADEBOOK_NOT_AVAILABLE
-							.toString());
+				.setToGradeBook(EvaluationModelIfc.GRADEBOOK_NOT_AVAILABLE.toString());
 			throw new Exception(e);
 		}
 
@@ -668,12 +628,17 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 
 	public AssessmentFacade createAssessment(String title, String description,
 			Long typeId, Long templateId) throws Exception {
+		return createAssessment(title, description, typeId, templateId, null);
+	}
+
+	public AssessmentFacade createAssessment(String title, String description,
+			Long typeId, Long templateId, String siteId) throws Exception {
 
 		// this assessment comes with a default section
 		AssessmentData assessment = null;
 		try {
 			assessment = prepareAssessment(title, description, typeId,
-					templateId);
+					templateId, siteId);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
@@ -691,14 +656,25 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			}
 		}
 		// register assessmnet with current site
-		registerWithCurrentSite(assessment.getAssessmentId().toString());
+		registerWithSite(assessment.getAssessmentId().toString(), siteId);
 		return new AssessmentFacade(assessment);
 	}
 
+	private void registerWithSite(String qualifierIdString, String siteId) {
+		if (siteId == null || siteId.length() == 0) {
+			PersistenceService.getInstance().getAuthzQueriesFacade()
+			.createAuthorization(AgentFacade.getCurrentSiteId(),
+					"EDIT_ASSESSMENT", qualifierIdString);
+		} else {
+
+			PersistenceService.getInstance().getAuthzQueriesFacade()
+			.createAuthorization(siteId,
+					"EDIT_ASSESSMENT", qualifierIdString);
+		}
+	}
+
 	private void registerWithCurrentSite(String qualifierIdString) {
-		PersistenceService.getInstance().getAuthzQueriesFacade()
-				.createAuthorization(AgentFacade.getCurrentSiteId(),
-						"EDIT_ASSESSMENT", qualifierIdString);
+		registerWithSite(qualifierIdString, null);
 	}
 
 	public ArrayList getAllAssessments(String orderBy) {
@@ -1861,7 +1837,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			log.debug("****protocol:"
 					+ ServerConfigurationService.getServerUrl());
 			AssessmentData new_a = prepareAssessment(a,
-					ServerConfigurationService.getServerUrl());
+					ServerConfigurationService.getServerUrl(), toContext);
 			newList.add(new_a);
 		}
 		getHibernateTemplate().saveOrUpdateAll(newList); // write
@@ -1995,7 +1971,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
     	return newAssessmentTitle;
     }
     
-	public AssessmentData prepareAssessment(AssessmentData a, String protocol) {
+    public AssessmentData prepareAssessment(AssessmentData a, String protocol, String toContext) {
 		AssessmentData newAssessment = new AssessmentData(new Long("0"), a
 				.getTitle(), a.getDescription(), a.getComments(), a.getAssessmentTemplateId(),
 				TypeFacade.HOMEWORK, a.getInstructorNotification(), a
@@ -2004,7 +1980,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 						AgentFacade.getAgentString(), new Date());
 		// section set
 		Set newSectionSet = prepareSectionSet(newAssessment, a.getSectionSet(),
-				protocol);
+				protocol, toContext);
 		newAssessment.setSectionSet(newSectionSet);
 		// access control
 		AssessmentAccessControl newAccessControl = prepareAssessmentAccessControl(
@@ -2046,12 +2022,16 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		newAssessment.setSecuredIPAddressSet(newIPSet);
 		// attachmentSet
 		Set newAssessmentAttachmentSet = prepareAssessmentAttachmentSet(
-				newAssessment, a.getAssessmentAttachmentSet(), protocol);
+				newAssessment, a.getAssessmentAttachmentSet(), protocol, toContext);
 		newAssessment.setAssessmentAttachmentSet(newAssessmentAttachmentSet);
 
 		return newAssessment;
 	}
 
+	public AssessmentData prepareAssessment(AssessmentData a, String protocol) {
+		return prepareAssessment(a, protocol, null);
+	}
+	
 	public AssessmentFeedback prepareAssessmentFeedback(AssessmentData p,
 			AssessmentFeedback a) {
 		if (a == null) {
@@ -2132,7 +2112,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 	}
 
 	public Set prepareSectionSet(AssessmentData newAssessment, Set sectionSet,
-			String protocol) {
+			String protocol, String toContext) {
 		log.debug("new section size = " + sectionSet.size());
 		HashSet h = new HashSet();
 		Iterator i = sectionSet.iterator();
@@ -2150,10 +2130,10 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 							.getCreatedDate(), section.getLastModifiedBy(),
 					section.getLastModifiedDate());
 			Set newSectionAttachmentSet = prepareSectionAttachmentSet(
-					newSection, section.getSectionAttachmentSet(), protocol);
+					newSection, section.getSectionAttachmentSet(), protocol, toContext);
 			newSection.setSectionAttachmentSet(newSectionAttachmentSet);
 			Set newItemSet = prepareItemSet(newSection, section.getItemSet(),
-					protocol);
+					protocol, toContext);
 			newSection.setItemSet(newItemSet);
 			Set newMetaDataSet = prepareSectionMetaDataSet(newSection, section
 					.getSectionMetaDataSet());
@@ -2162,6 +2142,11 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			h.add(newSection);
 		}
 		return h;
+	}
+	
+	public Set prepareSectionSet(AssessmentData newAssessment, Set sectionSet,
+			String protocol) {
+		return prepareSectionSet(newAssessment, sectionSet, protocol, null);
 	}
 
 	public Set prepareSectionMetaDataSet(SectionData newSection, Set metaDataSet) {
@@ -2178,7 +2163,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 	}
 
 	public Set prepareItemSet(SectionData newSection, Set itemSet,
-			String protocol) {
+			String protocol, String toContext) {
 		log.debug("new item size = " + itemSet.size());
 		HashSet h = new HashSet();
 		Iterator j = itemSet.iterator();
@@ -2201,7 +2186,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			Set newItemFeedbackSet = prepareItemFeedbackSet(newItem, item
 					.getItemFeedbackSet());
 			Set newItemAttachmentSet = prepareItemAttachmentSet(newItem, item
-					.getItemAttachmentSet(), protocol);
+					.getItemAttachmentSet(), protocol, toContext);
 			newItem.setItemTextSet(newItemTextSet);
 			newItem.setItemMetaDataSet(newItemMetaDataSet);
 			newItem.setItemFeedbackSet(newItemFeedbackSet);
@@ -2217,7 +2202,12 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		}
 		return h;
 	}
-
+	
+	public Set prepareItemSet(SectionData newSection, Set itemSet,
+			String protocol) {
+		return prepareItemSet(newSection, itemSet, protocol, null);
+	}
+	
 	public Set prepareItemTextSet(ItemData newItem, Set itemTextSet, String protocol) {
 		log.debug("new item text size = " + itemTextSet.size());
 		HashSet h = new HashSet();
@@ -2268,7 +2258,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 	}
 
 	public Set prepareItemAttachmentSet(ItemData newItem,
-			Set itemAttachmentSet, String protocol) {
+			Set itemAttachmentSet, String protocol, String toContext) {
 		HashSet h = new HashSet();
 		Iterator o = itemAttachmentSet.iterator();
 		while (o.hasNext()) {
@@ -2278,7 +2268,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 				AssessmentService service = new AssessmentService();
 				ContentResource cr_copy = service.createCopyOfContentResource(
 						itemAttachment.getResourceId(), itemAttachment
-								.getFilename());
+								.getFilename(), toContext);
 				// get relative path
 				String url = getRelativePath(cr_copy.getUrl(), protocol);
 
@@ -2299,7 +2289,6 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		}
 		return h;
 	}
-
 	
 	//gopalrc - Aug 2010 - EMI ItemText attachments
 	public Set prepareItemTextAttachmentSet(ItemText newItemText,
@@ -2337,8 +2326,13 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 	
 	
 	
+	public Set prepareItemAttachmentSet(ItemData newItem,
+			Set itemAttachmentSet, String protocol) {
+		return prepareItemAttachmentSet(newItem, itemAttachmentSet, protocol, null);
+	}
+
 	public Set prepareSectionAttachmentSet(SectionData newSection,
-			Set sectionAttachmentSet, String protocol) {
+			Set sectionAttachmentSet, String protocol, String toContext) {
 		HashSet h = new HashSet();
 		Iterator o = sectionAttachmentSet.iterator();
 		while (o.hasNext()) {
@@ -2347,7 +2341,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			AssessmentService service = new AssessmentService();
 			ContentResource cr_copy = service.createCopyOfContentResource(
 					sectionAttachment.getResourceId(), sectionAttachment
-							.getFilename());
+							.getFilename(), toContext);
 
 			// get relative path
 			String url = getRelativePath(cr_copy.getUrl(), protocol);
@@ -2367,8 +2361,13 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		return h;
 	}
 
+	public Set prepareSectionAttachmentSet(SectionData newSection,
+			Set sectionAttachmentSet, String protocol) {
+		return prepareSectionAttachmentSet(newSection, sectionAttachmentSet, protocol, null);
+	}
+	
 	public Set prepareAssessmentAttachmentSet(AssessmentData newAssessment,
-			Set assessmentAttachmentSet, String protocol) {
+			Set assessmentAttachmentSet, String protocol, String toContext) {
 		HashSet h = new HashSet();
 		Iterator o = assessmentAttachmentSet.iterator();
 		while (o.hasNext()) {
@@ -2378,7 +2377,7 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 			AssessmentService service = new AssessmentService();
 			ContentResource cr_copy = service.createCopyOfContentResource(
 					assessmentAttachment.getResourceId(), assessmentAttachment
-							.getFilename());
+							.getFilename(), toContext);
 
 			// get relative path
 			String url = getRelativePath(cr_copy.getUrl(), protocol);
@@ -2398,6 +2397,10 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		return h;
 	}
 
+	public Set prepareAssessmentAttachmentSet(AssessmentData newAssessment,
+			Set assessmentAttachmentSet, String protocol) {
+		return prepareAssessmentAttachmentSet(newAssessment, assessmentAttachmentSet, protocol, null);
+	}
 	public Set prepareAnswerSet(ItemText newItemText, Set answerSet) {
 		log.debug("new answer size = " + answerSet.size());
 		HashSet h = new HashSet();
