@@ -2738,14 +2738,11 @@ public class HistogramListener
     	
     	
    		for (int i=0; i<questionBean.getHistogramBars().length; i++) {
-   			if (questionBean.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString())
-   					&& !questionBean.getQuestionLabel().contains("-")) {
-   				statsLine.add(" ");
-   			}
    			try {
-   				if (questionBean.getHistogramBars()[i].getIsCorrect()) {
-   					statsLine.add(ExportResponsesBean.FORMAT_BOLD);
-   				}
+   	   			if (questionBean.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString())
+   	   					&& !questionBean.getQuestionLabel().contains("-")) {
+   	   				statsLine.add(" ");
+   	   			}
    				else {
    					if (questionBean.getHistogramBars()[i].getIsCorrect()) {
    						statsLine.add(ExportResponsesBean.FORMAT_BOLD);
