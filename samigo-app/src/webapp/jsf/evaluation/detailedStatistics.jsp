@@ -301,7 +301,7 @@ Below added by gopalrc Nov 2007
         <h:outputText value="#{item.histogramBars[10].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>10 && !item.histogramBars[10].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
         <h:outputText value="#{item.histogramBars[10].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>10 && item.histogramBars[10].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
     </h:column>
-
+    
     <h:column rendered="#{histogramScores.maxNumberOfAnswers>11}">
         <f:facet name="header">
             <h:outputText escape="false" value="L" /> 
@@ -309,13 +309,133 @@ Below added by gopalrc Nov 2007
         <h:outputText value="#{item.histogramBars[11].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>11 && !item.histogramBars[11].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
         <h:outputText value="#{item.histogramBars[11].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>11 && item.histogramBars[11].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
     </h:column>
+    
 
     <h:column rendered="#{histogramScores.maxNumberOfAnswers>12}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="M" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[12].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>12 && !item.histogramBars[12].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[12].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>12 && item.histogramBars[12].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+    
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>13}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="N" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[13].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>13 && !item.histogramBars[13].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[13].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>13 && item.histogramBars[13].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>14}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="O" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[14].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>14 && !item.histogramBars[14].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[14].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>14 && item.histogramBars[14].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>15}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="P" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[15].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>15 && !item.histogramBars[15].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[15].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>15 && item.histogramBars[15].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>16}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="Q" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[16].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>16 && !item.histogramBars[16].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[16].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>16 && item.histogramBars[16].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>17}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="R" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[17].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>16 && !item.histogramBars[17].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[17].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>16 && item.histogramBars[17].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>18}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="S" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[18].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>18 && !item.histogramBars[18].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[18].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>18 && item.histogramBars[18].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>19}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="T" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[19].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>19 && !item.histogramBars[19].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[19].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>19 && item.histogramBars[19].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>20}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="U" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[20].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>20 && !item.histogramBars[20].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[20].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>20 && item.histogramBars[20].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>21}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="V" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[21].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>21 && !item.histogramBars[21].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[21].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>21 && item.histogramBars[21].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>22}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="W" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[22].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>22 && !item.histogramBars[22].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[22].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>22 && item.histogramBars[22].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>23}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="X" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[23].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>23 && !item.histogramBars[23].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[23].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>23 && item.histogramBars[23].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>24}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="Y" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[24].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>24 && !item.histogramBars[24].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[24].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>24 && item.histogramBars[24].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+    <h:column rendered="#{histogramScores.maxNumberOfAnswers>25}">
+        <f:facet name="header">
+            <h:outputText escape="false" value="Z" /> 
+        </f:facet>
+        <h:outputText value="#{item.histogramBars[25].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>25 && !item.histogramBars[25].isCorrect && item.showIndividualAnswersInDetailedStatistics}"/>
+        <h:outputText value="#{item.histogramBars[25].numStudents}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>25 && item.histogramBars[25].isCorrect && item.showIndividualAnswersInDetailedStatistics}" styleClass="detailedStatsCorrectAnswerText"/>
+    </h:column>
+
+
+    
+    
+
+    <h:column rendered="false">
         <f:facet name="header">
             <h:outputText escape="false" value="#{histogramScores.undisplayedStudentResponseInItemAnalysisColumnHeader}" /> 
         </f:facet>
         <h:outputText value="#{item.sumOfStudentResponsesInUndisplayedItemAnalysisColumns}" escape="false" rendered="#{histogramScores.maxNumberOfAnswers>12 && item.histogramBars[12]!=null && item.showIndividualAnswersInDetailedStatistics}" title="#{item.studentResponsesInUndisplayedItemAnalysisColumns}"/>
     </h:column>
+    
+    
 
   </h:dataTable>
 
