@@ -1158,7 +1158,7 @@ public class DeliveryActionListener
 		}
 
         Collections.shuffle(shuffled, 
-        		new Random( (long) item.getText().hashCode() + agentString.hashCode()));
+        		new Random( (long) item.getText().hashCode() + (getAgentString() + "_" + item.getItemId().toString()).hashCode()));
         /*
         if (item.getTypeId().equals(TypeIfc.MATCHING))
         {
