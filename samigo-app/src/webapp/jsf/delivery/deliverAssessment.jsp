@@ -66,7 +66,7 @@
 
       <h:outputText value="<a name='top'></a>" escape="false" />
       
-      <div id="timer-warning" style="display:none;">
+      <div id="timer-warning">
       	<h3><h:outputText value="#{deliveryMessages.five_minutes_left1}" /></h3>
       	<p><h:outputText value="#{deliveryMessages.five_minutes_left2}" /></p>
       </div>

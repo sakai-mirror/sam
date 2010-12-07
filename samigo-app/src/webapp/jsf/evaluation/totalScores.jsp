@@ -746,7 +746,9 @@ return;
         </h:commandLink>
       </f:facet>
       <h:inputText value="#{description.totalOverrideScore}" size="5" id="adjustTotal" required="false" rendered="#{totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1'}"  onchange="toPoint(this.id);" >
+		<f:validateDoubleRange/>
 	 </h:inputText>
+     <h:message for="adjustTotal" style="color:red"/>
    </h:column>
 
 
@@ -761,7 +763,9 @@ return;
           </h:commandLink>    
       </f:facet>
       <h:inputText value="#{description.totalOverrideScore}" size="5" id="adjustTotal2" required="false" rendered="#{totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1'}"  onchange="toPoint(this.id);" >
+		<f:validateDoubleRange/>
 	 </h:inputText>
+     <h:message for="adjustTotal2" style="color:red"/>
    </h:column>
     
     <h:column rendered="#{totalScores.sortType=='totalOverrideScore'  && !totalScores.sortAscending}">
@@ -775,8 +779,10 @@ return;
       </h:commandLink> 
       </f:facet>
       <h:inputText value="#{description.totalOverrideScore}" size="5" id="adjustTotal3" required="false" rendered="#{totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1'}"  onchange="toPoint(this.id);" >
-      </h:inputText>
-    </h:column>
+		<f:validateDoubleRange/>
+	 </h:inputText>
+     <h:message for="adjustTotal3" style="color:red"/>
+   </h:column>
   
 
     <!-- FINAL SCORE -->

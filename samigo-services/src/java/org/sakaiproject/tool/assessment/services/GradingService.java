@@ -229,9 +229,14 @@ public class GradingService
       notifyGradebook(l, pub);
       //}
     } catch (GradebookServiceException ge) {
-      log.error("GradebookServiceException" + ge);
+      ge.printStackTrace();
       throw ge;
-    } 
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+
+
   }
 
 

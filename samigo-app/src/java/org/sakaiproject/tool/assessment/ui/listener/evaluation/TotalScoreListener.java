@@ -806,7 +806,7 @@ log.debug("testing agent getEid agent.geteid = " + agent.getEidString());
       // use -1 to indicate this is an unsubmitted agent
       results.setAssessmentGradingId(Long.valueOf(-1));
       results.setTotalAutoScore("0");
-      results.setTotalOverrideScore("-");
+      results.setTotalOverrideScore("0");
       results.setSubmittedDate(null);
       results.setFinalScore("0");
       results.setComments("");
