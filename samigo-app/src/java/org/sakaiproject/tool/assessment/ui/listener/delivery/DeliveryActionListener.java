@@ -1195,12 +1195,13 @@ public class DeliveryActionListener
       {
     	  String required=null;
     	  if (text.getRequiredOptionsCount()==null || text.getRequiredOptionsCount().intValue()==0) {
-    		  required=rb.getString("all");
+    		  //required=rb.getString("all");
+        	  key += " | " + text.getSequence() + ": ";
     	  }
     	  else {
     		  required=text.getRequiredOptionsCount().toString();
+        	  key += " | " + text.getSequence() + ": " + required + " " + rb.getString("of") + " ";
     	  }
-    	  key += " | " + text.getSequence() + ": " + required + " " + rb.getString("of") + " ";
       }
 
       
@@ -1500,7 +1501,7 @@ public class DeliveryActionListener
   }
 
   //gopalrc - Dec 2009
-  // This method treats EMI as multiple MCMR questions
+  // This method treats EMI in a similar way as multiple MCMR questions
   public void populateEMI(ItemDataIfc item, ItemContentsBean bean, HashMap publishedAnswerHash)
   {
     Iterator itemTextIter = item.getItemTextArraySorted().iterator();

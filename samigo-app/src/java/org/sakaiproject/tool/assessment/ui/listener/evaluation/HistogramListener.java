@@ -902,7 +902,7 @@ public class HistogramListener
 		HistogramBarBean[] bars = new HistogramBarBean[results.keySet().size()];
 		int[] numarray = new int[results.keySet().size()];
 		
-		//List of "AnswerText.sequence-Answer.sequence"
+		//List of "ItemText.sequence-Answer.sequence"
 		ArrayList sequenceList = new ArrayList();
 		iter = answers.iterator();
 		while (iter.hasNext()) {

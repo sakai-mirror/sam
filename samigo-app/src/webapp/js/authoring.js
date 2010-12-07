@@ -414,12 +414,18 @@ $(document).ready(function(){
 			var requiredOptionsCountSelect = $("select[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":requiredOptionsCount]");
 			var currentSelection = requiredOptionsCountSelect.val();
 			
-			//var changedCorrectOptions = $(this).val().split(",");
-			var maxOptions = $(this).val().length;
+			var correctOpts = $(this).val();
+			var maxOptions = +0;
+			for (var iMax=0; iMax<correctOpts.length; iMax++) {
+				var currCorrectLabel = correctOpts.substring(iMax, iMax+1);
+				if (ANSWER_OPTION_LABELS.indexOf(currCorrectLabel) != -1) {
+					maxOptions += 1;
+				}
+			}
 			
 			requiredOptionsCountSelect.empty();
 			requiredOptionsCountSelect.append('<option value="0">' + all_option + '</option>');
-			for (j=1; j<=maxOptions; j++) {
+			for (j=1; j<=maxOptions-1; j++) {
 				if (j == currentSelection) {
 					requiredOptionsCountSelect.append('<option selected="selected" value="'+ j +'">'+ j +'</option>');
 				}

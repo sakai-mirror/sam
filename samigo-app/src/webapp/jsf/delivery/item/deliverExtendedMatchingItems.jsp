@@ -3,7 +3,7 @@ include file for delivering extended matching items questions
 should be included in file importing DeliveryMessages
 --%>
 <!--
-* $Id: deliverMatching.jsp 62978 2009-05-27 19:29:02Z ktsao@stanford.edu $
+* $Id: deliverExtendedMatchingItems.jsp 62978 2009-05-27 19:29:02Z ktsao@stanford.edu $
 <%--
 ***********************************************************************************
 *

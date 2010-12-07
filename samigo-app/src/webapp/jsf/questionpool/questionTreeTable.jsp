@@ -20,8 +20,6 @@
 --%>
 -->
 
-******** GOPAL TEST/TEMP questionTreeTable.jsp *****************
-
 
 <STYLE type="text/css">
 <!-- 
