@@ -519,14 +519,15 @@ public class HistogramListener
 			  Iterator infoIter = info.iterator();
 			  while (infoIter.hasNext()) {
 				  HistogramQuestionScoresBean questionScores = (HistogramQuestionScoresBean)infoIter.next();
-				  if (questionScores.getQuestionType().equals("1") 
+                                  if (questionScores.getQuestionType().equals("1") 
 						  || questionScores.getQuestionType().equals("2")
 						  || questionScores.getQuestionType().equals("3")
 						  || questionScores.getQuestionType().equals("4")
 						  || questionScores.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString()) //gopalrc - Jan 2010 - EMI
 				  ) {
 					  questionScores.setShowIndividualAnswersInDetailedStatistics(true);
-					  detailedStatistics.add(questionScores);
+					  //XXX This is just a header line
+                                          //detailedStatistics.add(questionScores);
 					  if (questionScores.getHistogramBars() != null && !questionScores.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString())) {
 						  maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
 					  }
@@ -560,6 +561,30 @@ public class HistogramListener
 				  
 				  
 			  }
+                      //sort the stats
+                      Collections.sort(detailedStatistics, new Comparator<HistogramQuestionScoresBean>() {
+
+                          public int compare(HistogramQuestionScoresBean h1, HistogramQuestionScoresBean h2) {
+                              //Part
+                              int val = Integer.valueOf(h1.getPartNumber()).compareTo(Integer.valueOf(h1.getPartNumber()));
+                              if (val != 0) {
+                                  return val;
+                              }
+                              //Question. The question in here is not clean, so use item id.
+                              val = h1.getItemId().compareTo(h1.getItemId());
+                              if (val != 0) {
+                                  return val;
+                              }
+                              Long h1SS = h1.getSubQuestionSequence();//XXX remove
+                              Long h2SS = h2.getSubQuestionSequence();//XXX remove
+                              if (h1.getSubQuestionSequence() == null) {
+                                  return -1;
+                              } else if (h2.getSubQuestionSequence() == null) {
+                                  return 1;
+                              }
+                              return h1.getSubQuestionSequence().compareTo(h2.getSubQuestionSequence());
+                          }
+                      });
 			  histogramScores.setDetailedStatistics(detailedStatistics);
 			  histogramScores.setMaxNumberOfAnswers(maxNumOfAnswers);
 			  // above - gopalrc Dec 2007
@@ -904,14 +929,27 @@ public class HistogramListener
 		int[] numarray = new int[results.keySet().size()];
 		
 		//List of "ItemText.sequence-Answer.sequence"
-		ArrayList sequenceList = new ArrayList();
+		List<String> sequenceList = new ArrayList<String>();
 		iter = answers.iterator();
 		while (iter.hasNext()) {
 			AnswerIfc answer = (AnswerIfc) iter.next();
 			sequenceList.add(answer.getItemText().getSequence() + "-" + answer.getSequence());
 		}
+                //XXX sort the sequence
+		Collections.sort(sequenceList, new Comparator<String>(){
 
-		Collections.sort(sequenceList);
+                    public int compare(String o1, String o2) {
+                        Integer a1 = Integer.valueOf(o1.substring(0, o1.indexOf("-")));
+                        Integer a2 = Integer.valueOf(o2.substring(0, o1.indexOf("-")));
+                        int val = a1.compareTo(a2);
+                        if(val != 0){
+                            return val;
+                        }
+                        a1 = Integer.valueOf(o1.substring(o1.indexOf("-")+1));
+                        a2 = Integer.valueOf(o2.substring(o1.indexOf("-")+1));
+                        return a1.compareTo(a2);
+                    }
+                });
 		// iter = results.keySet().iterator();
 		iter = sequenceList.iterator();
 		int i = 0;
@@ -2608,7 +2646,7 @@ public class HistogramListener
     
     ArrayList spreadsheetRows = new ArrayList();
     List<HistogramQuestionScoresBean> detailedStatistics = bean.getDetailedStatistics();
-    //XXX add sort here?
+    
     spreadsheetRows.add(bean.getShowPartAndTotalScoreSpreadsheetColumns());
     //spreadsheetRows.add(bean.getShowDiscriminationColumn());
     
@@ -2669,30 +2707,6 @@ public class HistogramListener
         headerList.add(String.valueOf(colHeader));
     }
     spreadsheetRows.add(headerList);
-    
-    Collections.sort(detailedStatistics, new Comparator<HistogramQuestionScoresBean>(){
-
-            public int compare(HistogramQuestionScoresBean h1, HistogramQuestionScoresBean h2) {
-                //Part
-                int val = Integer.valueOf(h1.getPartNumber()).compareTo(Integer.valueOf(h1.getPartNumber()));
-                if(val != 0){
-                    return val;
-                }
-                //Question. The question in here is not clean, so use item id.
-                val = h1.getItemId().compareTo(h1.getItemId());
-                if(val != 0){
-                    return val;
-                }
-                Long h1SS = h1.getSubQuestionSequence();//XXX remove
-                Long h2SS = h2.getSubQuestionSequence();//XXX remove
-                if(h1.getSubQuestionSequence() == null){
-                    return -1;
-                }else if (h2.getSubQuestionSequence() == null){
-                    return 1;
-                }
-                return h1.getSubQuestionSequence().compareTo(h2.getSubQuestionSequence());
-            }
-        });
     Iterator detailedStatsIter = detailedStatistics.iterator();
     ArrayList statsLine = null;
     while (detailedStatsIter.hasNext()) {
