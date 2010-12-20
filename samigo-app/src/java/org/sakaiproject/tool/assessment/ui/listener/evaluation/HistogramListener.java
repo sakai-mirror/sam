@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -514,7 +515,7 @@ public class HistogramListener
 
 			  // below - gopalrc Dec 2007
 			  int maxNumOfAnswers = 0;
-			  ArrayList detailedStatistics = new ArrayList();
+			  List<HistogramQuestionScoresBean> detailedStatistics = new ArrayList<HistogramQuestionScoresBean>();
 			  Iterator infoIter = info.iterator();
 			  while (infoIter.hasNext()) {
 				  HistogramQuestionScoresBean questionScores = (HistogramQuestionScoresBean)infoIter.next();
@@ -2606,7 +2607,8 @@ public class HistogramListener
     }
     
     ArrayList spreadsheetRows = new ArrayList();
-    Collection detailedStatistics = bean.getDetailedStatistics();
+    List<HistogramQuestionScoresBean> detailedStatistics = bean.getDetailedStatistics();
+    //XXX add sort here?
     spreadsheetRows.add(bean.getShowPartAndTotalScoreSpreadsheetColumns());
     //spreadsheetRows.add(bean.getShowDiscriminationColumn());
     
@@ -2668,7 +2670,29 @@ public class HistogramListener
     }
     spreadsheetRows.add(headerList);
     
-    
+    Collections.sort(detailedStatistics, new Comparator<HistogramQuestionScoresBean>(){
+
+            public int compare(HistogramQuestionScoresBean h1, HistogramQuestionScoresBean h2) {
+                //Part
+                int val = Integer.valueOf(h1.getPartNumber()).compareTo(Integer.valueOf(h1.getPartNumber()));
+                if(val != 0){
+                    return val;
+                }
+                //Question. The question in here is not clean, so use item id.
+                val = h1.getItemId().compareTo(h1.getItemId());
+                if(val != 0){
+                    return val;
+                }
+                Long h1SS = h1.getSubQuestionSequence();//XXX remove
+                Long h2SS = h2.getSubQuestionSequence();//XXX remove
+                if(h1.getSubQuestionSequence() == null){
+                    return -1;
+                }else if (h2.getSubQuestionSequence() == null){
+                    return 1;
+                }
+                return h1.getSubQuestionSequence().compareTo(h2.getSubQuestionSequence());
+            }
+        });
     Iterator detailedStatsIter = detailedStatistics.iterator();
     ArrayList statsLine = null;
     while (detailedStatsIter.hasNext()) {

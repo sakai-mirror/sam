@@ -863,7 +863,7 @@ publishedId = ppublishedId;
    * gopalrc Dec 2007
    * The HistogramQuestionScores for detailed Statistics for 
    */
-  private Collection detailedStatistics;
+  private List<HistogramQuestionScoresBean> detailedStatistics;
 
   
   
@@ -959,11 +959,11 @@ publishedId = ppublishedId;
 	  this.maxNumberOfAnswers = maxNumberOfAnswers;
   }
 
-  public Collection getDetailedStatistics() {
+  public List<HistogramQuestionScoresBean> getDetailedStatistics() {
 	return detailedStatistics;
   }
 
-  public void setDetailedStatistics(Collection detailedStatistics) {
+  public void setDetailedStatistics(List<HistogramQuestionScoresBean> detailedStatistics) {
 	this.detailedStatistics = detailedStatistics;
   }
 	

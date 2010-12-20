@@ -2160,6 +2160,8 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 				  float itemScore = 0.0f;
 
                   //Add the missing sequences!
+                                  //To manage emi answers, could help with others too
+                                  Map<Long, String> emiAnswerText = new TreeMap<Long, String>();
 				  for (Object ooo: l) {
 					  grade = (ItemGradingIfc)ooo;
 					  if (grade == null || EmptyItemGrading.class.isInstance(grade)) {
@@ -2194,7 +2196,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 						  }
 						  thistext = sequence + ": " + temptext;
 
-						  if (count == 0)
+                                                  if (count == 0)
 							  maintext = thistext;
 						  else
 							  maintext = maintext + "|" + thistext;
@@ -2250,14 +2252,23 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 							  ItemTextIfc itemTextIfc = (ItemTextIfc) publishedItemTextHash.get(grade.getPublishedItemTextId());
 							  sequence = itemTextIfc.getSequence();
 						  }
-						  thistext = sequence + ": " + temptext;
 
-						  if (count == 0)
-							  maintext = thistext;
-						  else
-							  maintext = maintext + "|" + thistext;
-
-						  count++;
+                                                  thistext = emiAnswerText.get(sequence);
+                                                  if(thistext == null){
+                                                      thistext = temptext;
+                                                  }else{
+                                                      thistext = thistext + temptext;
+                                                  }
+                                                  emiAnswerText.put(sequence, thistext);
+                                                  //XXX Remove
+//						  thistext = sequence + ": " + temptext;
+//
+//						  if (count == 0)
+//							  maintext = thistext;
+//						  else
+//							  maintext = maintext + "|" + thistext;
+//
+//						  count++;
 					  }
 					  else if (typeId.equals(TypeIfc.AUDIO_RECORDING)) {
 						  log.debug("AUDIO_RECORDING");
@@ -2314,6 +2325,18 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 					  }
 				  } // inner for - answers
 
+
+                                  if(!emiAnswerText.isEmpty()){
+                                    if(maintext == null){
+                                        maintext = "";
+                                    }
+                                    for(Entry<Long, String> entry: emiAnswerText.entrySet()){
+                                        maintext = maintext + "|" + entry.getKey().toString() + ":" + entry.getValue();
+                                    }
+                                    if(maintext.startsWith("|")){
+                                        maintext = maintext.substring(1);
+                                    }
+                                  }
                   Integer sectionSequenceNumber = null;
                   if(grade == null || EmptyItemGrading.class.isInstance(grade)){
                   	sectionSequenceNumber = EmptyItemGrading.class.cast(grade).getSectionSequence();

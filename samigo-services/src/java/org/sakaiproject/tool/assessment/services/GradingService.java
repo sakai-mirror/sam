@@ -857,8 +857,8 @@ public class GradingService
         AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(answerId);
 
         float itemTextScore = ((Float) totalItemTextScores.get(itemTextId)).floatValue();
-        int requiredCorrectOptions = itemText.getRequiredOptionsCount().intValue();
-        if (requiredCorrectOptions>0 && answer.getIsCorrect()) {
+        Integer requiredCorrectOptions = itemText.getRequiredOptionsCount();
+        if (requiredCorrectOptions != null && requiredCorrectOptions.intValue() > 0 && answer.getIsCorrect()) {
         	if (processedCorrectGradingsPerItemText.get(itemTextId)==null) {
         		processedCorrectGradingsPerItemText.put(itemTextId, 1);
         	}
@@ -866,7 +866,7 @@ public class GradingService
         		int numProcessed = ((Integer)processedCorrectGradingsPerItemText.get(itemTextId)).intValue();
         		numProcessed++;
         		processedCorrectGradingsPerItemText.put(itemTextId, Integer.valueOf(numProcessed));
-        		if (numProcessed>requiredCorrectOptions) {
+        		if (numProcessed>requiredCorrectOptions.intValue()) {
                 	itemGrading.setAutoScore( Float.valueOf(0));
         		}
         	}
