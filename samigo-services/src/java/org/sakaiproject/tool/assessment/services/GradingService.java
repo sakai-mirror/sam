@@ -895,7 +895,6 @@ public class GradingService
         Long itemTextId = itemGrading.getPublishedItemTextId();
         ItemTextIfc itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
         float itemTextScore = ((Float) totalItemTextScores2.get(itemTextId)).floatValue();
-        int requiredCorrectOptions = itemText.getRequiredOptionsCount().intValue();
         if(itemTextScore < 0) {
         	itemGrading.setAutoScore( Float.valueOf(0));
         }

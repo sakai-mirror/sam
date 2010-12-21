@@ -94,7 +94,7 @@
 </div>
 <br/>
 
-
+<!-- XXX Removed since this is calculated
 <div id="discountDiv" class="shorttext">
   <h:outputLabel value="#{authorMessages.negative_point_value}"/>
   <h:inputText id="answerdsc" value="#{itemauthor.currentItem.itemDiscount}" required="true"  size="6" onchange="toPoint(this.id);">
@@ -103,7 +103,7 @@
   <h:message for="answerdsc" styleClass="validate"/>
 </div>
 <br/>
-
+-->
 
 
   <!-- 2 QUESTION THEME TEXT -->

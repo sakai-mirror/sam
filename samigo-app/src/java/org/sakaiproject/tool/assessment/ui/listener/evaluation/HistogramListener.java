@@ -5,7 +5,6 @@ package org.sakaiproject.tool.assessment.ui.listener.evaluation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -213,7 +212,7 @@ public class HistogramListener
           for(AssessmentGradingData agd: allscores){
           	agd.setItemGradingSet(delegate.getItemGradingSet(String.valueOf(agd.getAssessmentGradingId())));
           }
-          if (allscores.size() == 0) {
+          if (allscores.isEmpty()) {
 			// Similar case in Bug 1537, but clicking Statistics link instead of assignment title.
 			// Therefore, redirect the the same page.
 			delivery.setOutcome("reviewAssessmentError");

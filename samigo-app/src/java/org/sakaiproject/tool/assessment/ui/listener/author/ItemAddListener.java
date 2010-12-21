@@ -1160,7 +1160,7 @@ public class ItemAddListener
 		if (numberOfCorrectAnswersRequired != 0) {
 			correctAnswerScore = (Float.valueOf(bean.getItemScore())).floatValue() / (float)numberOfCorrectAnswersRequired;
 		}
-		float answerScore = 0;
+		
 		Iterator textSetIter = textSet.iterator();
 		while (textSetIter.hasNext()) {
 			ItemTextIfc itemText = (ItemTextIfc)textSetIter.next();
@@ -1170,12 +1170,11 @@ public class ItemAddListener
 			while (answerSetIter.hasNext()) {
 				actualAnswer = (AnswerIfc)answerSetIter.next();
 				if (actualAnswer.getIsCorrect()==null || !actualAnswer.getIsCorrect()) {
-					answerScore = 0;
+					actualAnswer.setDiscount(Float.valueOf(correctAnswerScore));
 				}
 				else {
-					answerScore = correctAnswerScore;
+					actualAnswer.setScore(Float.valueOf(correctAnswerScore));
 				}
-				actualAnswer.setScore(Float.valueOf(answerScore));
 			}
 		}
 					

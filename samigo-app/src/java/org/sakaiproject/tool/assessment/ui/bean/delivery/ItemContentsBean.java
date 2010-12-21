@@ -1241,6 +1241,8 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
                                      "new value " + score);
                   if (answer.getIsCorrect()) {
                 	  answer.setScore(correctAnswerScore);
+                  }else{
+                      answer.setDiscount(correctAnswerScore);
                   }
               }
               EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.revise", "itemId=" + itemData.getItemId(), true));

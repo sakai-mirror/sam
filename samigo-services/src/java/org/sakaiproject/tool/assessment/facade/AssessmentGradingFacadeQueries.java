@@ -2252,23 +2252,13 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 							  ItemTextIfc itemTextIfc = (ItemTextIfc) publishedItemTextHash.get(grade.getPublishedItemTextId());
 							  sequence = itemTextIfc.getSequence();
 						  }
-
-                                                  thistext = emiAnswerText.get(sequence);
-                                                  if(thistext == null){
-                                                      thistext = temptext;
-                                                  }else{
-                                                      thistext = thistext + temptext;
-                                                  }
-                                                  emiAnswerText.put(sequence, thistext);
-                                                  //XXX Remove
-//						  thistext = sequence + ": " + temptext;
-//
-//						  if (count == 0)
-//							  maintext = thistext;
-//						  else
-//							  maintext = maintext + "|" + thistext;
-//
-//						  count++;
+                              thistext = emiAnswerText.get(sequence);
+                              if(thistext == null){
+                                 thistext = temptext;
+                              }else{
+                                 thistext = thistext + temptext;
+                              }
+                              emiAnswerText.put(sequence, thistext);
 					  }
 					  else if (typeId.equals(TypeIfc.AUDIO_RECORDING)) {
 						  log.debug("AUDIO_RECORDING");
