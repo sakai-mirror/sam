@@ -1419,7 +1419,7 @@ public class DeliveryActionListener
       }
       Collections.shuffle(shuffled,
                           new Random( (long) item.getText().hashCode() +
-                          getAgentString().hashCode()));
+			 (getAgentString() + "_" + item.getItemId().toString()).hashCode()));
 
 /*
       Collections.shuffle
