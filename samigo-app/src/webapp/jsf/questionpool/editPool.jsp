@@ -32,6 +32,9 @@
       <head><%= request.getAttribute("html.head") %>
       <title><h:outputText value="#{questionPoolMessages.edit_p}"/></title>
 
+      <script type="text/javascript" language="JavaScript" src="/samigo-app/js/jquery-1.3.2.min.js"></script>
+      <script type="text/javascript" language="JavaScript" src="/samigo-app/js/jquery-ui-1.7.2.custom.min.js"></script>
+      <link type="text/css" href="/samigo-app/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" media="all"/>
 <%@ include file="/js/delivery.js" %>
 
 <script language="javascript" type="text/JavaScript">
