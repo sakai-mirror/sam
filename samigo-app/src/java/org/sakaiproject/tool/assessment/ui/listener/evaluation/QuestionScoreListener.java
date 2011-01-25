@@ -543,21 +543,16 @@ public class QuestionScoreListener implements ActionListener,
 							answerText = gdataAnswer.getText();
 					} else {
 						// this handles the other question types: SAQ, File
-						// upload, Audio, FIB, Fill in Numeric
+						// upload, Audio, FIB, Fill in Numeric, EMI
 						// These question type use itemGrading.answetText to
 						// store information about their answer
-						if ((bean.getTypeId().equals("8") || bean.getTypeId().equals("11")) && gdataAnswer == null) {
+						if ((bean.getTypeId().equals("8") || bean.getTypeId().equals("11") || bean.getTypeId().equals("13")) && gdataAnswer == null) {
 							answerText = "";
-						}
-						else {
+						} else if (bean.getTypeId().equals("13")) {//gopalrc - EMI
+							answerText = gdataPubItemText.getSequence() + ": " + gdataAnswer.getLabel();
+						} else {
 							answerText = gdata.getAnswerText();
 						}
-						
-						//gopalrc - EMI
-						if (bean.getTypeId().equals("13")) {
-							answerText = gdataPubItemText.getSequence() + ": " + gdataAnswer.getLabel();
-						}
-						
 					}
 
 					if ("4".equals(bean.getTypeId())) {
@@ -745,7 +740,7 @@ public class QuestionScoreListener implements ActionListener,
 		}
 
 		catch (RuntimeException e) {
-			e.printStackTrace();
+			log.error("Could not complete question scores.", e);
 			return false;
 		}
 

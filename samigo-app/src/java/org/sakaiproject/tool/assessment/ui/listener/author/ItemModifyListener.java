@@ -271,7 +271,7 @@ public class ItemModifyListener implements ActionListener
     }
     catch(RuntimeException e)
     {
-      e.printStackTrace();
+        log.error("Could not populate ItemBean", e);
       return false;
     }
 
@@ -545,7 +545,7 @@ public class ItemModifyListener implements ActionListener
   private void populateItemTextForEMI(ItemAuthorBean itemauthorbean, ItemFacade itemfacade, ItemBean bean)  {
 	  if (!Long.valueOf(itemauthorbean.getItemType()).equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) return;
 	  
-	  bean.setAnswerOptionsRichCount(itemfacade.getAnswerOptionsRichCount().toString());
+	  bean.setAnswerOptionsRichCount(itemfacade.getAnswerOptionsRichCount()==null?"0":itemfacade.getAnswerOptionsRichCount().toString());
 	  bean.setAnswerOptionsSimpleOrRich(itemfacade.getAnswerOptionsSimpleOrRich().toString());
 	  
 	  Set itemtextSet = itemfacade.getItemTextSet();

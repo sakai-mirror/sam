@@ -565,12 +565,12 @@ public class HistogramListener
 
                           public int compare(HistogramQuestionScoresBean h1, HistogramQuestionScoresBean h2) {
                               //Part
-                              int val = Integer.valueOf(h1.getPartNumber()).compareTo(Integer.valueOf(h1.getPartNumber()));
+                              int val = Integer.valueOf(h1.getPartNumber()).compareTo(Integer.valueOf(h2.getPartNumber()));
                               if (val != 0) {
                                   return val;
                               }
                               //Question. The question in here is not clean, so use item id.
-                              val = h1.getItemId().compareTo(h1.getItemId());
+                              val = h1.getItemId().compareTo(h2.getItemId());
                               if (val != 0) {
                                   return val;
                               }
@@ -1253,7 +1253,7 @@ public class HistogramListener
 			  Float totalScore = new Float(0);
 			  while (answerIter.hasNext()) {
 				  AnswerIfc subQuestionAnswer = (AnswerIfc) answerIter.next();
-				  totalScore += subQuestionAnswer.getScore();
+				  totalScore += (subQuestionAnswer==null||subQuestionAnswer.getScore()==null?0.0F:subQuestionAnswer.getScore());
 				  
 			  }
 			  questionScores.setTotalScore(totalScore.toString());
