@@ -51,7 +51,6 @@ import org.sakaiproject.tool.assessment.facade.QuestionPoolFacade;
 import org.sakaiproject.tool.assessment.integration.context.IntegrationContextFactory;
 import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceHelper;
 import org.sakaiproject.tool.assessment.qti.constants.QTIVersion;
-import org.sakaiproject.tool.assessment.qti.exception.RespondusMatchingException;
 import org.sakaiproject.tool.assessment.qti.util.XmlUtil;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.services.qti.QTIService;
@@ -175,8 +174,9 @@ public class XMLImportBean implements Serializable
       if (isCP) {
     	  File f2 = new File(uploadFile);
     	  success = f2.delete();
-          if (!success)
-	  log.error ("Failed to delete file " + uploadFile);
+          if (!success) {
+        	  log.error ("Failed to delete file " + uploadFile);
+          }
     	  File f3 = new File(unzipLocation);
     	  deleteDirectory(f3);
       }
@@ -255,7 +255,7 @@ public class XMLImportBean implements Serializable
     this.importType2 = importType2;
   }
 
-  private void processFile(String fileName, String uploadFile, boolean isRespondus) throws Exception, RespondusMatchingException
+  private void processFile(String fileName, String uploadFile, boolean isRespondus) throws Exception
   {
     itemAuthorBean.setTarget(ItemAuthorBean.FROM_ASSESSMENT); // save to assessment
 
@@ -421,12 +421,6 @@ public class XMLImportBean implements Serializable
     try
     {
     	processAsPoolFile(uploadFile);
-    }
-    catch (RespondusMatchingException rmx)
-    {
-      ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorImportExport");
-      FacesMessage message = new FacesMessage(rb.getString("respondus_matching_err") + rmx.getMessage());
-      FacesContext.getCurrentInstance().addMessage(null, message);
     }
     catch (Exception ex)
     {
