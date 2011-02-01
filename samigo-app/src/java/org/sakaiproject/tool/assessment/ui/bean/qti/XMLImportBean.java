@@ -37,10 +37,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.*;
-import org.xml.sax.SAXException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +51,6 @@ import org.sakaiproject.tool.assessment.facade.QuestionPoolFacade;
 import org.sakaiproject.tool.assessment.integration.context.IntegrationContextFactory;
 import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceHelper;
 import org.sakaiproject.tool.assessment.qti.constants.QTIVersion;
-import org.sakaiproject.tool.assessment.qti.exception.RespondusMatchingException;
 import org.sakaiproject.tool.assessment.qti.util.XmlUtil;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
 import org.sakaiproject.tool.assessment.services.qti.QTIService;
@@ -89,8 +84,6 @@ public class XMLImportBean implements Serializable
   private QuestionPoolBean questionPoolBean;
   private boolean isCP;
   private String importType2;
-  private static final String VALIDATE_XSD_PATH =
-      "xml/xsd/";
   
   private static final GradebookServiceHelper gbsHelper =
       IntegrationContextFactory.getInstance().getGradebookServiceHelper();
@@ -144,6 +137,7 @@ public class XMLImportBean implements Serializable
   {
 	String filename = uploadFile;
 	String unzipLocation = null;
+	boolean fileNotFound = false;
 	if (isCP) {
 		ImportService importService = new ImportService();
 		unzipLocation = importService.unzipImportFile(uploadFile);
@@ -155,6 +149,7 @@ public class XMLImportBean implements Serializable
     }
     catch (FileNotFoundException fnfex)
     {
+      fileNotFound = true;
       ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorImportExport");
       FacesMessage message = new FacesMessage( rb.getString("import_qti_not_found") );
       FacesContext.getCurrentInstance().addMessage(null, message);
@@ -166,17 +161,22 @@ public class XMLImportBean implements Serializable
       FacesContext.getCurrentInstance().addMessage(null, message);
     }
     finally {
+      boolean success = false;    	
       // remove unsuccessful file
-      log.debug("****Clean up file: "+filename);
-      File f1 = new File(filename);
-      boolean success = f1.delete();
-      if (!success)
-	log.error ("Failed to delete file " + filename);
+      if (!fileNotFound) {
+        log.debug("****Clean up file: "+filename);
+        File f1 = new File(filename);
+        success = f1.delete();
+        if (!success) {
+    	  log.error ("Failed to delete file " + filename);
+        }
+      }
       if (isCP) {
     	  File f2 = new File(uploadFile);
     	  success = f2.delete();
-          if (!success)
-	  log.error ("Failed to delete file " + uploadFile);
+          if (!success) {
+        	  log.error ("Failed to delete file " + uploadFile);
+          }
     	  File f3 = new File(unzipLocation);
     	  deleteDirectory(f3);
       }
@@ -255,7 +255,7 @@ public class XMLImportBean implements Serializable
     this.importType2 = importType2;
   }
 
-  private void processFile(String fileName, String uploadFile, boolean isRespondus) throws Exception, RespondusMatchingException
+  private void processFile(String fileName, String uploadFile, boolean isRespondus) throws Exception
   {
     itemAuthorBean.setTarget(ItemAuthorBean.FROM_ASSESSMENT); // save to assessment
 
@@ -367,16 +367,7 @@ public class XMLImportBean implements Serializable
     //trim = true so that xml processing instruction at top line, even if not.
     Document document = null;
 	try {
-		
-		// validate xml first 
- 		boolean success = validateImportXml(fullFileName);
- 		// now parse xml
-		if (success) {
-			document = XmlUtil.readDocument(fullFileName, true);
-		}
-		else {
-			throw( new RuntimeException("Invalid QTI XML format."));
-		}
+		document = XmlUtil.readDocument(fullFileName, true);
 	} catch (Exception e) {
 		throw(e);
 	}
@@ -389,35 +380,6 @@ public class XMLImportBean implements Serializable
     }
   }
 
-  private boolean validateImportXml(String fullfilename) throws SAXException, IOException{
-      // 1. Lookup a factory for the W3C XML Schema language
-      SchemaFactory factory = 
-          SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-      
-      // 2. Compile the schema. 
-      // Here the schema is loaded from a java.io.File, but you could use 
-      // a java.net.URL or a javax.xml.transform.Source instead.
-      String schemaFile = VALIDATE_XSD_PATH + "qtiv1p2.xsd";
-      log.debug("schemaFile = " + schemaFile);
-      Schema schema = factory.newSchema(new StreamSource(XMLImportBean.class.getClassLoader().getResourceAsStream(schemaFile)));
-  
-      // 3. Get a validator from the schema.
-      Validator validator = schema.newValidator();
-      
-      // 4. Parse the document you want to check.
-      Source source = new StreamSource(fullfilename);
-      
-      // 5. Check the document
-      try {
-          validator.validate(source);
-          log.debug(fullfilename + " is valid.");
-          return true;
-      }
-      catch (SAXException ex) {
-    	  log.debug(fullfilename + " is not valid QTI format.");
-      }
-      return false;
-  }
   public AuthorBean getAuthorBean()
   {
     return authorBean;
@@ -459,12 +421,6 @@ public class XMLImportBean implements Serializable
     try
     {
     	processAsPoolFile(uploadFile);
-    }
-    catch (RespondusMatchingException rmx)
-    {
-      ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorImportExport");
-      FacesMessage message = new FacesMessage(rb.getString("respondus_matching_err") + rmx.getMessage());
-      FacesContext.getCurrentInstance().addMessage(null, message);
     }
     catch (Exception ex)
     {

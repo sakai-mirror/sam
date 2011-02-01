@@ -750,9 +750,29 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		};
 		List list = getHibernateTemplate().executeFind(hcb);
 
-		// List list = getHibernateTemplate().find(query,
-		// new Object[] {siteAgentId},
-		// new org.hibernate.type.Type[] {Hibernate.STRING});
+		// Get the number of question in each assessment
+		HashMap questionSizeMap = new HashMap();
+		HibernateCallback hcb2 = new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				StringBuilder sb2 = new StringBuilder("select a.assessmentBaseId, count(*) ");
+				sb2.append("from ItemData i, SectionData s,  AssessmentData a, AuthorizationData z ");
+				sb2.append("where a = s.assessment and s = i.section and a.assessmentBaseId = z.qualifierId ");
+				sb2.append("and z.functionId=? and z.agentIdString=? ");
+				sb2.append("group by a.assessmentBaseId ");
+				Query q2 = session.createQuery(sb2.toString());
+				q2.setString(0, "EDIT_ASSESSMENT");
+				q2.setString(1, siteAgentId);
+				return q2.list();
+			};
+		};
+		List questionSizeList = getHibernateTemplate().executeFind(hcb2);
+		Iterator iter = questionSizeList.iterator();
+		while (iter.hasNext()) {
+			Object o[] = (Object[]) iter.next();
+			questionSizeMap.put(o[0], o[1]);
+		}
+		
 		ArrayList assessmentList = new ArrayList();
 		String lastModifiedBy = "";
 		AgentFacade agent = null;

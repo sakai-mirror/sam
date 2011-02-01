@@ -159,20 +159,24 @@ font-size:1.2em
 	width: 11%;
 }
 
+.status {
+	width: 8%;
+}
+
 .inProgress {
-	width: 9%;
+	width: 6%;
 }
 
 .submitted {
-	width: 9%;
+	width: 6%;
 }
 
 .releaseDate {
-	width: 9%;
+	width: 8%;
 }
 
 .dueDate {
-	width: 9%;
+	width: 8%;
 }
 
 .listAssessments th{
@@ -305,12 +309,12 @@ table.noBorder td {
 	padding: 0;
 }
 ul.ui-tabs-nav {
-	border-bottom: 2px solid #ED8F20;
+	border-bottom: 2px solid #828282;
 }
 ul.ui-tabs-nav li span.samigo-tab-sub {
 	text-decoration: none !important;
 	font-weight: normal !important;
-	color: #4E5356;
+	color: #000000;
 }
 ul.ui-tabs-nav li a {
 	text-decoration: none !important;
@@ -333,7 +337,20 @@ tr.list-row-even td, tr.list-row-odd td {
 #assessment-status-limiter {
 	margin-bottom: 12px;
 }
-#assessment-status-limiter a.active {
+#tabs #assessment-status-limiter a.active {
 	font-weight: bold;
 	text-decoration: none !important;
+	color: #000000;
 }
+#tabs, #tabs .ui-widget-content {
+	border-width: 0;
+	background: none;
+}
+#tabs .ui-widget-content a {
+	color: #0080C0;
+	text-decoration: none;
+}
+#tabs .ui-widget-content a:hover {
+	text-decoration: underline;
+}
+
