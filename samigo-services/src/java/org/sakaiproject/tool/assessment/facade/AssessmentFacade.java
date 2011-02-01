@@ -56,7 +56,8 @@ public class AssessmentFacade extends AssessmentBaseFacade
   private Set sectionSet;
   private Set assessmentAttachmentSet;
   private String lastModifiedDateForDisplay;
-  
+  private Integer questionSize;
+
   public AssessmentFacade() {
     //super();
     this.data = new AssessmentData();
@@ -103,6 +104,15 @@ public class AssessmentFacade extends AssessmentBaseFacade
     super.setLastModifiedBy(lastModifiedBy);
   }
 
+  public AssessmentFacade(Long id, String title, Date lastModifiedDate, String lastModifiedBy, int questionSize) {
+	    // in the case of template assessmentBaseId is the assessmentTemplateId
+	    super.setAssessmentBaseId(id);
+	    super.setTitle(title);
+	    super.setLastModifiedDate(lastModifiedDate);
+	    super.setLastModifiedBy(lastModifiedBy);
+	    this.questionSize = questionSize;
+  }
+  
   public AssessmentFacade(AssessmentIfc data, Boolean loadSection) {
     try {
       // assessment(org.osid.assessment.Assessment) is a protected properties
