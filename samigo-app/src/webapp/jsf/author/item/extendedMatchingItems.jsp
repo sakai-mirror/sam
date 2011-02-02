@@ -85,14 +85,14 @@
   <!-- this is for creating emi questions -->
   
   <!-- 1 POINTS and DISCOUNT -->
-<div class="tier2">
-     <div class="shorttext"> <h:outputLabel value="#{authorMessages.answer_point_value}" />
+<div>
+    <h3><h:outputText value="#{authorMessages.answer_point_value}" />
     <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}"required="true" size="6" onchange="toPoint(this.id);">
 	  <f:validateDoubleRange minimum="0"/>
 	</h:inputText>
 	<h:message for="answerptr" styleClass="validate"/>
+	</h3>
 </div>
-<br/>
 
 <!-- XXX Removed since this is calculated
 <div id="discountDiv" class="shorttext">
@@ -108,19 +108,18 @@
 
   <!-- 2 QUESTION THEME TEXT -->
 
-  <div class="longtext"> <h:outputLabel value="#{authorMessages.question_theme_text}" />
-    <h:inputText id="themetext" value="#{itemauthor.currentItem.itemText}"required="true" size="60" >
-    </h:inputText>
-    <h:message for="themetext" styleClass="validate"/>
-  </div>
-  <br/>
+  <h3><h:outputText value="#{authorMessages.question_theme_text}" /></h3>
+  <h:inputText id="themetext" value="#{itemauthor.currentItem.itemText}"required="true" size="60" ></h:inputText>
+  <h:message for="themetext" styleClass="validate"/>
 
 
 
   <!-- 3 ANSWER OPTIONS - SIMPLE OR RICH TEXT-->
 
-  <h:outputLabel value="#{authorMessages.select_appropriate_format}" />
-  <f:verbatim><br/></f:verbatim>
+  <h3><h:outputText value="#{authorMessages.options_text}" /></h3>
+    <f:verbatim><br/></f:verbatim>
+<div class="act greyBox">
+  <div><h:outputText value="#{authorMessages.select_appropriate_format}" /></div>
   <h:selectOneRadio id="emiAnswerOptionsSimpleOrRich" value="#{itemauthor.currentItem.answerOptionsSimpleOrRich}" layout="pageDirection" required="yes">
     <f:selectItem itemLabel="#{authorMessages.simple_text_option_label}" itemValue="0"/>
     <f:selectItem itemLabel="#{authorMessages.rich_text_option_label}" itemValue="1"/>
@@ -133,8 +132,7 @@
 <div id="emiAnswerOptionsRich">
  <div class="tier2">
   
-   <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options_rich}" />
-   </div>
+   <h:outputLabel value="#{authorMessages.answer_options_rich}" />
 
   <!-- WYSIWYG -->
   <h:panelGrid>
@@ -146,7 +144,7 @@
 
  
  <!-- ATTACHMENTS BELOW - OPTIONS -->
- <div class="longtext">
+ <div>
   <h:panelGroup rendered="#{itemauthor.hasAttachment}">
     <h:dataTable value="#{itemauthor.attachmentList}" var="attach">
       <h:column>
@@ -166,15 +164,13 @@
   </h:panelGroup>
 
   <h:panelGroup rendered="#{!itemauthor.hasAttachment}">
-    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="false">
-       <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
+    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="false" styleClass="iconAttach">
        <h:outputText value="#{authorMessages.add_attachments}"/>
     </h:commandLink>
   </h:panelGroup>
 
   <h:panelGroup rendered="#{itemauthor.hasAttachment}">
-    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="false">
-       <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
+    <h:commandLink action="#{itemauthor.addAttachmentsRedirect}" value="" immediate="false" styleClass="iconAttach">
        <h:outputText value="#{authorMessages.add_remove_attachments}"/>
     </h:commandLink>
   </h:panelGroup>
@@ -185,7 +181,7 @@
   <f:verbatim><br/><br/></f:verbatim>
 
 
-  <div class="shorttext tier2">
+  <div class="tier2">
     <h:outputText value="#{authorMessages.answer_options_count}" />
     <h:selectOneMenu  id="answerOptionsRichCount"  value="#{itemauthor.currentItem.answerOptionsRichCount}" >
       <f:selectItem itemLabel="#{authorMessages.select_menu}" itemValue="0"/>
@@ -227,19 +223,22 @@
 <!-- dynamicaly generate rows of answer options -->
 
 <div id="emiAnswerOptionsSimple">
- <div class="tier2">
+ <div>
 
- <h:panelGrid columns="2">
+ <h:panelGrid columns="3" columnClasses="alignTop">
    <h:panelGroup>
 
-     <div class="longtext"><h:outputLabel value="#{authorMessages.answer_options}"/></div>
+     <div><h:outputLabel value="#{authorMessages.answer_options}"/></div>
 
-     <h:dataTable id="emiAnswerOptions" value="#{itemauthor.currentItem.emiAnswerOptions}" var="answer" headerClass="navView longtext">
+     <h:dataTable id="emiAnswerOptions" value="#{itemauthor.currentItem.emiAnswerOptions}" var="answer" headerClass="navView">
      <h:column>
-       <h:panelGrid id="Row" columns="3">
+       <h:panelGrid id="Row" columns="3" cellspacing="0" cellpadding="0" >
 
          <h:panelGroup>
            <h:outputText id="Label" value="#{answer.label}"  />
+	   <f:verbatim>
+	    <div style="width:10px"> </div>
+	    </f:verbatim>
          </h:panelGroup>
   
          <h:panelGrid>
@@ -249,7 +248,7 @@
 
          <h:panelGroup>
            <h:outputLink id="RemoveLink" title="#{authorMessages.t_removeO}" rendered="#{itemauthor.currentItem.itemType == 13}">
-             <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
+	      <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
            </h:outputLink>		 
          </h:panelGroup>
 
@@ -258,10 +257,16 @@
      </h:dataTable>
 
    </h:panelGroup>
+   
+  <h:panelGroup>
+    <f:verbatim>
+      <div id="divider"/>
+    </f:verbatim>
+  </h:panelGroup>
 
 
    <h:panelGrid>
-     <div class="longtext"><h:outputLabel id="pasteLabel" value="#{authorMessages.answer_options_paste}"/></div>
+     <div><h:outputLabel id="pasteLabel" value="#{authorMessages.answer_options_paste}"/></div>
      <h:inputTextarea id="emiAnswerOptionsPaste" rows="6" cols="50" value="#{itemauthor.currentItem.emiAnswerOptionsPaste}">
      </h:inputTextarea>
    </h:panelGrid>
@@ -272,22 +277,20 @@
  </div>
 
 
- <div class="shorttext tier2">
-  <h:outputLink id="addEmiAnswerOptionsLink" >
-    <f:verbatim><img src="/library/image/silk/add.png" border="0"></f:verbatim>
+ <div class=" tier2">
+  <h:outputLink id="addEmiAnswerOptionsLink" styleClass="iconAdd">
     <h:outputText value="#{authorMessages.add_more_options}"/>
   </h:outputLink>		 
  </div>
 
+</div>
 </div>
 
 
 
   <!-- 4 LEAD IN STATEMENT -->
 
-<br/><br/>
-
-  <div class="longtext"><h:outputLabel value="#{authorMessages.lead_in_statement}" /></div>
+  <h3><h:outputText value="#{authorMessages.lead_in_statement}" /></h3>
   <!-- WYSIWYG -->
   <h:panelGrid>
    <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.leadInStatement}" hasToggle="yes">
@@ -302,16 +305,15 @@
 
   <!-- 4 QUESTION-ANSWER COMBINATIONS -->
 
-  <div class="longtext">
-    <h:outputLabel value="#{authorMessages.question_answer_combinations} " />  </div>
+  <h3><h:outputText value="#{authorMessages.question_answer_combinations} " />  </h3>
 
 <!-- dynamicaly generate rows of question-answer combos -->
-<div class="tier2">
+<div>
 
- <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinationsUI}" var="answer" headerClass="navView longtext">
+ <h:dataTable id="emiQuestionAnswerCombinations" value="#{itemauthor.currentItem.emiQuestionAnswerCombinationsUI}" var="answer" headerClass="navView" cellspacing="0" cellpadding="0" >
  <h:column>
 
- <h:panelGrid id="Row" columns="4">
+ <h:panelGrid id="Row" columns="4" columnClasses="alignTop" styleClass="act greyBox">
   <h:panelGroup>
     <f:verbatim>
        <div>
@@ -355,15 +357,13 @@
   </h:panelGroup>
 
   <h:panelGroup rendered="#{!answer.hasAttachment}">
-    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="false">
-       <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
+    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="false" styleClass="iconAttach">
        <h:outputText value="#{authorMessages.add_attachments}"/>
     </h:commandLink>
   </h:panelGroup>
 
   <h:panelGroup rendered="#{answer.hasAttachment}">
-    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="false">
-       <f:verbatim><img src="/library/image/silk/attach.png" border="0"/></f:verbatim>
+    <h:commandLink action="#{answer.addAttachmentsRedirect}" value="" immediate="false" styleClass="iconAttach">
        <h:outputText value="#{authorMessages.add_remove_attachments}"/>
     </h:commandLink>
   </h:panelGroup>
@@ -436,14 +436,12 @@
 </div>
 
 <div class="shorttext tier2">
-  <h:outputLink id="addEmiQuestionAnswerCombinationsLink" rendered="true">
-    <f:verbatim><img src="/library/image/silk/add.png" border="0"></f:verbatim>
+  <h:outputLink id="addEmiQuestionAnswerCombinationsLink" rendered="true"  styleClass="iconAdd">
     <h:outputText value="#{authorMessages.add_more_items}"/>
   </h:outputLink>		 
 
 
-  <h:commandLink id="XX_addEmiQuestionAnswerCombinationsLink" action="#{itemauthor.currentItem.addEmiQuestionAnswerCombinationsAction}" rendered="false">
-    <f:verbatim><img src="/library/image/silk/add.png" border="0"></f:verbatim>
+  <h:commandLink id="XX_addEmiQuestionAnswerCombinationsLink" action="#{itemauthor.currentItem.addEmiQuestionAnswerCombinationsAction}" rendered="false"  styleClass="iconAdd">
     <h:outputText value="#{authorMessages.add_more_items}"/>
   </h:commandLink>
 </div>

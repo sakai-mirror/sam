@@ -157,12 +157,19 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 	
 	private Long itemGradingIdForFilePicker;
 	
+	private boolean isMultipleItems = false;
 	
-    //gopalrc - added 30 Nov 2009 - for EMI question
+    public boolean getIsMultipleItems() {
+		return this.isMultipleItems;
+	}
+
+	public void setIsMultipleItems(boolean isMultipleItems) {
+		this.isMultipleItems = isMultipleItems;
+	}
+
+	//gopalrc - added 30 Nov 2009 - for EMI question
     private String themeText;
     private String leadInText;
-	
-    
 	
 	public ItemContentsBean() {
 	}

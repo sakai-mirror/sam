@@ -31,7 +31,7 @@ include file for displaying Extended Matching Items questions
       <f:verbatim><br/><br/></f:verbatim>
 
 
-      <h:dataTable value="#{question.emiAnswerOptions}" var="option" styleClass="simpleBorder">
+      <h:dataTable value="#{question.emiAnswerOptions}" var="option" styleClass="simpleBorder" cellspacing="0">
         <h:column> 
           <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
             <h:outputText escape="false" value="#{option.label}. #{option.text}" /> 
@@ -73,7 +73,7 @@ include file for displaying Extended Matching Items questions
       
 
       
-      <h:dataTable value="#{question.emiQuestionAnswerCombinations}" var="option" styleClass="simpleBorder">
+      <h:dataTable value="#{question.emiQuestionAnswerCombinations}" var="option" styleClass="simpleBorder" cellspacing="0">
         <h:column> 
           <h:panelGroup rendered="#{option.text != null && option.text ne ''}">
             <h:outputText escape="false" value="#{option.sequence}. #{option.text}" /> 

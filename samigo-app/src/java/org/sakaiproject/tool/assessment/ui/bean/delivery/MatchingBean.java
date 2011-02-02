@@ -54,8 +54,17 @@ public class MatchingBean
   private String feedback;
   private AnswerIfc answer;
   private boolean isCorrect;
+  private String itemSequence;
 
-  public class AnswerLabelWithCorrectStatus {
+  public String getItemSequence() {
+	return itemSequence;
+}
+
+public void setItemSequence(String itemSequence) {
+	this.itemSequence = itemSequence;
+}
+
+public class AnswerLabelWithCorrectStatus {
 	  private boolean isCorrect;
 	  private String answerLabel;
 	  public AnswerLabelWithCorrectStatus(boolean correct, String label) {

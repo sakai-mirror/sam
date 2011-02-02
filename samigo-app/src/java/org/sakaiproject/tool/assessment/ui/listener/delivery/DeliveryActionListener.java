@@ -1523,7 +1523,8 @@ public class DeliveryActionListener
 
       MatchingBean mbean = new MatchingBean();
       newAnswers = new ArrayList();
-      mbean.setText(text.getSequence() + ". " + text.getText());
+      mbean.setText(text.getText());
+      mbean.setItemSequence(text.getSequence() + "");
 
       mbean.setItemText(text);
       mbean.setItemContentsBean(bean);
@@ -1570,6 +1571,7 @@ public class DeliveryActionListener
     
     bean.setMatchingArray(beans);
     bean.setAnswers(newAnswers); // Change the answers to just text
+    bean.setIsMultipleItems(beans.size() > 1);
   }
 
   
