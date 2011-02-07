@@ -762,14 +762,16 @@ public class GradingService
       log.debug("****itemGrading size="+itemGradingSet.size());
       Iterator iter = itemGradingSet.iterator();
 
-      // fibAnswersMap contains a map of HashSet of answers for a FIB item,
+      // fibEmiAnswersMap contains a map of HashSet of answers for a FIB or EMI item,
       // key =itemid, value= HashSet of answers for each item.  
-      // This is used to keep track of answers we have already used for 
+      // For FIB: This is used to keep track of answers we have already used for
       // mutually exclusive multiple answer type of FIB, such as 
       // The flag of the US is {red|white|blue},{red|white|blue}, and {red|white|blue}.
       // so if the first blank has an answer 'red', the 'red' answer should 
-      // not be included in the answers for the other mutually exclusive blanks. 
-      HashMap fibAnswersMap= new HashMap();
+      // not be included in the answers for the other mutually exclusive blanks.
+      // For EMI: This keeps track of how many answers were given so we don't give
+      // extra marks for to many answers.
+      HashMap fibEmiAnswersMap = new HashMap();
       
       
       //change algorithm based on each question (SAK-1930 & IM271559) -cwen
@@ -796,7 +798,7 @@ public class GradingService
 
         // note that totalItems & fibAnswersMap would be modified by the following method
         autoScore = getScoreByQuestionType(itemGrading, item, itemType, publishedItemTextHash, 
-                               totalItems, fibAnswersMap, publishedAnswerHash, regrade);
+                               totalItems, fibEmiAnswersMap, publishedAnswerHash, regrade);
         log.debug("**!regrade, autoScore="+autoScore);
         if (!(TypeIfc.MULTIPLE_CORRECT).equals(itemType) && !(TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType))
           totalItems.put(itemId, Float.valueOf(autoScore));
@@ -837,56 +839,8 @@ public class GradingService
       
       log.debug("****x3.1 "+(new Date()).getTime());
 
-      // Loop 1: the following procedure ensure total score awarded per EMI item 
-      // is no more than allowed by the requiredOptionsCount
-      // to ensure no cross-effects unfortunately this needs to be processed in 2 loops
-      // this currently only applies to EMI question type - gopalrc
-      iter = emiItemGradings.iterator();
-      HashMap processedCorrectGradingsPerItemText = new HashMap();
-      HashMap totalItemTextScores2 = new HashMap();
-      while(iter.hasNext())
-      {
-        ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
-        Long itemId = itemGrading.getPublishedItemId();
-        HashMap totalItemTextScores = (HashMap)totalItems.get(itemId);
-        
-        Long itemTextId = itemGrading.getPublishedItemTextId();
-        ItemTextIfc itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
-        
-        Long answerId  = itemGrading.getPublishedAnswerId();
-        AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(answerId);
-
-        float itemTextScore = ((Float) totalItemTextScores.get(itemTextId)).floatValue();
-        Integer requiredCorrectOptions = itemText.getRequiredOptionsCount();
-        if (requiredCorrectOptions != null && requiredCorrectOptions.intValue() > 0 && answer.getIsCorrect()) {
-        	if (processedCorrectGradingsPerItemText.get(itemTextId)==null) {
-        		processedCorrectGradingsPerItemText.put(itemTextId, 1);
-        	}
-        	else {
-        		int numProcessed = ((Integer)processedCorrectGradingsPerItemText.get(itemTextId)).intValue();
-        		numProcessed++;
-        		processedCorrectGradingsPerItemText.put(itemTextId, Integer.valueOf(numProcessed));
-        		if (numProcessed>requiredCorrectOptions.intValue()) {
-                	itemGrading.setAutoScore( Float.valueOf(0));
-        		}
-        	}
-        }
-        
-        //save updated scores for final processing below
-        float accumulateScore=(float)0;
-        if (!totalItemTextScores2.containsKey(itemTextId))
-      	  totalItemTextScores2.put(itemTextId, Float.valueOf(itemGrading.getAutoScore()));
-        else {
-        	accumulateScore = ((Float)totalItemTextScores2.get(itemTextId)).floatValue();
-        	accumulateScore += itemGrading.getAutoScore().floatValue();
-            totalItemTextScores2.put(itemTextId, Float.valueOf(accumulateScore));
-        }
-      }
-      
-
-      // Loop 2: this procedure ensure total score awarded per EMI item 
+      // Loop 1: this procedure ensure total score awarded per EMI item
       // is no less than 0
-      // to ensure no cross-effects unfortunately this needs to be processed in 2 loops
       // this currently only applies to EMI question type - gopalrc
       iter = emiItemGradings.iterator();
       while(iter.hasNext())
@@ -894,6 +848,7 @@ public class GradingService
         ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
         Long itemTextId = itemGrading.getPublishedItemTextId();
         ItemTextIfc itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
+        Map totalItemTextScores2 = (Map)totalItems.get(itemGrading.getPublishedItemId());
         float itemTextScore = ((Float) totalItemTextScores2.get(itemTextId)).floatValue();
         if(itemTextScore < 0) {
         	itemGrading.setAutoScore( Float.valueOf(0));
@@ -984,7 +939,7 @@ public class GradingService
   
   private float getScoreByQuestionType(ItemGradingIfc itemGrading, ItemDataIfc item,
                                        Long itemType, HashMap publishedItemTextHash, 
-                                       HashMap totalItems, HashMap fibAnswersMap,
+                                       HashMap totalItems, HashMap fibEmiAnswersMap,
                                        HashMap publishedAnswerHash, boolean regrade){
     //float score = (float) 0;
     float initScore = (float) 0;
@@ -1066,7 +1021,7 @@ public class GradingService
               break;
 
       case 8: // FIB
-              autoScore = getFIBScore(itemGrading, fibAnswersMap, item, publishedAnswerHash) / (float) ((ItemTextIfc) item.getItemTextSet().toArray()[0]).getAnswerSet().size();
+              autoScore = getFIBScore(itemGrading, fibEmiAnswersMap, item, publishedAnswerHash) / (float) ((ItemTextIfc) item.getItemTextSet().toArray()[0]).getAnswerSet().size();
               //overridescore - cwen
               if (itemGrading.getOverrideScore() != null)
                 autoScore += itemGrading.getOverrideScore().floatValue();
@@ -1097,17 +1052,36 @@ public class GradingService
       case 13: //gopalrc EMI
     	  if (!totalItems.containsKey(itemId)){
               totalItems.put(itemId, new HashMap());
+              fibEmiAnswersMap.put(itemId, new HashMap());
     	  }
-    
-          autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
+
+          //update the fibEmiAnswersMap so we can keep track
+          //of how many answers were given
+    	  Map itemTextCountMap = (Map)fibEmiAnswersMap.get(itemId);
+          Long itemTextId = itemGrading.getPublishedItemTextId();
+          AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(itemGrading.getPublishedAnswerId());
+          int answerCount = 0;
+          if(answer.getIsCorrect()){
+            if(itemTextCountMap.containsKey(itemTextId)){
+              answerCount = ((Integer)itemTextCountMap.get(itemTextId))+1;
+            }else{
+              answerCount = 1;
+            }
+            itemTextCountMap.put(itemTextId, answerCount);
+          }
+          itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
+          if(answerCount > itemText.getRequiredOptionsCount()){
+            //there is already enough answers for the item option
+              //just ignore this
+              autoScore = 0.0F;
+          }else{
+            autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
+          }
+          
           //overridescore
           if (itemGrading.getOverrideScore() != null)
             autoScore += itemGrading.getOverrideScore().floatValue();
-          ItemTextIfc iText = (ItemTextIfc) publishedItemTextHash.get(itemGrading.getPublishedItemTextId());
-          Long itemTextId = iText.getId();
           
-          //totalItems.put(iText.getId(),  Float.valueOf(autoScore));
-
           HashMap totalItemTextScores = (HashMap)totalItems.get(itemId);
           if (!totalItemTextScores.containsKey(itemTextId))
         	  totalItemTextScores.put(itemTextId, Float.valueOf(autoScore));

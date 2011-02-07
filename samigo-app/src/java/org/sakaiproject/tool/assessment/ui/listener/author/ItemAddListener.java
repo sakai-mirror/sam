@@ -1075,10 +1075,10 @@ public class ItemAddListener
 		// 3. Prepare and save actual answers from answer components 
 		// (emiAnswerOptions and emiQuestionAnswerCombinations)
 		// ///////////////////////////////////////////////////////////
-		int numberOfCorrectAnswersRequired = 0;
-		float correctAnswerScore = 0;
-		
-		iter = bean.getEmiQuestionAnswerCombinationsClean().iterator();
+                @SuppressWarnings("unchecked")
+		List<AnswerBean> emiQuestionAnswerCombinations = bean.getEmiQuestionAnswerCombinationsClean();
+                int answerCombinations = emiQuestionAnswerCombinations.size();
+                iter = emiQuestionAnswerCombinations.iterator();
 		AnswerBean qaCombo = null;
 		while (iter.hasNext()) {
 			qaCombo = (AnswerBean) iter.next();
@@ -1087,14 +1087,15 @@ public class ItemAddListener
 			itemText.setItem(item.getData());
 			itemText.setSequence(qaCombo.getSequence());
 			itemText.setText(qaCombo.getText());
-			itemText.setRequiredOptionsCount(Integer.valueOf(qaCombo.getRequiredOptionsCount()));
-
-			int requiredOptions = (Integer.valueOf(qaCombo.getRequiredOptionsCount())).intValue();
+                        int requiredOptions = (Integer.valueOf(qaCombo.getRequiredOptionsCount())).intValue();
 			if (requiredOptions == 0) {
 				requiredOptions = qaCombo.correctOptionsCount();
 			}
-			numberOfCorrectAnswersRequired += requiredOptions;
-			
+			itemText.setRequiredOptionsCount(requiredOptions);
+
+			//for emi the score per correct answer is total/combinations/requiredOptions
+			//the discount is the negitive of that
+			Float score = item.getScore()/answerCombinations/requiredOptions;
 			HashSet answerSet = new HashSet();
 			
 			if (Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()).equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE) ) {
@@ -1102,16 +1103,12 @@ public class ItemAddListener
 				while (selectionOptions.hasNext()) {
 					AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
 					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
-					
-					Float discount = 0.0F;
-					if (!isCorrect) {
-						discount = Float.valueOf(bean.getItemDiscount());
-					}
+
 					AnswerIfc actualAnswer = new Answer(itemText,
 							selectOption.getText(), selectOption
 							.getSequence(), selectOption.getLabel(),
-							isCorrect, null, null, null,
-							discount, null);
+							isCorrect, null, score, null,
+							-score, null);
 
 /*					
 					HashSet answerFeedbackSet1 = new HashSet();
@@ -1154,28 +1151,6 @@ public class ItemAddListener
 			itemText.setAnswerSet(answerSet);
 			textSet.add(itemText);
 			
-		}
-
-		//now calculate and save the answer scores
-		if (numberOfCorrectAnswersRequired != 0) {
-			correctAnswerScore = (Float.valueOf(bean.getItemScore())).floatValue() / (float)numberOfCorrectAnswersRequired;
-		}
-		
-		Iterator textSetIter = textSet.iterator();
-		while (textSetIter.hasNext()) {
-			ItemTextIfc itemText = (ItemTextIfc)textSetIter.next();
-			if (!itemText.isEmiQuestionItemText()) continue;
-			Iterator answerSetIter = itemText.getAnswerSet().iterator();
-			AnswerIfc actualAnswer = null;
-			while (answerSetIter.hasNext()) {
-				actualAnswer = (AnswerIfc)answerSetIter.next();
-				if (actualAnswer.getIsCorrect()==null || !actualAnswer.getIsCorrect()) {
-					actualAnswer.setDiscount(Float.valueOf(correctAnswerScore));
-				}
-				else {
-					actualAnswer.setScore(Float.valueOf(correctAnswerScore));
-				}
-			}
 		}
 					
 		return textSet;

@@ -1206,7 +1206,7 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
           ItemFacade item = itemService.getItem(itemData.getItemId(), AgentFacade.getAgentString());
           item.setScore(score);
 
-   		int numberOfCorrectAnswersRequired = 0;
+   		int answerCombinations = 0;
 		float correctAnswerScore = 0;
 
           ItemDataIfc data = item.getData();
@@ -1215,42 +1215,24 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
           while (iter.hasNext()) {
               ItemTextIfc itemText = (ItemTextIfc) iter.next();
               if (!itemText.isEmiQuestionItemText()) continue;
-              if (itemText.getRequiredOptionsCount() != null && itemText.getRequiredOptionsCount().intValue() > 0) {
-            	  numberOfCorrectAnswersRequired += itemText.getRequiredOptionsCount().intValue();
-              }
-              else {
-                  Set answerSet = itemText.getAnswerSet();
-                  Iterator iter2 = answerSet.iterator();
-                  while (iter2.hasNext()) {
-                      AnswerIfc answer = (AnswerIfc)iter2.next();
-                      log.debug("old value " + answer.getScore() +
-                                         "new value " + score);
-                      if (answer.getIsCorrect()) {
-                    	  numberOfCorrectAnswersRequired++;
-                      }
-                  }
-              }
+              answerCombinations++;
           }
-   		  if (numberOfCorrectAnswersRequired != 0) {
-			correctAnswerScore = score.floatValue() / (float)numberOfCorrectAnswersRequired;
-		  }
    		  
           iter = itemTextSet.iterator();
           while (iter.hasNext()) {
               ItemTextIfc itemText = (ItemTextIfc) iter.next();
               if (!itemText.isEmiQuestionItemText()) continue;
-              
+
+              int requiredOptions = itemText.getRequiredOptionsCount();
+              Float optionScore = item.getScore()/answerCombinations/requiredOptions;
               Set answerSet = itemText.getAnswerSet();
               Iterator iter2 = answerSet.iterator();
               while (iter2.hasNext()) {
                   AnswerIfc answer = (AnswerIfc)iter2.next();
                   log.debug("old value " + answer.getScore() +
-                                     "new value " + score);
-                  if (answer.getIsCorrect()) {
-                	  answer.setScore(correctAnswerScore);
-                  }else{
-                      answer.setDiscount(correctAnswerScore);
-                  }
+                                     "new value " + optionScore);
+                  answer.setScore(optionScore);
+                  answer.setDiscount(optionScore);
               }
               EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.revise", "itemId=" + itemData.getItemId(), true));
           }
