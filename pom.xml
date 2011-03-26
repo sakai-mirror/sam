@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sakai.common.version>1.0.5</sakai.common.version>
         <sakai.edu-services.version>1.0.7</sakai.edu-services.version>
-        <sakai.jsf.version>2.7.7</sakai.jsf.version>
+        <sakai.jsf.version>2.7.8</sakai.jsf.version>
     </properties>
 
     <modules>
