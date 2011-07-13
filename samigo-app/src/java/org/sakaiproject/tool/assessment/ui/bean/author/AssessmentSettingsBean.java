@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -1053,11 +1054,12 @@ public class AssessmentSettingsBean
       return date;
     }
 
-    if (!dateValidation(dateString)) {
-    	this.isValidDate = false;
-    	return null;
-    }
-    try {
+     try {
+    	 if (!dateValidation(dateString)) {
+    		 this.isValidDate = false;
+    		 return null;
+    	 }
+
       //Date date= (Date) displayFormat.parse(dateString);
 // dateString is in client timezone, change it to server time zone
       TimeUtil tu = new TimeUtil();
@@ -1065,9 +1067,16 @@ public class AssessmentSettingsBean
     }
     catch (Exception ex) {
       // we will leave it as a null date
-      log.warn("Unable to format date.");
-      error=true;
-      ex.printStackTrace();
+    	log.warn("Unable to format date.");
+    	FacesContext context=FacesContext.getCurrentInstance();
+    	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
+    	String err;
+
+    	err=rb.getString("deliveryDate_error");
+    	context.addMessage(null,new FacesMessage(err));
+
+    	error=true;
+      //ex.printStackTrace();
     }
     return date;
   }
@@ -1526,6 +1535,20 @@ public class AssessmentSettingsBean
 	  this.originalFeedbackDateString = "";
   }
   
+  private String createUniqueKey(String key, Map map) {
+     if (!map.containsKey(key)) {
+        return key;
+     } else {
+        int index = 1;
+        String ukey = key + " (" + index + ")";
+        while (map.containsKey(ukey)) {
+           index++;
+           ukey = key + " (" + index + ")";
+        }
+        return ukey;
+     }
+  }
+
   /**
    * gopalrc Nov 2007
    * Returns all groups for site
@@ -1546,8 +1569,9 @@ public class AssessmentSettingsBean
 	    		 //String groupType = group.getProperties().getProperty("sections_category");
 	    		 //groupType = groupType == null ? "" : " (" + groupType + ")";
 	    		 String groupDescription = group.getDescription()==null || group.getDescription().equals("") ? "" : " : " + group.getDescription();
+                         String selectDescription = createUniqueKey(groupDescription.toUpperCase(), sortedSelectItems);
 	    		 String displayDescription = group.getTitle() + groupDescription;
-	    		 sortedSelectItems.put(displayDescription.toUpperCase(), new SelectItem(group.getId(), displayDescription));
+			 sortedSelectItems.put(selectDescription, new SelectItem(group.getId(), displayDescription));
 	    	 }
 	    	 Set keySet = sortedSelectItems.keySet();
 	    	 groupIter = keySet.iterator();
