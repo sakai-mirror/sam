@@ -35,11 +35,21 @@
 	  <script type="text/javascript" language="JavaScript" src="../../js/saveForm.js"></script>
 	  <script type="text/javascript" language="JavaScript" src="../../js/jquery-1.3.2.min.js"></script>
 	  <script type="text/javascript" language="JavaScript" src="../../js/jquery-ui-1.7.2.custom.min.js"></script>
+	  <script type="text/javascript" language="JavaScript" src="/samigo-app/js/jquery.blockUI-2.31.js"></script>
 	  <link type="text/css" href="../../css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
 	  
 	  <script type="text/javascript">
 		$(document).ready(function(){
 		
+			$('input[type=submit]').click(function() {
+                                 $.blockUI({ message: '',
+                                 overlayCSS: {
+                                 backgroundColor: '#ff0',
+                                 opacity: 0}
+                                 });
+ 	 
+                        });
+
 			$('#timer-warning').dialog({
 				autoOpen: false,
 				width: 400,
