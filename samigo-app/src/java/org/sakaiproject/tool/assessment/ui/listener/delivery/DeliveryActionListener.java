@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.faces.context.FacesContext;
@@ -38,11 +39,18 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+
 import org.sakaiproject.event.cover.EventTrackingService;
 import org.sakaiproject.event.cover.NotificationService;
+import org.sakaiproject.tool.assessment.data.dao.assessment.Answer;
+import org.sakaiproject.tool.assessment.api.SamigoApiFactory;
 import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
@@ -61,6 +69,9 @@ import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
 import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
+import org.sakaiproject.tool.assessment.shared.api.assessment.SecureDeliveryServiceAPI;
+import org.sakaiproject.tool.assessment.shared.api.assessment.SecureDeliveryServiceAPI.Phase;
+import org.sakaiproject.tool.assessment.shared.api.assessment.SecureDeliveryServiceAPI.PhaseStatus;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.ContentsDeliveryBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.DeliveryBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.FeedbackComponent;
@@ -70,12 +81,14 @@ import org.sakaiproject.tool.assessment.ui.bean.delivery.ItemContentsBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.MatchingBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.SectionContentsBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.SelectionBean;
+import org.sakaiproject.tool.assessment.ui.bean.delivery.MatrixSurveyBean;
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.StudentScoresBean;
 import org.sakaiproject.tool.assessment.ui.bean.shared.PersonBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.ui.model.delivery.TimedAssessmentGradingModel;
 import org.sakaiproject.tool.assessment.ui.queue.delivery.TimedAssessmentQueue;
 import org.sakaiproject.tool.assessment.ui.web.session.SessionUtil;
+import org.sakaiproject.tool.assessment.util.FormatException;
 import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.util.ResourceLoader;
 
@@ -188,7 +201,8 @@ public class DeliveryActionListener
       GradingService service = new GradingService();
       PublishedAssessmentService pubService = new PublishedAssessmentService();
       AssessmentGradingData ag = null;
-
+      boolean isFirstTimeBegin = false;
+      
       switch (action){
       case 2: // preview assessment
               setFeedbackMode(delivery);
@@ -230,6 +244,25 @@ public class DeliveryActionListener
               delivery.setGraderComment(agData.getComments());
               delivery.setAssessmentGradingId(agData.getAssessmentGradingId());
               delivery.setOutcome("takeAssessment");
+              delivery.setSecureDeliveryHTMLFragment( "" );
+              delivery.setBlockDelivery( false );
+              
+              SecureDeliveryServiceAPI secureDelivery = SamigoApiFactory.getInstance().getSecureDeliveryServiceAPI();
+              if ( secureDelivery.isSecureDeliveryAvaliable() ) {
+            	  
+            	  String moduleId = publishedAssessment.getAssessmentMetaDataByLabel( SecureDeliveryServiceAPI.MODULE_KEY );
+            	  if ( moduleId != null && ! SecureDeliveryServiceAPI.NONE_ID.equals( moduleId ) ) {
+              		  
+            		  HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            		  PhaseStatus status = secureDelivery.validatePhase(moduleId, Phase.ASSESSMENT_REVIEW, publishedAssessment, request );
+            		  delivery.setSecureDeliveryHTMLFragment( 
+            				  secureDelivery.getHTMLFragment(moduleId, publishedAssessment, request, Phase.ASSESSMENT_REVIEW, status, new ResourceLoader().getLocale() ) );             		 
+            		  if ( PhaseStatus.FAILURE == status )  {           			 
+            			  delivery.setOutcome( "secureDeliveryError" );
+            			  delivery.setBlockDelivery( true );
+            		  }
+            	  }                 	  
+              }  
               break;
  
       case 4: // Grade assessment
@@ -247,6 +280,24 @@ public class DeliveryActionListener
       case 1: // Take assessment
       case 5: // Take assessment via url
               log.debug("**** DeliveryActionListener #0");
+
+              if (ae != null && ae.getComponent().getId().startsWith("beginAssessment")) {
+            	  // #1. check password
+            	  if (!delivery.getSettings().getUsername().equals(""))
+            	  {
+            		  if ("passwordAccessError".equals(delivery.validatePassword())) {
+            			  return;
+            		  }
+            	  }
+
+            	  // #2. check IP
+            	  if (delivery.getSettings().getIpAddresses() != null && !delivery.getSettings().getIpAddresses().isEmpty())
+            	  {
+            		  if ("ipAccessError".equals(delivery.validateIP())) {
+            			  return;
+            		  }
+            	  }
+              }
               
               // If this is a linear access and user clicks on Show Feedback, we do not
               // get data from db. Use delivery bean instead
@@ -302,6 +353,7 @@ public class DeliveryActionListener
                 	  ag = service.getLastSavedAssessmentGradingByAgentId(id, agent);
                 	  if (ag == null) {
                 		  ag = createAssessmentGrading(publishedAssessment);
+                		  isFirstTimeBegin = true;
                 	  }
                 	  else {
                 		  setAttemptDateIfNull(ag);
@@ -317,7 +369,7 @@ public class DeliveryActionListener
               setFeedbackMode(delivery);
               
               if (ae != null && ae.getComponent().getId().startsWith("beginAssessment")) {
-            	  setTimer(delivery, publishedAssessment, true);
+            	  setTimer(delivery, publishedAssessment, true, isFirstTimeBegin);
             	  setStatus(delivery, pubService, Long.valueOf(id));
             	  
             	  if (action == DeliveryBean.TAKE_ASSESSMENT) {
@@ -332,7 +384,7 @@ public class DeliveryActionListener
             			  int timeRemaining = Integer.parseInt(delivery.getTimeLimit()) - Integer.parseInt(delivery.getTimeElapse());
             			  eventRef.append(timeRemaining);
             		  }
-            		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take", eventRef.toString(), true));
+            		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take", "siteId=" + AgentFacade.getCurrentSiteId() + ", " + eventRef.toString(), true));
             	  }
             	  else if (action == DeliveryBean.TAKE_ASSESSMENT_VIA_URL) {
             		  StringBuffer eventRef = new StringBuffer("publishedAssessmentId");
@@ -348,11 +400,11 @@ public class DeliveryActionListener
             		  }
             		  PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
             		  String siteId = publishedAssessmentService.getPublishedAssessmentOwner(Long.valueOf(delivery.getAssessmentId()));
-            		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take.via_url", eventRef.toString(), siteId, true, NotificationService.NOTI_REQUIRED));
+            		  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.take.via_url", "siteId=" + AgentFacade.getCurrentSiteId() + ", " + eventRef.toString(), siteId, true, NotificationService.NOTI_REQUIRED));
             	  }
               }
               else {
-            	  setTimer(delivery, publishedAssessment, false);
+            	  setTimer(delivery, publishedAssessment, false, false);
               }
               
               // extend session time out
@@ -1028,7 +1080,8 @@ public class DeliveryActionListener
     if (item.getTypeId().equals(TypeIfc.ESSAY_QUESTION) ||
         item.getTypeId().equals(TypeIfc.FILE_UPLOAD) ||
         item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY) ||
-        item.getTypeId().equals(TypeIfc.AUDIO_RECORDING))
+        item.getTypeId().equals(TypeIfc.AUDIO_RECORDING) ||
+        item.getTypeId().equals(TypeIfc.MATRIX_CHOICES_SURVEY))
 
     {
       itemBean.setFeedback(item.getGeneralItemFeedback());
@@ -1086,6 +1139,8 @@ public class DeliveryActionListener
     	}
     	//log.debug("correctAnswers: " + correctAnswers);
     	
+    	//check if there's wrong answer in the answer list, matrix survey question won't affect it, since the answer is always right, 
+    	//so don't need to check the matrix survey question
     	while (iterAnswer.hasNext())
     	{
     		
@@ -1104,10 +1159,15 @@ public class DeliveryActionListener
     		  }
     		  else if (item.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC)) {
     			  GradingService gs = new GradingService();
-    			  boolean correctanswer = gs.getFINResult( data,   item,  publishedAnswerHash);
-    			  if (!correctanswer){
-    				  haswronganswer =true;
-      		    	break;
+    			  try {
+    				  boolean correctanswer = gs.getFINResult( data,   item,  publishedAnswerHash);
+    				  if (!correctanswer){
+        				  haswronganswer =true;
+        				  break;
+    				  }
+    			  }
+    			  catch (FormatException e) {
+    				  log.debug("should not come to here");
     			  }
     		  }
     		  else if  ((item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS)) || (item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) )||(item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) )||(item.getTypeId().equals(TypeIfc.MATCHING) )){
@@ -1117,12 +1177,10 @@ public class DeliveryActionListener
     		    	break;
     		    }
       		    else if (answer !=null) {  
-      		    	// for matching, if no selection has been made, answer = null.  we dont want to increment mcmc_match_counter if answer is null
-      		    	
+      		    	// for matching, if no selection has been made, answer = null.  
+      		    	//we don't want to increment mcmc_match_counter if answer is null
       		    	mcmc_match_counter++;
       		    }
-    			  	
- 
     		  }
     		  else {
     			  // for other question types, tf, mcsc, mcmc and matching
@@ -1206,8 +1264,11 @@ public class DeliveryActionListener
 
       
       // Never randomize Fill-in-the-blank or Numeric Response, always randomize matching
-      if (randomize && !(item.getTypeId().equals(TypeIfc.FILL_IN_BLANK)||item.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC)) || item.getTypeId().equals(TypeIfc.MATCHING))
-          {
+      if (randomize && !(item.getTypeId().equals(TypeIfc.FILL_IN_BLANK)||
+    		  item.getTypeId().equals(TypeIfc.FILL_IN_NUMERIC) || 
+    		  item.getTypeId().equals(TypeIfc.MATRIX_CHOICES_SURVEY)) ||
+    		  item.getTypeId().equals(TypeIfc.MATCHING))
+      {
             ArrayList shuffled = new ArrayList();
             Iterator i1 = text.getAnswerArraySorted().iterator();
             while (i1.hasNext())
@@ -1261,14 +1322,15 @@ public class DeliveryActionListener
                 item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
                 item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
                 item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) ||
-                item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY)))
+                item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE_SURVEY) ||
+                item.getTypeId().equals(TypeIfc.MATRIX_CHOICES_SURVEY)))
         {
           // Ignore, it's a null answer
         }
         else
         {
           // Set the label and key
-          if (item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) ||
+          if ((!item.getPartialCreditFlag() && item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE)) ||
               item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT) ||
               item.getTypeId().equals(TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION) ||
               item.getTypeId().equals(TypeIfc.MATCHING))
@@ -1294,7 +1356,6 @@ public class DeliveryActionListener
             }
           }
           
-          
           //gopalrc - added for EMI - Sept 2010	
           if (item.getTypeId().equals(TypeIfc.EXTENDED_MATCHING_ITEMS) && text.isEmiQuestionItemText()
         		  && answer.getIsCorrect())
@@ -1303,6 +1364,25 @@ public class DeliveryActionListener
           }
 
           
+          //multiple choice partial credit:
+          if (item.getTypeId().equals(TypeIfc.MULTIPLE_CHOICE) && item.getPartialCreditFlag()){
+        	  Float pc =  Float.valueOf(answer.getPartialCredit());
+        	  if (pc == null) {
+        		  pc = Float.valueOf(0f);
+        	  }
+        	  if(pc > 0){
+        		  if (rb == null) { 	 
+        			  rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.DeliveryMessages");
+        		  }
+        		  String correct = rb.getString("alt_correct");
+        		  if(("").equals(key)){
+        			  key = answer.getLabel() + "&nbsp;<span style='color: green'>(" + pc + "%&nbsp;" + correct + ")</span>";
+        		  }else{
+        			  key += ",&nbsp;" + answer.getLabel() + "&nbsp;<span style='color: green'>(" + pc + "%&nbsp;" + correct + ")</span>";
+        		  }
+        	  }
+          }
+
           if (item.getTypeId().equals(TypeIfc.TRUE_FALSE) &&
               answer.getIsCorrect() != null &&
               answer.getIsCorrect().booleanValue())
@@ -1338,8 +1418,7 @@ public class DeliveryActionListener
               key += ", " + answer.getText();
             }
           }
-          
-          
+          //myanswers will get the answer even for matrix and multiple choices survey
           myanswers.add(answer);
         }
       }
@@ -1491,10 +1570,14 @@ public class DeliveryActionListener
     }
     else if (item.getTypeId().equals(TypeIfc.ESSAY_QUESTION)) 
     {
-      String responseText = itemBean.getResponseText();
-      // SAK-17021
-      // itemBean.setResponseText(FormattedText.convertFormattedTextToPlaintext(responseText));
-      itemBean.setResponseText(ContextUtil.stringWYSIWYG(responseText));
+    	String responseText = itemBean.getResponseText();
+    	// SAK-17021
+    	// itemBean.setResponseText(FormattedText.convertFormattedTextToPlaintext(responseText));
+    	itemBean.setResponseText(ContextUtil.stringWYSIWYG(responseText));
+    }
+    else if (item.getTypeId().equals(TypeIfc.MATRIX_CHOICES_SURVEY))
+    {
+    	populateMatrixChoices(item, itemBean, publishedAnswerHash);
     }
     
     return itemBean;
@@ -1900,6 +1983,84 @@ public class DeliveryActionListener
     bean.setFinArray(fins);
   }
 
+  public void populateMatrixChoices(ItemDataIfc item, ItemContentsBean bean, HashMap publishedAnswerHash){
+
+	  ArrayList matrixArray = new ArrayList();
+
+	  List<Integer> columnIndexList = new ArrayList<Integer>();
+	  ArrayList itemTextArray = item.getItemTextArraySorted();
+	  ArrayList answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted(); 
+	  MatrixSurveyBean mbean = null;
+
+	  List<String> stringList = new ArrayList<String>();
+
+	  for(int i=0; i<answerArray.size(); i++){
+		  String str = ((AnswerIfc) answerArray.get(i)).getText();
+
+		  if(str!=null && str.trim().length()>0) {
+			  stringList.add(str);
+		  }
+	  }
+
+	  for (int k=0; k<stringList.size(); k++){
+		  columnIndexList.add(new Integer(k));
+	  }	
+
+	  String [] columnChoices = stringList.toArray(new String[stringList.size()]);
+	  List<ItemTextIfc> iList = new ArrayList<ItemTextIfc>();
+
+	  for (int i=0; i<itemTextArray.size(); i++)
+	  {
+		  String str = ((ItemTextIfc) itemTextArray.get(i)).getText();
+		  if (str!=null && str.trim().length()>0)
+			  iList.add((ItemTextIfc)itemTextArray.get(i));
+	  }
+
+	  for(int i=0; i<iList.size(); i++)
+	  {	
+		  ItemTextIfc text = iList.get(i);
+		  ArrayList answers = ((ItemTextIfc)itemTextArray.get(i)).getAnswerArraySorted();
+		  List<AnswerIfc> alist = new ArrayList<AnswerIfc>();
+		  List<String> slist = new ArrayList<String>();
+		  for(int j= 0; j<answers.size(); j++)
+		  {
+			  if ((AnswerIfc)answers.get(j) != null && !"".equals(((AnswerIfc)answers.get(j)).getText().trim()))	{
+				  alist.add((AnswerIfc)answers.get(j));
+				  slist.add(((AnswerIfc)answers.get(j)).getId().toString());
+			  }
+		  }
+		  AnswerIfc [] answerIfcs =alist.toArray(new AnswerIfc[alist.size()]);
+		  String[] answerSid = slist.toArray(new String[slist.size()]);
+		  mbean = new MatrixSurveyBean();
+		  mbean.setItemText(text);
+		  mbean.setItemContentsBean(bean);
+		  mbean.setAnswerArray(answerIfcs);
+		  mbean.setAnswerSid(answerSid);
+		  ArrayList itemGradingArray = bean.getItemGradingDataArray();
+		  for (int k=0; k< itemGradingArray.size(); k++)
+		  {
+			  ItemGradingData data = (ItemGradingData)itemGradingArray.get(k);
+			  if((data.getPublishedItemTextId()).longValue() == text.getId().longValue()){
+				  mbean.setItemGradingData(data);
+				  if (data.getPublishedAnswerId() != null)
+					  mbean.setResponseId(data.getPublishedAnswerId().toString());
+				  break;
+			  }
+		  }
+		  matrixArray.add(mbean);
+	  }
+	  bean.setColumnArray(columnChoices);
+	  bean.setColumnIndexList(columnIndexList);
+	  bean.setMatrixArray(matrixArray);
+	  bean.setForceRanking(Boolean.parseBoolean(item.getItemMetaDataByLabel(ItemMetaDataIfc.FORCE_RANKING)));
+	  if (item.getItemMetaDataByLabel(ItemMetaDataIfc.MX_SURVEY_RELATIVE_WIDTH) != null)
+	  {
+		  bean.setRelativeWidth(Integer.parseInt(item.getItemMetaDataByLabel(ItemMetaDataIfc.MX_SURVEY_RELATIVE_WIDTH)));
+	  }
+	  bean.setAddComment(Boolean.parseBoolean(item.getItemMetaDataByLabel(ItemMetaDataIfc.ADD_COMMENT_MATRIX)));
+	  bean.setCommentField(item.getItemMetaDataByLabel(ItemMetaDataIfc.MX_SURVEY_QUESTION_COMMENTFIELD));
+  }
+
   /**
    * Tests that malformed FIN text does not create an excessive number of loops.
    * Quickie test, nice to have: refine, move to JUnit.
@@ -2157,11 +2318,13 @@ public class DeliveryActionListener
     }
   }
 
-  protected void setTimer(DeliveryBean delivery, PublishedAssessmentFacade publishedAssessment, boolean fromBeginAssessment){
+  protected void setTimer(DeliveryBean delivery, PublishedAssessmentFacade publishedAssessment, boolean fromBeginAssessment, boolean isFirstTimeBegin){
     // i hope to use the property timedAssessment but it appears that this property
     // is not recorded properly in DB - daisyf
     int timeLimit = 0;
     AssessmentAccessControlIfc control = publishedAssessment.getAssessmentAccessControl();
+    AssessmentGradingData ag = delivery.getAssessmentGrading();
+    delivery.setBeginTime(ag.getAttemptDate());
     if (delivery.getHasTimeLimit() && control != null && control.getTimeLimit()!=null) {
     	if (fromBeginAssessment) {
     		timeLimit = Integer.parseInt(delivery.updateTimeLimit(publishedAssessment.getAssessmentAccessControl().getTimeLimit().toString()));
@@ -2181,23 +2344,27 @@ public class DeliveryActionListener
 
       //if assessment is half done, load setting saved in DB,
       // else set time elapsed as 0
-      AssessmentGradingData ag = delivery.getAssessmentGrading();
-      delivery.setBeginTime(ag.getAttemptDate());
+      //AssessmentGradingData ag = delivery.getAssessmentGrading();
+      //delivery.setBeginTime(ag.getAttemptDate());
       if (delivery.isTimeRunning() && delivery.getBeginAssessment()){
-        if (ag.getTimeElapsed() != null){
+    	//int timeElapsed  = Math.round((float)((new Date()).getTime() - ag.getAttemptDate().getTime())/1000.0f); //in sec
+    	//delivery.setTimeElapse(String.valueOf(timeElapsed));
+        /*
+    	if (ag.getTimeElapsed() != null){
           delivery.setTimeElapse(ag.getTimeElapsed().toString());
-	}
+        }
         else{  // this is a new timed assessment
           delivery.setTimeElapse("0");
-	}
-        queueTimedAssessment(delivery, timeLimit, fromBeginAssessment, publishedAssessment);
+        }
+        */
+        queueTimedAssessment(delivery, timeLimit, fromBeginAssessment, publishedAssessment, isFirstTimeBegin);
         delivery.setBeginAssessment(false);
       }
       else{ // in midst of assessment taking, sync it with timedAG
         TimedAssessmentQueue queue = TimedAssessmentQueue.getInstance();
         TimedAssessmentGradingModel timedAG = queue.get(ag.getAssessmentGradingId());
         if (timedAG != null)
-          syncTimeElapsedWithServer(timedAG, delivery, fromBeginAssessment);
+          syncTimeElapsedWithServer(timedAG, delivery, isFirstTimeBegin);
       }
 
       if (delivery.getLastTimer()==0){
@@ -2206,51 +2373,75 @@ public class DeliveryActionListener
     }
   }
 
-  private void queueTimedAssessment(DeliveryBean delivery, int timeLimit, boolean fromBeginAssessment, PublishedAssessmentFacade publishedAssessment){
-    AssessmentGradingData ag = delivery.getAssessmentGrading();
-    TimedAssessmentQueue queue = TimedAssessmentQueue.getInstance();
-    TimedAssessmentGradingModel timedAG = queue.get(ag.getAssessmentGradingId());
-    if (timedAG == null){
-      timedAG = new TimedAssessmentGradingModel(ag.getAssessmentGradingId(), 
-                timeLimit, timeLimit - ag.getTimeElapsed().intValue(),
-                new Date(), new Date(), // need modify later
-		false, getTimerId(delivery), publishedAssessment);
-      queue.add(timedAG);
-      //log.debug("***0. queue="+queue);
-      //log.debug("***1. put timedAG in queue, timedAG="+timedAG);
-    }
-    else{
-      // if timedAG exists && beginAssessment==true, this is dodgy. It means that
-      // users may have exited the assessment via unusual mean (e.g. clicking at
-      // a leftnav bar link). In order to return to the assessment that he is taking,
-      // he must go through the beginAssessment screen again, hence, beginAssessment is set
-      // to true again. In this case, we need to sync up the JScript time with the server time
-      // We need to correct 2 settings based on timedAG: delivery.timeElapse
-      syncTimeElapsedWithServer(timedAG, delivery, fromBeginAssessment);
-    }
+  private void queueTimedAssessment(DeliveryBean delivery, int timeLimit, boolean fromBeginAssessment, PublishedAssessmentFacade publishedAssessment, boolean isFirstTimeBegin){
+	  AssessmentGradingData ag = delivery.getAssessmentGrading();
+	  TimedAssessmentQueue queue = TimedAssessmentQueue.getInstance();
+	  TimedAssessmentGradingModel timedAG = queue.get(ag.getAssessmentGradingId());
+	  if (isFirstTimeBegin){
+		  timedAG = new TimedAssessmentGradingModel(ag.getAssessmentGradingId(), 
+				  timeLimit, timeLimit,
+				  new Date(), new Date(), // need modify later
+				  false, getTimerId(delivery), publishedAssessment);
+		  queue.add(timedAG);
+		  
+		  delivery.setTimeElapse("0");
+		  //log.debug("***0. queue="+queue);
+		  //log.debug("***1. put timedAG in queue, timedAG="+timedAG);
+	  }
+	  else{
+		  if (timedAG == null){
+			  int timeElapsed  = Math.round((new Date().getTime() - ag.getAttemptDate().getTime())/1000.0f);
+			  timedAG = new TimedAssessmentGradingModel(ag.getAssessmentGradingId(), 
+					  timeLimit, timeLimit - timeElapsed,
+					  new Date(), new Date(), 
+					  false, getTimerId(delivery), publishedAssessment);
+			  queue.add(timedAG);
+			  delivery.setTimeElapse(String.valueOf(timeElapsed));
+		  }
+		  else {
+			  // if timedAG exists && beginAssessment==true, this is dodgy. It means that
+			  // users may have exited the assessment via unusual mean (e.g. clicking at
+			  // a leftnav bar link). In order to return to the assessment that he is taking,
+			  // he must go through the beginAssessment screen again, hence, beginAssessment is set
+			  // to true again. In this case, we need to sync up the JScript time with the server time
+			  // We need to correct 2 settings based on timedAG: delivery.timeElapse
+			  syncTimeElapsedWithServer(timedAG, delivery, false);
+		  }
+	  }
   }
 
-  private void syncTimeElapsedWithServer(TimedAssessmentGradingModel timedAG, DeliveryBean delivery, boolean fromBeginAssessment){
+  private void syncTimeElapsedWithServer(TimedAssessmentGradingModel timedAG, DeliveryBean delivery, boolean isFirstTimeBegin){
 	    AssessmentGradingData ag = delivery.getAssessmentGrading();
 	    //boolean zeroTimeElapsed = false;
+	    /*
 	    boolean acceptLateSubmission = AssessmentAccessControlIfc.ACCEPT_LATE_SUBMISSION.equals(delivery.getPublishedAssessment().getAssessmentAccessControl().getLateHandling());
+	    int timeLimit = Integer.parseInt(delivery.getPublishedAssessment().getAssessmentAccessControl().getTimeLimit().toString());
+		// due date
 	    if (delivery.getDueDate() != null && !acceptLateSubmission) {
 	    	int timeBeforeDue  = Math.round((float)(delivery.getDueDate().getTime() - (new Date()).getTime())/1000.0f); //in sec
-	    	int timeLimit = Integer.parseInt(delivery.getPublishedAssessment().getAssessmentAccessControl().getTimeLimit().toString());
-			if (timeBeforeDue < timeLimit && fromBeginAssessment) {
-				//zeroTimeElapsed = true;
+	    	if (timeBeforeDue < timeLimit && fromBeginAssessment) {
+				delivery.setTimeElapse("0");
+				timedAG.setBeginDate(new Date());
+				return;
+			}
+	    }
+	    // retract date
+	    if (delivery.getRetractDate() != null) {
+	    	int timeBeforeRetract  = Math.round((float)(delivery.getRetractDate().getTime() - (new Date()).getTime())/1000.0f); //in sec
+	    	if (timeBeforeRetract < timeLimit && fromBeginAssessment) {
 				delivery.setTimeElapse("0");
 				timedAG.setBeginDate(new Date());
 				return;
 			}
 	    }
 
-        int timeElapsed  = Math.round((float)((new Date()).getTime() - timedAG.getBeginDate().getTime())/1000.0f); //in sec
+		*/
+
         // this is to cover the scenerio when user took an assessment, Save & Exit, Then returned at a
         // later time, we need to account for the time taht he used before
-        int timeTakenBefore = timedAG.getTimeLimit() - timedAG.getTimeLeft(); // in sec
-        //log.debug("***time passed before reload next page="+timeElapsed+timeTakenBefore);
-	    ag.setTimeElapsed(Integer.valueOf(timeElapsed+timeTakenBefore));
+        int timeElapsed  = Math.round((new Date().getTime() - ag.getAttemptDate().getTime())/1000.0f);
+        log.debug("***setTimeElapsed="+timeElapsed);
+	    ag.setTimeElapsed(Integer.valueOf(timeElapsed));
 
 	    // not sure why isLate lost its value, so setting it again here
 	    ag.setIsLate(Boolean.FALSE);

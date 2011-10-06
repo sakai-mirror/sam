@@ -55,24 +55,17 @@ public class Answer
   private Float  partialCredit; //partial credit
   private Set answerFeedbackSet;
   private HashMap answerFeedbackMap;
-  private ItemData dat=new ItemData();
-  
-  
-  //gopalrc Jan 2010 - for EMI questions
-  //private String correctOptionLabels;
-  
-  
-  //gopalrc - added 27 Nov 2009
-  //set of possible EMI selection options indicating correct and incorrect options
-  //private ArrayList emiSelectionOptions;
-  
-  
+  private ItemData dat=new ItemData();  
 
-public Answer() {}
+  public Answer() {}
 
+	public Answer(ItemTextIfc itemText, String text, Long sequence, String label,
+			Boolean isCorrect, String grade, Float score, Float partialCredit, Float discount) {
+		this(itemText, text, sequence, label, isCorrect, grade, score, partialCredit, discount, null);
+	}
+	
   public Answer(ItemTextIfc itemText, String text, Long sequence, String label,
                 Boolean isCorrect, String grade, Float score, Float partialCredit, Float discount, 
-                //String correctOptionLabels,
                 Set answerFeedbackSet) {
     this.itemText = itemText;
     this.item = itemText.getItem();
@@ -83,7 +76,6 @@ public Answer() {}
     this.grade = grade;
     this.score = score;
     this.discount=discount;
-//    this.correctOptionLabels = correctOptionLabels;
     this.answerFeedbackSet = answerFeedbackSet;
     this.partialCredit=partialCredit;
   }
@@ -260,79 +252,16 @@ public Answer() {}
 
 	  return dat.isNotEmpty(getText());
   }
-
-	
-	//gopalrc added 16 Nov 2009
-/*  
-	public boolean isEmiOptionCorrect(String optionLabel) {
-		optionLabel = optionLabel.trim().toUpperCase();
-		String correctOptionLabels = getCorrectOptionLabels();
-		if (correctOptionLabels.indexOf(optionLabel) > -1) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-*/	
-	
-	//gopalrc added 27 Nov 2009
-/*	
-	public ArrayList getEmiSelectionOptions() {
-		return emiSelectionOptions;
-	}
-*/  
 	
   //--mustansar for partial credit
   public Float getPartialCredit(){
 	  return partialCredit;
   }
 
-  
-  //gopalrc added 27 Nov 2009
-/*  
-	public void setEmiSelectionOptions(ArrayList emiSelectionOptions) {
-		this.emiSelectionOptions = emiSelectionOptions;
-	}
-*/
-  
 	//gopalrc added 27 Nov 2009
 	protected Answer clone() throws CloneNotSupportedException {
 		return (Answer)super.clone();
 	}
-	
-
-	//gopalrc - added 30 Nov 2009
-/*
-	public int getNumberOfCorrectEmiOptions() {
-		int count = 0;
-		Iterator iter = emiSelectionOptions.iterator();
-		while (iter.hasNext()) {
-			Answer answer = (Answer) iter.next();
-			if (answer.getIsCorrect()) {
-				count++;
-			}
-		}
-		return count;
-	}
-*/
-	
-	
-	
-  //gopalrc Jan 2010 - for EMI questions
-/*	
-  public String getCorrectOptionLabels() {
-    return correctOptionLabels;
-  }
-*/
-	
-  //gopalrc Jan 2010 - for EMI questions
-/*	
-  public void setCorrectOptionLabels(String correctOptionLabels) {
-	if (correctOptionLabels != null) correctOptionLabels = correctOptionLabels.trim().toUpperCase();  
-    this.correctOptionLabels = correctOptionLabels;
-  }
-*/
 	
   public void setPartialCredit(Float pCredit ){
 	  this.partialCredit=pCredit;

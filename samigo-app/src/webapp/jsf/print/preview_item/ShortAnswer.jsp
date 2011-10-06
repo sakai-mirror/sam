@@ -28,14 +28,17 @@ should be included in file importing DeliveryMessages
   <%-- questionBlock --%>
   <h:outputText styleClass="questionBlock" escape="false" value="#{question.itemData.text}" />
   <h:outputText value="<br />" escape="false" />
+  <h:outputText value="<br />" escape="false" />
+  
+  <%@ include file="/jsf/delivery/item/attachment.jsp" %>
   
   <h:panelGroup styleClass="answerBlock" rendered="#{printSettings.showKeys || printSettings.showKeysFeedback}">
-    <h:outputLabel value="#{printMessages.answer_point}: "/>
+    <h:outputLabel value="!!!!#{printMessages.answer_point}: "/>
   	<h:outputText escape="false" value="#{question.itemData.score} #{authorMessages.points_lower_case}" />
   	<h:outputText value="<br />" escape="false" />
     <h:outputLabel value="#{printMessages.answer_model}: "/>
-    <h:outputText rendered="#{question.key != null && question.key != ''}" escape="false" value="#{question.key}" />
-    <h:outputText rendered="#{question.key == null || question.key == ''}" escape="false" value="--------" />
+    <h:outputText rendered="#{question.key != null && question.key != '' && question.key != 'null'}" escape="false" value="#{question.key}" />
+    <h:outputText rendered="#{question.key == null || question.key == '' || question.key == 'null'}" escape="false" value="--------" />
     <f:verbatim><br/></f:verbatim>
   </h:panelGroup>
   

@@ -32,7 +32,7 @@ should be included in file importing DeliveryMessages
 <h:panelGroup rendered="#{delivery.actionString=='takeAssessment' 
                        || delivery.actionString=='takeAssessmentViaUrl'}">
   <h:outputText escape="false" value="#{deliveryMessages.upload_instruction} " />
-  <h:outputText escape="false" value=" (#{delivery.fileUploadSizeMax} #{deliveryMessages.file_limit}) <br />" styleClass="validate"/>
+  <h:outputText escape="false" value=" (#{deliveryMessages.max_file_size} #{delivery.fileUploadSizeMax}#{deliveryMessages.unit}) <br />" styleClass="validate"/>
 
   <h:outputText value="#{deliveryMessages.file} " />
   <!-- note that target represent the location where the upload medis will be temporarily stored -->
@@ -98,24 +98,27 @@ should be included in file importing DeliveryMessages
              && delivery.navigation ne '1' && delivery.displayMardForReview }">
 <h:selectBooleanCheckbox value="#{question.review}" id="mark_for_review" />
 	<h:outputLabel for="mark_for_review" value="#{deliveryMessages.mark}" />
-	<h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('../author/markForReviewPopUp.faces','MarkForReview','width=300,height=220,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('../author/markForReviewTipText.faces','MarkForReview','width=300,height=220,scrollbars=yes, resizable=yes');" >
+	<h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('../author/markForReviewPopUp.faces','MarkForReview','width=300,height=220,scrollbars=yes, resizable=yes');" >
 		<h:outputText  value=" #{assessmentSettingsMessages.whats_this_link}"/>
 	</h:outputLink>
 </h:panelGroup>
 
+  <f:verbatim><br /></f:verbatim>
+
 <h:panelGroup rendered="#{delivery.feedback eq 'true'}">
-  <h:panelGroup rendered="#{delivery.feedbackComponent.showItemLevel && question.feedbackIsNotEmpty}">
-    <f:verbatim><br /></f:verbatim>
-    <f:verbatim><b></f:verbatim>
-    <h:outputLabel for="feedSC" value="#{commonMessages.feedback}: " />
-    <f:verbatim></b></f:verbatim>
-    <h:outputText id="feedSC" value="#{question.feedback}" escape="false" />
-  </h:panelGroup>
-  <h:panelGrid rendered="#{delivery.actionString !='gradeAssessment' && delivery.feedbackComponent.showGraderComment && !delivery.noFeedback=='true' && (question.gradingCommentIsNotEmpty || question.hasItemGradingAttachment)}" columns="2" border="0">
-    <h:outputLabel for="commentSC" value="<b>#{deliveryMessages.comment}#{deliveryMessages.column} </b>" />
-    
-	<h:outputText id="commentSC" value="#{question.gradingComment}" escape="false" rendered="#{question.gradingCommentIsNotEmpty}"/>
-    <h:outputText value=" " rendered="#{question.gradingCommentIsNotEmpty}"/>
+  <h:panelGrid rendered="#{delivery.feedbackComponent.showItemLevel && question.feedbackIsNotEmpty}">
+    <h:panelGroup>
+      <h:outputLabel for="feedSC" styleClass="answerkeyFeedbackCommentLabel" value="#{commonMessages.feedback}: " />
+      <h:outputText id="feedSC" value="#{question.feedback}" escape="false" />
+    </h:panelGroup>
+    <h:outputText value=" " />
+  </h:panelGrid>
+  
+  <h:panelGrid rendered="#{delivery.actionString !='gradeAssessment' && delivery.feedbackComponent.showGraderComment && !delivery.noFeedback=='true' && (question.gradingCommentIsNotEmpty || question.hasItemGradingAttachment)}" columns="1" border="0">
+    <h:panelGroup> 
+      <h:outputLabel for="commentSC" styleClass="answerkeyFeedbackCommentLabel" value="#{deliveryMessages.comment}#{deliveryMessages.column} " />
+  	  <h:outputText id="commentSC" value="#{question.gradingComment}" escape="false" rendered="#{question.gradingCommentIsNotEmpty}"/>
+    </h:panelGroup>
     
 	<h:panelGroup rendered="#{question.hasItemGradingAttachment}">
       <h:dataTable value="#{question.itemGradingAttachmentList}" var="attach">

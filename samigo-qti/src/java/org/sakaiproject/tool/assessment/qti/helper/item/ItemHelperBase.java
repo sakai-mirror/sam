@@ -60,6 +60,7 @@ public abstract class ItemHelperBase
   protected static final long ITEM_MCMC_SS = TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION.longValue();
   protected static final long ITEM_TF = TypeIfc.TRUE_FALSE.longValue();
   protected static final long ITEM_MATCHING = TypeIfc.MATCHING.longValue();
+  protected static final long ITEM_MXSURVEY = TypeIfc.MATRIX_CHOICES_SURVEY.longValue();
 
   //gopalrc - added 17 Nov 2009 - Extended Matching Items Question
   public static final long ITEM_EMI = TypeIfc.EXTENDED_MATCHING_ITEMS.longValue();
@@ -266,6 +267,10 @@ public abstract class ItemHelperBase
     else if (ITEM_EMI == typeId)
     {
       template = AuthoringXml.ITEM_EMI;
+    }
+    else if (ITEM_MXSURVEY == typeId)
+    {
+      template = AuthoringXml.ITEM_MXSURVEY;
     }
 
     log.debug("typeId: " + typeId);

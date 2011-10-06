@@ -40,35 +40,17 @@
 			}
 		</style> 
       </head>
-      <body onload="<%= request.getAttribute("html.body.onload") %>">
+      <body onload="disableIt();<%= request.getAttribute("html.body.onload") %>">
  <div class="portletBody">
 
  <!-- JAVASCRIPT -->
 <%@ include file="/js/delivery.js" %>
 
-<script>
+<script type="text/javascript">
 function toPoint(id)
 {
   var x=document.getElementById(id).value
   document.getElementById(id).value=x.replace(',','.')
-}
-
-function clickEmailLink(field, fromName, fromEmailAddress, toName, toEmailAddress, assessmentName){
-var emaillinkid= field.id.replace("createEmail", "hiddenlink");
-var newindex = 0;
-for (i=0; i<document.links.length; i++) {
-  if(document.links[i].id == emaillinkid)
-  {
-    newindex = i;
-    break;
-  }
-}
-
-document.links[newindex].onclick();
-pause(500);
-window.open("../evaluation/createNewEmail.faces?fromEmailLinkClick=true&fromName=" + fromName + "&fromEmailAddress=" + fromEmailAddress + "&toName=" + toName + "&toEmailAddress=" + toEmailAddress +  "&assessmentName=" + assessmentName,'createEmail','width=600,height=600,scrollbars=yes, resizable=yes');
-
-document.location='../evaluation/totalScores';
 }
 
 function pause(numberMillis)
@@ -81,6 +63,26 @@ now = new Date();
 if (now.getTime() > exitTime)
 return;
 }
+}
+
+function inIt()
+{
+  var inputs= document.getElementsByTagName("INPUT");
+  for (var i = 0; i < inputs.length; i++) {
+    if (inputs[i].name.indexOf("applyScoreButton") >=0) {
+      inputs[i].disabled=false;
+    }
+  }
+}
+
+function disableIt()
+{
+  var inputs= document.getElementsByTagName("INPUT");
+  for (var i = 0; i < inputs.length; i++) {
+    if (inputs[i].name.indexOf("applyScoreButton") >=0) {
+      inputs[i].disabled=true;
+    }
+  }
 }
 
 </script>
@@ -156,7 +158,7 @@ return;
 
   </p>
 <div class="tier1">
-  <h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+  <h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
   <!-- only shows Max Score Possible if this assessment does not contain random dawn parts -->
 
 <sakai:flowState bean="#{totalScores}" />
@@ -165,8 +167,19 @@ return;
     <h:panelGrid columns="1" columnClasses="samLeftNav" width="100%">
 	  <h:panelGroup rendered="#{!totalScores.hasRandomDrawPart}">
         <h:outputText value="#{evaluationMessages.max_score_poss}" style="instruction"/>
-        <h:outputText value="#{totalScores.maxScore}" style="instruction"/>
+        <h:outputText value=" #{totalScores.maxScore}" style="instruction"/>
       </h:panelGroup>
+	  
+	  <h:panelGroup rendered="#{totalScores.allSubmissions!='4'}">
+	    <h:commandButton value="#{evaluationMessages.applyGrades} " id="applyScoreButton" styleClass="active" type="submit">
+	  				<f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreUpdateListener" />
+	  	</h:commandButton>
+	  	<h:outputText value=" "/>
+	  	<h:inputText id="applyScoreUnsubmitted" value="#{totalScores.applyToUngraded}"  onkeydown="inIt()" onchange="toPoint(this.id);" size="5"/>
+		<h:outputText value=" #{evaluationMessages.applyGradesDesc}"/>
+	  </h:panelGroup>
+	  
+	  <h:outputText value="&nbsp;" escape="false"/>
 	  
 	  <h:panelGroup>
         <!-- SECTION AWARE -->
@@ -305,16 +318,17 @@ return;
      </h:panelGroup>
      <f:verbatim><br/></f:verbatim>
 	 <span class="itemAction">
-	   <h:outputLink id="createEmail1" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
-	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
-	   </h:outputLink>
+	   <h:panelGroup rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}">
+		 <h:outputText value="<a href=\"mailto:" escape="false" />
+	     <h:outputText value="#{description.email}" escape="false" />
+	     <h:outputText value="?subject=" escape="false" />
+		 <h:outputText value="#{totalScores.assessmentName} #{commonMessages.feedback}\">" escape="false" />
+         <h:outputText value="  #{evaluationMessages.email}" escape="false"/>
+         <h:outputText value="</a>" escape="false" />
+	   </h:panelGroup>
 	 </span>
-
    	</span>
-	<h:commandLink id="hiddenlink1" value="" action="totalScores">
-          <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.util.EmailListener" />
-		  <f:param name="toUserId" value="#{description.idString}" />
-	</h:commandLink>
+	
     </h:column>
 
     <h:column rendered="#{totalScores.anonymous eq 'false' && totalScores.sortType eq 'lastName' && totalScores.sortAscending}">
@@ -353,15 +367,17 @@ return;
      </h:panelGroup>
      <f:verbatim><br/></f:verbatim>
 	 <span class="itemAction">
-	   <h:outputLink id="createEmail2" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
-	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
-	   </h:outputLink>
+	   <h:panelGroup rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}">
+		 <h:outputText value="<a href=\"mailto:" escape="false" />
+	     <h:outputText value="#{description.email}" escape="false" />
+	     <h:outputText value="?subject=" escape="false" />
+		 <h:outputText value="#{totalScores.assessmentName} #{commonMessages.feedback}\">" escape="false" />
+         <h:outputText value="  #{evaluationMessages.email}" escape="false"/>
+         <h:outputText value="</a>" escape="false" />
+	   </h:panelGroup>
 	 </span>
    	</span>
-	<h:commandLink id="hiddenlink2" value="" action="totalScores">
-          <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.util.EmailListener" />
-		  <f:param name="toUserId" value="#{description.idString}" />
-	</h:commandLink>
+	
     </h:column>
 
     <h:column rendered="#{totalScores.anonymous eq 'false' && totalScores.sortType eq 'lastName' && !totalScores.sortAscending}">
@@ -398,19 +414,20 @@ return;
          <f:param name="gradingData" value="#{description.assessmentGradingId}" />
        </h:commandLink>
      </h:panelGroup>
+
      <f:verbatim><br/></f:verbatim>
-     <f:verbatim><br/></f:verbatim>
+
 	 <span class="itemAction">
-	   <h:outputLink id="createEmail3" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
-	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
-	  </h:outputLink>
+	  <h:panelGroup rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}">
+		 <h:outputText value="<a href=\"mailto:" escape="false" />
+	     <h:outputText value="#{description.email}" escape="false" />
+	     <h:outputText value="?subject=" escape="false" />
+		 <h:outputText value="#{totalScores.assessmentName} #{commonMessages.feedback}\">" escape="false" />
+         <h:outputText value="  #{evaluationMessages.email}" escape="false"/>
+         <h:outputText value="</a>" escape="false" />
+	   </h:panelGroup>
 	  </span>
    	</span>
-
-	<h:commandLink id="hiddenlink3" value="" action="totalScores">
-          <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.util.EmailListener" />
-		  <f:param name="toUserId" value="#{description.idString}" />
-	</h:commandLink>
 	</h:column>
     
 
@@ -631,11 +648,25 @@ return;
         <h:outputText value="#{description.submittedDate}" rendered="#{description.attemptDate != null && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1')}" >
           <f:convertDateTime pattern="#{generalMessages.output_data_picker_w_sec}"/>
         </h:outputText>
-		<h:panelGroup rendered="#{description.isLate == 'true' && description.attemptDate != null
-                    && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1') 
+		<h:panelGroup rendered="#{description.isAutoSubmitted == 'false' && description.isLate == 'true' && description.attemptDate != null
+                    && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1')
 					&& !(totalScores.isTimedAssessment eq 'true' && totalScores.acceptLateSubmission eq 'false')}">
 			<f:verbatim><br/></f:verbatim>
 			<h:outputText style="color:red" value="#{evaluationMessages.late}"/>
+		</h:panelGroup>
+
+		<h:panelGroup rendered="#{description.isAutoSubmitted == 'true' && description.isAttemptDateAfterDueDate == 'true' && description.attemptDate != null
+                    && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1')
+					&& !(totalScores.isTimedAssessment eq 'true' && totalScores.acceptLateSubmission eq 'false')}">
+			<f:verbatim><br/></f:verbatim>
+			<h:outputText style="color:red" value="#{evaluationMessages.late}"/>
+		</h:panelGroup>
+
+		<h:panelGroup rendered="#{description.isAutoSubmitted == 'true' && description.isAttemptDateAfterDueDate == 'false' && description.attemptDate != null
+                    && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1')
+					&& !totalScores.isTimedAssessment eq 'true'}">
+			<f:verbatim><br/></f:verbatim>
+			<h:outputText style="color:red" value="#{evaluationMessages.auto_submit}"/>
 		</h:panelGroup>
 
         <h:outputText value="#{evaluationMessages.no_submission}"
@@ -656,12 +687,27 @@ return;
         <h:outputText value="#{description.submittedDate}" rendered="#{description.attemptDate != null && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1')}" >
           <f:convertDateTime pattern="#{generalMessages.output_data_picker_w_sec}"/>
         </h:outputText>
-		<h:panelGroup rendered="#{description.isLate eq 'true' && description.attemptDate != null
-                    && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1') 
+		<h:panelGroup rendered="#{description.isAutoSubmitted == 'false' && description.isLate == 'true' && description.attemptDate != null
+                    && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1')
 					&& !(totalScores.isTimedAssessment eq 'true' && totalScores.acceptLateSubmission eq 'false')}">
 			<f:verbatim><br/></f:verbatim>
 			<h:outputText style="color:red" value="#{evaluationMessages.late}"/>
 		</h:panelGroup>
+
+		<h:panelGroup rendered="#{description.isAutoSubmitted == 'true' && description.isAttemptDateAfterDueDate == 'true' && description.attemptDate != null
+                    && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1')
+					&& !(totalScores.isTimedAssessment eq 'true' && totalScores.acceptLateSubmission eq 'false')}">
+			<f:verbatim><br/></f:verbatim>
+			<h:outputText style="color:red" value="#{evaluationMessages.late}"/>
+		</h:panelGroup>
+
+		<h:panelGroup rendered="#{description.isAutoSubmitted == 'true' && description.isAttemptDateAfterDueDate == 'false' && description.attemptDate != null
+                    && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1')
+					&& !totalScores.isTimedAssessment eq 'true'}">
+			<f:verbatim><br/></f:verbatim>
+			<h:outputText style="color:red" value="#{evaluationMessages.auto_submit}"/>
+		</h:panelGroup>
+		
         <h:outputText value="#{evaluationMessages.no_submission}"
          rendered="#{description.attemptDate == null && (totalScores.anonymous eq 'false'  || description.assessmentGradingId ne '-1')}"/>
     </h:column>
@@ -908,7 +954,7 @@ return;
 <p class="act">
 
    <%-- <h:commandButton value="#{evaluationMessages.save_exit}" action="author"/> --%>
-   <h:commandButton styleClass="active" value="#{evaluationMessages.save_cont}" action="totalScores" type="submit" >
+   <h:commandButton styleClass="active" value="#{evaluationMessages.save_cont}" action="totalScores" type="submit" rendered="#{totalScores.allSubmissions!='4'}">
       <f:actionListener
          type="org.sakaiproject.tool.assessment.ui.listener.evaluation.TotalScoreUpdateListener" />
       <f:actionListener

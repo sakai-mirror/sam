@@ -44,7 +44,7 @@
 
 <%@ include file="/js/delivery.js" %>
 <!--JAVASCRIPT -->
-<script language="javascript" type="text/JavaScript">
+<script type="text/JavaScript">
 <%@ include file="/js/browser.js" %>
 </script>
 
@@ -55,7 +55,7 @@
 
 <!-- DONE BUTTON FOR PREVIEW -->
 <h:panelGroup rendered="#{delivery.actionString=='previewAssessment'}">
- <f:verbatim><div class="validation"></f:verbatim>
+ <f:verbatim><div class="previewMessage"></f:verbatim>
      <h:outputText value="#{deliveryMessages.ass_preview}" />
      <h:commandButton value="#{deliveryMessages.done}" action="#{person.cleanResourceIdListInPreview}" type="submit"/>
  <f:verbatim></div></f:verbatim>
@@ -65,8 +65,14 @@
 <div class="tier1">
  <h4> <h:outputText value="\"#{delivery.assessmentTitle}\" #{deliveryMessages.for} #{delivery.courseName} " escape="false"/></h4>
 <div class="tier2">
-<h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+<h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
  
+<!-- ASSESSMENT INTRODUCTION-->
+<div class="assessmentIntroduction"><h:outputText value="#{delivery.instructorMessage}" escape="false"/></div>
+   
+<!-- ASSESSMENT INTRODUCTION-->
+<div class="assessmentIntroduction"><h:outputText value="#{delivery.instructorMessage}" escape="false"/></div>
+   
   <!-- ASSESSMENT ATTACHMENTS -->
   <%@ include file="/jsf/delivery/assessment_attachment.jsp" %>
 
@@ -123,11 +129,11 @@
 <h:panelGrid columns="2" border="0">
     <h:outputText value=" "/>
     <h:outputText value=" "/>
-    <h:outputLabel value="#{deliveryMessages.username}" rendered="#{delivery.settings.username ne ''}" />
-    <h:inputText value="#{delivery.username}" size="20" rendered="#{delivery.settings.username ne ''}" />
+    <h:outputLabel for="baUserName"  value="#{deliveryMessages.username}" rendered="#{delivery.settings.username ne ''}" />
+    <h:inputText id="baUserName" value="#{delivery.username}" size="20" rendered="#{delivery.settings.username ne ''}" />
 
-    <h:outputLabel value="#{deliveryMessages.password}" rendered="#{delivery.settings.username ne ''}" />
-    <h:inputSecret value="#{delivery.password}" size="20" rendered="#{delivery.settings.username ne ''}" />
+    <h:outputLabel for="baPassword" value="#{deliveryMessages.password}" rendered="#{delivery.settings.username ne ''}" />
+    <h:inputSecret id="baPassword" value="#{delivery.password}" size="20" rendered="#{delivery.settings.username ne ''}" />
 </h:panelGrid>
  </div></div>
 
@@ -166,16 +172,11 @@
     <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
   </h:commandButton>
 
-  <h:commandButton id="cancel2" value="#{commonMessages.cancel_action}" type="button"
-     style="act" onclick="disableCancel2();javascript:window.open('#{delivery.portal}/login','_top')"
-onkeypress="javascript:window.open('#{delivery.portal}/login','_top')"
-     rendered="#{delivery.actionString=='takeAssessmentViaUrl'}"
-     disabled="#{delivery.actionString=='previewAssessment'}"/>
 </p>
 
 <!-- DONE BUTTON, FOR PREVIEW ONLY --> 
 <h:panelGroup rendered="#{delivery.actionString=='previewAssessment'}">
- <f:verbatim><div class="validation"></f:verbatim>
+ <f:verbatim><div class="previewMessage"></f:verbatim>
      <h:outputText value="#{deliveryMessages.ass_preview}" />
      <h:commandButton value="#{deliveryMessages.done}" action="#{person.cleanResourceIdListInPreview}" type="submit"/>
  <f:verbatim></div></f:verbatim>

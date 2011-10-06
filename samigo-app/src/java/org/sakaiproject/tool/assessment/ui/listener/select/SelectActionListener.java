@@ -29,14 +29,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.HashSet;
 
 import javax.faces.component.html.HtmlSelectOneMenu;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.tool.assessment.api.SamigoApiFactory;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.StudentGradingSummaryData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
@@ -50,6 +54,7 @@ import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacadeQueries;
 import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
+import org.sakaiproject.tool.assessment.shared.api.assessment.SecureDeliveryServiceAPI;
 import org.sakaiproject.tool.assessment.ui.bean.authz.AuthorizationBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.DeliveryBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.DeliveryBeanie;
@@ -57,6 +62,7 @@ import org.sakaiproject.tool.assessment.ui.bean.shared.PersonBean;
 import org.sakaiproject.tool.assessment.ui.bean.select.SelectAssessmentBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.util.BeanSort;
+import org.sakaiproject.util.ResourceLoader;
 
 /**
  * <p>Title: Samigo</p>
@@ -185,9 +191,6 @@ public class SelectActionListener
         AgentFacade.getAgentString(), this.getSubmittedOrderBy(select),
         Boolean.getBoolean( (String) ContextUtil.lookupParam("reviewAscending")));
         */
-
-    List containRandomPartAssessmentIds = publishedAssessmentService.getContainRandomPartAssessmentIds();
-
     processDisplayInfo(select);
     
     // 1. get the most recent submission, or the highest submissions of each assessment for a user, depending on grading option
@@ -202,13 +205,22 @@ public class SelectActionListener
     HashMap feedbackHash = publishedAssessmentService.getFeedbackHash();
     DeliveryBeanie deliveryAnt = null;
     boolean isUnique = true;
+    HashSet<Long> recentSubmittedIds = new HashSet<Long>();
     select.setHasAnyAssessmentRetractForEdit(false);
     for (int k = 0; k < recentSubmittedList.size(); k++) {
-        hasHighest = false;
-        hasMultipleSubmission = false;
+    	AssessmentGradingFacade g = (AssessmentGradingFacade)
+    	recentSubmittedList.get(k);
+    	recentSubmittedIds.add(g.getPublishedAssessmentId());
+    }
 
-      AssessmentGradingFacade g = (AssessmentGradingFacade)
-          recentSubmittedList.get(k);
+    List containRandomPartAssessmentIds = publishedAssessmentService.getContainRandomPartAssessmentIds(recentSubmittedIds);
+
+    for (int k = 0; k < recentSubmittedList.size(); k++) {
+    	hasHighest = false;
+    	hasMultipleSubmission = false;
+
+    	AssessmentGradingFacade g = (AssessmentGradingFacade)
+    	recentSubmittedList.get(k);
 
         DeliveryBeanie delivery = new DeliveryBeanie();
         delivery.setAssessmentGradingId(g.getAssessmentGradingId());
@@ -434,6 +446,14 @@ public class SelectActionListener
     select.setTakeableAssessments(takeablePublishedList);
     select.setReviewableAssessments(submittedAssessmentGradingList);
 
+    // If secure delivery modules are installed, then insert their html fragments      
+    select.setSecureDeliveryHTMLFragments( "" );
+    SecureDeliveryServiceAPI secureDelivery = SamigoApiFactory.getInstance().getSecureDeliveryServiceAPI();
+    if ( secureDelivery.isSecureDeliveryAvaliable() ) {
+    	
+    	HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+    	select.setSecureDeliveryHTMLFragments( secureDelivery.getInitialHTMLFragments(request, new ResourceLoader().getLocale() ) );
+    }
   }
 
   /**
@@ -713,7 +733,7 @@ public class SelectActionListener
     // must meet 2 conditions: hasFeedback==true && feedback.getShowStudentScore()==true
     AssessmentFeedbackIfc f= (AssessmentFeedbackIfc)feedbackHash.get(a.getPublishedAssessmentId());
     if (f!=null && f.getFeedbackComponentOption()!=null) { //gopalrc - TODO : check this - Sept 2010 - added second condition - Was getting error
-      boolean showScorecore = (Boolean.TRUE).equals(f.getShowStudentScore()) || f.getFeedbackComponentOption().equals(new Integer(1));
+      boolean showScorecore = (Boolean.TRUE).equals(f.getShowStudentScore()) || Integer.valueOf(1).equals(f.getFeedbackComponentOption());
       if (showScorecore && "show".equals(hasFeedback))
         showScore = "show";
       if (showScorecore && "blank".equals(hasFeedback))
@@ -766,9 +786,13 @@ public class SelectActionListener
   private String getFeedbackComponentOption(Long publishedAssessmentId, HashMap publishedAssessmentHash){
 	    PublishedAssessmentFacade p = (PublishedAssessmentFacade)publishedAssessmentHash.
 	        get(publishedAssessmentId);
-	    if (p!=null && p.getFeedbackComponentOption()!=null) //gopalrc - TODO : check this - Sept 2010 - added second condition - Was getting error
-	      return p.getFeedbackComponentOption().toString();
-	    else
+	    if (p!=null) {
+	      Integer option = p.getFeedbackComponentOption();
+	      if (option == null)
+   		    return null;
+	      else
+	    	return option.toString();
+	    } else
 	      return null;
 	  }
   

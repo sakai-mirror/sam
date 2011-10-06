@@ -29,8 +29,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.faces.model.SelectItem;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -128,7 +130,7 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 
 	private ArrayList finArray;
 
-	private ArrayList selectionArray;
+	private ArrayList<SelectionBean> selectionArray;
 
 	private String key;
 
@@ -150,7 +152,13 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 										// score
 
 	private boolean showStudentQuestionScore;
+	
+	private boolean isInvalidFinInput;
+	
+	private boolean isInvalidSALengthInput;
 
+	private String saCharCount;
+	
 	private String pointsDisplayString;
 
 	private List itemGradingAttachmentList;
@@ -158,19 +166,28 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 	private Long itemGradingIdForFilePicker;
 	
 	private boolean isMultipleItems = false;
-	
-    public boolean getIsMultipleItems() {
-		return this.isMultipleItems;
-	}
-
-	public void setIsMultipleItems(boolean isMultipleItems) {
-		this.isMultipleItems = isMultipleItems;
-	}
 
 	//gopalrc - added 30 Nov 2009 - for EMI question
     private String themeText;
     private String leadInText;
 	
+	/* sam-939*/
+	private boolean forceRanking;
+
+	private int relativeWidth;
+
+	private ArrayList matrixArray;
+
+	//private String[] columnChoices;
+
+	private List<Integer> columnIndexList;
+
+	private String[] columnArray;
+
+	private String commentField;
+	private boolean addComment;
+	private String studentComment;
+
 	public ItemContentsBean() {
 	}
 
@@ -184,6 +201,14 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 		} else {
 			setNumber(1);
 		}
+	}
+	
+    public boolean getIsMultipleItems() {
+		return this.isMultipleItems;
+	}
+
+	public void setIsMultipleItems(boolean isMultipleItems) {
+		this.isMultipleItems = isMultipleItems;
 	}
 
 	/**
@@ -790,6 +815,10 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 		}
 	}
 	
+	public String getResponseTextPlain() {
+		return FormattedText.convertFormattedTextToPlaintext(getResponseText());
+	}
+
 	public String getResponseTextForDisplay() {
 		log.debug("itemcontentbean.getResponseText");
 		try {
@@ -799,12 +828,21 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 				ItemGradingData data = (ItemGradingData) iter.next();
 				response = data.getAnswerText();
 			}
-			response = response.replaceAll("(\r\n|\r)", "<br/>");
-			return response;
+
+			if (response!=null){
+				response = response.replaceAll("(\r\n|\r)", "<br/>");
+				return response;
+			}else{
+				return responseText;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return responseText;
 		}
+	}
+
+	public void setResponseTextPlain(String presponseId) {
+		setResponseText(presponseId);
 	}
 
 	public void setResponseText(String presponseId) {
@@ -866,11 +904,128 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 	public void setSelectionArray(ArrayList newArray) {
 		selectionArray = newArray;
 	}
+	
+	public List<SelectItem> getSelectItemPartsMC() {
+		List<SelectItem> selectItemParts = new ArrayList<SelectItem>();
 
-  public ArrayList getAnswers()
-  {
-    return answers;
-  }
+		String text = null;
+		for(SelectionBean selection: selectionArray) {
+			if (selection.getAnswer().getLabel() != null && !selection.getAnswer().getLabel().equals("")) {
+				text = " " + selection.getAnswer().getLabel() + ". " + selection.getAnswer().getText();
+			}
+			else {
+				text = " " + selection.getAnswer().getText();
+			}
+
+			selectItemParts.add(new SelectItem(selection.getAnswerId(), text));
+		}
+
+		return selectItemParts;
+	}
+
+	public ArrayList getMatrixArray() {
+		return matrixArray;
+	}
+
+	public void setMatrixArray(ArrayList newArray) {
+		matrixArray = newArray;
+	}
+
+
+	public List<Integer> getColumnIndexList(){
+		return columnIndexList;
+	}
+
+	public void setColumnIndexList(List<Integer> columnIndexList){
+		this.columnIndexList = columnIndexList;
+	}
+
+	public String[] getColumnArray(){
+		return columnArray;
+	}
+
+	public void setColumnArray(String[] columnArray){
+		this.columnArray = columnArray;
+	}
+
+	public boolean getForceRanking(){
+		return this.forceRanking;
+	}
+
+	public void setForceRanking(boolean forceRanking){
+		this.forceRanking = forceRanking;
+	}
+
+	public int getRelativeWidth(){
+		return this.relativeWidth;
+	}
+
+	public void setRelativeWidth(int param) {
+		this.relativeWidth = param;
+	}
+
+	public boolean getAddComment(){
+		return this.addComment;
+	}
+
+	public void setAddComment(boolean param){
+		this.addComment = param;
+	}
+	
+	public String getCommentField(){
+		return this.commentField;
+	}
+
+	public void setCommentField(String param){
+		this.commentField = param;
+	}
+
+	public String getStudentComment() {
+		try {
+			String comment = studentComment;
+			Iterator iter = getItemGradingDataArray().iterator();
+			if (iter.hasNext()) {
+				ItemGradingData data = (ItemGradingData) iter.next();
+				comment = data.getAnswerText();
+			}
+			return comment;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return studentComment;
+		}
+	}
+
+	public void setStudentComment(String param){
+		try {
+			studentComment = param;
+			Iterator iter = getItemGradingDataArray().iterator();
+			if (!iter.hasNext()
+					&& (param == null || param.equals(""))) {
+				return;
+			}
+			ItemGradingData data = null;
+			if (iter.hasNext()) {
+				data = (ItemGradingData) iter.next();
+			} else {
+				data = new ItemGradingData();
+				data.setPublishedItemId(itemData.getItemId());
+				ItemTextIfc itemText = (ItemTextIfc) itemData.getItemTextSet()
+				.toArray()[0];
+				data.setPublishedItemTextId(itemText.getId());
+				ArrayList items = new ArrayList();
+				items.add(data);
+				setItemGradingDataArray(items);
+			}
+			data.setAnswerText(param);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+
+	public ArrayList getAnswers()
+	{
+		return answers;
+	}
 
 	public void setAnswers(ArrayList list) {
 		answers = list;
@@ -1184,7 +1339,7 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
                                      "new value " + score);
                   answer.setScore(score);
               }
-              EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.revise", "itemId=" + itemData.getItemId(), true));
+              EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.revise", "siteId=" + AgentFacade.getCurrentSiteId() + ", itemId=" + itemData.getItemId(), true));
           }
           itemService.saveItem(item);
           itemData.setScore(score);
@@ -1300,7 +1455,6 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
   {
 	  this.itemGradingIdForFilePicker = itemGradingIdForFilePicker;
   }
-
   
   //gopalrc - added 30 Nov 2009
   public String getLeadInText() {
@@ -1324,8 +1478,31 @@ public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
 	themeText = itemData.getThemeText();
 	leadInText = itemData.getLeadInText();
   }
-    
   
+  public void setIsInvalidFinInput(boolean isInvalidFinInput) {
+	  this.isInvalidFinInput = isInvalidFinInput;
+  }
+
+  public boolean getIsInvalidFinInput() {
+	  return isInvalidFinInput;
+  }  
+
+  public void setIsInvalidSALengthInput(boolean isInvalidSALengthInput) {
+	  this.isInvalidSALengthInput = isInvalidSALengthInput;
+  }
+
+  public boolean getIsInvalidSALengthInput() {
+	  return isInvalidSALengthInput;
+  }  
+  
+  public String getSaCharCount() {
+	  return saCharCount;
+  }
+
+  public void setSaCharCount(String saCharCount)
+  {
+	  this.saCharCount = saCharCount;
+  }
   
 }
 

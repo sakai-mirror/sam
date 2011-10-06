@@ -23,7 +23,7 @@ Headings for item edit pages, needs to have msg=AuthorMessages.properties.
 **********************************************************************************/
 --%>
 -->
-<script language="javascript" type="text/JavaScript">
+<script type="text/JavaScript">
 <!--
 function changeTypeLink(field){
 
@@ -64,16 +64,20 @@ document.links[newindex].onclick();
       <h:outputText value="#{generalMessages.assessment}" />
     </h:commandLink>
 
-<f:verbatim></span></li>
-<li role="menuitem" ><span></f:verbatim>
+<f:verbatim></span></li></f:verbatim>
+
+<h:panelGroup rendered="#{authorization.adminTemplate and template.showAssessmentTypes}">
+<f:verbatim><li role="menuitem" ><span></f:verbatim>
 
     <h:commandLink title="#{generalMessages.t_template}" action="template" immediate="true">
       <h:outputText value="#{generalMessages.template}" />
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.TemplateListener" />
     </h:commandLink>
 
-<f:verbatim></span></li>
-<li role="menuitem" ><span></f:verbatim>
+<f:verbatim></span></li></f:verbatim>
+</h:panelGroup>
+
+<f:verbatim><li role="menuitem" ><span></f:verbatim>
 
     <h:commandLink title="#{generalMessages.t_questionPool}" action="poolList" immediate="true">
       <h:outputText value="#{generalMessages.questionPool}" />
@@ -147,8 +151,8 @@ listener set selectFromQuestionPool, eliminating the rendered attribute
 <h:commandLink id="hiddenlink" action="#{itemauthor.doit}" value="">
 </h:commandLink>
 
-<h:message rendered="#{questionpool.importToAuthoring == 'true' && itemauthor.target == 'assessment'}" for="changeQType1" infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
-<h:message rendered="#{questionpool.importToAuthoring == 'false' && itemauthor.target == 'assessment'}" for="changeQType2" infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+<h:message rendered="#{questionpool.importToAuthoring == 'true' && itemauthor.target == 'assessment'}" for="changeQType1" infoClass="messageSamigo" warnClass="validation" errorClass="messageSamigo" fatalClass="messageSamigo"/>
+<h:message rendered="#{questionpool.importToAuthoring == 'false' && itemauthor.target == 'assessment'}" for="changeQType2" infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 </div>
 <!-- SUBHEADING -->
 <p class="navModeAction">
@@ -169,9 +173,8 @@ listener set selectFromQuestionPool, eliminating the rendered attribute
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 7}" value="#{authorMessages.audio_recording}"/>
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 6}" value="#{authorMessages.file_upload}"/>
      <h:outputText rendered="#{itemauthor.currentItem.itemType== 10}" value="#{authorMessages.import_from_q}"/>
-	 <!-- gopalrc - added 18 Nov 2009 -->
-     <h:outputText rendered="#{itemauthor.currentItem.itemType== 13}" value="#{authorMessages.extended_matching_items}"/>
-
+     <h:outputText rendered="#{itemauthor.currentItem.itemType== 14}" value="#{authorMessages.extended_matching_items}"/>
+     <h:outputText rendered="#{itemauthor.currentItem.itemType== 13}" value="#{authorMessages.matrix_choices_surv}"/>
    </b>
  </span>
  <span class="rightNav">
@@ -200,7 +203,7 @@ listener set selectFromQuestionPool, eliminating the rendered attribute
   </h:commandLink>
 --%>
  </span>
-   <h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+   <h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 </p>
 </div>
 </h:form>

@@ -84,7 +84,7 @@ public class PublishedAccessControl
                                  Integer timeLimit, Integer timedAssessment,
                                  Integer retryAllowed, Integer lateHandling,
                                  Date startDate, Date dueDate,
-                                 Date scoreDate, Date feedbackDate,
+                                 Date scoreDate, Date feedbackDate, 
                                  String releaseTo)
   {
     this.submissionsAllowed = submissionsAllowed; // =  no limit

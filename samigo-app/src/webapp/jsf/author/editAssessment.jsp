@@ -32,10 +32,22 @@
   <f:view>
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head><%= request.getAttribute("html.head") %>
+      <!-- for sam-939 -->
+      <style type="text/css">
+        .TableColumn {
+      	  text-align: center
+        }
+        .TableClass {
+      	  border-style: dotted;
+      	  border-width: 0.5px;
+      	  border-color: light grey;
+        }
+      </style>
+
       <title><h:outputText value="#{authorMessages.create_modify_a}" /></title>
       <samigo:script path="/js/authoring.js"/>
 
-<script language="javascript" style="text/JavaScript">
+<script style="text/JavaScript">
 <%@ include file="/js/samigotree.js" %>
 
 <!--
@@ -74,8 +86,7 @@ document.links[newindex].onclick();
 <!-- some back end stuff stubbed -->
 <h:form id="assesssmentForm">
 
-<h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
-  <h:panelGroup rendered="#{!author.isEditPendingAssessmentFlow}" styleClass="validation">
+  <h:panelGroup rendered="#{!author.isEditPendingAssessmentFlow}" styleClass="messageSamigo2">
     <h:panelGrid  columns="1">
 	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_1}" />
 	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_21}" rendered="#{assessmentBean.hasGradingData}"/>
@@ -119,6 +130,8 @@ document.links[newindex].onclick();
         <h:outputText value="#{authorMessages.t_preview}"/>
         <f:param name="assessmentId" value="#{assessmentBean.assessmentId}"/>
         <f:param name="actionString" value="previewAssessment" />
+        <f:param name="fromEdit" value="true" />
+        <f:param name="isFromPrint" value="false" />
         <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.delivery.BeginDeliveryActionListener" />
       </h:commandLink>
 
@@ -130,6 +143,7 @@ document.links[newindex].onclick();
 	<h:commandLink action="#{pdfAssessment.prepPDF}" rendered="#{assessmentBean.showPrintLink eq 'true' && assessmentBean.showPrintAssessment eq 'true'}">
 		<f:param name="assessmentId" value="#{assessmentBean.assessmentId}"/>
 		<f:param name="actionString" value="editAssessment"/>
+		<f:param name="isFromPrint" value="true" />
 		<h:outputText value="#{printMessages.print}" escape="false" />
 	</h:commandLink>
 
@@ -209,6 +223,8 @@ document.links[newindex].onclick();
   <f:param name="itemSequence" value="0"/>
 </h:commandLink>
 
+<h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo" />
+
 <div class="tier1">
 <h:dataTable id="parts" width="100%"
       value="#{assessmentBean.sections}" var="partBean" border="0">
@@ -232,6 +248,11 @@ document.links[newindex].onclick();
 
 		<h:outputText rendered="#{(partBean.sectionAuthorType!= null &&partBean.sectionAuthorTypeString == '2') && partBean.numberToBeDrawnString > 1}" value="#{authorMessages.random_draw_type} #{partBean.poolNameToBeDrawn} - #{partBean.numberToBeDrawnString} #{authorMessages.questions_lower_case}" escape="false"/>
 		<h:outputText rendered="#{(partBean.sectionAuthorType!= null &&partBean.sectionAuthorTypeString == '2') && partBean.numberToBeDrawnString == 1}" value="#{authorMessages.random_draw_type} #{partBean.poolNameToBeDrawn} - #{partBean.numberToBeDrawnString} #{authorMessages.question_lower_case}" escape="false"/>
+
+		<h:commandButton value="#{authorMessages.random_update_questions}" type="submit" id="randomQuestions" action="editAssessment" rendered="#{(partBean.sectionAuthorType!= null &&partBean.sectionAuthorTypeString == '2' && author.isEditPendingAssessmentFlow)}"
+			onclick="document.getElementById('assesssmentForm:randomQuestionsSectionId').value='#{partBean.sectionId}'" style="margin-left: 2em">
+		  	<f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.UpdateRandomPoolQuestionsListener" />
+		</h:commandButton>
 
 	  </h:panelGroup>
       </h:panelGroup>
@@ -269,11 +290,15 @@ document.links[newindex].onclick();
 <f:verbatim><div class="tier2"></f:verbatim>
         <!-- PART ATTACHMENTS -->
         <%@ include file="/jsf/author/part_attachment.jsp" %>
-<f:verbatim><div class="tier2"></f:verbatim>
 
-        <h:outputText rendered="#{partBean.sectionAuthorType!= null && partBean.sectionAuthorTypeString == '2'}" value="#{authorMessages.random_draw_msg}" />
-
-<!-- this insert should only show up when there are no questions in this part -->
+		<h:outputText rendered="#{partBean.sectionAuthorType!= null && partBean.sectionAuthorTypeString == '2' && (empty partBean.randomQuestionsDrawDate || !author.isEditPendingAssessmentFlow)}" value="#{authorMessages.random_draw_msg_no_date}"/>
+        <h:outputFormat rendered="#{partBean.sectionAuthorType!= null && partBean.sectionAuthorTypeString == '2' && !empty partBean.randomQuestionsDrawDate && author.isEditPendingAssessmentFlow}" value="#{authorMessages.random_draw_msg}" escape="false">
+        	<f:param value="#{partBean.poolNameToBeDrawn}"/>
+        	<f:param value="#{partBean.randomQuestionsDrawDate}"/>
+        	<f:param value="#{partBean.randomQuestionsDrawTime}"/>
+        </h:outputFormat>
+        
+        <!-- this insert should only show up when there are no questions in this part -->
 <h:panelGroup rendered="#{partBean.itemContentsSize eq '0' && author.isEditPendingAssessmentFlow}">
     <f:verbatim>    <div class="longtext"> </f:verbatim> <h:outputLabel for="changeQType" value="#{authorMessages.ins_new_q} "/>
 
@@ -313,6 +338,7 @@ document.links[newindex].onclick();
      <h:outputText rendered="#{question.itemData.typeId== 1}" value=" #{commonMessages.multiple_choice_sin}"/>
      <h:outputText rendered="#{question.itemData.typeId== 2}" value=" #{commonMessages.multipl_mc_ms}"/>
      <h:outputText rendered="#{question.itemData.typeId== 12}" value=" #{commonMessages.multipl_mc_ss}"/>
+     <h:outputText rendered="#{question.itemData.typeId== 13}" value=" #{authorMessages.matrix_choice_surv}"/>
      <h:outputText rendered="#{question.itemData.typeId== 3}" value=" #{authorMessages.multiple_choice_surv}"/>
      <h:outputText rendered="#{question.itemData.typeId== 4}" value=" #{authorMessages.true_false}"/>
      <h:outputText rendered="#{question.itemData.typeId== 5}" value=" #{authorMessages.short_answer_essay}"/>
@@ -321,12 +347,13 @@ document.links[newindex].onclick();
      <h:outputText rendered="#{question.itemData.typeId== 9}" value=" #{authorMessages.matching}"/>
      <h:outputText rendered="#{question.itemData.typeId== 7}" value=" #{authorMessages.audio_recording}"/>
      <h:outputText rendered="#{question.itemData.typeId== 6}" value=" #{authorMessages.file_upload}"/>
-     <h:outputText rendered="#{question.itemData.typeId== 13}" value=" #{authorMessages.extended_matching_items}"/>
+     <h:outputText rendered="#{question.itemData.typeId== 14}" value=" #{authorMessages.extended_matching_items}"/>
      
 
      <h:outputText value=" #{authorMessages.dash} " />
-     <h:inputText id="answerptr" value="#{question.updatedScore}" required="true" size="6" onkeydown="inIt()" onchange="toPoint(this.id);" disabled="#{question.itemData.typeId== 3}">
-	<f:validateDoubleRange /></h:inputText>
+     <h:inputText id="answerptr" value="#{question.updatedScore}" required="true" size="6" onkeydown="inIt()" onchange="toPoint(this.id);" rendered="#{question.itemData.typeId!= 3}">
+	<f:validateDoubleRange minimum="0.00"/></h:inputText>
+    <h:outputText rendered="#{question.itemData.typeId== 3}" value="#{question.updatedScore}"/>
 
 		<h:outputText rendered="#{question.itemData.score > 1}" value=" #{authorMessages.points_lower_case}"/>
 		<h:outputText rendered="#{question.itemData.score == 1}" value=" #{authorMessages.point_lower_case}"/>
@@ -399,10 +426,14 @@ document.links[newindex].onclick();
           </h:panelGroup>
 
 		  <!-- gopalrc - added 18 Nov 2008 -->
-		  <h:panelGroup rendered="#{question.itemData.typeId == 13}">
+		  <h:panelGroup rendered="#{question.itemData.typeId == 14}">
             <%@ include file="/jsf/author/preview_item/ExtendedMatchingItems.jsp" %>
           </h:panelGroup>
 
+          <h:panelGroup rendered="#{question.itemData.typeId == 13}">
+            <%@ include file="/jsf/author/preview_item/MatrixChoicesSurvey.jsp" %>
+          </h:panelGroup>
+          
 <f:verbatim> </div></f:verbatim>
 <h:panelGroup rendered="#{author.isEditPendingAssessmentFlow}">
     <f:verbatim>    <div class="longtext"> </f:verbatim> <h:outputLabel for="changeQType" value="#{authorMessages.ins_new_q} "/>
@@ -456,14 +487,15 @@ document.links[newindex].onclick();
 </h:panelGrid>
 
 
-  <h:panelGroup rendered="#{!author.isEditPendingAssessmentFlow}" styleClass="validation">
+  <h:panelGroup rendered="#{!author.isEditPendingAssessmentFlow}" styleClass="messageSamigo2">
     <h:panelGrid  columns="1">
 	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_1}" />
 	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_21}" rendered="#{assessmentBean.hasGradingData}"/>
 	  <h:outputText value="#{authorMessages.edit_published_assessment_warn_22}" rendered="#{!assessmentBean.hasGradingData}"/>
     </h:panelGrid>
   </h:panelGroup>
-
+  
+  <h:inputHidden id="randomQuestionsSectionId" value=""/>
 </h:form>
 <!-- end content -->
 </div>

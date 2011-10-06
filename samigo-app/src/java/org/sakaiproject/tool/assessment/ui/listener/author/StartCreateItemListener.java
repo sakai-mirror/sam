@@ -204,11 +204,13 @@ log.debug("after getting item.getItemType() ");
                         nextpage = "fillInBlackItem";
                         break;
                 case 11:
-                    nextpage = "fillInNumericItem";
-                    break;
-                    
-                // gopalrc - added 18 November 2009   
+                        nextpage = "fillInNumericItem";
+                        break;
                 case 13:
+                        nextpage = "matrixChoicesSurveyItem";
+                        break;
+                // gopalrc - added 18 November 2009   
+                case 14:
                     nextpage = "emiItem";
                     break;
                     

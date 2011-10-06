@@ -114,6 +114,30 @@ public class TotalScoreUpdateListener
   	  String err = "";
   	  boolean isAnonymousGrading = false;
 
+  	  String applyToUngraded = bean.getApplyToUngraded().trim();
+  	  if(applyToUngraded != null && !"".equals(applyToUngraded)){
+  		  try{
+  			  Float.valueOf(applyToUngraded).floatValue();
+  			  ArrayList allAgents = bean.getAllAgentsDirect();
+  			  iter = allAgents.iterator();
+  			  while(iter.hasNext()){
+  				  AgentResults agentResults = (AgentResults) iter.next();
+  				  if (agentResults.getAssessmentGradingId().equals(Long.valueOf(-1)) || agentResults.getSubmittedDate() == null) {
+  					  agentResults.setTotalOverrideScore(applyToUngraded+"");
+  				  }
+  			  }
+  			  iter = allAgents.iterator();
+  			  bean.setApplyToUngraded("");
+  		  }catch (Exception e) {
+  			  FacesContext context = FacesContext.getCurrentInstance();
+  			  String err2 = (String) ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.EvaluationMessages", "number_format_error_user_id_apply");
+  			  context.addMessage(null,  new FacesMessage(err2));
+  			  return true;
+  		  }
+  		  bean.setApplyToUngraded("");
+  	  }
+
+
   	  if (bean.getPublishedAssessment() != null 
   			  && bean.getPublishedAssessment().getEvaluationModel() != null
   			  && bean.getPublishedAssessment().getEvaluationModel().getAnonymousGrading() != null
@@ -158,7 +182,12 @@ public class TotalScoreUpdateListener
         			agentResults.setFinalScore(newScore+"");
         			BeanUtils.copyProperties(data, agentResults);
         			data.setPublishedAssessmentId(bean.getPublishedAssessment().getPublishedAssessmentId());
-        			data.setTotalAutoScore(Float.valueOf(agentResults.getTotalAutoScore()));
+        			if ("-".equals(agentResults.getTotalAutoScore())) {
+        				data.setTotalAutoScore(Float.valueOf(0f));
+        			}
+        			else {
+        				data.setTotalAutoScore(Float.valueOf(agentResults.getTotalAutoScore()));
+        			}
         			data.setTotalOverrideScore(Float.valueOf(agentResults.getTotalOverrideScore()));
         			data.setFinalScore(Float.valueOf(agentResults.getFinalScore()));
         			data.setIsLate(agentResults.getIsLate());
@@ -183,7 +212,7 @@ public class TotalScoreUpdateListener
         			// tell hibernate this is a new record
         			data.setAssessmentGradingId(Long.valueOf(0));
         			data.setSubmittedDate(null);
-        			data.setTotalAutoScore(Float.valueOf(agentResults.getTotalAutoScore()));
+        			data.setTotalAutoScore(Float.valueOf(0f));
         			data.setTotalOverrideScore(Float.valueOf(agentResults.getTotalOverrideScore()));
         			data.setFinalScore(Float.valueOf(agentResults.getFinalScore()));
         			data.setComments(agentResults.getComments());
@@ -238,7 +267,7 @@ public class TotalScoreUpdateListener
     	  return true;
       }
 
-    return true;
+      return true;
   }
 
   private boolean needUpdate(AgentResults agentResults, HashMap map, StringBuilder newScoreString) throws NumberFormatException{

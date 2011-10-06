@@ -51,11 +51,9 @@ public interface ItemHelperIfc
   public static final long ITEM_MCMC_SS = TypeIfc.MULTIPLE_CORRECT_SINGLE_SELECTION.longValue();
   public static final long ITEM_TF = TypeIfc.TRUE_FALSE.longValue();
   public static final long ITEM_MATCHING = TypeIfc.MATCHING.longValue();
-  
-  //gopalrc - added 17 Nov 2009
   public static final long ITEM_EMI = TypeIfc.EXTENDED_MATCHING_ITEMS.longValue();
-  
-  
+  public static final long ITEM_MXSURVEY = TypeIfc.MATRIX_CHOICES_SURVEY.longValue();
+
   public String[] itemTypes =
     {
     "Unknown Type",
@@ -70,6 +68,7 @@ public interface ItemHelperIfc
     "Numeric Response",
     "Matching",
     "Extended Matching Items",
+    "Matrix Choices Survey",
   };
 
   

@@ -774,7 +774,7 @@ public class AudioRecorder extends JPanel implements ActionListener,
 		}
 
 		public void run() {
-
+		    try {
 			duration = 0;
 			audioInputStream = null;
 
@@ -789,7 +789,7 @@ public class AudioRecorder extends JPanel implements ActionListener,
 						+ res.getString("not_supported_"));
 				return;
 			}
-
+				//System.out.println("info=" + info);
 			// get and open the target data line for capture.
 
 			try {
@@ -819,20 +819,26 @@ public class AudioRecorder extends JPanel implements ActionListener,
 
 			line.start();
 			audioMeter.start();
-
-			while (thread != null) {
-				if ((numBytesRead = line.read(data, 0, bufferLengthInBytes)) == -1) {
-					break;
-				}
-				// we want this to sample in a separate thread, methinks
-			    for (int i=0; i < data.length; i++) {
-			    	if (Math.abs(data[i]) > 0) {
-			    		audioMeter.setLevel(Math.abs(data[i]));
-			    		audioMeter.setSeconds(seconds);
-			    	}
-			    }
-				out.write(data, 0, numBytesRead);
 				
+				while (thread != null) {
+					if ((numBytesRead = line.read(data, 0, bufferLengthInBytes)) == -1) {
+						break;
+					}
+					// we want this to sample in a separate thread, methinks
+					for (int i=0; i < data.length; i+=2) {
+						int value = 0;
+		                // deal with Endianness
+		                int hiByte = data[i];
+		                int loByte = data[i+1];
+	                    short shortVal = (short) hiByte;
+	                    value = (short) ((shortVal << 8) | (byte) loByte);
+	                    float level = (float) value / Short.MAX_VALUE;
+	                    float adj_level = level * 110;
+	                    //System.out.println("adj_level = " + adj_level);
+	                    audioMeter.setLevel(Math.round(Math.abs(adj_level)));
+	                    audioMeter.setSeconds(seconds);
+					}
+					out.write(data, 0, numBytesRead);
 			}
 
 			// we reached the end of the stream. stop and close the line.
@@ -867,6 +873,17 @@ public class AudioRecorder extends JPanel implements ActionListener,
 			}
 
 			samplingGraph.createWaveForm(audioBytes, lines, audioInputStream);
+		}
+                finally {
+                        thread = null;
+                        while (audioInputStream == null) {
+                                try {
+	                                Thread.sleep(10);
+	                        } catch (InterruptedException e) {
+	                                e.printStackTrace();
+				}
+			}
+		}
 		}
 	} // End class Capture
 

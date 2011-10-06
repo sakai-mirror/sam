@@ -39,6 +39,10 @@ $Id$
 
 
  <div class="portletBody">
+ 
+<!-- IF A SECURE DELIVERY MODULE HAS BEEN SELECTED, INJECT ITS HTML FRAGMENT (IF ANY) HERE -->
+<h:outputText  value="#{delivery.secureDeliveryHTMLFragment}" escape="false"  />
+ 
 <h:form id="histogram">
 
   <h:inputHidden id="publishedId" value="#{histogramScores.publishedId}" />
@@ -102,7 +106,7 @@ $Id$
 
     <h:outputText value=" </p>" rendered="#{histogramScores.hasNav==null || histogramScores.hasNav=='true'}" escape="false"/>
 
-  <h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+  <h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 
 <div class="tier1">
 
@@ -203,7 +207,7 @@ $Id$
 </h:panelGroup>
 
 <!-- The parts drop down. -->
-<h:panelGroup rendered="#{histogramScores.assesmentPartCount > 1 && (histogramScores.hasNav==null || histogramScores.hasNav=='true')}">
+<h:panelGroup rendered="#{histogramScores.assesmentPartCount > 1}">
     <h:outputText value="#{evaluationMessages.part} " />
     <h:outputText value="#{evaluationMessages.column} " />
     <h:selectOneMenu id="partNumber" onchange="document.forms[0].submit();"
@@ -230,8 +234,15 @@ $Id$
         <h:dataTable value="#{item.histogramBars}" var="bar">
           <h:column>
             <h:panelGrid columns="1">
-              <h:panelGroup>
+              <h:panelGroup rendered="#{item.questionType !='13'}">
+				<h:graphicImage id="image8" rendered="#{bar.isCorrect}" width="12" height="12"
+        			alt="#{evaluationMessages.alt_correct}" url="/images/delivery/checkmark.gif" >
+       			</h:graphicImage>
+				<h:graphicImage id="image9" rendered="#{!bar.isCorrect}" width="12" height="12"
+        			alt="#{evaluationMessages.alt_incorrect}" url="/images/delivery/spacer.gif" >
+       			</h:graphicImage>
 
+<!-- Jaques, does this still need to be here? START -->
         <f:verbatim><h4></f:verbatim>
           <h:outputText value="#{bar.title}" escape="false" rendered="#{bar.title ne ''}"/>
         <f:verbatim></h4></f:verbatim>
@@ -244,20 +255,35 @@ $Id$
         alt="#{evaluationMessages.alt_incorrect}" url="/images/delivery/spacer.gif" >
        </h:graphicImage>
 
+<!-- Jaques, does this still need to be here? END -->
        <h:graphicImage url="/images/reddot.gif" height="12" width="#{bar.columnHeight}"/>
                 <h:outputText value=" #{bar.numStudentsText}" />
               </h:panelGroup>
-               <h:panelGroup>
-               <h:graphicImage width="12" height="12" url="/images/delivery/spacer.gif" />
-              <h:outputText value="#{bar.label}" escape="false" />
-              <f:verbatim><br/></f:verbatim> 
-              
-</h:panelGroup>
+              <h:panelGroup>
+              	<h:graphicImage width="12" height="12" url="/images/delivery/spacer.gif" />
+              	<h:outputText value="#{bar.label}" escape="false" />
+			  </h:panelGroup>
+			  
+			  <h:panelGroup rendered="#{item.questionType == '13' }">
+			    <f:verbatim><div class="tier3"></f:verbatim>
+				<h:dataTable value="#{bar.itemBars}" var="itemBar" >
+					<h:column>
+					<h:panelGrid columns="3">
+					<h:panelGroup>
+						<h:outputText value="#{itemBar.itemText}  "/>
+						<h:graphicImage url="/images/reddot.gif" height="12" width="#{itemBar.columnHeight}"/>
+						<h:outputText value="#{itemBar.numStudentsText}"/> 
+					</h:panelGroup>
+					</h:panelGrid>
+					</h:column>
+				</h:dataTable>
+				<f:verbatim></div></f:verbatim>
+			  </h:panelGroup>
             </h:panelGrid>
           </h:column>
         </h:dataTable>
 
-        <!-- 1-2=mcmc 3=mcsc 4=tf 5=essay 6=file 7=audio 8=FIB 9=matching 13=emi -->
+        <!-- 1-2=mcmc 3=mcsc 4=tf 5=essay 6=file 7=audio 8=FIB 9=matching 14=emi -->
 
         <h:panelGrid columns="2" rendered="#{item.questionType == '5' or item.questionType == '6' or item.questionType == '7'}">
 
@@ -272,11 +298,11 @@ $Id$
           <h:outputLabel value="#{evaluationMessages.mode}" />
           <h:outputText id="mode" value="#{item.mode}" />
         </h:panelGrid>
-        <h:panelGrid columns="2" rendered="#{item.questionType == '3'}">
+       <h:panelGrid columns="2" rendered="#{item.questionType == '3' or item.questionType == '13'}">
           <h:outputLabel for="responses1" value="#{evaluationMessages.responses}" />
           <h:outputText id="responses1" value="#{item.numResponses}" />
          </h:panelGrid>
-         <h:panelGrid columns="2" rendered="#{item.questionType == '1' or  item.questionType == '2' or  item.questionType == '4' or  item.questionType == '8' or item.questionType == '9' or item.questionType == '11' or item.questionType == '12'  or item.questionType == '13'}" columnClasses="alignLeft,aligntRight">
+         <h:panelGrid columns="2" rendered="#{item.questionType == '1' or  item.questionType == '2' or  item.questionType == '4' or  item.questionType == '8' or item.questionType == '9' or item.questionType == '11' or item.questionType == '12'  or item.questionType == '14'}" columnClasses="alignLeft,aligntRight">
              <h:outputLabel for="responses2" value="#{evaluationMessages.responses}" />
           <h:outputText id="responses2" value="#{item.numResponses}" />
           <h:outputLabel for="percentCorrect" value="#{evaluationMessages.percentCorrect}" />

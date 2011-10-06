@@ -41,7 +41,7 @@
       <samigo:script path="/js/authoring.js"/>
 
 
-<script language="javascript" style="text/JavaScript">
+<script style="text/JavaScript">
 <!--
 function validateUrl(){
   var list =document.getElementsByTagName("input");
@@ -319,7 +319,7 @@ function setBlockDivs()
      <h:outputText value="#{assessmentSettingsMessages.settings} #{assessmentSettingsMessages.dash} #{assessmentSettings.title}"/>
     </h3>
 <p>
-  <h:messages infoClass="validation" warnClass="messageValidation" errorClass="validation" fatalClass="validation"/>
+  <h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 </p>
 
 <div class="tier1">
@@ -360,7 +360,7 @@ function setBlockDivs()
       summary="#{templateMessages.enter_template_info_section}">
 
         <h:outputLabel for="assessment_title" value="#{assessmentSettingsMessages.assessment_title}"/>
-        <h:inputText id="assessment_title" size="80" value="#{assessmentSettings.title}" />
+        <h:inputText id="assessment_title" size="80" maxlength="255" value="#{assessmentSettings.title}" />
 
         <h:outputLabel for="creator" value="#{assessmentSettingsMessages.assessment_creator}" rendered="#{assessmentSettings.valueMap.assessmentAuthor_isInstructorEditable==true}"/>
 
@@ -415,7 +415,7 @@ function setBlockDivs()
 	</h:panelGroup>
 	<h:outputText value="" rendered="#{assessmentSettings.valueMap.dueDate_isInstructorEditable==true}"/>
 	<h:outputText value="#{assessmentSettingsMessages.assessment_due_date_note}" rendered="#{assessmentSettings.valueMap.dueDate_isInstructorEditable==true}"/>
-	
+		
 	<!-- For formatting -->
 	<h:outputText value="" />
 	<h:outputText value="" />
@@ -428,6 +428,7 @@ function setBlockDivs()
 	</h:panelGroup>
 	<h:outputText value="" rendered="#{assessmentSettings.valueMap.retractDate_isInstructorEditable==true}"/>
 	<h:outputText value="#{assessmentSettingsMessages.assessment_retract_date_note}" rendered="#{assessmentSettings.valueMap.retractDate_isInstructorEditable==true}"/>
+
   </h:panelGrid>
  </div>
   </samigo:hideDivision>
@@ -460,7 +461,7 @@ function setBlockDivs()
   </samigo:hideDivision>
 
   <!-- *** HIGH SECURITY *** -->
-<h:panelGroup rendered="#{assessmentSettings.valueMap.ipAccessType_isInstructorEditable==true or assessmentSettings.valueMap.passwordRequired_isInstructorEditable==true}" >
+<h:panelGroup rendered="#{assessmentSettings.valueMap.ipAccessType_isInstructorEditable==true or assessmentSettings.valueMap.passwordRequired_isInstructorEditable==true} or publishedSettings.valueMap.lockedBrowser_isInstructorEditable==true" >
   <samigo:hideDivision title="#{assessmentSettingsMessages.heading_high_security}">
     <f:verbatim><div class="tier2"></f:verbatim>
     <h:panelGrid border="0" columns="2"
@@ -488,6 +489,21 @@ function setBlockDivs()
         <h:outputLabel for="password" value="#{assessmentSettingsMessages.high_security_password}"/>
         <h:inputText id="password" size="20" value="#{assessmentSettings.password}"/>
       </h:panelGrid>
+      
+      <h:outputText value="#{assessmentSettingsMessages.require_secure_delivery}"
+		rendered="#{assessmentSettings.valueMap.lockedBrowser_isInstructorEditable==true && assessmentSettings.secureDeliveryAvailable}"/>
+	  <h:panelGrid border="0" columns="1"  columnClasses="longtext"
+		rendered="#{assessmentSettings.valueMap.lockedBrowser_isInstructorEditable==true && assessmentSettings.secureDeliveryAvailable}">
+	  	<h:selectOneRadio id="secureDeliveryModule" value="#{assessmentSettings.secureDeliveryModule}"  layout="pageDirection" onclick="setBlockDivs();document.forms[0].onsubmit();document.forms[0].submit();">
+			<f:selectItems value="#{assessmentSettings.secureDeliveryModuleSelections}" />
+	  	</h:selectOneRadio>
+	  	<h:panelGrid border="0" columns="2"  columnClasses="longtext"
+			rendered="#{assessmentSettings.valueMap.lockedBrowser_isInstructorEditable==true && assessmentSettings.secureDeliveryAvailable}">	
+			<h:outputLabel for="secureDeliveryModuleExitPassword" value="#{assessmentSettingsMessages.secure_delivery_exit_pwd}"/>
+			<h:inputText id="secureDeliveryModuleExitPassword" size="20" value="#{assessmentSettings.secureDeliveryModuleExitPassword}"
+				disabled="#{assessmentSettings.secureDeliveryModule == 'SECURE_DELIVERY_NONE_ID'}" maxlength="14"/>      	
+	  	</h:panelGrid>
+	  </h:panelGrid>
     </h:panelGrid>
  <f:verbatim></div></f:verbatim>
   </samigo:hideDivision>
@@ -544,12 +560,17 @@ function setBlockDivs()
     <!-- NAVIGATION -->
     <h:panelGroup rendered="#{assessmentSettings.valueMap.itemAccessType_isInstructorEditable==true}">
   <f:verbatim> <div class="longtext"></f:verbatim> <h:outputLabel for="itemNavigation" value="#{assessmentSettingsMessages.navigation}" /><f:verbatim></div><div class="tier3"></f:verbatim>
-      <h:panelGrid columns="2"  >
+      <h:panelGrid columns="1">
         <h:selectOneRadio id="itemNavigation" value="#{assessmentSettings.itemNavigation}"  layout="pageDirection" 
 		onclick="setBlockDivs();submitForm();">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.linear_access}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.random_access}"/>
         </h:selectOneRadio>
+        <h:panelGroup>
+        <f:verbatim> <div class="samigo-linear-access-warning"></f:verbatim>
+        <h:outputText value="#{assessmentSettingsMessages.linear_access_warning} "/>
+        <f:verbatim> </div></f:verbatim>
+        </h:panelGroup>
       </h:panelGrid>
 <f:verbatim></div></f:verbatim>
     </h:panelGroup>
@@ -626,24 +647,16 @@ function setBlockDivs()
 
     <!-- NUMBER OF SUBMISSIONS -->
     <h:panelGroup rendered="#{assessmentSettings.valueMap.submissionModel_isInstructorEditable==true}">
-      <f:verbatim><div class="longtext"></f:verbatim> <h:outputLabel for="unlimitedSubmissions" value="#{assessmentSettingsMessages.submissions}" /> <f:verbatim> </div> <div class="tier3"></f:verbatim>
+      <f:verbatim><div class="longtext"></f:verbatim> <h:outputLabel value="#{assessmentSettingsMessages.submissions}" /> <f:verbatim> </div> <div class="tier3"></f:verbatim>
       <f:verbatim><table><tr><td></f:verbatim>
-        <h:selectOneRadio id="unlimitedSubmissions1" value="#{assessmentSettings.unlimitedSubmissions}" layout="pageDirection" rendered="#{assessmentSettings.itemNavigation!=1}">
-          <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.unlimited_submission}"/>
-          <f:selectItem itemValue="0" itemLabel="#{assessmentSettingsMessages.only}" />
-        </h:selectOneRadio>
-        <h:selectOneRadio id="unlimitedSubmissions2" value="0" disabled="true" layout="pageDirection" rendered="#{assessmentSettings.itemNavigation==1}">
+        <h:selectOneRadio id="unlimitedSubmissions" value="#{assessmentSettings.unlimitedSubmissions}" layout="pageDirection">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.unlimited_submission}"/>
           <f:selectItem itemValue="0" itemLabel="#{assessmentSettingsMessages.only}" />
         </h:selectOneRadio>
 
       <f:verbatim></td><td valign="bottom"></f:verbatim>
-        <h:panelGroup rendered="#{assessmentSettings.itemNavigation!=1}">
-          <h:inputText size="5"  id="submissions_Allowed1" value="#{assessmentSettings.submissionsAllowed}" />
-          <h:outputLabel for="submissions_Allowed" value="#{assessmentSettingsMessages.limited_submission}" />
-        </h:panelGroup>
-        <h:panelGroup rendered="#{assessmentSettings.itemNavigation==1}">
-          <h:inputText size="5"  id="submissions_Allowed2" value="1" disabled="true" />
+        <h:panelGroup>
+          <h:inputText size="5"  id="submissions_Allowed" value="#{assessmentSettings.submissionsAllowed}" />
           <h:outputLabel for="submissions_Allowed" value="#{assessmentSettingsMessages.limited_submission}" />
         </h:panelGroup>
       <f:verbatim></td></tr></table></div></f:verbatim>
@@ -893,14 +906,14 @@ function setBlockDivs()
 
     <!-- RECORDED SCORE AND MULTIPLES -->
     <h:panelGroup rendered="#{assessmentSettings.valueMap.recordedScore_isInstructorEditable==true}">
-   <f:verbatim>  <div class="longtext">  </f:verbatim> <h:outputLabel for="scoringType" value="#{assessmentSettingsMessages.recorded_score}" /><f:verbatim></div> <div class="tier3"> </f:verbatim>
+   <f:verbatim>  <div class="longtext">  </f:verbatim> <h:outputLabel for="scoringType1" value="#{assessmentSettingsMessages.recorded_score}" rendered="#{author.canRecordAverage}"/><h:outputLabel for="scoringType2" value="#{assessmentSettingsMessages.recorded_score}" rendered="#{!author.canRecordAverage}"/><f:verbatim></div> <div class="tier3"> </f:verbatim>
       <h:panelGrid columns="2"  >
-        <h:selectOneRadio value="#{assessmentSettings.scoringType}" layout="pageDirection" rendered="#{author.canRecordAverage}">
+        <h:selectOneRadio value="#{assessmentSettings.scoringType}" id="scoringType1" layout="pageDirection" rendered="#{author.canRecordAverage}">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.highest_score}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.last_score}"/>
           <f:selectItem itemValue="4" itemLabel="#{assessmentSettingsMessages.average_score}"/>
         </h:selectOneRadio>
-        <h:selectOneRadio value="#{assessmentSettings.scoringType}" layout="pageDirection" rendered="#{!author.canRecordAverage}">
+        <h:selectOneRadio value="#{assessmentSettings.scoringType}" id="scoringType2" layout="pageDirection" rendered="#{!author.canRecordAverage}">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.highest_score}"/>
           <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.last_score}"/>
         </h:selectOneRadio>
@@ -986,12 +999,12 @@ function setBlockDivs()
   </h:commandButton>
 
   <!-- cancel -->
-  <h:commandButton value="#{commonMessages.cancel_action}" type="submit" action="editAssessment" rendered="#{author.fromPage == 'editAssessment'}">
+  <h:commandButton value="#{commonMessages.cancel_action}" type="submit" action="editAssessment" rendered="#{author.firstFromPage == 'editAssessment'}">
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ResetAssessmentAttachmentListener" />
       <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.EditAssessmentListener" />
   </h:commandButton>
 
-    <h:commandButton value="#{commonMessages.cancel_action}" type="submit" action="#{author.getFromPage}" rendered="#{author.fromPage != 'editAssessment'}">
+    <h:commandButton value="#{commonMessages.cancel_action}" type="submit" action="author" rendered="#{author.firstFromPage == 'author'}">
 	      <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.author.ResetAssessmentAttachmentListener" />
   </h:commandButton>
 
@@ -999,7 +1012,7 @@ function setBlockDivs()
 </h:form>
 <!-- end content -->
 </div>
-         <script language="javascript" style="text/JavaScript">retainHideUnhideStatus('none');showHideReleaseGroups();</script>
+         <script style="text/JavaScript">retainHideUnhideStatus('none');showHideReleaseGroups();</script>
 
       </body>
     </html>

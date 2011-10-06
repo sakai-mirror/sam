@@ -24,7 +24,7 @@ should be included in file importing DeliveryMessages
 **********************************************************************************/
 --%>
 -->
-<h:outputText value="<script>" escape="false" />
+<h:outputText value="<script type='text/javascript'>" escape="false" />
 <h:outputText value="var selectedRadioButton#{question.itemData.itemId};" escape="false" />
 <h:outputText value="function uncheckRadioButtons#{question.itemData.itemId}(radioButton) {" escape="false" />
 <h:outputText value="if (selectedRadioButton#{question.itemData.itemId} != null) {" escape="false" />
@@ -39,33 +39,29 @@ should be included in file importing DeliveryMessages
   <!-- ATTACHMENTS -->
   <%@ include file="/jsf/delivery/item/attachment.jsp" %>
 
+  <f:verbatim><div class="mcscFixUp"></f:verbatim>
+  <f:verbatim><div class="mcscFixUpSource"></f:verbatim>
+  <h:selectOneRadio required="false" value="#{question.responseId}" layout="pagedirection"
+                    disabled="#{delivery.actionString=='reviewAssessment' || delivery.actionString=='gradeAssessment'}" >
+       <f:selectItems value="#{question.selectItemPartsMC}" />
+  </h:selectOneRadio>
+  <f:verbatim></div></f:verbatim>
+
   <h:dataTable value="#{question.selectionArray}" var="selection">
     <h:column rendered="#{delivery.feedback eq 'true' &&
        delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
       <h:graphicImage id="image"
-        rendered="#{selection.answer.isCorrect eq 'true' && selection.response}"
+        rendered="#{(selection.answer.isCorrect eq 'true' || selection.answer.partialCredit gt 0) && selection.response}"
         alt="#{deliveryMessages.alt_correct}" url="/images/checkmark.gif" >
       </h:graphicImage>
       <h:graphicImage id="image2"
-        rendered="#{selection.answer.isCorrect ne 'true' && selection.response}"
+        rendered="#{selection.answer.isCorrect != null && !selection.answer.isCorrect && selection.response && (selection.answer.partialCredit == null || selection.answer.partialCredit le 0)}"
         width="16" height="16"
-        alt="#{deliveryMessages.alt_incorrect}" url="/images/delivery/spacer.gif">
+        alt="#{deliveryMessages.alt_incorrect}" url="/images/crossmark.gif">
       </h:graphicImage>
     </h:column>
     <h:column>
-
-     <h:selectOneRadio onfocus="if (this.defaultChecked) { uncheckRadioButtons#{question.itemData.itemId}(this) };" onclick="uncheckRadioButtons#{question.itemData.itemId}(this);" onkeypress="uncheckRadioButtons#{question.itemData.itemId}(this);" required="false" 
-        disabled="#{delivery.actionString=='reviewAssessment'
-                 || delivery.actionString=='gradeAssessment'}" 
-       value="#{question.responseId}" layout="pageLayout">
-       <f:selectItem itemValue="#{selection.answerId}" />
-     </h:selectOneRadio>
-
-    </h:column>
-    <h:column>
-     <h:outputText value=" #{selection.answer.label}" escape="false" />
-     <h:outputText value="." rendered="#{selection.answer.label ne ''}" />
-     <h:outputText value=" #{selection.answer.text}" escape="false" />
+<f:verbatim><div class="mcscFixUpTarget"></div></f:verbatim>
     </h:column>
     <h:column>
       <h:panelGroup rendered="#{delivery.feedback eq 'true' &&
@@ -78,6 +74,8 @@ should be included in file importing DeliveryMessages
       </h:panelGroup>
     </h:column>
   </h:dataTable>
+<f:verbatim></div></f:verbatim>
+<f:verbatim><script>$('div.mcscFixUp').each(function(index1,elBlockToFix){$(elBlockToFix).find('div.mcscFixUpSource label').each(function(index,elLabelAndInputToMove){$(elBlockToFix).find('div.mcscFixUpTarget:first').replaceWith($(elLabelAndInputToMove));});$(elBlockToFix).find('div.mcscFixUpSource').remove();});</script></f:verbatim>
 
   <h:panelGroup
     rendered="#{question.itemData.hasRationale && question.itemData.typeId != 3}" >
@@ -108,36 +106,33 @@ should be included in file importing DeliveryMessages
              && delivery.navigation ne '1' && delivery.displayMardForReview }">
 <h:selectBooleanCheckbox value="#{question.review}" id="mark_for_review" />
 	<h:outputLabel for="mark_for_review" value="#{deliveryMessages.mark}" />
-	<h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('../author/markForReviewPopUp.faces','MarkForReview','width=300,height=220,scrollbars=yes, resizable=yes');" onkeypress="javascript:window.open('../author/markForReviewTipText.faces','MarkForReview','width=300,height=220,scrollbars=yes, resizable=yes');" >
+	<h:outputLink title="#{assessmentSettingsMessages.whats_this_link}" value="#" onclick="javascript:window.open('../author/markForReviewPopUp.faces','MarkForReview','width=300,height=220,scrollbars=yes, resizable=yes');" >
 		<h:outputText  value=" #{assessmentSettingsMessages.whats_this_link}"/>
 	</h:outputLink>
 </h:panelGroup>
 
 <h:panelGroup rendered="#{delivery.feedback eq 'true'}">
-  <f:verbatim><br /></f:verbatim>
+  <h:panelGrid rendered="#{delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true' && question.itemData.typeId != 3}" >
+    <h:panelGroup>
+      <h:outputLabel for="answerKeyMC" styleClass="answerkeyFeedbackCommentLabel" value="#{deliveryMessages.ans_key}#{deliveryMessages.column} " />
+      <h:outputText id="answerKeyMC" value="#{question.key}" escape="false" />
+    </h:panelGroup>
+    <h:outputText value=" "/>
+  </h:panelGrid>
 
-  <h:panelGroup rendered="#{delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true' && question.itemData.typeId != 3}" >
-    <f:verbatim><b></f:verbatim>
-    <h:outputLabel for="answerKeyMC" value="#{deliveryMessages.ans_key}#{deliveryMessages.column} " />
-    <f:verbatim></b></f:verbatim>
-    <h:outputText id="answerKeyMC"
-       value="#{question.key}" escape="false" />
+  <h:panelGrid rendered="#{delivery.feedbackComponent.showItemLevel && !delivery.noFeedback=='true' && question.feedbackIsNotEmpty}">
+    <h:panelGroup>
+      <h:outputLabel for="feedSC" styleClass="answerkeyFeedbackCommentLabel" value="#{commonMessages.feedback}#{deliveryMessages.column} " />
+      <h:outputText id="feedSC" value="#{question.feedback}" escape="false" />
+    </h:panelGroup>
+    <h:outputText value=" "/>
+  </h:panelGrid>
 
-  </h:panelGroup>
-
-  <h:panelGroup rendered="#{delivery.feedbackComponent.showItemLevel && !delivery.noFeedback=='true' && question.feedbackIsNotEmpty}">
-    <f:verbatim><br /></f:verbatim>
-    <f:verbatim><b></f:verbatim>
-    <h:outputLabel for="feedSC" value="#{commonMessages.feedback}#{deliveryMessages.column} " />
-    <f:verbatim></b></f:verbatim>
-    <h:outputText id="feedSC" value="#{question.feedback}" escape="false" />
-  </h:panelGroup>
-
-  <h:panelGrid rendered="#{delivery.actionString !='gradeAssessment' && delivery.feedbackComponent.showGraderComment && !delivery.noFeedback=='true' && (question.gradingCommentIsNotEmpty || question.hasItemGradingAttachment)}" columns="2" border="0">
-    <h:outputLabel for="commentSC" value="<b>#{deliveryMessages.comment}#{deliveryMessages.column} </b>" />
-    
-	<h:outputText id="commentSC" value="#{question.gradingComment}" escape="false" rendered="#{question.gradingCommentIsNotEmpty}"/>
-    <h:outputText value=" " rendered="#{question.gradingCommentIsNotEmpty}"/>
+  <h:panelGrid rendered="#{delivery.actionString !='gradeAssessment' && delivery.feedbackComponent.showGraderComment && !delivery.noFeedback=='true' && (question.gradingCommentIsNotEmpty || question.hasItemGradingAttachment)}" columns="1" border="0">
+    <h:panelGroup>
+      <h:outputLabel for="commentSC" styleClass="answerkeyFeedbackCommentLabel" value="#{deliveryMessages.comment}#{deliveryMessages.column} " />
+      <h:outputText id="commentSC" value="#{question.gradingComment}" escape="false" rendered="#{question.gradingCommentIsNotEmpty}"/>
+    </h:panelGroup>
     
 	<h:panelGroup rendered="#{question.hasItemGradingAttachment}">
       <h:dataTable value="#{question.itemGradingAttachmentList}" var="attach">

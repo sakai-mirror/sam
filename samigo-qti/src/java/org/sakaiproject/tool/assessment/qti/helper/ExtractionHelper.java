@@ -45,6 +45,7 @@ import org.jdom.input.DOMBuilder;
 import org.jdom.output.XMLOutputter;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentResource;
+//import org.sakaiproject.tool.assessment.api.SamigoApiFactory;
 import org.sakaiproject.tool.assessment.data.dao.assessment.Answer;
 import org.sakaiproject.tool.assessment.data.dao.assessment.AnswerFeedback;
 import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentAccessControl;
@@ -61,6 +62,7 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
+import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.ItemFacade;
 import org.sakaiproject.tool.assessment.facade.QuestionPoolFacade;
@@ -79,6 +81,7 @@ import org.sakaiproject.tool.assessment.qti.util.Iso8601TimeInterval;
 import org.sakaiproject.tool.assessment.qti.util.XmlMapper;
 import org.sakaiproject.tool.assessment.qti.util.XmlUtil;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
+import org.sakaiproject.tool.assessment.shared.api.assessment.SecureDeliveryServiceAPI;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.tool.cover.ToolManager;
@@ -287,11 +290,12 @@ public class ExtractionHelper
       Document transform = getTransformDocument(transformType, isRespondus);
       Document xml = asi.getDocument();
       Document model = XmlUtil.transformDocument(xml, transform);
+      /*
       DOMBuilder in = new DOMBuilder(); 
       org.jdom.Document jdomDoc = in.build(model); 
-      XMLOutputter  printer = new XMLOutputter();
+      XMLOutputter printer = new XMLOutputter();
       printer.output(jdomDoc, System.out);
-
+      */
       
       map = XmlMapper.map(model);
     }
@@ -465,6 +469,22 @@ public class ExtractionHelper
     // assessment feedback control
     makeAssessmentFeedback(assessment);
     
+    // Respondus Locked Browser
+    // To-do: To retain the value, need to re-organize SamigoApiFactory to samigo-api.
+    /* 
+    if ("TRUE".equalsIgnoreCase(assessment.getAssessmentMetaDataByLabel("REQUIRE_LOCKED_BROWSER")))
+    {
+    	SecureDeliveryServiceAPI secureDeliveryService = SamigoApiFactory.getInstance().getSecureDeliveryServiceAPI();
+        assessment.updateAssessmentMetaData(SecureDeliveryServiceAPI.MODULE_KEY, assessmentSettings.getSecureDeliveryModule() );
+        if (assessment.getAssessmentMetaDataByLabel("EXIT_PASSWARD") != null || 
+        		!((String) assessment.getAssessmentMetaDataByLabel("EXIT_PASSWARD")).trim().equals("") ) {
+        	String encryptedPassword = secureDeliveryService.encryptPassword( assessmentSettings.getSecureDeliveryModule(), assessment.getAssessmentMetaDataByLabel("EXIT_PASSWARD"));
+        	assessment.updateAssessmentMetaData(SecureDeliveryServiceAPI.EXITPWD_KEY, TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, encryptedPassword ));
+        }
+    	
+        assessment.updateAssessmentMetaData(SecureDeliveryServiceAPI.TITLE_DECORATION, assessment.getTitle());
+    }
+    */
   }
 
   /**
@@ -772,25 +792,22 @@ public class ExtractionHelper
         "ASSESSMENT_RELEASED_TO");
 
     // for backwards compatibility with version 1.5 exports.
+    // if release to groups, set to Site
     if (releasedTo != null && releasedTo.indexOf("Authenticated Users") > -1)
     {
       log.debug(
           "Fixing obsolete reference to 'Authenticated Users', setting released to 'Anonymous Users'.");
       releasedTo = AuthoringConstantStrings.ANONYMOUS;
     }
+    else if (releasedTo != null && releasedTo.indexOf("Selected Groups") > -1){
+    	releasedTo = AgentFacade.getCurrentSiteId();
+    }
 
-
-      // for backwards compatibility with version 1.5 exports.
-      if (releasedTo != null && releasedTo.indexOf("Authenticated Users") > -1)
-      {
-        log.debug(
-          "Fixing obsolete reference to 'Authenticated Users', setting released to 'Anonymous Users'.");
-        releasedTo = AuthoringConstantStrings.ANONYMOUS;
-      }
-
+    if (releasedTo != null) {
       log.debug("control.setReleaseTo(releasedTo)='"+releasedTo+"'.");
       control.setReleaseTo(releasedTo);
-
+    }
+    
     // Timed Assessment
     if (duration != null)
     {
@@ -1529,28 +1546,32 @@ public class ExtractionHelper
     // item text and answers
     if (TypeIfc.FILL_IN_BLANK.longValue() == typeId.longValue())
     {
-      if (isRespondus) {
-    	  addRespondusFibTextAndAnswers(item, itemMap);
-      }
-      else {
-        addFibTextAndAnswers(item, itemMap);
-      }
+    	if (isRespondus) {
+    		addRespondusFibTextAndAnswers(item, itemMap);
+    	}
+    	else {
+    		addFibTextAndAnswers(item, itemMap);
+    	}
     }
 
-  else if (TypeIfc.FILL_IN_NUMERIC.longValue() == typeId.longValue())
-	    {
-	  		addFibTextAndAnswers(item, itemMap);
-	      //addFinTextAndAnswers(item, itemMap);  // 10/3/2006: Diego's code, duplicate of addFibTextAndAnswers
-	    }
-  else if (TypeIfc.MATCHING.longValue() == typeId.longValue())
-  {
-	  if (isRespondus) {
-		  addRespondusMatchTextAndAnswers(item, itemMap);
-	  }
-	  else {
-		  addMatchTextAndAnswers(item, itemMap);
-	  }
-  }
+    else if (TypeIfc.FILL_IN_NUMERIC.longValue() == typeId.longValue())
+    {
+    	addFibTextAndAnswers(item, itemMap);
+    	//addFinTextAndAnswers(item, itemMap);  // 10/3/2006: Diego's code, duplicate of addFibTextAndAnswers
+    }
+    else if (TypeIfc.MATCHING.longValue() == typeId.longValue())
+    {
+    	if (isRespondus) {
+    		addRespondusMatchTextAndAnswers(item, itemMap);
+    	}
+    	else {
+    		addMatchTextAndAnswers(item, itemMap);
+    	}
+    }
+    else if (TypeIfc.MATRIX_CHOICES_SURVEY.longValue() == typeId.longValue())
+    {
+    	addMatrixSurveyTextAndAnswers(item, itemMap);
+    }
     else
     {
     	if (isRespondus) {
@@ -2530,6 +2551,107 @@ public class ExtractionHelper
 	  item.setItemTextSet(itemTextSet);
   }
 
+  //NOTE: this code is obviously modelled on matching.
+  // However the source and target are reversed. The columns have to
+  // be what the XSL code calls source, which is the reverse of how matching does it.
+  // The problem is that because a column can be reused, it needs to be the direction
+  // with the match_group attribute.  Feedback and correct/incorrect isn't done, since
+  // there's no scoring. The generic item code handles generate item feedback, which is
+  // all that makes sense for this question type.
+  //   The xsl code recognizes a question as matrix if match_max > 1, i.e. if the
+  // answers in the columns can be used for more that one row. Technically a forced choice
+  // situation, which we do support, is a matrix question type with match_max = 1. But
+  // the export code won't actually write a match_max of 1 for that, so we won't havve
+  // trouble. If someone does a matrix with only one row, we could have a problem.
+  private void addMatrixSurveyTextAndAnswers(ItemFacade item, Map itemMap)
+  {
+	  List sourceList = (List) itemMap.get("itemMatchSourceText");  // with match_group, i.e. column headings
+	  List targetList = (List) itemMap.get("itemMatchTargetText");  // row headings
+
+	  List itemTextList = (List) itemMap.get("itemText");
+
+	  sourceList = sourceList == null ? new ArrayList() : sourceList;
+	  targetList = targetList == null ? new ArrayList() : targetList;
+	  itemTextList =
+		  itemTextList == null ? new ArrayList() : itemTextList;
+
+		  String itemTextString = "";
+		  if (itemTextList.size()>0)
+		  {
+			  itemTextString = XmlUtil.processFormattedText(log, (String) itemTextList.get(0));
+		  }
+
+		  HashSet itemTextSet = new HashSet();
+
+		  // first, add the question text
+		  if (itemTextString==null) itemTextString = "";
+		  itemTextString=itemTextString.replaceAll("\\?\\?"," ");//SAK-2298
+		  log.debug("item.setInstruction itemTextString: " + itemTextString);
+		  item.setInstruction(itemTextString);
+
+		  // loop through target texts, i.e. rows
+		  for (int i = 0; i < targetList.size(); i++)
+		  {
+			  // create the entry for the row
+			  String sourceText = XmlUtil.processFormattedText(log, (String) targetList.get(i));
+			  if (sourceText == null) sourceText="";
+			  sourceText=sourceText.replaceAll("\\?\\?"," ");//SAK-2298
+			  log.debug("sourceText: " + sourceText);
+
+			  ItemText sourceItemText = new ItemText();
+			  sourceItemText.setText(makeFCKAttachment(sourceText));
+			  sourceItemText.setItem(item.getData());
+			  sourceItemText.setSequence( Long.valueOf(i + 1));
+
+			  HashSet targetSet = new HashSet();
+
+			  // loop through all answers, i.e. columns
+			  char answerLabel = 'A';
+			  for (int a = 0; a < sourceList.size(); a++)
+			  {
+				  String targetString = XmlUtil.processFormattedText(log, (String) sourceList.get(a));
+				  if (targetString == null)
+				  {
+					  targetString = "";
+				  }
+				  targetString=targetString.replaceAll("\\?\\?"," ");//SAK-2298
+				  log.debug("targetString: " + targetString);
+
+				  Answer target = new Answer();
+
+				  //feedback
+				  HashSet answerFeedbackSet = new HashSet();
+
+				  target.setAnswerFeedbackSet(answerFeedbackSet);
+
+				  String label = "" + answerLabel++;
+				  target.setLabel(label); // up to 26, is this a problem?
+				  target.setText(makeFCKAttachment(targetString));
+				  target.setItemText(sourceItemText);
+				  target.setItem(item.getData());
+				  target.setSequence( Long.valueOf(a + 1));
+
+				  // correct answer and score
+				  // manual authoring disregards the number of partial answers
+				  // or whether the answer is correct so we will do the same.
+				  // float score = 0;
+				  float score = 0.0f;
+				  float discount = 0.0f;
+
+				  log.debug("setting answer " + a + " score to:" + score);
+				  target.setScore( Float.valueOf(score));
+				  target.setDiscount(Float.valueOf(discount));
+
+				  targetSet.add(target);
+
+			  }
+
+			  sourceItemText.setAnswerSet(targetSet);
+			  itemTextSet.add(sourceItemText);
+		  }
+
+		  item.setItemTextSet(itemTextSet);
+  }
 
   /**
    * Helper method rotates the first n.

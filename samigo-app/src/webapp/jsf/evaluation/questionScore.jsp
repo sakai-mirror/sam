@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://www.sakaiproject.org/samigo" prefix="samigo" %>
 <%@ taglib uri="http://sakaiproject.org/jsf/sakai" prefix="sakai" %>
-
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
 <!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -33,6 +33,16 @@ $Id$
  <f:view>
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head><%= request.getAttribute("html.head") %>
+      <style type="text/css">
+        .TableColumn {
+          text-align: center
+        }
+       .TableClass {
+         border-style: dotted;
+         border-width: 0.5px;
+         border-color: light grey;
+       }
+      </style>
       <title><h:outputText
         value="#{evaluationMessages.title_question}" /></title>
       </head>
@@ -41,31 +51,13 @@ $Id$
  <!-- JAVASCRIPT -->
 <%@ include file="/js/delivery.js" %>
 
-<script>
+<script type="text/javascript">
 function toPoint(id)
 {
   var x=document.getElementById(id).value
   document.getElementById(id).value=x.replace(',','.')
 }
 
-function clickEmailLink(field, fromName, fromEmailAddress, toName, toEmailAddress, assessmentName){
-var emaillinkid= field.id.replace("createEmail", "hiddenlink");
-//fromName = escapeApostrophe(fromName);
-//to = escapeApostrophe(toName);
-var newindex = 0;
-for (i=0; i<document.links.length; i++) {
-  if(document.links[i].id == emaillinkid)
-  {
-    newindex = i;
-    break;
-  }
-}
-
-document.links[newindex].onclick();
-window.open("../evaluation/createNewEmail.faces?fromEmailLinkClick=true&fromName=" + fromName + "&fromEmailAddress=" + fromEmailAddress + "&toName=" + toName + "&toEmailAddress=" + toEmailAddress +  "&assessmentName=" + assessmentName,'createEmail','width=600,height=600,scrollbars=yes, resizable=yes');
-
-document.location='../evaluation/questionScore';
-}
 </script>
 
 <!-- content... -->
@@ -130,7 +122,7 @@ document.location='../evaluation/questionScore';
 
   </p>
 <div class="tier1">
-  <h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+  <h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 
   <h:dataTable value="#{questionScores.sections}" var="partinit">
     <h:column>
@@ -205,13 +197,16 @@ document.location='../evaluation/questionScore';
      <h:panelGroup rendered="#{questionScores.typeId == '3'}">
          <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_mult_surv}"/>
      </h:panelGroup>
+     <h:panelGroup rendered="#{questionScores.typeId == '13'}">
+         <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_matrix_choices_surv}"/>
+     </h:panelGroup>
      <h:panelGroup rendered="#{questionScores.typeId == '1'}">
     <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{commonMessages.multiple_choice_sin}"/>
       </h:panelGroup>
      <h:panelGroup rendered="#{questionScores.typeId == '12'}">
     <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{commonMessages.multipl_mc_ss}"/>
       </h:panelGroup>
-    <h:panelGroup rendered="#{questionScores.typeId == '13'}">
+    <h:panelGroup rendered="#{questionScores.typeId == '14'}">
       <h:outputText value="#{evaluationMessages.question}#{question.sequence} - #{evaluationMessages.q_emi}"/>
     </h:panelGroup>    
  </h:column>
@@ -277,9 +272,14 @@ document.location='../evaluation/questionScore';
     <%@ include file="/jsf/evaluation/item/displayTrueFalse.jsp" %>
     </f:subview>
   </h:panelGroup>
-  <h:panelGroup rendered="#{questionScores.typeId == '13'}">
+  <h:panelGroup rendered="#{questionScores.typeId == '14'}">
     <f:subview id="displayExtendedMatchingItems">
     <%@ include file="/jsf/evaluation/item/displayExtendedMatchingItems.jsp" %>
+    </f:subview>
+  </h:panelGroup>
+  <h:panelGroup rendered="#{questionScores.typeId == '13'}">
+    <f:subview id="displayMatrixSurvey">
+    <%@ include file="/jsf/evaluation/item/displayMatrixSurvey.jsp" %>
     </f:subview>
   </h:panelGroup>
 
@@ -294,7 +294,7 @@ document.location='../evaluation/questionScore';
 	</p>
 	</h:panelGroup>
 	<h:panelGroup rendered="#{questionScores.typeId == '6'}">
-		<h:outputLink title="#{evaluationMessages.t_fileUpload}" value="/samigo-app/servlet/DownloadAllMedia?publishedId=#{questionScores.publishedId}&publishedItemId=#{questionScores.itemId}&createdBy=#{question.itemData.createdBy}&partNumber=#{part.partNumber}&anonymous=#{totalScores.anonymous}&scoringType=#{questionScores.allSubmissions}">
+		<h:outputLink title="#{evaluationMessages.t_fileUpload}" value="/samigo-app/servlet/DownloadAllMedia?publishedId=#{questionScores.publishedId}&publishedItemId=#{questionScores.itemId}&createdBy=#{question.createdBy}&partNumber=#{part.partNumber}&anonymous=#{totalScores.anonymous}&scoringType=#{questionScores.allSubmissions}">
 		<h:outputText escape="false" value="#{evaluationMessages.download_all}" />
 		</h:outputLink>
 	 </h:panelGroup>
@@ -442,15 +442,16 @@ document.location='../evaluation/questionScore';
        </h:commandLink>
 	   <f:verbatim><br/></f:verbatim>
 	   <span class="itemAction">
-	   <h:outputLink id="createEmail1" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
-	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
-	   </h:outputLink>
+	   <h:panelGroup rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}">
+		 <h:outputText value="<a href=\"mailto:" escape="false" />
+	     <h:outputText value="#{description.email}" escape="false" />
+	     <h:outputText value="?subject=" escape="false" />
+		 <h:outputText value="#{totalScores.assessmentName} #{commonMessages.feedback}\">" escape="false" />
+         <h:outputText value="  #{evaluationMessages.email}" escape="false"/>
+         <h:outputText value="</a>" escape="false" />
+	   </h:panelGroup>
 	   </span>
      </h:panelGroup>
-	 <h:commandLink id="hiddenlink1" value="" action="questionScores">
-          <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.util.EmailListener" />
-		  <f:param name="toUserId" value="#{description.idString}" />
-	</h:commandLink>
     </h:column>
 
     <h:column rendered="#{questionScores.anonymous eq 'false' && questionScores.sortType eq 'lastName' && questionScores.sortAscending}">
@@ -480,16 +481,17 @@ document.location='../evaluation/questionScore';
        </h:commandLink>
        <f:verbatim><br/></f:verbatim>
 	   <span class="itemAction">
-	   <h:outputLink id="createEmail2" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
-	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
-	   </h:outputLink>
+	   <h:panelGroup rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}">
+		 <h:outputText value="<a href=\"mailto:" escape="false" />
+	     <h:outputText value="#{description.email}" escape="false" />
+	     <h:outputText value="?subject=" escape="false" />
+		 <h:outputText value="#{totalScores.assessmentName} #{commonMessages.feedback}\">" escape="false" />
+         <h:outputText value="  #{evaluationMessages.email}" escape="false"/>
+         <h:outputText value="</a>" escape="false" />
+	   </h:panelGroup>
 	   </span>
      </h:panelGroup>
-	<h:commandLink id="hiddenlink2" value="" action="questionScores">
-          <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.util.EmailListener" />
-		  <f:param name="toUserId" value="#{description.idString}" />
-	</h:commandLink>
-    </h:column>    
+	 </h:column>    
     
     <h:column rendered="#{questionScores.anonymous eq 'false' && questionScores.sortType eq 'lastName' && !questionScores.sortAscending}">
       <f:facet name="header">
@@ -522,17 +524,17 @@ document.location='../evaluation/questionScore';
        </h:commandLink>
        <f:verbatim><br/></f:verbatim>
 	   <span class="itemAction">
-	   <h:outputLink id="createEmail3" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{description.firstName} #{description.lastName}\", \"#{description.email}\", \"#{totalScores.assessmentName}\");" value="#">
-	     <h:outputText value="  #{evaluationMessages.email}" rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
-	   </h:outputLink>
+	   <h:panelGroup rendered="#{description.email != null && description.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}">
+		 <h:outputText value="<a href=\"mailto:" escape="false" />
+	     <h:outputText value="#{description.email}" escape="false" />
+	     <h:outputText value="?subject=" escape="false" />
+		 <h:outputText value="#{totalScores.assessmentName} #{commonMessages.feedback}\">" escape="false" />
+         <h:outputText value="  #{evaluationMessages.email}" escape="false"/>
+         <h:outputText value="</a>" escape="false" />
+	   </h:panelGroup>
 	   </span>
      </h:panelGroup>
-	<h:commandLink id="hiddenlink3" value="" action="questionScores">
-          <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.util.EmailListener" />
-		  <f:param name="toUserId" value="#{description.idString}" />
-	</h:commandLink>
-    </h:column>  
-
+	</h:column>  
 
 	<!-- SUBMISSION ID -->
     <h:column rendered="#{questionScores.anonymous eq 'true' && questionScores.sortType ne 'assessmentGradingId'}">
@@ -826,10 +828,10 @@ document.location='../evaluation/questionScore';
       <f:facet name="header">
         <h:panelGroup>
 		  <h:outputText value="#{commonMessages.student_response}" 
-             rendered="#{questionScores.typeId == '6' || questionScores.typeId == '7' }"/>
+             rendered="#{questionScores.typeId == '6' || questionScores.typeId == '7'}"/>
           <h:commandLink title="#{evaluationMessages.t_sortResponse}" id="answer" action="questionScores" >
             <h:outputText value="#{commonMessages.student_response}" 
-               rendered="#{questionScores.typeId != '6' && questionScores.typeId != '7' }"/>
+               rendered="#{questionScores.typeId != '6' && questionScores.typeId != '7'}"/>
             <f:actionListener
                type="org.sakaiproject.tool.assessment.ui.listener.evaluation.QuestionScoreUpdateListener" />
             <f:actionListener
@@ -892,10 +894,10 @@ document.location='../evaluation/questionScore';
       <f:facet name="header">
       <h:panelGroup>
 		  <h:outputText value="#{commonMessages.student_response}" 
-             rendered="#{questionScores.typeId == '6' || questionScores.typeId == '7' }"/>
+             rendered="#{questionScores.typeId == '6' || questionScores.typeId == '7'}"/>
           <h:commandLink title="#{evaluationMessages.t_sortResponse}" action="questionScores" >
             <h:outputText value="#{commonMessages.student_response}" 
-               rendered="#{questionScores.typeId != '6' && questionScores.typeId != '7' }"/>
+               rendered="#{questionScores.typeId != '6' && questionScores.typeId != '7'}"/>
           <f:param name="sortAscending" value="false" />
           <h:graphicImage alt="#{evaluationMessages.alt_sortResponseDescending}" rendered="#{questionScores.sortAscending && questionScores.typeId != '6' && questionScores.typeId != '7'}" url="/images/sortascending.gif"/>
       	  <f:actionListener
@@ -952,10 +954,10 @@ document.location='../evaluation/questionScore';
       <f:facet name="header">
 		  <h:panelGroup>
 		  <h:outputText value="#{commonMessages.student_response}" 
-             rendered="#{questionScores.typeId == '6' || questionScores.typeId == '7' }"/>
+             rendered="#{questionScores.typeId == '6' || questionScores.typeId == '7'}"/>
           <h:commandLink title="#{evaluationMessages.t_sortResponse}" action="questionScores" >
             <h:outputText value="#{commonMessages.student_response}" 
-               rendered="#{questionScores.typeId != '6' && questionScores.typeId != '7' }"/>
+               rendered="#{questionScores.typeId != '6' && questionScores.typeId != '7'}"/>
           <f:param name="sortAscending" value="true" />
           <h:graphicImage alt="#{evaluationMessages.alt_sortResponseAscending}" rendered="#{!questionScores.sortAscending && questionScores.typeId != '6' && questionScores.typeId != '7'}" url="/images/sortdescending.gif"/>
       	  <f:actionListener

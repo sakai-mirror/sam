@@ -2004,7 +2004,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   }
   
   
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String partString, String questionString, String textString, String rationaleString, Map useridMap) {
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String partString, String questionString, String textString, String rationaleString, String itemGradingCommentsString, Map useridMap) {
 	  ArrayList dataList = new ArrayList();
 	  ArrayList headerList = new ArrayList();
 	  ArrayList finalList = new ArrayList(2);
@@ -2112,6 +2112,12 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 				  } 
 			  }
 
+			  String assessmentGradingComments = "";
+			  if (assessmentGradingData.getComments() != null) {
+				  assessmentGradingComments = assessmentGradingData.getComments().replaceAll("<br\\s*/>", "");
+			  }
+			  responseList.add(assessmentGradingComments);
+			  
 			  Long assessmentGradingId = assessmentGradingData.getAssessmentGradingId();
 
 			  HashMap studentGradingMap = getStudentGradingData(assessmentGradingData.getAssessmentGradingId().toString());
@@ -2348,6 +2354,12 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 				  if (addRationale) {
 					  responseList.add(rationale);
 				  }
+				  
+				  String itemGradingComments = "";
+				  if (grade.getComments() != null) {
+				  	itemGradingComments = grade.getComments().replaceAll("<br\\s*/>", "");
+				  }
+				  responseList.add(itemGradingComments);
 
 				  // Only set header based on the first item grading data
 				  if (fistItemGradingData) {
@@ -2363,6 +2375,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 					  if (addRationale) {
 						  headerList.add(makeHeader(partString, sectionSequenceNumber, questionString, rationaleString, questionNumber, poolString, poolName));
 					  }
+					  headerList.add(makeHeader(partString, sectionSequenceNumber, questionString, itemGradingCommentsString, questionNumber, poolString, poolName));
 				  }	    		   
 			  } // outer for - questions
 
@@ -2881,7 +2894,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 						" a.finalScore, a.comments, a.status, a.gradedBy, a.gradedDate, a.attemptDate, a.timeElapsed) " +
 						" from AssessmentGradingData a, PublishedAccessControl c " +
 						" where a.publishedAssessmentId = c.assessment.publishedAssessmentId " +
-						" and current_timestamp() >= c.dueDate and a.status not in (4, 5) and c.autoSubmit = ? " +
+						" and current_timestamp() >= c.retractDate and a.status not in (4, 5) and c.autoSubmit = ? " +
 						" order by a.publishedAssessmentId, a.agentId, a.forGrade desc ", values);
 		
 	    Iterator iter = list.iterator();
@@ -2892,6 +2905,10 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    HashMap gradebookMap = new HashMap();
 	    HashMap studentUidsToScores = new HashMap();
 	    ArrayList toGradebookAssessmentsList = new ArrayList();
+	    
+	    // SAM-1088 getting the assessment so we can check to see if last user attempt was after due date
+	    PublishedAssessmentService assessmentService = new PublishedAssessmentService();
+	    PublishedAssessmentFacade assessment = null;
 	    while (iter.hasNext()) {
 	    	AssessmentGradingData adata = (AssessmentGradingData) iter.next();
 	    	if (lastPublishedAssessmentId.equals(adata.getPublishedAssessmentId())) {
@@ -2905,7 +2922,18 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    				if (adata.getFinalScore() == null) {
 	    					adata.setFinalScore(0f);
 	    				}
-	    				adata.setIsAutoSubmitted(Boolean.TRUE);
+	    				// SAM-1088
+	    				if (adata.getSubmittedDate() == null) {
+	    					adata.setIsAutoSubmitted(Boolean.TRUE);
+	    				}
+	    				else if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
+	    						adata.getSubmittedDate().after(assessment.getDueDate())) {
+	    					adata.setIsLate(true);
+	    				}
+	    				else if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
+	    						adata.getSubmittedDate().before(assessment.getDueDate())) {
+	    					adata.setIsAutoSubmitted(Boolean.TRUE);
+	    				}
 	    				adata.setSubmittedDate(new Date());
 	    				adata.setStatus(Integer.valueOf(1));
 	    				toBeAutoSubmittedList.add(adata);
@@ -2926,7 +2954,18 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    			if (adata.getFinalScore() == null) {
     					adata.setFinalScore(0f);
     				}
-	    			adata.setIsAutoSubmitted(Boolean.TRUE);
+	    			// SAM-1088
+    				if (adata.getSubmittedDate() == null) {
+    					adata.setIsAutoSubmitted(Boolean.TRUE);
+    				}
+    				else if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
+    						adata.getSubmittedDate().after(assessment.getDueDate())) {
+    					adata.setIsLate(true);
+    				}
+    				else if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
+    						adata.getSubmittedDate().before(assessment.getDueDate())) {
+    					adata.setIsAutoSubmitted(Boolean.TRUE);
+    				}
 	    			adata.setSubmittedDate(new Date());
 	    			adata.setStatus(Integer.valueOf(1));
 	    			toBeAutoSubmittedList.add(adata);
@@ -2980,34 +3019,34 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 			if (integrated) {
 				g = (GradebookService) SpringBeanLocator.getInstance().getBean("org.sakaiproject.service.gradebook.GradebookService");
 			}
-		}
-		GradebookServiceHelper gbsHelper = IntegrationContextFactory.getInstance().getGradebookServiceHelper();
-		PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
-		HashMap toGradebookPublishedAssessmentSiteIdMap = publishedAssessmentService.getToGradebookPublishedAssessmentSiteIdMap();
-		while (it.hasNext()) {
-			entry = (Entry) it.next();
-			publishedAssessmentId = (Long) entry.getKey();
-			if (!toGradebookPublishedAssessmentSiteIdMap.containsKey(publishedAssessmentId)) {
-				continue;
-			}
-			String currentSiteId = (String) toGradebookPublishedAssessmentSiteIdMap.get(publishedAssessmentId);
-			if (gbsHelper.gradebookExists(GradebookFacade.getGradebookUId(currentSiteId), g)){
-				int retryCount = PersistenceService.getInstance().getRetryCount().intValue();
-				while (retryCount > 0){
-					try {
-						gbsHelper.updateExternalAssessmentScores(publishedAssessmentId, (HashMap) entry.getValue(), g);
-						retryCount = 0;
-					}
-					catch (Exception e) {
-						log.warn("problem delete assessmentAttachment: " + e.getMessage());
-						retryCount = PersistenceService.getInstance().retryDeadlock(e, retryCount);
-					}
-				}
-			} else {
-				if(log.isDebugEnabled()) log.debug("Not updating the gradebook.");
-			}
-		}
 
+			GradebookServiceHelper gbsHelper = IntegrationContextFactory.getInstance().getGradebookServiceHelper();
+			PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+			HashMap toGradebookPublishedAssessmentSiteIdMap = publishedAssessmentService.getToGradebookPublishedAssessmentSiteIdMap();
+			while (it.hasNext()) {
+				entry = (Entry) it.next();
+				publishedAssessmentId = (Long) entry.getKey();
+				if (!toGradebookPublishedAssessmentSiteIdMap.containsKey(publishedAssessmentId)) {
+					continue;
+				}
+				String currentSiteId = (String) toGradebookPublishedAssessmentSiteIdMap.get(publishedAssessmentId);
+				if (gbsHelper.gradebookExists(GradebookFacade.getGradebookUId(currentSiteId), g)){
+					int retryCount = PersistenceService.getInstance().getRetryCount().intValue();
+					while (retryCount > 0){
+						try {
+							gbsHelper.updateExternalAssessmentScores(publishedAssessmentId, (HashMap) entry.getValue(), g);
+							retryCount = 0;
+						}
+						catch (Exception e) {
+							log.warn("problem delete assessmentAttachment: " + e.getMessage());
+							retryCount = PersistenceService.getInstance().retryDeadlock(e, retryCount);
+						}
+					}
+				} else {
+					if(log.isDebugEnabled()) log.debug("Not updating the gradebook.");
+				}
+			}
+		}
 	}
 	
 	public ItemGradingAttachmentIfc createItemGradingtAttachment(ItemGradingIfc itemGrading, String resourceId, String filename, String protocol) {

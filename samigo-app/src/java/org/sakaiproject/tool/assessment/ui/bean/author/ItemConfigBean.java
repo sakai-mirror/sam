@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import javax.faces.model.SelectItem;
 
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.ResourceLoader; 
 
@@ -67,6 +68,7 @@ private static final String msgResource =
   private boolean selectFromQuestionPool;
   private boolean selectFromQuestionBank;
   
+  private boolean showMatrixSurvey;
 
   /**
    * gopalrc - added 17 November 2009
@@ -261,6 +263,16 @@ private static final String msgResource =
   {
     this.showSurvey = showSurvey;
   }
+  
+  public boolean isShowMatrixSurvey()
+  {
+	  return showMatrixSurvey;
+  }
+
+  public void setShowMatrixSurvey(boolean showMatrixSurvey)
+  {
+	  this.showMatrixSurvey = showMatrixSurvey;
+  }
 
   /**
    * Derived property.  Get arraylist of item type SelectItems.
@@ -278,37 +290,49 @@ private static final String msgResource =
     list.add(new SelectItem("", getResourceDisplayName("select_qtype")));
 
     if (isShowAllMultipleChoice())
-      list.add(new SelectItem("1",
+      list.add(new SelectItem(String.valueOf(TypeIfc.MULTIPLE_CHOICE),
         getResourceDisplayName("multiple_choice_type")));
     
     if (showSurvey)
-      list.add(new SelectItem("3",
+      list.add(new SelectItem(String.valueOf(TypeIfc.MULTIPLE_CHOICE_SURVEY),
         getResourceDisplayName("multiple_choice_surv")));
+    
+    if (showMatrixSurvey)
+    	list.add(new SelectItem(String.valueOf(TypeIfc.MATRIX_CHOICES_SURVEY),
+    			getResourceDisplayName("matrix_choices_surv")));
 
     if (showEssay)
-      list.add(new SelectItem("5", getResourceDisplayName("short_answer_essay")));
+      list.add(new SelectItem(String.valueOf(TypeIfc.ESSAY_QUESTION),
+    		  getResourceDisplayName("short_answer_essay")));
 
     if (showFillInTheBlank)
-      list.add(new SelectItem("8", getResourceDisplayName("fill_in_the_blank")));
+      list.add(new SelectItem(String.valueOf(TypeIfc.FILL_IN_BLANK),
+    		  getResourceDisplayName("fill_in_the_blank")));
 
     if (showFillInNumeric)
-      list.add(new SelectItem("11", getResourceDisplayName("fill_in_numeric")));
+      list.add(new SelectItem(String.valueOf(TypeIfc.FILL_IN_NUMERIC),
+    		  getResourceDisplayName("fill_in_numeric")));
     
     if (showMatching)
-      list.add(new SelectItem("9", getResourceDisplayName("matching")));
+      list.add(new SelectItem(String.valueOf(TypeIfc.MATCHING),
+    		  getResourceDisplayName("matching")));
 
     if (showTrueFalse)
-      list.add(new SelectItem("4", getResourceDisplayName("true_false")));
+      list.add(new SelectItem(String.valueOf(TypeIfc.TRUE_FALSE),
+    		  getResourceDisplayName("true_false")));
 
     if (showAudio)
-      list.add(new SelectItem("7", getResourceDisplayName("audio_recording")));
+      list.add(new SelectItem(String.valueOf(TypeIfc.AUDIO_RECORDING),
+    		  getResourceDisplayName("audio_recording")));
 
     if (showFileUpload)
-      list.add(new SelectItem("6", getResourceDisplayName("file_upload")));
+      list.add(new SelectItem(String.valueOf(TypeIfc.FILE_UPLOAD),
+    		  getResourceDisplayName("file_upload")));
 
     //gopalrc - added 17 Nov 2009 - resource display name in AuthorMessages.properties
     if (showExtendedMatchingItems)
-        list.add(new SelectItem("13", getResourceDisplayName("extended_matching_items")));
+        list.add(new SelectItem(String.valueOf(TypeIfc.EXTENDED_MATCHING_ITEMS),
+      		  getResourceDisplayName("extended_matching_items")));
     
     if (selectFromQuestionPool)
       list.add(new SelectItem("10", getResourceDisplayName("import_from_q")));
@@ -333,44 +357,6 @@ private static final String msgResource =
 
     return list;
   }
-
-  /*
-  // test the item accessors and mutators and the selectItem list
-  public static void main (String[] args)
-  {
-    ItemConfigBean bean = new ItemConfigBean();
-    ArrayList list = bean.getItemTypeSelectList();
-    for (int i = 0; i < list.size(); i++)
-    {
-      SelectItem sitem = (SelectItem)list.get(i);
-    }
-
-    bean.setSelectFromQuestionPool(true);
-    bean.setSelectFromQuestionBank(true);
-    bean.setShowAudio(true);
-    bean.setShowEssay(true);
-    bean.setShowFileUpload(true);
-    bean.setShowFillInTheBlank(true);
-    bean.setShowFillInNumeric(true);
-    bean.setShowMatching(true);
-    bean.setShowMultipleChoiceMultipleCorrect(true);
-    bean.setShowMultipleChoiceSingleCorrect(true);
-    bean.setShowSurvey(true);
-    bean.setShowTrueFalse(true);
-    list = bean.getItemTypeSelectList();
-    for (int i = 0; i < list.size(); i++)
-    {
-      SelectItem sitem = (SelectItem)list.get(i);
-    }
-    bean.setShowAudio(false);
-    bean.setShowFileUpload(false);
-    list = bean.getItemTypeSelectList();
-    for (int i = 0; i < list.size(); i++)
-    {
-      SelectItem sitem = (SelectItem)list.get(i);
-    }
-  }
-  */
 
   /**
    * Can we select items from a question pool?

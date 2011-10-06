@@ -90,6 +90,7 @@ public class AuthoringXml
   public static final String ITEM_SURVEY = "mcSurveyTemplate.xml";
   public static final String ITEM_TF = "trueFalseTemplate.xml";
   public static final String ITEM_MATCHING = "matchTemplate.xml";
+  public static final String ITEM_MXSURVEY = "mxSurveyTemplate.xml";
   
   //gopalrc - added 17 Nov 2009
   public static final String ITEM_EMI = "emiTemplate.xml";

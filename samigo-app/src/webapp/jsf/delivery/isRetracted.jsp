@@ -50,13 +50,13 @@
  <h:form id="isRetracted">
  <p class="act">
        <h:commandButton value="#{deliveryMessages.button_return}" type="submit"
-         styleClass="active" action="select" rendered="#{delivery.actionString!='takeAssessmentViaUrl'">
+         styleClass="active" action="select" rendered="#{delivery.actionString!='takeAssessmentViaUrl'}">
           <f:actionListener
             type="org.sakaiproject.tool.assessment.ui.listener.select.SelectActionListener" />
        </h:commandButton>
 
    	   <h:commandButton value="#{deliveryMessages.button_continue}" type="button" 
-	     rendered="#{delivery.actionString=='takeAssessmentViaUrl'}" style="act" onclick="javascript:self.location.href='#{delivery.selectHrfURL}'" onkeypress="javascript:self.location.href='#{delivery.selectHrfURL}'" />
+	     rendered="#{delivery.actionString=='takeAssessmentViaUrl'}" style="act" onclick="javascript:window.open('#{delivery.selectURL}','_top')" onkeypress="javascript:window.open('#{delivery.selectURL}','_top')" />
 
  </p>
  </h:form>

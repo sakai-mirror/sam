@@ -247,7 +247,7 @@
          </h:panelGrid>
 
          <h:panelGroup>
-           <h:outputLink id="RemoveLink" title="#{authorMessages.t_removeO}" rendered="#{itemauthor.currentItem.itemType == 13}">
+           <h:outputLink id="RemoveLink" title="#{authorMessages.t_removeO}" rendered="#{itemauthor.currentItem.itemType == 14}">
 	      <f:verbatim><img src="/library/image/silk/cross.png" border="0"></f:verbatim>
            </h:outputLink>		 
          </h:panelGroup>

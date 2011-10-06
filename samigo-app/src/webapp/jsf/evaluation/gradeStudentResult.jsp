@@ -33,6 +33,16 @@ $Id$
   <f:view>
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head><%= request.getAttribute("html.head") %>
+      <style type="text/css">
+        .TableColumn {
+          text-align: center
+        }
+        .TableClass {
+          border-style: dotted;
+          border-width: 0.5px;
+          border-color: light grey;
+        }
+      </style>
       <title><h:outputText
         value="#{commonMessages.total_scores}" /></title>
     <samigo:script path="/jsf/widget/hideDivision/hideDivision.js" />
@@ -41,44 +51,11 @@ $Id$
   <body onload="hideUnhideAllDivsExceptFirst('none');;<%= request.getAttribute("html.body.onload") %>">
 <!-- $Id:  -->
 <!-- content... -->
-<script>
+<script type="text/javascript">
 function toPoint(id)
 {
   var x=document.getElementById(id).value
   document.getElementById(id).value=x.replace(',','.')
-}
-
-function clickEmailLink(field){
-var emaillinkid= field.id.replace("createEmail", "hiddenlink");
-
-var newindex = 0;
-for (i=0; i<document.links.length; i++) {
-  if(document.links[i].id == emaillinkid)
-  {
-    newindex = i;
-    break;
-  }
-}
-
-document.links[newindex].onclick();
-window.open('../evaluation/createNewEmail.faces','createEmail','width=600,height=600,scrollbars=yes, resizable=yes');
-}
-
-function clickEmailLink(field, fromName, fromEmailAddress, toName, toEmailAddress, assessmentName){
-var emaillinkid= field.id.replace("createEmail", "hiddenlink");
-var newindex = 0;
-for (i=0; i<document.links.length; i++) {
-  if(document.links[i].id == emaillinkid)
-  {
-    newindex = i;
-    break;
-  }
-}
-
-document.links[newindex].onclick();
-window.open("../evaluation/createNewEmail.faces?fromEmailLinkClick=true&fromName=" + fromName + "&fromEmailAddress=" + fromEmailAddress + "&toName=" + toName + "&toEmailAddress=" + toEmailAddress +  "&assessmentName=" + assessmentName,'createEmail','width=600,height=600,scrollbars=yes, resizable=yes');
-
-document.location='../evaluation/gradeStudentResult';
 }
 
 </script>
@@ -133,14 +110,14 @@ document.location='../evaluation/gradeStudentResult';
     </h:commandLink>
   </p>
 
-  <h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+  <h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 
 <f:verbatim><h4></f:verbatim>
 <h:outputText value="#{totalScores.assessmentName}" escape="false"/>
 <f:verbatim></h4></f:verbatim>
 <div class="tier3">
 <h:panelGrid columns="2">
-   <h:outputText value="#{deliveryMessages.comment}#{deliveryMessages.column}"/>
+   <h:outputText value="#{evaluationMessages.comment_for_student}#{deliveryMessages.column}"/>
    <h:inputTextarea value="#{studentScores.comments}" rows="3" cols="30"/>
    </h:panelGrid>
 </div>
@@ -265,17 +242,23 @@ document.location='../evaluation/gradeStudentResult';
               </f:subview>
             </h:panelGroup>
             
-            <h:panelGroup rendered="#{question.itemData.typeId == 13}">
+            <h:panelGroup rendered="#{question.itemData.typeId == 14}">
               <f:subview id="deliverExtendedMatchingItems">
                 <%@ include file="/jsf/delivery/item/deliverExtendedMatchingItems.jsp" %>
               </f:subview>
             </h:panelGroup>
             
+            <h:panelGroup rendered="#{question.itemData.typeId == 13}">
+              <f:subview id="deliverMatrixChoicesSurvey">
+                <%@ include file="/jsf/delivery/item/deliverMatrixChoicesSurvey.jsp" %>
+              </f:subview>
+            </h:panelGroup>
+
           <f:verbatim></div></f:verbatim>
 
           <f:verbatim><div class="tier2"></f:verbatim>
           <h:panelGrid columns="2" border="0" >
-            <h:outputText value="#{deliveryMessages.comment}#{deliveryMessages.column}"/>
+            <h:outputText value="#{evaluationMessages.comment_for_student}#{deliveryMessages.column}"/>
             <h:inputTextarea value="#{question.gradingComment}" rows="3" cols="30"/>
             <h:outputText value=" "/>
     	    <%@ include file="/jsf/evaluation/gradeStudentResultAttachment.jsp" %>
@@ -290,14 +273,14 @@ document.location='../evaluation/gradeStudentResult';
 <h:outputText value="#{author.updateFormTime}" />
 <h:inputHidden value="#{author.currentFormTime}" />
 
-<h:outputLink tabindex="-1" id="createEmail1" onclick="clickEmailLink(this, \"#{totalScores.graderName}\", \"#{totalScores.graderEmailInfo}\", \"#{studentScores.firstName} #{studentScores.lastName}\", \"#{studentScores.email}\", \"#{totalScores.assessmentName}\");" value="#"> 
-  <h:outputText value="  #{evaluationMessages.email} #{studentScores.firstName}" rendered="#{studentScores.email != null && studentScores.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}" />
-</h:outputLink>
-
-<h:commandLink tabindex="-1" id="hiddenlink1" value="" action="studentScores">
-  <f:actionListener type="org.sakaiproject.tool.assessment.ui.listener.util.EmailListener" />
-  <f:param name="toUserId" value="#{studentScores.studentId}" />
-</h:commandLink>
+<h:panelGroup rendered="#{studentScores.email != null && studentScores.email != '' && email.fromEmailAddress != null && email.fromEmailAddress != ''}">
+  <h:outputText value="<a href=\"mailto:" escape="false" />
+  <h:outputText value="#{studentScores.email}" escape="false" />
+  <h:outputText value="?subject=" escape="false" />
+  <h:outputText value="#{totalScores.assessmentName} #{commonMessages.feedback}\">" escape="false" />
+  <h:outputText value="  #{evaluationMessages.email} #{studentScores.firstName}" escape="false"/>
+  <h:outputText value="</a>" escape="false" />
+</h:panelGroup>
 
 <p class="act">
    <h:commandButton styleClass="active" value="#{evaluationMessages.save_cont}" action="totalScores" type="submit">

@@ -37,12 +37,12 @@
       <body onload="<%= request.getAttribute("html.body.onload") %>">
       <div class="portletBody">
 
-<script type="text/javascript" language="JavaScript" src="/library/js/jquery-latest.min.js"></script>
-<script type="text/javascript" language="JavaScript" src="/samigo-app/js/info.js"></script>
-<script type="text/javascript" language="JavaScript" src="/samigo-app/js/jquery-ui-1.7.2.custom.min.js"></script>
-<script type="text/javascript" language="JavaScript" src="/samigo-app/js/jquery.tablesorter.js"></script>
+<script type="text/javascript" src="/library/js/jquery-latest.min.js"></script>
+<script type="text/javascript" src="/samigo-app/js/info.js"></script>
+<script type="text/javascript" src="/samigo-app/js/jquery-ui-1.7.2.custom.min.js"></script>
+<script type="text/javascript" src="/samigo-app/js/jquery.tablesorter.js"></script>
 <link type="text/css" href="/samigo-app/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" media="all"/>
-<script language="javascript" style="text/JavaScript">
+<script style="text/JavaScript">
 
 function clickPendingSelectActionLink(field){
 var insertlinkid= field.id.replace("pendingSelectAction", "pendingHiddenlink");
@@ -164,7 +164,7 @@ $(document).ready(function() {
     <h:outputText value="#{authorFrontDoorMessages.assessments}"/>
   </h3>
 <p>
-  <h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+  <h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 </p>
 
 <div class="tier1">
@@ -184,7 +184,7 @@ $(document).ready(function() {
 		  <f:verbatim><span class="new_assessment"></f:verbatim>
 	      <h:outputText value="#{authorFrontDoorMessages.assessment_create}"/>
 	      <f:verbatim></span></f:verbatim>
-		  <h:inputText id="title" value="#{author.assessTitle}" size="32" />
+		  <h:inputText id="title" maxlength="255" value="#{author.assessTitle}" size="32" />
     	</div>
 
     	<div>
@@ -298,7 +298,7 @@ $(document).ready(function() {
     <span id="assessment-status-active">
       <a id="assessment-link-status-active"><h:outputText value="#{authorFrontDoorMessages.assessment_status_active}" /></a>:
     </span>
-    <span>(<h:outputText value="#{authorFrontDoorMessages.assessment_status_active_sub}" />)</span>
+    <span><h:outputText value="#{authorFrontDoorMessages.assessment_status_active_sub}" /></span>
     <span class="separator">|</span>
     <span id="assessment-status-inactive">
       <a id="assessment-link-status-inactive"><h:outputText value="#{authorFrontDoorMessages.assessment_status_inactive}" /></a>:

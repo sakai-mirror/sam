@@ -35,6 +35,7 @@ import javax.faces.event.ActionListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.event.cover.EventTrackingService;
+import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacadeQueries;
 import org.sakaiproject.tool.assessment.facade.AssessmentTemplateFacade;
@@ -81,6 +82,7 @@ public class AuthorAssessmentListener
     AssessmentSettingsBean assessmentSettings = (AssessmentSettingsBean) ContextUtil.
     lookupBean("assessmentSettings");
     author.setOutcome("createAssessment");
+    author.setFirstFromPage("editAssessment");
     if (!passAuthz(context)){
       author.setOutcome("author");
       return;
@@ -128,7 +130,7 @@ public class AuthorAssessmentListener
     try{
       assessment = createAssessment(
          assessmentTitle.trim(), description, typeId, templateId);
-      EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.create", "assessmentId=" + assessment.getAssessmentId(), true));
+      EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.create", "siteId=" + AgentFacade.getCurrentSiteId() + ", assessmentId=" + assessment.getAssessmentId(), true));
     }
     catch(Exception e){
       // can't create assesment because gradebookService is not ready

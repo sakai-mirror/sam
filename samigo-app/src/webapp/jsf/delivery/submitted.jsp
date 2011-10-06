@@ -34,7 +34,7 @@
       <title><h:outputText value="#{deliveryMessages.submission}" /></title>
       </head>
 
-<script language="javascript" style="text/JavaScript">
+<script style="text/JavaScript">
 function reviewAssessment(field){
 var insertlinkid= field.id.replace("reviewAssessment", "hiddenlink");
 var newindex = 0;
@@ -51,6 +51,9 @@ document.links[newindex].onclick();
 </script>
 
       <body onload="<%= request.getAttribute("html.body.onload") %>">
+      
+      <!-- IF A SECURE DELIVERY MODULE HAS BEEN SELECTED, INJECT ITS HTML FRAGMENT (IF ANY) HERE -->
+	  <h:outputText  value="#{delivery.secureDeliveryHTMLFragment}" escape="false" />
 
  <!--h:outputText value="<body #{delivery.settings.bgcolor} #{delivery.settings.background}>" escape="false" /-->
 <!--div class="portletBody"-->
@@ -66,7 +69,7 @@ document.links[newindex].onclick();
 </h4>
 
 <h:form id="submittedForm">
-<h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+<h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 
 	<h:outputText value="#{deliveryMessages.submission_confirmation_message_1}" rendered="#{!delivery.actionString=='takeAssessmentViaUrl' || !delivery.anonymousLogin}"/>
     <h:outputText value="#{deliveryMessages.submission_confirmation_message_4}" rendered="#{delivery.actionString=='takeAssessmentViaUrl' && delivery.anonymousLogin}"/>
@@ -116,9 +119,8 @@ document.links[newindex].onclick();
        rendered="#{delivery.actionString=='takeAssessment'}" />
 
     <h:commandButton value="#{deliveryMessages.button_continue}" type="button" 
-       rendered="#{delivery.actionString=='takeAssessmentViaUrl' && !delivery.anonymousLogin}" 
-       style="act" onclick="javascript:self.location.href='#{delivery.selectHrfURL}'" onkeypress="javascript:self.location.href='#{delivery.selectHrfURL}'" />
-
+       rendered="#{delivery.actionString=='takeAssessmentViaUrl' && !delivery.anonymousLogin}"
+       style="act" onclick="javascript:window.open('#{delivery.selectURL}','_top')" onkeypress="javascript:window.open('#{delivery.selectURL}','_top')" />
 
     <h:commandButton value="#{deliveryMessages.review_results}" type="button" id="reviewAssessment"
        rendered="#{delivery.actionString=='takeAssessmentViaUrl' && delivery.anonymousLogin}" 

@@ -42,8 +42,7 @@
       </head>
     <body onload="<%= request.getAttribute("html.body.onload") %>">
 
-<script language="javascript" style="text/JavaScript">
-
+<script style="text/JavaScript">
 function submitForm()
 {
   document.forms[0].onsubmit();
@@ -252,7 +251,7 @@ function uncheckOther(field){
   <%@ include file="/jsf/author/allHeadings.jsp" %>
 
 <p>
-  <h:messages infoClass="validation" warnClass="messageValidation" errorClass="validation" fatalClass="validation"/>
+  <h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 </p>
 
     <h3>
@@ -276,7 +275,7 @@ function uncheckOther(field){
     <h:panelGrid columns="2" columnClasses="shorttext"
       summary="#{templateMessages.enter_template_info_section}">
         <h:outputLabel value="#{assessmentSettingsMessages.assessment_title}"/>
-        <h:inputText id="assessment_title" size="80" value="#{publishedSettings.title}" />
+        <h:inputText id="assessment_title" size="80" maxlength="255" value="#{publishedSettings.title}" />
 
         <h:outputLabel value="#{assessmentSettingsMessages.assessment_creator}"  rendered="#{publishedSettings.valueMap.assessmentAuthor_isInstructorEditable==true}"/>
 
@@ -284,7 +283,7 @@ function uncheckOther(field){
 
         <h:outputLabel for="assessment_author" rendered="#{publishedSettings.valueMap.assessmentAuthor_isInstructorEditable==true}" value="#{assessmentSettingsMessages.assessment_authors}"/>
 
-        <h:inputText id="assessment_author" size="80" value="#{publishedSettings.authors}"
+        <h:inputText id="assessment_author" size="80" maxlength="255" value="#{publishedSettings.authors}"
           rendered="#{publishedSettings.valueMap.assessmentAuthor_isInstructorEditable==true}"/>
 
         <h:outputLabel value="#{assessmentSettingsMessages.assessment_description}" rendered="#{publishedSettings.valueMap.description_isInstructorEditable==true}"/>
@@ -316,7 +315,7 @@ function uncheckOther(field){
       <samigo:datePicker value="#{publishedSettings.startDateString}" size="25" id="startDate" />
       <h:outputText value="" />
       <h:outputText value="#{assessmentSettingsMessages.available_date_note}" />
-	
+
 	<!-- For formatting -->
 	<h:outputText value="" />
 	<h:outputText value="" />
@@ -327,7 +326,7 @@ function uncheckOther(field){
       <samigo:datePicker value="#{publishedSettings.dueDateString}" size="25" id="endDate"/>
       <h:outputText value="" />
 	  <h:outputText value="#{assessmentSettingsMessages.assessment_due_date_note}" />
-	  	
+
 	<!-- For formatting -->
 	<h:outputText value="" />
 	<h:outputText value="" />
@@ -380,7 +379,7 @@ function uncheckOther(field){
 </samigo:hideDivision>
 
   <!-- *** HIGH SECURITY *** -->
-  <h:panelGroup rendered="#{publishedSettings.valueMap.ipAccessType_isInstructorEditable==true or publishedSettings.valueMap.passwordRequired_isInstructorEditable==true}" >
+  <h:panelGroup rendered="#{publishedSettings.valueMap.ipAccessType_isInstructorEditable==true or publishedSettings.valueMap.passwordRequired_isInstructorEditable==true or publishedSettings.valueMap.lockedBrowser_isInstructorEditable==true}" >
   <samigo:hideDivision title="#{assessmentSettingsMessages.t_highSecurity}" id="div4">
 	<f:verbatim><div class="tier2"></f:verbatim>
     <h:panelGrid border="0" columns="2" columnClasses="longtext"
@@ -400,6 +399,21 @@ function uncheckOther(field){
         <h:outputLabel value="#{assessmentSettingsMessages.high_security_password}"/>
         <h:inputText size="20" value="#{publishedSettings.password}"/>
       </h:panelGrid>
+      
+	  <h:outputText value="#{assessmentSettingsMessages.require_secure_delivery}"
+		rendered="#{publishedSettings.valueMap.lockedBrowser_isInstructorEditable==true && publishedSettings.secureDeliveryAvailable}"/>
+	  <h:panelGrid border="0" columns="1"  columnClasses="longtext"
+		rendered="#{publishedSettings.valueMap.lockedBrowser_isInstructorEditable==true && publishedSettings.secureDeliveryAvailable}">
+	    <h:selectOneRadio id="secureDeliveryModule" value="#{publishedSettings.secureDeliveryModule}"  layout="pageDirection" onclick="setBlockDivs();document.forms[0].onsubmit();document.forms[0].submit();">
+			<f:selectItems value="#{publishedSettings.secureDeliveryModuleSelections}" />
+		</h:selectOneRadio>
+		<h:panelGrid border="0" columns="2"  columnClasses="longtext"
+		   rendered="#{publishedSettings.valueMap.lockedBrowser_isInstructorEditable==true && publishedSettings.secureDeliveryAvailable}">	
+		   <h:outputLabel for="secureDeliveryModuleExitPassword" value="#{assessmentSettingsMessages.secure_delivery_exit_pwd}"/>
+		   <h:inputText id="secureDeliveryModuleExitPassword" size="20" value="#{publishedSettings.secureDeliveryModuleExitPassword}"
+				disabled="#{publishedSettings.secureDeliveryModule == 'SECURE_DELIVERY_NONE_ID'}" maxlength="14" />      	
+		</h:panelGrid>
+	  </h:panelGrid>
     </h:panelGrid>
 <f:verbatim></div></f:verbatim>
   </samigo:hideDivision>
@@ -445,12 +459,17 @@ function uncheckOther(field){
   <h:panelGroup rendered="#{publishedSettings.valueMap.itemAccessType_isInstructorEditable==true}">
   <f:verbatim> <div class="longtext"></f:verbatim> <h:outputLabel for="itemNavigation" value="#{assessmentSettingsMessages.navigation}" />
   <f:verbatim></div><div class="tier3"></f:verbatim>
-    <h:panelGrid columns="2">
+    <h:panelGrid columns="1">
       <h:selectOneRadio id="itemNavigation" value="#{publishedSettings.itemNavigation}"  layout="pageDirection" 
 		onclick="setBlockDivs();submitForm();">
         <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.linear_access}"/>
         <f:selectItem itemValue="2" itemLabel="#{assessmentSettingsMessages.random_access}"/>
       </h:selectOneRadio>
+      <h:panelGroup>
+        <f:verbatim> <div class="samigo-linear-access-warning"></f:verbatim>
+        <h:outputText value="#{assessmentSettingsMessages.linear_access_warning} "/>
+        <f:verbatim> </div></f:verbatim>
+        </h:panelGroup>
     </h:panelGrid>
   <f:verbatim></div></f:verbatim>
   </h:panelGroup>
@@ -532,27 +551,18 @@ function uncheckOther(field){
 	 <f:verbatim></div><div class="tier3"></f:verbatim>
 	 <f:verbatim><table><tr><td></f:verbatim>
 
-        <h:selectOneRadio id="unlimitedSubmissions1" rendered="#{publishedSettings.itemNavigation!=1}"
-            value="#{publishedSettings.unlimitedSubmissions}" layout="pageDirection">
+        <h:selectOneRadio id="unlimitedSubmissions" value="#{publishedSettings.unlimitedSubmissions}" layout="pageDirection">
           <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.unlimited_submission}"/>
           <f:selectItem itemValue="0" itemLabel="#{assessmentSettingsMessages.only}" />
         </h:selectOneRadio>
-        <h:selectOneRadio id="unlimitedSubmissions2" disabled="true" rendered="#{publishedSettings.itemNavigation==1}"
-            value="0" layout="pageDirection">
-          <f:selectItem itemValue="1" itemLabel="#{assessmentSettingsMessages.unlimited_submission}"/>
-          <f:selectItem itemValue="0" itemLabel="#{assessmentSettingsMessages.only}" />
-        </h:selectOneRadio>
+        
         <f:verbatim></td><td valign="bottom"></f:verbatim>
         
-        <h:panelGroup rendered="#{publishedSettings.itemNavigation!=1}">
+        <h:panelGroup>
           <h:inputText size="5" value="#{publishedSettings.submissionsAllowed}"/>
           <h:outputLabel value="#{assessmentSettingsMessages.limited_submission}" />
         </h:panelGroup>
-        <h:panelGroup rendered="#{publishedSettings.itemNavigation==1}">
-          <h:inputText size="5" value="1" disabled="true"/>
-          <h:outputLabel value="#{assessmentSettingsMessages.limited_submission}" />
-        </h:panelGroup>
-
+        
     <f:verbatim></td></tr></table></f:verbatim>
      <f:verbatim></div></f:verbatim>
    </h:panelGroup>
@@ -963,8 +973,8 @@ function uncheckOther(field){
 <!-- end content -->
 <f:verbatim></div></f:verbatim>
 
-        <script language="javascript" style="text/JavaScript">retainHideUnhideStatus('none');showHideReleaseGroups();</script>
-
+        <script style="text/JavaScript">retainHideUnhideStatus('none');showHideReleaseGroups();</script>
+        
       </body>
     </html>
   </f:view>

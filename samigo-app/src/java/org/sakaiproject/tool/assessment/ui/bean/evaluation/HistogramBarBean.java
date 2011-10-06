@@ -24,7 +24,7 @@
 package org.sakaiproject.tool.assessment.ui.bean.evaluation;
 
 import java.io.Serializable;
-
+import java.util.ArrayList;
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
 
 /**
@@ -49,9 +49,19 @@ private int numStudents;
   private Long subQuestionSequence;
   private String title;
 
-
-
-
+  private ItemBarBean[] itemBars;
+  
+  public void setItemBars(ArrayList<ItemBarBean> items){
+	  itemBars = items.toArray(new ItemBarBean[items.size()]);
+  }
+  
+  public void setItemBars(ItemBarBean[] barBean){
+	  itemBars = barBean;
+  }
+  
+  public ItemBarBean[] getItemBars(){
+	  return this.itemBars;
+  }
 
 /**
     *

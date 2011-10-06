@@ -46,7 +46,7 @@
 <h3>
      <h:outputText value="#{authorMessages.create_modify_p} #{authorMessages.dash} #{sectionBean.assessmentTitle}" escape="false"/></h3>
 <h:form id="modifyPartForm"  onsubmit="return editorCheck();">
-<h:messages infoClass="validation" warnClass="validation" errorClass="validation" fatalClass="validation"/>
+<h:messages infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>
   <h:inputHidden id="assessmentId" value="#{sectionBean.assessmentId}"/>
   <h:inputHidden id="sectionId" value="#{sectionBean.sectionId}"/>
 
@@ -163,7 +163,7 @@
    <h:panelGroup >
    <h:outputText value="#{authorMessages.q_ordering_n}" />
 
-     <h:selectOneRadio disabled="#{sectionBean.type =='2' || !author.isEditPendingAssessmentFlow}" layout="pageDirection" value="#{sectionBean.questionOrdering}">
+     <h:selectOneRadio disabled="#{sectionBean.type =='2'}" layout="pageDirection" value="#{sectionBean.questionOrdering}">
        <f:selectItem itemLabel="#{authorMessages.as_listed_on_assessm}"
          itemValue="1"/>
        <f:selectItem itemLabel="#{authorMessages.random_within_p}"

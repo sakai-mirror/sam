@@ -28,6 +28,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -44,6 +45,7 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.tool.assessment.integration.helper.ifc.CalendarServiceHelper;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.event.cover.EventTrackingService;
 import org.sakaiproject.service.gradebook.shared.AssignmentHasIllegalPointsException;
@@ -69,6 +71,10 @@ import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.email.cover.EmailService;
+import org.sakaiproject.site.api.Site;
+import org.sakaiproject.tool.cover.ToolManager;
+import org.sakaiproject.site.cover.SiteService;
+import org.sakaiproject.exception.IdUnusedException;
 
 /**
  * <p>Title: Samigo</p>2
@@ -90,6 +96,9 @@ public class PublishAssessmentListener
   private static final Lock repeatedPublishLock = new ReentrantLock();
   private static boolean repeatedPublish = false;
 
+  private CalendarServiceHelper calendarService = IntegrationContextFactory.getInstance().getCalendarServiceHelper();
+  private ResourceLoader rl= new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages");
+  
   public PublishAssessmentListener() {
   }
 
@@ -124,37 +133,58 @@ public class PublishAssessmentListener
   			//Map requestParams = context.getExternalContext().getRequestParameterMap();
   			AuthorBean author = (AuthorBean) ContextUtil.lookupBean(
   			"author");
-  			
+
   			AssessmentSettingsBean assessmentSettings = (AssessmentSettingsBean) ContextUtil.lookupBean("assessmentSettings");
-  			
+
   			AssessmentService assessmentService = new AssessmentService();
-  			
+
   			AssessmentFacade assessment = assessmentService.getAssessment(
   					assessmentSettings.getAssessmentId().toString());
-  			
+
   			// 0. sorry need double checking assesmentTitle and everything
   			boolean error = checkTitle(assessment);
   			if (error){
   				return;
   			}
-  			
+
   			// Tell AuthorBean that we just published an assessment
   			// This will allow us to jump directly to published assessments tab
   			author.setJustPublishedAnAssessment(true);
 
-  			publish(assessment, assessmentSettings);
+  			//update any random draw questions from pool since they could have changed
+  			int success = assessmentService.updateAllRandomPoolQuestions(assessment);
+  			if(success == assessmentService.UPDATE_SUCCESS){
 
-  			GradingService gradingService = new GradingService();
-  			PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
-  			AuthorActionListener authorActionListener = new AuthorActionListener();
-  			authorActionListener.prepareAssessmentsList(author, assessmentService, gradingService, publishedAssessmentService);
-  			
-  			repeatedPublish = true;
+  				//grab new updated assessment
+  				assessment = assessmentService.getAssessment(assessment.getAssessmentId().toString());	
+
+  				publish(assessment, assessmentSettings);
+
+  				GradingService gradingService = new GradingService();
+  				PublishedAssessmentService publishedAssessmentService = new PublishedAssessmentService();
+  				AuthorActionListener authorActionListener = new AuthorActionListener();
+  				authorActionListener.prepareAssessmentsList(author, assessmentService, gradingService, publishedAssessmentService);
+
+  				repeatedPublish = true;
+  			}else{
+  				repeatedPublish = false;
+
+  				FacesContext context = FacesContext.getCurrentInstance();
+  				if(success == AssessmentService.UPDATE_ERROR_DRAW_SIZE_TOO_LARGE){  		    		
+  					String err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","update_pool_error_size_too_large");
+  					context.addMessage(null,new FacesMessage(err));
+  				}else{
+  					String err=ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.AuthorMessages","update_pool_error_unknown");
+  					context.addMessage(null,new FacesMessage(err));
+  				}
+
+  				return;
+  			}
   		}
-		} finally{
-			repeatedPublishLock.unlock();
+	  } finally{
+		  repeatedPublishLock.unlock();
 
-		}
+	  }
   }
 
   private void publish(AssessmentFacade assessment,
@@ -168,15 +198,19 @@ public class PublishAssessmentListener
        releaseTo = pub.getAssessmentAccessControl().getReleaseTo();
        PublishRepublishNotificationBean publishRepublishNotification = (PublishRepublishNotificationBean) ContextUtil.lookupBean("publishRepublishNotification");
        boolean sendNotification = publishRepublishNotification.getSendNotification();
-
+       String subject = publishRepublishNotification.getNotificationSubject();
+       String notificationMessage = getNotificationMessage(publishRepublishNotification, assessmentSettings.getTitle(), assessmentSettings.getReleaseTo(), assessmentSettings.getStartDateString(), assessmentSettings.getPublishedUrl(),
+          		assessmentSettings.getReleaseToGroupsAsString(), assessmentSettings.getDueDateString(), assessmentSettings.getTimedHours(), assessmentSettings.getTimedMinutes(), 
+          		assessmentSettings.getUnlimitedSubmissions(), assessmentSettings.getSubmissionsAllowed(), assessmentSettings.getScoringType(), assessmentSettings.getFeedbackDelivery(), assessmentSettings.getFeedbackDateString());
+       
        if (sendNotification) {
-    	   sendNotification(pub, publishedAssessmentService, publishRepublishNotification,
-    			   assessmentSettings.getReleaseTo(), assessmentSettings.getReleaseToGroupsAsString(), assessmentSettings.getTitle(), assessmentSettings.getPublishedUrl(),
-    			   assessmentSettings.getStartDateString(), assessmentSettings.getDueDateString(), assessmentSettings.getRetractDateString(),
-    			   assessmentSettings.getTimedHours(), assessmentSettings.getTimedMinutes(), assessmentSettings.getUnlimitedSubmissions(),
-    			   assessmentSettings.getSubmissionsAllowed(), assessmentSettings.getScoringType(), assessmentSettings.getFeedbackDelivery(), assessmentSettings.getFeedbackDateString());
+    	   sendNotification(pub, publishedAssessmentService, subject, notificationMessage, 
+    			   assessmentSettings.getReleaseTo());
        }
-       EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.publish", "assessmentId=" + assessment.getAssessmentId() + ", publishedAssessmentId=" + pub.getPublishedAssessmentId(), true));
+       EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.publish", "siteId=" + AgentFacade.getCurrentSiteId() + ", assessmentId=" + assessment.getAssessmentId() + ", publishedAssessmentId=" + pub.getPublishedAssessmentId(), true));
+       //update Calendar Events
+       boolean addDueDateToCalendar = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("publishAssessmentForm:calendarDueDate") != null;
+       calendarService.updateAllCalendarEvents(pub, assessmentSettings.getReleaseTo(), assessmentSettings.getGroupsAuthorized(), rl.getString("calendarDueDatePrefix") + " ", addDueDateToCalendar, notificationMessage);
     } catch (AssignmentHasIllegalPointsException gbe) {
        // Right now gradebook can only accept assessements with totalPoints > 0 
        // this  might change later
@@ -247,12 +281,9 @@ public class PublishAssessmentListener
     return error;
   }
   
-  public void sendNotification(PublishedAssessmentFacade pub, PublishedAssessmentService service, PublishRepublishNotificationBean publishRepublishNotification,
-		  String releaseTo, String releaseToGroupsAsString, String title, String publishedURL, String startDateString, String dueDateString, String retractDateString, 
-		  Integer timedHours, Integer timedMinutes, String unlimitedSubmissions, String submissionsAllowed, String scoringType,
-		  String feedbackDelivery, String feedbackDateString) {
+  public void sendNotification(PublishedAssessmentFacade pub, PublishedAssessmentService service, String subject, String message,
+		  String releaseTo) {
 	  TotalScoresBean totalScoresBean = (TotalScoresBean) ContextUtil.lookupBean("totalScores");
-	  ResourceLoader rl = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AssessmentSettingsMessages");
 	  
 	  AgentFacade instructor = new AgentFacade();
 	  InternetAddress fromIA = null;
@@ -303,8 +334,31 @@ public class PublishAssessmentListener
 		  toIA[count++] = (InternetAddress) iter2.next();
 	  }
 
-	  String subject = publishRepublishNotification.getNotificationSubject();
+
+	  String noReplyEmaillAddress =  "no-reply@" + ServerConfigurationService.getServerName();
+      InternetAddress[] noReply = new InternetAddress[1];
+      try {
+    	  noReply[0] = new InternetAddress(noReplyEmaillAddress);
+      } catch (AddressException e) {
+              log.warn("AddressException encountered when constructing no_reply@serverName email.");
+      }
+	  
+	  List<String> headers = new  ArrayList<String>();
+	  headers.add("Content-Type: text/html");
+	  EmailService.sendMail(fromIA, toIA, subject.toString(), message, noReply, noReply, headers);
+  }
+  
+  public String getNotificationMessage(PublishRepublishNotificationBean publishRepublishNotification, String title, String releaseTo, String startDateString, String publishedURL, String releaseToGroupsAsString, String dueDateString, Integer timedHours, Integer timedMinutes, String unlimitedSubmissions, String submissionsAllowed, String scoringType, String feedbackDelivery, String feedbackDateString){
 	  String siteTitle = publishRepublishNotification.getSiteTitle();
+	  if(siteTitle == null || "".equals(siteTitle)){
+		  try {
+			  Site site = SiteService.getSite(ToolManager.getCurrentPlacement().getContext());
+			  siteTitle = site.getTitle();
+			  publishRepublishNotification.setSiteTitle(siteTitle);
+		  } catch (IdUnusedException iue) {
+			  log.warn(iue);
+		  }
+	  }
 	  String newline = "<br />\n";
 	  String bold_open = "<b>";
 	  String bold_close = "</b>";
@@ -327,6 +381,7 @@ public class PublishAssessmentListener
 	  message.append("\"");
 	  message.append(" ");
 	  
+	  publishedURL = "<a target=\"_blank\" href=\"" + publishedURL + "\">" + publishedURL + "</a>";
 	  if ("Anonymous Users".equals(releaseTo)) {
 		  message.append(MessageFormat.format(rl.getString("available_anonymously_at"), startDateString, publishedURL));
 	  }
@@ -411,24 +466,14 @@ public class PublishAssessmentListener
 	  StringBuffer portalUrlSb = new StringBuffer();
 	  portalUrlSb.append(" <a href=\"");
 	  portalUrlSb.append(ServerConfigurationService.getPortalUrl());
-	  portalUrlSb.append("\">");
+	  portalUrlSb.append("\" target=\"_blank\">");
 	  portalUrlSb.append(ServerConfigurationService.getPortalUrl());
 	  portalUrlSb.append("</a>");
 	  message.append(MessageFormat.format(rl.getString("notification_content"), siteTitleSb.toString(), portalUrlSb.toString()));
 	  
 	  message.append(newline);
 	  message.append(newline);
-
-	  String noReplyEmaillAddress =  "no-reply@" + ServerConfigurationService.getServerName();
-      InternetAddress[] noReply = new InternetAddress[1];
-      try {
-    	  noReply[0] = new InternetAddress(noReplyEmaillAddress);
-      } catch (AddressException e) {
-              log.warn("AddressException encountered when constructing no_reply@serverName email.");
-      }
 	  
-	  List<String> headers = new  ArrayList<String>();
-	  headers.add("Content-Type: text/html");
-	  EmailService.sendMail(fromIA, toIA, subject.toString(), message.toString(), noReply, noReply, headers);
+	  return message.toString();
   }
 }

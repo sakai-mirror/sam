@@ -57,7 +57,6 @@ Headings for delivery pages, needs to have msg=DeliveryMessages.properties, etc.
 
 <!-- HIDE / SHOW TIMER BAR -->
 <h:commandButton type="button" onclick="document.getElementById('remText').style.display=document.getElementById('remText').style.display=='none' ? '': 'none';document.getElementById('timer').style.display=document.getElementById('timer').style.display=='none' ? '': 'none';document.getElementById('bar').style.display=document.getElementById('bar').style.display=='none' ? '': 'none'"
-onkeypress="document.getElementById('remText').style.display=document.getElementById('remText').style.display=='none' ? '': 'none';document.getElementById('timer').style.display=document.getElementById('timer').style.display=='none' ? '': 'none';document.getElementById('bar').style.display=document.getElementById('bar').style.display=='none' ? '': 'none'"
  value="#{deliveryMessages.hide_show}" />
 <!-- END OF TIMER -->
 
@@ -66,7 +65,7 @@ onkeypress="document.getElementById('remText').style.display=document.getElement
 
 <h:commandLink title="#{deliveryMessages.t_submit}" id="submitforgrade" action="#{delivery.submitForGradeFromTimer}" value="" />
 
-<script language="javascript" type="text/JavaScript">
+<script type="text/JavaScript">
 <!--
 function clickSubmitForGrade(){
   var newindex = 0;
@@ -84,6 +83,8 @@ function clickSubmitForGrade(){
 </h:panelGroup>
 
 <h:panelGroup rendered="#{delivery.actionString=='previewAssessment' && delivery.hasTimeLimit}" >
-	<h:graphicImage height="60" width="300" url="/images/delivery/TimerPreview.png"/>
+  <f:verbatim><div style="margin:10px 0px 0px 0px;"><span style="background-color:#bab5b5; padding:5px"></f:verbatim>
+  <h:outputText value="#{deliveryMessages.timer_preview_not_available}"/>
+  <f:verbatim></div></span></f:verbatim>
 </h:panelGroup>
 </p>

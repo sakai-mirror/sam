@@ -4,7 +4,7 @@
     
     <parent>
         <groupId>org.sakaiproject.samigo</groupId>
-        <artifactId>samigo</artifactId>
+        <artifactId>samigo-deploy</artifactId>
         <version>2.9-SNAPSHOT</version>
     </parent>
     
@@ -57,12 +57,9 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-        <!-- The OKiOSID jar was previously deployed to shared by the now redundant samigo-shared-deploy module. -->
         <dependency>
             <groupId>OKI</groupId>
             <artifactId>OkiOSID</artifactId>
-            <version>2.0</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
     

@@ -538,7 +538,8 @@ public class QuestionScoreListener implements ActionListener,
 							|| bean.getTypeId().equals("12")
 							|| bean.getTypeId().equals("3")
 							|| bean.getTypeId().equals("4")
-							|| bean.getTypeId().equals("9")) {
+							|| bean.getTypeId().equals("9")
+							|| bean.getTypeId().equals("13")) {
 						if (gdataAnswer != null)
 							answerText = gdataAnswer.getText();
 					} else {
@@ -546,9 +547,9 @@ public class QuestionScoreListener implements ActionListener,
 						// upload, Audio, FIB, Fill in Numeric, EMI
 						// These question type use itemGrading.answetText to
 						// store information about their answer
-						if ((bean.getTypeId().equals("8") || bean.getTypeId().equals("11") || bean.getTypeId().equals("13")) && gdataAnswer == null) {
+						if ((bean.getTypeId().equals("8") || bean.getTypeId().equals("11") || bean.getTypeId().equals("14")) && gdataAnswer == null) {
 							answerText = "";
-						} else if (bean.getTypeId().equals("13")) {//gopalrc - EMI
+						} else if (bean.getTypeId().equals("14")) {//gopalrc - EMI
 							answerText = gdataPubItemText.getSequence() + ": " + gdataAnswer.getLabel();
 						} else {
 							answerText = gdata.getAnswerText();
@@ -591,7 +592,16 @@ public class QuestionScoreListener implements ActionListener,
 									+ answerText;
 						}
 					}
-
+					if (bean.getTypeId().equals("13")) {
+						if (gdataPubItemText == null) {
+							// the matching pair is deleted
+							answerText = "";
+						}
+						else {
+							int answerNo = gdataPubItemText.getSequence().intValue() + 1;
+							answerText = answerNo + ":" + answerText;
+						}
+					}
 					// file upload
 					if (bean.getTypeId().equals("6")) {
 						gdata.setMediaArray(delegate.getMediaArray2(gdata
@@ -646,6 +656,31 @@ public class QuestionScoreListener implements ActionListener,
 					 * // no need to shorten it if (rationale.length() > 35)
 					 * rationale = rationale.substring(0, 35) + "...";
 					 */
+
+					//SAM-755-"checkmark" indicates right, add "X" to indicate wrong
+					if (gdataAnswer != null) {
+						if (bean.getTypeId().equals("8") || bean.getTypeId().equals("11")) {
+							//need to do something here for fill in the blanks
+							if(gdataAnswer.getScore() > 0){
+								//if score is 0, there is no way to tell if user got the correct answer
+								//by using "autoscore"... wish there was a better way to tell if its correct or not
+								Float autoscore = gdata.getAutoScore();
+								if (!(Float.valueOf(0)).equals(autoscore)) {
+									answerText = "<img src='/samigo-app/images/delivery/checkmark.gif'>" + answerText;
+								}else if(Float.valueOf(0).equals(autoscore)){
+									answerText = "<img src='/samigo-app/images/crossmark.gif'>" + answerText;
+								}
+							}
+						}
+						else if(!bean.getTypeId().equals("3")){
+							if((gdataAnswer.getIsCorrect() != null && gdataAnswer.getIsCorrect()) || 
+									(gdataAnswer.getPartialCredit() != null && gdataAnswer.getPartialCredit() > 0)){
+								answerText = "<img src='/samigo-app/images/delivery/checkmark.gif'>" + answerText;
+							}else if(gdataAnswer.getIsCorrect() != null && !gdataAnswer.getIsCorrect()){
+								answerText = "<img src='/samigo-app/images/crossmark.gif'>" + answerText;
+							}
+						}
+					}
 
 					// -- Got the answer text --
 					if (!answerList.get(0).equals(gdata)) { // We already have

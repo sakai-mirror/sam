@@ -29,15 +29,24 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.math.BigDecimal;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.event.cover.EventTrackingService;
+import org.apache.commons.math.complex.Complex;
+import org.apache.commons.math.complex.ComplexFormat;
 import org.sakaiproject.service.gradebook.shared.GradebookService;
 import org.sakaiproject.spring.SpringBeanLocator;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
@@ -64,6 +73,8 @@ import org.sakaiproject.tool.assessment.facade.TypeFacadeQueriesAPI;
 import org.sakaiproject.tool.assessment.integration.context.IntegrationContextFactory;
 import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceHelper;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
+import org.sakaiproject.tool.assessment.util.FormatException;
+
 
 /**
  * The GradingService calls the back end to get/store grading information. 
@@ -212,7 +223,8 @@ public class GradingService
         AssessmentGradingData ag = (AssessmentGradingData)gdataList.get(i);
         saveOrUpdateAssessmentGrading(ag);
         EventTrackingService.post(EventTrackingService.newEvent("sam.total.score.update", 
-        		"gradedBy=" + AgentFacade.getAgentString() + 
+        		"siteId=" + AgentFacade.getCurrentSiteId() +
+        		", gradedBy=" + AgentFacade.getAgentString() + 
         		", assessmentGradingId=" + ag.getAssessmentGradingId() + 
           		", totalAutoScore=" + ag.getTotalAutoScore() + 
           		", totalOverrideScore=" + ag.getTotalOverrideScore() + 
@@ -711,10 +723,10 @@ public class GradingService
    */
   public void storeGrades(AssessmentGradingIfc data, PublishedAssessmentIfc pub,
                           HashMap publishedItemHash, HashMap publishedItemTextHash,
-                          HashMap publishedAnswerHash) 
+                          HashMap publishedAnswerHash, HashMap invalidFINMap, ArrayList invalidSALengthList) throws GradebookServiceException, FinFormatException
   {
 	  log.debug("storeGrades: data.getSubmittedDate()" + data.getSubmittedDate());
-	  storeGrades(data, false, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash, true);
+	  storeGrades(data, false, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash, true, invalidFINMap, invalidSALengthList);
   }
   
   /**
@@ -722,10 +734,17 @@ public class GradingService
    */
   public void storeGrades(AssessmentGradingIfc data, PublishedAssessmentIfc pub,
                           HashMap publishedItemHash, HashMap publishedItemTextHash,
-                          HashMap publishedAnswerHash, boolean persistToDB) 
+                          HashMap publishedAnswerHash, boolean persistToDB, HashMap invalidFINMap, ArrayList invalidSALengthList) throws GradebookServiceException, FinFormatException
   {
 	  log.debug("storeGrades (not persistToDB) : data.getSubmittedDate()" + data.getSubmittedDate());
-	  storeGrades(data, false, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash, persistToDB);
+	  storeGrades(data, false, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash, persistToDB, invalidFINMap, invalidSALengthList);
+  }
+  
+  public void storeGrades(AssessmentGradingIfc data, boolean regrade, PublishedAssessmentIfc pub,
+		  HashMap publishedItemHash, HashMap publishedItemTextHash,
+		  HashMap publishedAnswerHash, boolean persistToDB) throws GradebookServiceException, FinFormatException {
+	  log.debug("storeGrades (not persistToDB) : data.getSubmittedDate()" + data.getSubmittedDate());
+	  storeGrades(data, false, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash, persistToDB, null, null);
   }
 
   /**
@@ -738,20 +757,11 @@ public class GradingService
    */
   public void storeGrades(AssessmentGradingIfc data, boolean regrade, PublishedAssessmentIfc pub,
                           HashMap publishedItemHash, HashMap publishedItemTextHash,
-                          HashMap publishedAnswerHash, boolean persistToDB) 
-         throws GradebookServiceException {
+                          HashMap publishedAnswerHash, boolean persistToDB, HashMap invalidFINMap, ArrayList invalidSALengthList) 
+         throws GradebookServiceException, FinFormatException {
     log.debug("****x1. regrade ="+regrade+" "+(new Date()).getTime());
     try {
       String agent = data.getAgentId();
-      
-      // Added persistToDB because if we don't save data to DB later, we shouldn't update the assessment
-      // submittedDate either. The date should be sync in delivery bean and DB
-      // This is for DeliveryBean.checkDataIntegrity()
-      if (!regrade && persistToDB)
-      {
-    	data.setSubmittedDate(new Date());
-        setIsLate(data, pub);
-      }
       
       // note that this itemGradingSet is a partial set of answer submitted. it contains only 
       // newly submitted answers, updated answers and MCMR/FIB/FIN answers ('cos we need the old ones to
@@ -772,7 +782,6 @@ public class GradingService
       // For EMI: This keeps track of how many answers were given so we don't give
       // extra marks for to many answers.
       HashMap fibEmiAnswersMap = new HashMap();
-      
       
       //change algorithm based on each question (SAK-1930 & IM271559) -cwen
       HashMap totalItems = new HashMap();
@@ -796,9 +805,35 @@ public class GradingService
         itemGrading.setAgentId(agent);
         itemGrading.setOverrideScore(Float.valueOf(0));
 
+        if (itemType == 5 && itemGrading.getAnswerText() != null) {
+        	String processedAnswerText = itemGrading.getAnswerText().replaceAll("\r", "").replaceAll("\n", "");
+        	if (processedAnswerText.length() > 60000) {
+        		if (invalidSALengthList != null) {
+        			invalidSALengthList.add(item.getItemId());
+        		}
+        	}
+        }
+        
         // note that totalItems & fibAnswersMap would be modified by the following method
-        autoScore = getScoreByQuestionType(itemGrading, item, itemType, publishedItemTextHash, 
+        try {
+        	autoScore = getScoreByQuestionType(itemGrading, item, itemType, publishedItemTextHash, 
                                totalItems, fibEmiAnswersMap, publishedAnswerHash, regrade);
+        }
+        catch (FinFormatException e) {
+        	autoScore = 0f;
+        	if (invalidFINMap != null) {
+        		if (invalidFINMap.containsKey(itemId)) {
+        			ArrayList list = (ArrayList) invalidFINMap.get(itemId);
+        			list.add(itemGrading.getItemGradingId());
+        		}
+        		else {
+        			ArrayList list = new ArrayList();
+        			list.add(itemGrading.getItemGradingId());
+        			invalidFINMap.put(itemId, list);
+        		}
+        	}
+        }
+        
         log.debug("**!regrade, autoScore="+autoScore);
         if (!(TypeIfc.MULTIPLE_CORRECT).equals(itemType) && !(TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType))
           totalItems.put(itemId, Float.valueOf(autoScore));
@@ -809,6 +844,18 @@ public class GradingService
         itemGrading.setAutoScore(Float.valueOf(autoScore));
       }
 
+      if ((invalidFINMap != null && invalidFINMap.size() > 0) || (invalidSALengthList != null && invalidSALengthList.size() > 0)) {
+    	  return;
+      }
+      // Added persistToDB because if we don't save data to DB later, we shouldn't update the assessment
+      // submittedDate either. The date should be sync in delivery bean and DB
+      // This is for DeliveryBean.checkDataIntegrity()
+      if (!regrade && persistToDB)
+      {
+    	data.setSubmittedDate(new Date());
+        setIsLate(data, pub);
+      }
+      
       log.debug("****x3. "+(new Date()).getTime());
       
       ArrayList emiItemGradings = new ArrayList();
@@ -884,7 +931,8 @@ public class GradingService
     } catch (GradebookServiceException ge) {
       ge.printStackTrace();
       throw ge;
-    } catch (Exception e) {
+    } 
+    catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException(e);
     }
@@ -903,7 +951,7 @@ public class GradingService
     	}
     }
     log.debug("****x8. "+(new Date()).getTime());
-    
+
     // I am not quite sure what the following code is doing... I modified this based on my assumption:
     // If this happens dring regrade, we don't want to clean these data up
     // We only want to clean them out in delivery
@@ -940,7 +988,7 @@ public class GradingService
   private float getScoreByQuestionType(ItemGradingIfc itemGrading, ItemDataIfc item,
                                        Long itemType, HashMap publishedItemTextHash, 
                                        HashMap totalItems, HashMap fibEmiAnswersMap,
-                                       HashMap publishedAnswerHash, boolean regrade){
+                                       HashMap publishedAnswerHash, boolean regrade) throws FinFormatException {
     //float score = (float) 0;
     float initScore = (float) 0;
     float autoScore = (float) 0;
@@ -1035,8 +1083,13 @@ public class GradingService
               }
               break;
       case 11: // FIN
-          autoScore = getFINScore(itemGrading, item, publishedAnswerHash) / (float) ((ItemTextIfc) item.getItemTextSet().toArray()[0]).getAnswerSet().size();
-          //overridescore - cwen
+    	  try {
+    		  autoScore = getFINScore(itemGrading, item, publishedAnswerHash) / (float) ((ItemTextIfc) item.getItemTextSet().toArray()[0]).getAnswerSet().size();
+    	  }
+    	  catch (FinFormatException e) {
+    		  throw e;
+    	  }
+    	  //overridescore - cwen
           if (itemGrading.getOverrideScore() != null)
             autoScore += itemGrading.getOverrideScore().floatValue();
 
@@ -1049,7 +1102,7 @@ public class GradingService
           }
           break;
 
-      case 13: //gopalrc EMI
+      case 14: //gopalrc EMI
     	  if (!totalItems.containsKey(itemId)){
               totalItems.put(itemId, new HashMap());
               fibEmiAnswersMap.put(itemId, new HashMap());
@@ -1170,15 +1223,21 @@ public class GradingService
 
     // add retry logic to resolve deadlock problem while sending grades to gradebook
 
+    Float originalFinalScore = data.getFinalScore();
     int retryCount = PersistenceService.getInstance().getRetryCount().intValue();
     while (retryCount > 0){
     	try {
     		// Send the average score if average was selected for multiple submissions
     		Integer scoringType = pub.getEvaluationModel().getScoringType();
     		if (scoringType.equals(EvaluationModelIfc.AVERAGE_SCORE)) {
-    			Float averageScore = PersistenceService.getInstance().getAssessmentGradingFacadeQueries().
-    			getAverageSubmittedAssessmentGrading(Long.valueOf(pub.getPublishedAssessmentId()), data.getAgentId());
-    			data.setFinalScore(averageScore);
+    			// status = 5: there is no submission but grader update something in the score page
+    			if(data.getStatus() ==5) {
+    				data.setFinalScore(data.getFinalScore());
+    			} else {
+    				Float averageScore = PersistenceService.getInstance().getAssessmentGradingFacadeQueries().
+    				getAverageSubmittedAssessmentGrading(Long.valueOf(pub.getPublishedAssessmentId()), data.getAgentId());
+    				data.setFinalScore(averageScore);
+    			}
     		}
     		gbsHelper.updateExternalAssessmentScore(data, g);
     		retryCount = 0;
@@ -1197,6 +1256,11 @@ public class GradingService
     	  retryCount = retry(retryCount, e, pub, false);
       }
     }
+
+    //change the final score back to the original score since it may set to average score.
+    if(data.getFinalScore() != originalFinalScore ) {
+	data.setFinalScore(originalFinalScore);
+     }
     } else {
        if(log.isDebugEnabled()) log.debug("Not updating the gradebook.  toGradebook = " + toGradebook);
     }
@@ -1445,131 +1509,149 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
   }
   
   
-  public float getFINScore(ItemGradingIfc data,  ItemDataIfc itemdata, HashMap publishedAnswerHash)
+  public float getFINScore(ItemGradingIfc data,  ItemDataIfc itemdata, HashMap publishedAnswerHash) throws FinFormatException
   {
 	  float totalScore = (float) 0;
 	  boolean matchresult = getFINResult(data, itemdata, publishedAnswerHash);
 	  if (matchresult){
 		  totalScore += ((AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId())).getScore().floatValue();
-		  
 	  }	
 	  return totalScore;
 	  
   }
 	  
-  public boolean getFINResult(ItemGradingIfc data,  ItemDataIfc itemdata, HashMap publishedAnswerHash)
+  public boolean getFINResult (ItemGradingIfc data,  ItemDataIfc itemdata, HashMap publishedAnswerHash) throws FinFormatException
   {
-	  // this method checks if the FIN answer is correct.  
-    String studentanswer = "";
-    boolean range;
-    boolean matchresult = false;
-    float studentAnswerNum,answer1Num,answer2Num,answerNum;
+	  String studentanswer = "";
+	  boolean range;
+	  boolean matchresult = false;
+	  ComplexFormat complexFormat = new ComplexFormat();
+	  Complex answerComplex = null;
+	  Complex studentAnswerComplex = null;
+	  BigDecimal answerNum = null, answer1Num = null, answer2Num = null, studentAnswerNum = null;
 
-    if (data.getPublishedAnswerId() == null) {
-    	return false;
-    }
+	  if (data.getPublishedAnswerId() == null) {
+		  return false;
+	  }
 
-    AnswerIfc answerIfc = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
-    if (answerIfc == null) {
-    	return matchresult;
-    }
-    String answertext = answerIfc.getText();
-    //Long itemId = itemdata.getItemId();
+	  AnswerIfc answerIfc = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
+	  if (answerIfc == null) {
+		  return matchresult;
+	  }
+	  String answertext = answerIfc.getText();
+	  if (answertext != null)
+	  {
+		  StringTokenizer st = new StringTokenizer(answertext, "|");
+		  range = false;
+		  if (st.countTokens() > 1) {
+			  range = true;
+		  }
 
-      //Set answerSet = new HashSet();
+		  String studentAnswerText = null;
+		  if (data.getAnswerText() != null) {
+			  studentAnswerText = data.getAnswerText().trim();
+		  }
 
-    
+		  if (range) {
 
-    if (answertext != null)
-    {
-      StringTokenizer st = new StringTokenizer(answertext, "|");
-      range=false;
-      if (st.countTokens()>1){
-    	  range=true;
-      }
-      if (range)
-    	  
-      {
-    	
-        String answer1 = st.nextToken().trim();
-        String answer2 = st.nextToken().trim();
-        if (answer1 != null){
-            answer1= answer1.trim().replace(',','.');  // in Spain, comma is used as a decimal point
-           }
-    
-        try{
-        	answer1Num = Float.valueOf(answer1).floatValue();
-        }catch(NumberFormatException ex){
-        	answer1Num =  Float.NaN;
-        }
-        log.debug("answer1Num= " + answer1Num);
-        if (answer2 != null){
-            answer2= answer2.trim().replace(',','.');  // in Spain, comma is used as a decimal point
-           }        
-    
-        try{
-        	answer2Num = Float.valueOf(answer2).floatValue();
-        }catch(NumberFormatException ex){
-        	answer2Num =  Float.NaN;
-        }
-        
-        log.debug("answer2Num= " + answer2Num);      
-        // Can accept increasing and decreasing ranges
-        if (answer1Num > answer2Num) {
-          float swap = answer1Num;
-          answer1Num = answer2Num;
-          answer2Num = swap;
-        }
-        
-          if (data.getAnswerText() != null){
-    	    studentanswer= data.getAnswerText().trim().replace(',','.');    // in Spain, comma is used as a decimal point
-    	    try{
-    	    	studentAnswerNum = Float.valueOf(studentanswer).floatValue();   	    	
-            }catch(NumberFormatException ex){
-            	studentAnswerNum =  Float.NaN;
-            	//Temporal. Directamente contar\? como mala.
-            }
-            log.debug("studentAnswerNum= " + studentAnswerNum);  	   
-            if (!(Float.isNaN(studentAnswerNum) || Float.isNaN(answer1Num) || Float.isNaN(answer2Num))){ 	   
-            matchresult=((answer1Num <= studentAnswerNum) && (answer2Num >= studentAnswerNum)) ;
-          	}
-            
-          }
-      }else{ //range
-    	  String answer = st.nextToken().trim();
-    	  if (answer != null){
-    	       answer= answer.trim().replace(',','.');  // in Spain, comma is used as a decimal point
-    	  }
+			  String answer1 = st.nextToken().trim();
+			  String answer2 = st.nextToken().trim();
 
-      try{
-      	answerNum = Float.valueOf(answer).floatValue(); 
-      }catch(NumberFormatException ex){
-      	answerNum =  Float.NaN;
-//      	should not go here
-      }
-      log.debug("answerNum= " +  answerNum);
-      
-      
-        if (data.getAnswerText() != null){
-  	    studentanswer= data.getAnswerText().trim().replace(',','.');  // in Spain, comma is used as a decimal point
-	    try{
-  	    	studentAnswerNum = Float.valueOf(studentanswer).floatValue(); 	    	
-          }catch(NumberFormatException ex){
-          	studentAnswerNum =  Float.NaN;
-          }
-          log.debug("studentAnswerNum= " + studentAnswerNum);  	   
-          if (!(Float.isNaN(studentAnswerNum) || Float.isNaN(answerNum))){ 	   
-          matchresult=(answerNum == studentAnswerNum) ;
-          }
-        }
-      }
-      
-       
-     
-    }
-    return matchresult;
+			  try {
+				  answer1Num = new BigDecimal(answer1);
+				  answer2Num = new BigDecimal(answer2);
+			  } catch (Exception e) {
+				  log.debug("Number is not BigDecimal: " + answer1 + " or " + answer2);
+			  }
+
+			  HashMap map = validate(studentAnswerText);
+			  studentAnswerNum = (BigDecimal) map.get("REAL");
+
+			  matchresult = (answer1Num != null && answer2Num != null && studentAnswerNum != null &&
+					  (answer1Num.compareTo(studentAnswerNum) <= 0) && (answer2Num.compareTo(studentAnswerNum) >= 0));
+		  }
+		  else { // not range
+			  String answer = st.nextToken().trim();
+
+			  try {
+				  answerNum = new BigDecimal(answer); 
+			  } catch(NumberFormatException ex) {
+				  log.debug("Number is not BigDecimal: " + answer);
+			  }
+
+			  try {
+				  answerComplex = complexFormat.parse(answer);
+			  } catch(ParseException ex) {
+				  log.debug("Number is not Complex: " + answer);
+			  }
+
+			  if (data.getAnswerText() != null) {  
+				  HashMap map = validate(studentAnswerText);
+
+				  if (answerNum != null) {
+					  studentAnswerNum = (BigDecimal) map.get("REAL");
+					  matchresult = (studentAnswerNum != null && answerNum.compareTo(studentAnswerNum) == 0);
+				  }
+				  else if (answerComplex != null) {
+					  studentAnswerComplex = (Complex) map.get("COMPLEX");
+					  matchresult = (studentAnswerComplex != null && answerComplex.equals(studentAnswerComplex));
+				  }
+			  }
+		  }
+	  }
+	  return matchresult;
+  }  
+
+  private HashMap validate(String value) {
+	  HashMap map = new HashMap();
+	  if (value == null || value.trim().equals("")) {
+		  return map;
+	  }
+	  String trimmedValue = value.trim();
+	  boolean isComplex = true;
+	  boolean isRealNumber = true;
+
+	  BigDecimal studentAnswerReal = null;
+	  try {
+		  studentAnswerReal = new BigDecimal(trimmedValue);
+	  } catch (Exception e) {
+		  isRealNumber = false;
+	  }
+
+	  // Test for complex number only if it is not a BigDecimal
+	  Complex studentAnswerComplex = null;
+	  if (!isRealNumber) {
+		  try {
+			  DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance(Locale.US);
+			  df.setGroupingUsed(false);
+
+			  // Numerical format ###.## (decimal symbol is the point)
+			  ComplexFormat complexFormat = new ComplexFormat(df);
+			  studentAnswerComplex = complexFormat.parse(trimmedValue);
+
+			  // This is because there is a bug parsing complex number. 9i is parsed as 9
+			  if (studentAnswerComplex.getImaginary() == 0 && trimmedValue.contains("i")) {
+				  isComplex = false;
+			  }
+		  } catch (Exception e) {
+			  isComplex = false;
+		  }
+	  }
+
+	  Boolean isValid = isComplex || isRealNumber;
+	  if (!isValid) {
+		  throw new FinFormatException("Not a valid FIN Input. studentanswer=" + trimmedValue);
+	  }
+
+	  if (isRealNumber) {
+		  map.put("REAL", studentAnswerReal);
+	  }
+	  else if (isComplex) {
+		  map.put("COMPLEX", studentAnswerComplex);
+	  }
+
+	  return map;
   }
-  
   
   public float getTotalCorrectScore(ItemGradingIfc data, HashMap publishedAnswerHash)
   {
@@ -1902,11 +1984,11 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	    return numberRetake;
   }
   
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String partString, String questionString, String textString, String rationaleString, Map useridMap) {
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String partString, String questionString, String textString, String rationaleString, String itemGradingCommentsString, Map useridMap) {
 	  List list = null;
 	    try {
 	    	list = PersistenceService.getInstance().
-	        getAssessmentGradingFacadeQueries().getExportResponsesData(publishedAssessmentId, anonymous,audioMessage, fileUploadMessage, noSubmissionMessage, showPartAndTotalScoreSpreadsheetColumns, poolString, partString, questionString, textString, rationaleString, useridMap);
+	        getAssessmentGradingFacadeQueries().getExportResponsesData(publishedAssessmentId, anonymous,audioMessage, fileUploadMessage, noSubmissionMessage, showPartAndTotalScoreSpreadsheetColumns, poolString, partString, questionString, textString, rationaleString, itemGradingCommentsString, useridMap);
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	    }
