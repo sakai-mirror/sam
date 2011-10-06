@@ -35,7 +35,7 @@ table.checkall td {padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bott
       <f:selectItem itemValue="1"/>
     </h:selectManyCheckbox>
   </f:facet>
-  <h:selectManyCheckbox immediate="true" id="removeCheckbox" onclick="checkUpdate()" onkeypress="checkUpdate()"  value ="#{questionpool.destItems}">
+  <h:selectManyCheckbox immediate="true" id="removeCheckbox" onclick="checkUpdate()" onkeypress="checkUpdate()"  value="#{questionpool.destItems}">
     <f:selectItem itemValue="#{question.itemIdString}" itemLabel=""/>
   </h:selectManyCheckbox>
 </h:column>
@@ -145,7 +145,7 @@ table.checkall td {padding-top:0px;padding-bottom:0px;margin-top:0px;margin-bott
       <f:facet name="header">
         <h:outputText value="#{questionPoolMessages.impToAuthor}"/>
       </f:facet>
- 	  <h:selectManyCheckbox immediate="true" id="importCheckbox" value ="#{questionpool.destItems}">
+ 	  <h:selectManyCheckbox immediate="true" id="importCheckbox" value="#{questionpool.destItems}">
         <f:selectItem itemValue="#{question.itemIdString}" itemLabel=""/>
  	  </h:selectManyCheckbox>
      </h:column>

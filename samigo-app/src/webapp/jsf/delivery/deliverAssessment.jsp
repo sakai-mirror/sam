@@ -253,9 +253,9 @@ document.links[newindex].onclick();
 <h:inputHidden id="formatByPart" value="#{delivery.settings.formatByPart}"/>
 <h:inputHidden id="formatByAssessment" value="#{delivery.settings.formatByAssessment}"/>
 <h:inputHidden id="lastSubmittedDate1" value="#{delivery.assessmentGrading.submittedDate.time}" 
-   rendered ="#{delivery.assessmentGrading.submittedDate!=null}"/>
+   rendered="#{delivery.assessmentGrading.submittedDate!=null}"/>
 <h:inputHidden id="lastSubmittedDate2" value="0"
-   rendered ="#{delivery.assessmentGrading.submittedDate==null}"/>
+   rendered="#{delivery.assessmentGrading.submittedDate==null}"/>
 
 <!-- DONE BUTTON FOR PREVIEW -->
 <h:panelGroup rendered="#{delivery.actionString=='previewAssessment'}">

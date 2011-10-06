@@ -187,7 +187,7 @@
      	<f:facet name="header">
        		<h:outputText value="#{questionPoolMessages.revoke_access}"/>
      	</f:facet>
-		<h:selectManyCheckbox id="revokeCheckbox" value ="#{questionpoolshare.destPools}" onclick="checkUpdate();" onkeypress="checkUpdate();">
+		<h:selectManyCheckbox id="revokeCheckbox" value="#{questionpoolshare.destPools}" onclick="checkUpdate();" onkeypress="checkUpdate();">
 			<f:selectItem itemValue="#{agent.agentInstanceString}" itemDisabled="#{agent.agentInstanceString == questionpoolshare.questionPoolOwnerId}" itemLabel=""/>
 		</h:selectManyCheckbox>
 	</h:column>
@@ -275,7 +275,7 @@
      	<f:facet name="header">
        		<h:outputText value="#{questionPoolMessages.grant_access}"/>
      	</f:facet>
-		<h:selectManyCheckbox id="grantCheckbox" value ="#{questionpoolshare.destPools}" onclick="checkUpdate();" onkeypress="checkUpdate();">
+		<h:selectManyCheckbox id="grantCheckbox" value="#{questionpoolshare.destPools}" onclick="checkUpdate();" onkeypress="checkUpdate();">
 			<f:selectItem itemValue="#{agent.agentInstanceString}" itemDisabled="#{agent.agentInstanceString == questionpoolshare.questionPoolOwnerId}" itemLabel=""/>
 		</h:selectManyCheckbox>
 	</h:column>

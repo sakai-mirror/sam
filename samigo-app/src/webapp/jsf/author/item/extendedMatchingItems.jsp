@@ -87,7 +87,7 @@
   <!-- 1 POINTS and DISCOUNT -->
 <div>
     <h3><h:outputText value="#{authorMessages.answer_point_value}" />
-    <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}"required="true" size="6" onchange="toPoint(this.id);">
+    <h:inputText id="answerptr" value="#{itemauthor.currentItem.itemScore}" required="true" size="6" onchange="toPoint(this.id);">
 	  <f:validateDoubleRange minimum="0"/>
 	</h:inputText>
 	<h:message for="answerptr" styleClass="validate"/>
@@ -109,7 +109,7 @@
   <!-- 2 QUESTION THEME TEXT -->
 
   <h3><h:outputText value="#{authorMessages.question_theme_text}" /></h3>
-  <h:inputText id="themetext" value="#{itemauthor.currentItem.itemText}"required="true" size="60" ></h:inputText>
+  <h:inputText id="themetext" value="#{itemauthor.currentItem.itemText}" required="true" size="60" ></h:inputText>
   <h:message for="themetext" styleClass="validate"/>
 
 
