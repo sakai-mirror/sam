@@ -24,8 +24,31 @@ should be included in file importing DeliveryMessages
 **********************************************************************************/
 --%>
 -->
-
-
+<script type="text/javascript">
+//This does frontend validation for the emi options entered
+	var validEMIOptions = null;
+	
+	function setEMIOptions(element){
+		//remove the output id and :
+		var idPrefix = element.id.substring(0, element.id.lastIndexOf(':'));
+		//remove the index id and :
+		idPrefix = idPrefix.substring(0, idPrefix.lastIndexOf(':'));
+		//remove the extra id part for the datatable
+		idPrefix = idPrefix.substring(0, idPrefix.lastIndexOf(':')+1);
+		validEMIOptions = document.getElementById(idPrefix + 'emiAnswerOptionLabels').value;
+	}
+	
+	function checkEMIOptions(element, event){
+		if(!validEMIOptions){
+			setEMIOptions(element);
+		}
+		var keychar = String.fromCharCode(event.charCode).toUpperCase();
+		//don't use if it is not in the options
+		return (validEMIOptions.indexOf(keychar) != -1);
+	}
+</script>
+	
+	<h:inputHidden id="emiAnswerOptionLabels" value="#{question.itemData.emiAnswerOptionLabels}" /> 
   <f:verbatim></h5><h3></f:verbatim><h:outputText value="#{question.themeText}"  escape="false"/>
   <f:verbatim></h3><br /></f:verbatim>
   
@@ -113,7 +136,7 @@ should be included in file importing DeliveryMessages
       <h:inputText id="responseAnswer" value="#{matching.response}" size="3" style="text-transform:uppercase;"
        rendered="#{delivery.actionString ne 'reviewAssessment'
              && delivery.actionString ne 'gradeAssessment'}"
-             validator="#{matching.validateEmiResponse}"> 
+             validator="#{matching.validateEmiResponse}" onkeypress="return checkEMIOptions(this, event)"> 
       </h:inputText>
    </h:column>
 
