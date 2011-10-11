@@ -44,7 +44,11 @@ should be included in file importing DeliveryMessages
 		}
 		var keychar = String.fromCharCode(event.charCode).toUpperCase();
 		//don't use if it is not in the options
-		return (validEMIOptions.indexOf(keychar) != -1);
+		if(validEMIOptions.indexOf(keychar) == -1){
+			return false;
+		}
+		//now check that it is not a duplicate
+		return (element.value.toUpperCase().indexOf(keychar) == -1);
 	}
 </script>
 	
