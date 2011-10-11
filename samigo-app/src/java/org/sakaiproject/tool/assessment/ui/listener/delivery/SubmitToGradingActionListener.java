@@ -588,7 +588,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 		//no matter what kinds of type questions, if it marks as review, add it in. (SAM-1301)
 		for (int m = 0; m < grading.size(); m++) {
 			ItemGradingData itemgrading = (ItemGradingData) grading.get(m);
-			if (itemgrading.getReview() == true) {
+			if (itemgrading.getReview() != null && itemgrading.getReview() == true) {
 				adds.addAll(grading);
 			} 
 		}

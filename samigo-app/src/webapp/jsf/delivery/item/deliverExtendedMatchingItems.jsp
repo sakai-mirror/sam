@@ -26,21 +26,12 @@ should be included in file importing DeliveryMessages
 -->
 <script type="text/javascript">
 //This does frontend validation for the emi options entered
-	var validEMIOptions = null;
 	
-	function setEMIOptions(element){
-		//remove the output id and :
-		var idPrefix = element.id.substring(0, element.id.lastIndexOf(':'));
-		//remove the index id and :
-		idPrefix = idPrefix.substring(0, idPrefix.lastIndexOf(':'));
-		//remove the extra id part for the datatable
-		idPrefix = idPrefix.substring(0, idPrefix.lastIndexOf(':')+1);
-		validEMIOptions = document.getElementById(idPrefix + 'emiAnswerOptionLabels').value;
-	}
-	
-	function checkEMIOptions(element, event){
-		if(!validEMIOptions){
-			setEMIOptions(element);
+	function checkEMIOptions(element, validEMIOptions, event){
+		//ignore all the withspace keys
+		//48 = 0
+		if(event.charCode < 48){
+			return true;
 		}
 		var keychar = String.fromCharCode(event.charCode).toUpperCase();
 		//don't use if it is not in the options
@@ -48,11 +39,15 @@ should be included in file importing DeliveryMessages
 			return false;
 		}
 		//now check that it is not a duplicate
-		return (element.value.toUpperCase().indexOf(keychar) == -1);
+		var index = element.value.toUpperCase().indexOf(keychar);
+		if(index == -1){
+			return true;
+		}else{
+			//check that the duplicate is not selected, then we can replace
+			return (element.selectionStart <= index && element.selectionEnd > index);
+		}
 	}
 </script>
-	
-	<h:inputHidden id="emiAnswerOptionLabels" value="#{question.itemData.emiAnswerOptionLabels}" /> 
   <f:verbatim></h5><h3></f:verbatim><h:outputText value="#{question.themeText}"  escape="false"/>
   <f:verbatim></h3><br /></f:verbatim>
   
@@ -140,7 +135,7 @@ should be included in file importing DeliveryMessages
       <h:inputText id="responseAnswer" value="#{matching.response}" size="3" style="text-transform:uppercase;"
        rendered="#{delivery.actionString ne 'reviewAssessment'
              && delivery.actionString ne 'gradeAssessment'}"
-             validator="#{matching.validateEmiResponse}" onkeypress="return checkEMIOptions(this, event)"> 
+             validator="#{matching.validateEmiResponse}" onkeypress="return checkEMIOptions(this, '#{question.itemData.emiAnswerOptionLabels}', event)"> 
       </h:inputText>
    </h:column>
 
