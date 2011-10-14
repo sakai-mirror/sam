@@ -231,48 +231,4 @@ public class FibBean
   {
     hasInput = newin;
   }
-  
-/*  
-  //gopalrc - added for EMI - Jan 2010
-  public MatchingBean getSubQuestionContainer() {
-	return subQuestionContainer;
-  }
-
-  //gopalrc - added for EMI - Jan 2010
-	public void setSubQuestionContainer(MatchingBean subQuestionContainer) {
-		this.subQuestionContainer = subQuestionContainer;
-	}
-  
-	//gopalrc - added for EMI - Jan 2010
-	public void validateEmiResponse(FacesContext context, 
-            UIComponent toValidate,
-            Object value) {
-		
-		String response = ((String) value).trim().toUpperCase();
-
-		if (response.length() > 1 || (response.length() != 0 && !parent.getItemData().isValidEmiAnswerOptionLabel(response)) ) {
-			((UIInput)toValidate).setValid(false);
-			String invalid_response = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","invalid_response");     
-			String please_select_from_available = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","please_select_from_available");     
-			FacesMessage message = new FacesMessage(invalid_response + " '" + response + "' " + please_select_from_available);
-			context.addMessage(toValidate.getClientId(context), message);
-		}
-		else {
-		      Iterator iter = subQuestionContainer.getChoices().iterator();
-		      while (iter.hasNext()) {
-		    	  FibBean fibBean = (FibBean) iter.next();
-		    	  if (fibBean.getResponse()!=null && fibBean.getResponse().equals(response) && 
-		    			  !fibBean.equals(this)) 
-		    	  	{
-						((UIInput)toValidate).setValid(false);
-						String duplicate_responses = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","duplicate_responses");     
-						String for_sub_question = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","for_sub_question");     
-						FacesMessage message = new FacesMessage(duplicate_responses + " '" + response + "'  " + for_sub_question + " " + subQuestionContainer.getItemText().getSequence() );
-						context.addMessage(toValidate.getClientId(context), message);
-		    	  	}
-		      }
-		}
-	}
-*/
-  
 }

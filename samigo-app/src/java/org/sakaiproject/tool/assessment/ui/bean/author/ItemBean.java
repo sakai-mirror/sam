@@ -1025,33 +1025,6 @@ public class ItemBean
 
   }
 
-/*  
-//  this doesn't seem to be used
-  public void addChoices(ValueChangeEvent event) {
-        // build a default list of 4 choices, a, b, c, d,
-	FacesContext context = FacesContext.getCurrentInstance();
-	String newvalue = (String) event.getNewValue();
-	ArrayList list = getMultipleChoiceAnswers(); // get existing list
-	if (list!=null) {
-		// add additional answer bean
-		int currentsize = list.size();
-        	int newlength = currentsize+ new Integer(newvalue).intValue();
-        	for (int i=currentsize; i<newlength; i++){
-                	AnswerBean answerbean = new AnswerBean();
-              		answerbean.setSequence(new Long(i+1));
-                	answerbean.setLabel(AnswerBean.choiceLabels[i]);
-                	list.add(answerbean);
-
-        	}
-        }
-	setMultipleChoiceAnswers(list);
-	setAdditionalChoices("0");
-
-
-
-  }
-*/
-
   public String addChoicesAction() {
         // build a default list of 4 choices, a, b, c, d,
      //   FacesContext context = FacesContext.getCurrentInstance();
@@ -1646,96 +1619,7 @@ public class ItemBean
     	}
     	emiQuestionAnswerCombinations=cleanSortedList;
     	return cleanSortedList;
-    }    
-
-    
-    
-    //gopalrc - added 23 Nov 2009
-/*    
-    public String removeEmiQuestionAnswerCombinations() {
-    	String labelToRemove = ContextUtil.lookupParam("emiQuestionAnswerComboId");
-		ArrayList list = getEmiQuestionAnswerCombinationsClean(); // get existing list
-		if (list == null) {
-			return null;
-		}
-		Iterator iter = list.iterator();
-		int currentindex = 0;
-		boolean delete = false;
-		while (iter.hasNext()) {
-			AnswerBean answerbean = (AnswerBean) iter.next();
-			if (answerbean.getLabel().equals(labelToRemove)) {
-				// delete selected choices
-				iter.remove();
-				delete = true;
-			} else {
-				currentindex = currentindex + 1;
-				// reset sequence and labels , shift the seq/labels after a
-				// choice is deleted
-				answerbean.setSequence(Long.valueOf(currentindex));
-				answerbean.setLabel(answerbean.getSequence().toString());
-			}
-		}
-		return null;
-	}
-*/    
-    
-    /**
-     * gopalrc - added 23 Nov 2009
-     */
-/*    
-    public String getAdditionalEmiQuestionAnswerCombinations()
-    {
-      return additionalEmiQuestionAnswerCombinations;
     }
-*/
-    
-    /**
-     * gopalrc - added 23 Nov 2009
-     */
-/*    
-    public void setAdditionalEmiQuestionAnswerCombinations(String size)
-    {
-      this.additionalEmiQuestionAnswerCombinations= size;
-    }
-*/
-    
-    /**
-     * gopalrc - added 23 Nov 2009
-     */
-/*    
-    public String addEmiQuestionAnswerCombinationsAction() {
-    	
-        String newvalue = getAdditionalEmiQuestionAnswerCombinations();
-        ArrayList list = getEmiQuestionAnswerCombinations(); // get existing list
-        if (list!=null) {
-                // add additional answer bean
-           int currentsize = list.size();
-           int newlength = currentsize+ new Integer(newvalue).intValue();
-           if (newlength<=26){
-              for (int i=currentsize; i<newlength; i++){
-                  AnswerBean answerbean = new AnswerBean();
-                  answerbean.setSequence( Long.valueOf(i+1));
-  			      answerbean.setLabel(answerbean.getSequence().toString());
-                  list.add(answerbean);
-
-                }
-              setEmiQuestionAnswerCombinations(list);
-              //setAdditionalEmiQuestionAnswerCombinations("0"); // Jul 2010 forced to 3, no longer selected from a list
-
-           }
-           else
-	       {
-		   //print error
-               FacesContext context=FacesContext.getCurrentInstance();
-               ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
-               context.addMessage(null,new FacesMessage(rb.getString("MCanswer_outofbound_error")));
-	       }
-    
-       }
-       return "emiItem";
-  }
-*/    
-
 
     public void resetPartialCreditValues() {
 

@@ -23,6 +23,9 @@ Headings for item edit pages, needs to have msg=AuthorMessages.properties.
 **********************************************************************************/
 --%>
 -->
+<!-- Core files -->
+<script src="/samigo-app/js/jquery.alerts-1.1/jquery.alerts.js" type="text/javascript"></script>
+<link href="/samigo-app/js/jquery.alerts-1.1/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/JavaScript">
 <!--
 function changeTypeLink(field){
@@ -38,6 +41,26 @@ for (i=0; i<document.links.length; i++) {
 document.links[newindex].onclick();
 }
 
+//Display the EMI question example
+function displayEMIHelp(){
+	jQuery.ajax({
+		url: '../../../../../../samigo-app/emi/help.txt',
+		data: '',
+		success: displayEMIHelpCallback,
+		dataType: 'html'
+	});
+}
+
+function displayEMIHelpCallback(data, textStatus, jqXHR){
+	if(textStatus == 'success'){
+		jAlert(data, jQuery('#EMIHelp').text());
+		jQuery("#popup_container").css({
+				top: 20 + 'px'
+			});
+	}else{
+		alert('Help display Error: ' + textStatus);
+	}
+}
 //-->
 </script>
 <h:form id="itemFormHeading">
@@ -150,6 +173,12 @@ listener set selectFromQuestionPool, eliminating the rendered attribute
 
 <h:commandLink id="hiddenlink" action="#{itemauthor.doit}" value="">
 </h:commandLink>
+
+&nbsp;
+<a id="EMIHelp" href="#"
+	onclick="displayEMIHelp()" >
+	<h:outputText value="#{authorMessages.example_emi_question}" rendered="#{itemauthor.currentItem.itemType == 14}" />
+</a> 
 
 <h:message rendered="#{questionpool.importToAuthoring == 'true' && itemauthor.target == 'assessment'}" for="changeQType1" infoClass="messageSamigo" warnClass="validation" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 <h:message rendered="#{questionpool.importToAuthoring == 'false' && itemauthor.target == 'assessment'}" for="changeQType2" infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>

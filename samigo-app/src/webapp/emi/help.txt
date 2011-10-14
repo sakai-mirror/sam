@@ -1,0 +1,15 @@
+EMI Number
+
+A. 	One
+B. 	Two
+C. 	Three
+D. 	Four
+Some number stuff
+
+A(1 answer(s) required) 	1. What is first
+B(1 answer(s) required) 	2. Which came second
+C(1 answer(s) required) 	3. Give it a try
+D(1 answer(s) required) 	4. Last one
+
+
+Answer Key: 1:A 2:B 3:C 4:D 
