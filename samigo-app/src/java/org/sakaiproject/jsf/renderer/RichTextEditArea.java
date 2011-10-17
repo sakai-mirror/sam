@@ -88,6 +88,7 @@ public class RichTextEditArea extends Renderer
     ResponseWriter writer = context.getResponseWriter();
 
     Object value = null;
+    String identity = (String) component.getAttributes().get("identity");
     String reset = (String) component.getAttributes().get("reset");
     if (reset == null || !reset.equals("true")) {
     	if (component instanceof UIInput)
@@ -180,18 +181,18 @@ public class RichTextEditArea extends Renderer
     String justArea = (String) component.getAttributes().get("justArea");
 
     if (editor.equalsIgnoreCase("FCKeditor") || editor.equalsIgnoreCase("ckeditor")) {	
-      encodeFCK(writer, contextPath, (String) value, outCol, 
+      encodeFCK(writer, contextPath, (String) value, identity, outCol, 
               outRow, justArea, clientId, valueHasRichText, hasToggle); 
     }
     else 
     {
-      encodeHtmlarea(writer, contextPath, (String) value, outCol + "px", outRow + "px", 
+      encodeHtmlarea(writer, contextPath, (String) value, identity, outCol + "px", outRow + "px", 
               tmpCol, tmpRow, lineOfToolBar, justArea, clientId);
     }
   }
 
 
-  private void encodeHtmlarea(ResponseWriter writer, String contextPath, String value, String outCol, 
+  private void encodeHtmlarea(ResponseWriter writer, String contextPath, String value, String identity, String outCol, 
            String outRow, String tmpCol, String tmpRow, int lineOfToolBar, String justArea, String clientId) throws IOException
   {
 
@@ -212,7 +213,13 @@ public class RichTextEditArea extends Renderer
       writer.write(clientId);
       writer.write("_textinput\" id=\"");
       writer.write(clientId);
-      writer.write("_textinput\" disabled>");
+      writer.write("_textinput\" ");
+      if(identity != null){
+    	  writer.write("identity=\"");
+    	  writer.write(identity);
+    	  writer.write("\" ");
+      }
+      writer.write("disabled>");
       writer.write( (String) value);
       writer.write("</textarea>\n");
       if ( (tmpCol != null) && (tmpRow != null))
@@ -286,7 +293,12 @@ public class RichTextEditArea extends Renderer
         writer.write(clientId);
         writer.write("_textinput\" id=\"");
         writer.write(clientId);
-        writer.write("_textinput\"");
+        writer.write("_textinput\" ");
+        if(identity != null){
+      	  writer.write("identity=\"");
+      	  writer.write(identity);
+      	  writer.write("\" ");
+        }
         writer.write("></textarea>\n");
 
         if (lineOfToolBar == 3)
@@ -344,7 +356,13 @@ public class RichTextEditArea extends Renderer
         writer.write(clientId);
         writer.write("_textinput\" id=\"");
         writer.write(clientId);
-        writer.write("_textinput\">");
+        writer.write("_textinput\" ");
+        if(identity != null){
+      	  writer.write("identity=\"");
+      	  writer.write(identity);
+      	  writer.write("\" ");
+        }
+        writer.write(">");
         writer.write( (String) value);
         writer.write("</textarea>\n");
         if (lineOfToolBar == 3)
@@ -401,7 +419,7 @@ public class RichTextEditArea extends Renderer
   }
 
    
-  private void encodeFCK(ResponseWriter writer, String contextPath, String value, String outCol, 
+  private void encodeFCK(ResponseWriter writer, String contextPath, String value, String identity, String outCol, 
          String outRow, String justArea, String clientId, boolean valueHasRichText, String hasToggle) throws IOException
   {
 	  //come up w/ rows/cols for the textarea if needed
@@ -429,7 +447,21 @@ public class RichTextEditArea extends Renderer
         	value = FormattedText.escapeHtmlFormattedTextarea((String) value);
     }
     
-    writer.write("<textarea name=\"" + clientId + "_textinput\" id=\"" + clientId + "_textinput\" rows=\""+ textBoxRows + "\" cols=\""+ textBoxCols + "\" class=\"simple_text_area\">");
+    writer.write("<textarea name=\"");
+    writer.write(clientId);
+    writer.write("_textinput\" id=\"");
+    writer.write(clientId);
+    writer.write("_textinput\" ");
+    if(identity != null){
+    	writer.write("identity=\"");
+    	writer.write(identity);
+    	writer.write("\" ");
+    }
+    writer.write("rows=\"");
+    writer.write(textBoxRows);
+    writer.write("\" cols=\"");
+    writer.write(textBoxCols);
+    writer.write("\" class=\"simple_text_area\">");
     writer.write((String) value);
     writer.write("</textarea>");
     if (shouldToggle) {

@@ -294,7 +294,7 @@
   <h3><h:outputText value="#{authorMessages.lead_in_statement}" /></h3>
   <!-- WYSIWYG -->
   <h:panelGrid>
-   <samigo:wysiwyg rows="140" value="#{itemauthor.currentItem.leadInStatement}" hasToggle="yes">
+   <samigo:wysiwyg identity="lead_in_statement" rows="140" value="#{itemauthor.currentItem.leadInStatement}" hasToggle="yes">
      <f:validateLength minimum="1" maximum="64000"/>
    </samigo:wysiwyg>
   </h:panelGrid>
@@ -522,7 +522,8 @@
 	
     <!-- TEXT for JavaScript Processing-->
     <h:inputHidden id="all" value="#{authorMessages.all}" />
-
+    <h:inputHidden id="default_lead_in_statement_description" value="#{authorMessages.default_lead_in_statement_description}  #{authorMessages.default_lead_in_statement}" />
+	<h:inputHidden id="default_lead_in_statement" value="#{authorMessages.default_lead_in_statement}" />
 
     <!-- ERROR MESSAGES for JavaScript Processing-->
     <h:inputHidden id="error_dialog_title_line1" value="#{authorMessages.error_dialog_title_line1}" />

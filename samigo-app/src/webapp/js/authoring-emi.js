@@ -15,24 +15,31 @@ if (typeof $ === 'undefined') {
 	$ = jQuery;
 }
 $(document).ready(function(){
-	//set the lead in default VULA-1283 XXX
-	/*
-	$('[data-placeholder]').focus(function() {
-		var input = $(this);
-		if (input.val() == input.attr('data-placeholder')) {
-			input.val('');
-			input.css({});
+	//set the lead in default VULA-1283
+	$('[identity="lead_in_statement"]').focus(function() {
+		var leadin = $(this);
+		var defaultval = $('#default_lead_in_statement_description').val().replace("<br/>", "\n");
+		if (leadin.val() == defaultval) {
+			leadin.val('');
+			leadin.removeClass('placeholder');
 		}
 	}).blur(function() {
-		var input = $(this);
-		if (input.val() == '' || input.val() == input.attr('data-placeholder')) {
-			input.css({
-				color: '#aaa'
-			});
-			input.val(input.attr('data-placeholder'));
+		var leadin = $(this);
+		var defaultval = $('#default_lead_in_statement_description').val().replace("<br/>", "\n");
+		if (leadin.val() == '' || leadin.val() == defaultval) {
+			leadin.addClass('placeholder');
+			leadin.val(defaultval);
 		}
 	}).blur();
-	*/
+	$('[identity="lead_in_statement"]').parents('form').submit(function() {
+		$(this).find('[identity="lead_in_statement"]').each(function() {
+			var leadin = $(this);
+			var defaultval = $('#default_lead_in_statement_description').val().replace("<br/>", "\n");
+			if (leadin.val() == defaultval) {
+				leadin.val($('#default_lead_in_statement').val());
+			}
+		})
+	});
 	
 	//only applies to EMI authoring
 	if (!emiAuthoring) return;
