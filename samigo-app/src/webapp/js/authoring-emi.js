@@ -15,6 +15,10 @@ if (typeof $ === 'undefined') {
 	$ = jQuery;
 }
 $(document).ready(function(){
+	
+	//only applies to EMI authoring
+	if (!emiAuthoring) return;
+	
 	//set the lead in default VULA-1283
 	$('[identity="lead_in_statement"]').focus(function() {
 		var leadin = $(this);
@@ -40,9 +44,6 @@ $(document).ready(function(){
 			}
 		})
 	});
-	
-	//only applies to EMI authoring
-	if (!emiAuthoring) return;
 	
 	//************* VALIDATION *****************
 	var error_dialog_title_line1 = $("input[id=error_dialog_title_line1]").val();
@@ -82,16 +83,10 @@ $(document).ready(function(){
 
 		//Validate Answer Point Value
 		var answerPointValue = $("input[name=itemForm:answerptr]").val();
-		/*
-		if (answerPointValue.trim()=="" || +answerPointValue==0) {
-			errorMessages[errorNumber++] = answer_point_value_error;
-		}
-		*/
 		if (answerPointValue.trim()=="" || /[^0-9.]/g.test(answerPointValue)) {
 			errorMessages[errorNumber++] = answer_point_value_error;
 			itemError = true;
 		}
-
 		
 		//Validate Theme Text
 		var themeText = $("input[name=itemForm:themetext]").val();
@@ -101,7 +96,6 @@ $(document).ready(function(){
 		
 		
 		//Validate Options
-		//var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]").val();
 		var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked").val();
 		var optionLabels = "";
 		var numOptions = +0;
@@ -139,7 +133,6 @@ $(document).ready(function(){
 			}
 		}
 		
-
 		//Validate Items
 		for (j=0; j<=highestItemId; j++) {
 			var itemError = false;
@@ -154,14 +147,6 @@ $(document).ready(function(){
 					errorMessages[errorNumber++] = blank_or_non_integer_item_sequence_error + labelInput.val();
 					itemError = true;
 				}
-
-				// Blank items are ignored and removed
-				/*
-                if (itemText.trim() === "" && hasAttachment.val()==="false") {
-					errorMessages[errorNumber++] = item_text_not_entered_error + labelInput.val();
-					itemError = true;
-				}
-				*/
 				
 				var correctOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]").val().toUpperCase();
 				if (correctOptionLabels.trim()=="" || /[^A-Z,]/gi.test(correctOptionLabels)) {
@@ -179,12 +164,8 @@ $(document).ready(function(){
 						}
 					}
 				}
-				
-				//if (itemError) break;
 			}
 		}
-		
-		
 		
 		if (errorNumber > 0) {
 			$errorMessageDialog.dialog('close');
@@ -500,9 +481,6 @@ $(document).ready(function(){
 		var containerFrame = $("iframe[class=portletMainIframe]", parent.document.body);
 		containerFrame.height($(document.body).height() + 30);
 	}
-
-
-	
 });
 
 //*************** JQuery Functions Above ******************
