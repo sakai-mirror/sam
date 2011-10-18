@@ -14,6 +14,12 @@ var ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 if (typeof $ === 'undefined') {
 	$ = jQuery;
 }
+//this is to resolve an IE bug, aaaargh we are still in the dark ages
+if(typeof String.prototype.trim !== 'function') {
+	String.prototype.trim = function() {
+		return this.replace(/^\s+|\s+$/g, ''); 
+	}
+}
 $(document).ready(function(){
 	
 	//only applies to EMI authoring
