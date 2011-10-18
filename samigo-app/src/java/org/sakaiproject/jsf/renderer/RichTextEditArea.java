@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.tool.assessment.services.assessment.AssessmentService;
-import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.util.TextFormat;
 import org.sakaiproject.tool.cover.ToolManager; 
 import org.sakaiproject.util.EditorConfiguration;
@@ -214,11 +213,7 @@ public class RichTextEditArea extends Renderer
       writer.write("_textinput\" id=\"");
       writer.write(clientId);
       writer.write("_textinput\" ");
-      if(identity != null){
-    	  writer.write("identity=\"");
-    	  writer.write(identity);
-    	  writer.write("\" ");
-      }
+      writer.write(getIdentityAttribute(identity));
       writer.write("disabled>");
       writer.write( (String) value);
       writer.write("</textarea>\n");
@@ -294,11 +289,7 @@ public class RichTextEditArea extends Renderer
         writer.write("_textinput\" id=\"");
         writer.write(clientId);
         writer.write("_textinput\" ");
-        if(identity != null){
-      	  writer.write("identity=\"");
-      	  writer.write(identity);
-      	  writer.write("\" ");
-        }
+        writer.write(getIdentityAttribute(identity));
         writer.write("></textarea>\n");
 
         if (lineOfToolBar == 3)
@@ -357,11 +348,7 @@ public class RichTextEditArea extends Renderer
         writer.write("_textinput\" id=\"");
         writer.write(clientId);
         writer.write("_textinput\" ");
-        if(identity != null){
-      	  writer.write("identity=\"");
-      	  writer.write(identity);
-      	  writer.write("\" ");
-        }
+        writer.write(getIdentityAttribute(identity));
         writer.write(">");
         writer.write( (String) value);
         writer.write("</textarea>\n");
@@ -447,21 +434,7 @@ public class RichTextEditArea extends Renderer
         	value = FormattedText.escapeHtmlFormattedTextarea((String) value);
     }
     
-    writer.write("<textarea name=\"");
-    writer.write(clientId);
-    writer.write("_textinput\" id=\"");
-    writer.write(clientId);
-    writer.write("_textinput\" ");
-    if(identity != null){
-    	writer.write("identity=\"");
-    	writer.write(identity);
-    	writer.write("\" ");
-    }
-    writer.write("rows=\"");
-    writer.write(textBoxRows);
-    writer.write("\" cols=\"");
-    writer.write(textBoxCols);
-    writer.write("\" class=\"simple_text_area\">");
+    writer.write("<textarea name=\"" + clientId + "_textinput\" id=\"" + clientId + "_textinput\" " + getIdentityAttribute(identity) + " rows=\""+ textBoxRows + "\" cols=\""+ textBoxCols + "\" class=\"simple_text_area\">");
     writer.write((String) value);
     writer.write("</textarea>");
     if (shouldToggle) {
@@ -695,5 +668,16 @@ public class RichTextEditArea extends Renderer
 	*/
     org.sakaiproject.jsf.component.RichTextEditArea comp = (org.sakaiproject.jsf.component.RichTextEditArea) component;
     comp.setSubmittedValue(finalValue);
+  }
+  
+  private String getIdentityAttribute(String identity){
+	  if(identity != null){
+		  StringBuilder buf = new StringBuilder(" identity=\"");
+		  buf.append(identity);
+		  buf.append("\" ");
+		  return buf.toString();
+      }else{
+    	  return " ";
+      }
   }
 }

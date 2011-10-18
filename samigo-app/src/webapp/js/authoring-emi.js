@@ -59,25 +59,16 @@ $(document).ready(function(){
 	var at_least_two_options_required_error = $("input[id=at_least_two_options_required_error]").val();
 	var at_least_two_pasted_options_required_error = $("input[id=at_least_two_pasted_options_required_error]").val();
 	
+	//create error message tags
+	var $errorMessageTable = $('#emiErrorMessageTable');
+	var $errorMessageRow = $('<tr></tr>');
+	var $errorMessageColumn = $('<td></td>');
 	
-	
-	var $errorMessageDialog = $('<div></div>')
-	.html('')
-	.dialog({
-		autoOpen: false,
-		title: error_dialog_title_line1+'<br/>'+error_dialog_title_line2
-	});
-	
-	var $messageDialog = $('<div></div>')
-	.html('')
-	.dialog({
-		autoOpen: false,
-		title: "Warning Message"
-	});
-	
-	
+	//function to execute on save
 	var buttonSave = $("input[value=Save]");
 	buttonSave.bind('click', function(){
+		$errorMessageTable.removeClass('messageSamigo');
+		$('#emiErrorMessageTable > tr').remove();
 		var errorMessages = new Array(maxErrorsDisplayed);
 		var errorNumber=+0;
 
@@ -168,14 +159,13 @@ $(document).ready(function(){
 		}
 		
 		if (errorNumber > 0) {
-			$errorMessageDialog.dialog('close');
-			var messageHTML = "<font color='red'><ul>";
 			for (i=0; i<errorNumber; i++) {
-				messageHTML += "<li>" + errorMessages[i]+"</li>";
+				var col = $errorMessageColumn.clone().append(errorMessages[i]);
+				var row = $errorMessageRow.clone().appendTo($errorMessageTable);
+				col.appendTo(row);
 			}
-			messageHTML += "<ul/></font>";
-			$errorMessageDialog.html(messageHTML);
-			$errorMessageDialog.dialog('open');
+			$errorMessageTable.addClass('messageSamigo');
+			top.window.scrollTo(0,0);
 			return false;
 		}
 		else {
@@ -346,7 +336,6 @@ $(document).ready(function(){
 				return false;
 			}
 		}
-		//alert("Please save accumulated changes before adding additional items.");
 		messageDialog("Please save accumulated changes before adding additional items.");
 		setContainerHeight();
 		return false;
@@ -469,12 +458,7 @@ $(document).ready(function(){
 
 	
 	function messageDialog(message) {
-		$messageDialog.dialog('close');
-		var messageHTML = "<font color='red'><ul>";
-		messageHTML += message;
-		messageHTML += "<ul/></font>";
-		$messageDialog.html(messageHTML);
-		$messageDialog.dialog('open');
+		jAlert(message, 'Warning', null, 'confirm');
 	}
 	
 	function setContainerHeight() {

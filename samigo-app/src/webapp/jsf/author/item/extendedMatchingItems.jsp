@@ -51,6 +51,11 @@
 <!-- FORM -->
 <!-- HEADING -->
 <%@ include file="/jsf/author/item/itemHeadings.jsp" %>
+<table width="80%">
+<tbody id='emiErrorMessageTable'>
+</tbody>
+</table>
+
 <h:form id="itemForm" onsubmit="return editorCheck();">
 <p class="act">
   <h:commandButton rendered="#{itemauthor.target=='assessment'}" value="#{authorMessages.button_save}" action="#{itemauthor.currentItem.getOutcome}" styleClass="active">

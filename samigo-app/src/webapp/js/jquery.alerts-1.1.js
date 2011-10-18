@@ -42,30 +42,33 @@
 		
 		// Public methods
 		
-		alert: function(message, title, callback) {
+		alert: function(message, title, callback, image) {
 			if( title == null ) title = 'Alert';
-			$.alerts._show(title, message, null, 'alert', function(result) {
+			if( image == null ) image = 'alert';
+			$.alerts._show(title, message, null, 'alert', image, function(result) {
 				if( callback ) callback(result);
 			});
 		},
 		
-		confirm: function(message, title, callback) {
+		confirm: function(message, title, callback, image) {
 			if( title == null ) title = 'Confirm';
-			$.alerts._show(title, message, null, 'confirm', function(result) {
+			if( image == null ) image = 'confirm';
+			$.alerts._show(title, message, null, 'confirm', image, function(result) {
 				if( callback ) callback(result);
 			});
 		},
 			
-		prompt: function(message, value, title, callback) {
+		prompt: function(message, value, title, callback, image) {
 			if( title == null ) title = 'Prompt';
-			$.alerts._show(title, message, value, 'prompt', function(result) {
+			if( image == null ) image = 'prompt';
+			$.alerts._show(title, message, value, 'prompt', image, function(result) {
 				if( callback ) callback(result);
 			});
 		},
 		
 		// Private methods
 		
-		_show: function(title, msg, value, type, callback) {
+		_show: function(title, msg, value, type, imageType, callback) {
 			
 			$.alerts._hide();
 			$.alerts._overlay('show');
@@ -91,7 +94,7 @@
 			});
 			
 			$("#popup_title").text(title);
-			$("#popup_content").addClass(type);
+			$("#popup_content").addClass(imageType);
 			$("#popup_message").text(msg);
 			$("#popup_message").html( $("#popup_message").text().replace(/\n/g, '<br />') );
 			
@@ -220,16 +223,16 @@
 	}
 	
 	// Shortuct functions
-	jAlert = function(message, title, callback) {
-		$.alerts.alert(message, title, callback);
+	jAlert = function(message, title, callback, image) {
+		$.alerts.alert(message, title, callback, image);
 	}
 	
-	jConfirm = function(message, title, callback) {
-		$.alerts.confirm(message, title, callback);
+	jConfirm = function(message, title, callback, image) {
+		$.alerts.confirm(message, title, callback, image);
 	};
 		
-	jPrompt = function(message, value, title, callback) {
-		$.alerts.prompt(message, value, title, callback);
+	jPrompt = function(message, value, title, callback, image) {
+		$.alerts.prompt(message, value, title, callback, image);
 	};
 	
 })(jQuery);
