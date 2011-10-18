@@ -25,7 +25,7 @@ Headings for item edit pages, needs to have msg=AuthorMessages.properties.
 -->
 <!-- Core files -->
 <script src="/samigo-app/js/jquery.alerts-1.1.js" type="text/javascript"></script>
-<link href="/samigo-app/js/jquery.alerts-1.1/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="/samigo-app/css/jquery.alerts-1.1/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/JavaScript">
 <!--
 function changeTypeLink(field){
