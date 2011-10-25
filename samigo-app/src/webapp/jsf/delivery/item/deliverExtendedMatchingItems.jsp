@@ -28,7 +28,11 @@ should be included in file importing DeliveryMessages
 //This does frontend validation for the emi options entered
 	
 	function checkEMIOptions(element, validEMIOptions, event){
-		//ignore all the withspace keys
+		//no space
+		if(event.charCode == 32){
+			return false;
+		}
+		//ignore all the other withspace keys
 		//48 = 0
 		if(event.charCode < 48){
 			return true;

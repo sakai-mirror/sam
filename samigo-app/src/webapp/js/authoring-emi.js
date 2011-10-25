@@ -1,88 +1,108 @@
-//gopalrc - global vars
-var highestOptionId = +25;
-var highestItemId = +59;
-var maxAvailableItems = +30;
-var minOptions = +2;
-var additionalOptionsGroupSize = +3;
-var additionalItemsGroupSize = +3;
-var showAtStart = +4;
-var removeLabel = "X";
-var maxErrorsDisplayed = +20;
-var ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-//gopalrc - jQuery functions
-if (typeof $ === 'undefined') {
-	$ = jQuery;
-}
 //this is to resolve an IE bug, aaaargh we are still in the dark ages
 if(typeof String.prototype.trim !== 'function') {
 	String.prototype.trim = function() {
 		return this.replace(/^\s+|\s+$/g, ''); 
 	}
 }
+
+//jQuery functions
+if (typeof $ === 'undefined') {
+	$ = jQuery;
+}
+//------------------------------------------//
+//	The ready function, setup the form		//
+//	for all the events						//
+//------------------------------------------//
 $(document).ready(function(){
 	
 	//only applies to EMI authoring
+	//this value is set in extendedMatchingItems.jsp
 	if (!emiAuthoring) return;
 	
-	//set the lead in default VULA-1283
+	//------------------------------------------//
+	//	Global variables						//
+	//	Variables used in the emi functions		//
+	//------------------------------------------//
+	var highestOptionId = +25;
+	var highestItemId = +59;
+	var maxAvailableItems = +30;
+	var minOptions = +2;
+	var additionalOptionsGroupSize = +3;//XXX this must change
+	var additionalItemsGroupSize = +3;//XXX this must change
+	var showAtStart = +4;
+	var removeLabel = "X";
+	var ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+	//----------------------------------------------//
+	//	VALIDATION									//
+	//	set the validation variables from hidden	//
+	//	fields in the extendedMatchingItems.jsp		//
+	//----------------------------------------------//
+	var answer_point_value_error = $("input[id=answer_point_value_error]").val();
+	var theme_text_error = $("input[id=theme_text_error]").val();
+	var simple_text_options_blank_error = $("input[id=simple_text_options_blank_error]").val();//XXX
+	var number_of_rich_text_options_error = $("input[id=number_of_rich_text_options_error]").val();
+	var blank_or_non_integer_item_sequence_error = $("input[id=blank_or_non_integer_item_sequence_error]").val();
+	var correct_option_labels_error = $("input[id=correct_option_labels_error]").val();
+	var item_text_not_entered_error = $("input[id=item_text_not_entered_error]").val();//XXX
+	var correct_option_labels_invalid_error = $("input[id=correct_option_labels_invalid_error]").val();
+	var at_least_two_options_required_error = $("input[id=at_least_two_options_required_error]").val();
+	var at_least_two_pasted_options_required_error = $("input[id=at_least_two_pasted_options_required_error]").val();
+	
+	//------------------------------------------//
+	//	Lead in Statement						//
+	//	set the lead in default	and manage the	//
+	//	switch between user input and default	//
+	//------------------------------------------//
+	var leadinStatementDescription = $('#default_lead_in_statement_description').val().replace("<br/>", "\n");
 	$('[identity="lead_in_statement"]').focus(function() {
 		var leadin = $(this);
-		var defaultval = $('#default_lead_in_statement_description').val().replace("<br/>", "\n");
-		if (leadin.val() == defaultval) {
+		if (leadin.val() == leadinStatementDescription) {
 			leadin.val('');
 			leadin.removeClass('placeholder');
 		}
 	}).blur(function() {
 		var leadin = $(this);
-		var defaultval = $('#default_lead_in_statement_description').val().replace("<br/>", "\n");
-		if (leadin.val() == '' || leadin.val() == defaultval) {
+		if (leadin.val() == '' || leadin.val() == leadinStatementDescription) {
 			leadin.addClass('placeholder');
-			leadin.val(defaultval);
+			leadin.val(leadinStatementDescription);
 		}
 	}).blur();
+	//set the default part on submit
 	$('[identity="lead_in_statement"]').parents('form').submit(function() {
 		$(this).find('[identity="lead_in_statement"]').each(function() {
 			var leadin = $(this);
-			var defaultval = $('#default_lead_in_statement_description').val().replace("<br/>", "\n");
-			if (leadin.val() == defaultval) {
+			if (leadin.val() == leadinStatementDescription) {
 				leadin.val($('#default_lead_in_statement').val());
 			}
 		})
 	});
 	
-	//************* VALIDATION *****************
-	var error_dialog_title_line1 = $("input[id=error_dialog_title_line1]").val();
-	var error_dialog_title_line2 = $("input[id=error_dialog_title_line2]").val();
-	var answer_point_value_error = $("input[id=answer_point_value_error]").val();
-	var theme_text_error = $("input[id=theme_text_error]").val();
-	var simple_text_options_blank_error = $("input[id=simple_text_options_blank_error]").val();
-	var number_of_rich_text_options_error = $("input[id=number_of_rich_text_options_error]").val();
-	var blank_or_non_integer_item_sequence_error = $("input[id=blank_or_non_integer_item_sequence_error]").val();
-	var correct_option_labels_error = $("input[id=correct_option_labels_error]").val();
-	var item_text_not_entered_error = $("input[id=item_text_not_entered_error]").val();
-	var correct_option_labels_invalid_error = $("input[id=correct_option_labels_invalid_error]").val();
-	var at_least_two_options_required_error = $("input[id=at_least_two_options_required_error]").val();
-	var at_least_two_pasted_options_required_error = $("input[id=at_least_two_pasted_options_required_error]").val();
-	
-	//create error message tags
+	//----------------------------------------------//
+	//	Create error message tags					//
+	//	Setup the table at the top of 				//
+	//	extendedMatchingItems.jsp to hold the error	//
+	//	message. This replicate the way the errors	//
+	//	are shown in the normal jsf submits			//
+	//----------------------------------------------//
 	var $errorMessageTable = $('#emiErrorMessageTable');
 	var $errorMessageRow = $('<tr></tr>');
 	var $errorMessageColumn = $('<td></td>');
 	
-	//function to execute on save
+	//----------------------------------------------//
+	//	Validation function on save					//
+	//----------------------------------------------//
 	var buttonSave = $("input[value=Save]");
 	buttonSave.bind('click', function(){
 		$errorMessageTable.removeClass('messageSamigo');
 		$('#emiErrorMessageTable > tr').remove();
-		var errorMessages = new Array(maxErrorsDisplayed);
+		var errorMessages = new Array();
 		var errorNumber=+0;
 
 		//Validate Answer Point Value
 		var answerPointValue = $("input[name=itemForm:answerptr]").val();
 		if (answerPointValue.trim()=="" || /[^0-9.]/g.test(answerPointValue)) {
 			errorMessages[errorNumber++] = answer_point_value_error;
-			itemError = true;
 		}
 		
 		//Validate Theme Text
@@ -91,36 +111,38 @@ $(document).ready(function(){
 			errorMessages[errorNumber++] = theme_text_error;
 		}
 		
-		
 		//Validate Options
 		var simpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked").val();
 		var optionLabels = "";
 		var numOptions = +0;
 		
-		if (simpleOrRichAnswerOptions==0) { //simple
+		if (simpleOrRichAnswerOptions==0) { //simple text options
+			for (j=0; j<highestOptionId; j++) {
+				var optionText = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
+				if (optionText.is(':visible') && (optionText.val()==null || optionText.val().trim()=="") ) {
+					//errorMessages[errorNumber++] = simple_text_options_blank_error;
+					//break;//XXX
+				}
+				else if (optionText.is(':visible')) {
+					var label = ANSWER_OPTION_LABELS.substring(j, j+1);
+					optionLabels+=label;
+					numOptions++;
+				}
+			}
+			if (numOptions < minOptions) {
+				errorMessages[errorNumber++] = at_least_two_options_required_error;
+			}
+		}
+		else if(simpleOrRichAnswerOptions==2){//simple text paste
 			var pastedOptions = $("textarea[id=itemForm:emiAnswerOptionsPaste]").val();
 			if (pastedOptions == null || pastedOptions.trim()=="") {
-				for (j=0; j<highestOptionId; j++) {
-					var optionText = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
-					if (optionText.is(':visible') && (optionText.val()==null || optionText.val().trim()=="") ) {
-						//errorMessages[errorNumber++] = simple_text_options_blank_error;
-						//break;
-					}
-					else if (optionText.is(':visible')) {
-						var label = ANSWER_OPTION_LABELS.substring(j, j+1);
-						optionLabels+=label;
-						numOptions++;
-					}
-				}
-				if (numOptions < minOptions) {
-					errorMessages[errorNumber++] = at_least_two_options_required_error;
-				}
+				errorMessages[errorNumber++] = at_least_two_pasted_options_required_error;//XXX
 			}
 			else if (pastedOptions.split("\n").length < minOptions) {
 				errorMessages[errorNumber++] = at_least_two_pasted_options_required_error;
 			}
 		}
-		else { // Rich
+		else { // Rich //XXX
 			var richAnswerOptionsCount = +$("select[id=itemForm:answerOptionsRichCount]").val();
 			if (richAnswerOptionsCount == 0) {
 				errorMessages[errorNumber++] = number_of_rich_text_options_error;
@@ -132,7 +154,6 @@ $(document).ready(function(){
 		
 		//Validate Items
 		for (j=0; j<=highestItemId; j++) {
-			var itemError = false;
 			var labelInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Label]");
 			var itemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:" + j +":]").val();
 			var hasAttachment = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":hasAttachment]");
@@ -142,13 +163,11 @@ $(document).ready(function(){
 					&& ((itemText && itemText.trim()!=="") || hasAttachment.val()==="true") )  {
 				if (labelInput.val().trim()=="" || /[^0-9]/g.test(labelInput.val())) {
 					errorMessages[errorNumber++] = blank_or_non_integer_item_sequence_error + labelInput.val();
-					itemError = true;
 				}
 				
 				var correctOptionLabels = $("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":correctOptionLabels]").val().toUpperCase();
 				if (correctOptionLabels.trim()=="" || /[^A-Z,]/gi.test(correctOptionLabels)) {
 					errorMessages[errorNumber++] = correct_option_labels_error + labelInput.val();
-					itemError = true;
 				}
 				
 				if (optionLabels.length > 0) {
@@ -156,7 +175,6 @@ $(document).ready(function(){
 						thisLabel = correctOptionLabels.substring(i, i+1);
 						if (optionLabels.indexOf(thisLabel)==-1) {
 							errorMessages[errorNumber++] = correct_option_labels_invalid_error + labelInput.val();
-							itemError = true;
 							break;
 						}
 					}
@@ -179,23 +197,34 @@ $(document).ready(function(){
 		}
 	});
 	
+	//----------------------------------------------//
+	//  ************* OPTIONS ********************  //
+	//----------------------------------------------//
 	
-	//************* OPTIONS ********************
-	//Show/Hide Simple or Rich-Text Options based on user selection
-	var radiosSimpleOrRichAnswerOptions = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]");
-	radiosSimpleOrRichAnswerOptions.bind('click', function(){
+	//----------------------------------------------//
+	//	Show/Hide Simple or Rich-Text Options		//
+	//	based on user selection 					//
+	//----------------------------------------------//
+	$("input[name=itemForm:emiAnswerOptionsSimpleOrRich]").bind('click', function(){
 		if (this.value === "0"){
-			//show simple
+			//show simple option
+			$("#emiAnswerOptionsSimpleOptions").show();
+			$("#emiAnswerOptionsSimplePaste").hide();
 			$("#emiAnswerOptionsRich").hide();
-			$("#emiAnswerOptionsSimple").show();
 		}else if (this.value === "1"){
 			//show rich
+			$("#emiAnswerOptionsSimpleOptions").hide();
+			$("#emiAnswerOptionsSimplePaste").hide();
 			$("#emiAnswerOptionsRich").show();
-			$("#emiAnswerOptionsSimple").hide();
+		}else if (this.value === "2"){
+			//show simple paste
+			$("#emiAnswerOptionsSimpleOptions").hide();
+			$("#emiAnswerOptionsSimplePaste").show();
+			$("#emiAnswerOptionsRich").hide();
 		}
 	});
 	
-	//Remove Option
+	//Remove Option //XXX
 	for (i=0; i<=highestOptionId; i++) {
 		var emiOptionRemoveLink = $("a[id=itemForm:emiAnswerOptions:" + i + ":RemoveLink]");
 		emiOptionRemoveLink.bind('click', function() {
@@ -222,7 +251,7 @@ $(document).ready(function(){
 	}
 	
 	
-	//Add Options
+	//Add Options //XXX
 	var emiOptionAddLink = $("a[id=itemForm:addEmiAnswerOptionsLink]");
 	emiOptionAddLink.bind('click', function(){
 		for (i=0; i<highestOptionId; i++) {
@@ -250,26 +279,8 @@ $(document).ready(function(){
 		return false;
 	});
 	
-
-	//Hide Pasted if Option Text Entered
-	for (i=0; i<=highestOptionId; i++) {
-		var emiOptionText = $("input[id=itemForm:emiAnswerOptions:" + i + ":Text]");
-		emiOptionText.bind('change', function() {
-			if ($(this).val().trim() != "") {
-				$("textarea[id=itemForm:emiAnswerOptionsPaste]").hide();
-				$("textarea[id=itemForm:emiAnswerOptionsPaste]").val("");
-				$("label[id=itemForm:pasteLabel]").hide();
-			}
-			return false;
-	    });
-		emiOptionText.trigger('change');
-	}
-	
-	
-	
 	//************* ITEMS ********************
 	var emiVisibleItems = $("input[id=itemForm:emiVisibleItems]");
-
 	
 	//Remove Items
 	for (i=0; i<=highestItemId; i++) {
@@ -472,5 +483,3 @@ $(document).ready(function(){
 		containerFrame.height($(document.body).height() + 30);
 	}
 });
-
-//*************** JQuery Functions Above ******************

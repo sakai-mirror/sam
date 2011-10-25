@@ -268,18 +268,16 @@ public class ItemAddListener
 		
 		
 		// gopalrc TODO - more validation required if rich options ???
+		if(item.getAnswerOptionsSimpleOrRich().equals("2")) {//Simple Paste
+			if (item.getEmiAnswerOptionsPaste() != null
+					&& !item.getEmiAnswerOptionsPaste().trim().equals("")) {
+				item.populateEmiAnswerOptionsFromPasted();
+			}
+			item.setAnswerOptionsSimpleOrRich(ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString());
+		}//no else here. we need to go into the next if!
 		if (item.getAnswerOptionsSimpleOrRich().equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE.toString())) {
 
 			List answerOptions = (List) item.getEmiAnswerOptionsClean();
-			if (answerOptions == null
-					|| answerOptions.size() == 0) {
-				if (item.getEmiAnswerOptionsPaste() != null
-						&& !item.getEmiAnswerOptionsPaste().trim().equals("")) {
-					item.populateEmiAnswerOptionsFromPasted();
-				}
-			}
-			
-			//StringBuilder missingLabelbuf = new StringBuilder();
 			String txt = "";
 			String label = "";
 			int counter = 0;
