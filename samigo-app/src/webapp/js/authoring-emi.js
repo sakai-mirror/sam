@@ -86,8 +86,8 @@ $(document).ready(function(){
 	//	are shown in the normal jsf submits			//
 	//----------------------------------------------//
 	var $errorMessageTable = $('#emiErrorMessageTable');
-	var $errorMessageRow = $('<tr></tr>');
-	var $errorMessageColumn = $('<td></td>');
+	var $tableRowElement = $('<tr></tr>');
+	var $tableColumnElement = $('<td></td>');
 	
 	//----------------------------------------------//
 	//	Validation function on save					//
@@ -120,13 +120,17 @@ $(document).ready(function(){
 			for (j=0; j<highestOptionId; j++) {
 				var optionText = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
 				if (optionText.is(':visible') && (optionText.val()==null || optionText.val().trim()=="") ) {
+					//ignore
 					//errorMessages[errorNumber++] = simple_text_options_blank_error;
-					//break;//XXX
+					//break;
 				}
 				else if (optionText.is(':visible')) {
 					var label = ANSWER_OPTION_LABELS.substring(j, j+1);
 					optionLabels+=label;
 					numOptions++;
+				}else{
+					//not visible
+					break;
 				}
 			}
 			if (numOptions < minOptions) {
@@ -136,10 +140,12 @@ $(document).ready(function(){
 		else if(simpleOrRichAnswerOptions==2){//simple text paste
 			var pastedOptions = $("textarea[id=itemForm:emiAnswerOptionsPaste]").val();
 			if (pastedOptions == null || pastedOptions.trim()=="") {
-				errorMessages[errorNumber++] = at_least_two_pasted_options_required_error;//XXX
+				errorMessages[errorNumber++] = at_least_two_pasted_options_required_error;
 			}
 			else if (pastedOptions.split("\n").length < minOptions) {
 				errorMessages[errorNumber++] = at_least_two_pasted_options_required_error;
+			}else{
+				optionLabels = ANSWER_OPTION_LABELS.substring(0, pastedOptions.split("\n").length);
 			}
 		}
 		else { // Rich //XXX
@@ -179,13 +185,15 @@ $(document).ready(function(){
 						}
 					}
 				}
+			}else{
+				break;
 			}
 		}
 		
 		if (errorNumber > 0) {
 			for (i=0; i<errorNumber; i++) {
-				var col = $errorMessageColumn.clone().append(errorMessages[i]);
-				var row = $errorMessageRow.clone().appendTo($errorMessageTable);
+				var col = $tableColumnElement.clone().append(errorMessages[i]);
+				var row = $tableRowElement.clone().appendTo($errorMessageTable);
 				col.appendTo(row);
 			}
 			$errorMessageTable.addClass('messageSamigo');
@@ -223,6 +231,31 @@ $(document).ready(function(){
 			$("#emiAnswerOptionsRich").hide();
 		}
 	});
+	//trigger startup events
+	var radioSimpleOrRichChecked = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked");
+	radioSimpleOrRichChecked.trigger('click');
+	
+	//----------------------------------//
+	//	Add OptionLabels for Paste 		//
+	//	or Rich-Text Options			//
+	//----------------------------------//
+	var $labelsTable = $("#emiAnswerOptionsPasteLabelsTable");
+	$("textarea[id=itemForm:emiAnswerOptionsPaste]").change(function(){
+		var pastedOptions = $(this).val();
+		$('#emiAnswerOptionsPasteLabelsTable > tr').remove();
+		if (pastedOptions == null || pastedOptions.trim()!="") {
+			return;
+		}
+		var optionsArray = pastedOptions.split("\n");
+		for(i = 0; i < optionsArray.length; i++){
+			if (optionsArray[i] != null && optionsArray[i].trim()!="") {
+				var col = $tableColumnElement.clone().append(
+						ANSWER_OPTION_LABELS.substring(i, i+1) + '.) ' + optionsArray[i]);
+				var row = $tableRowElement.clone().appendTo($labelsTable);
+				col.appendTo(row);
+			}
+		}
+	});
 	
 	//Remove Option //XXX
 	for (i=0; i<=highestOptionId; i++) {
@@ -249,7 +282,6 @@ $(document).ready(function(){
 			return false;
 	    });
 	}
-	
 	
 	//Add Options //XXX
 	var emiOptionAddLink = $("a[id=itemForm:addEmiAnswerOptionsLink]");
@@ -282,7 +314,7 @@ $(document).ready(function(){
 	//************* ITEMS ********************
 	var emiVisibleItems = $("input[id=itemForm:emiVisibleItems]");
 	
-	//Remove Items
+	//Remove Items //XXX
 	for (i=0; i<=highestItemId; i++) {
 		var emiItemRemoveLink = $("a[id=itemForm:emiQuestionAnswerCombinations:" + i + ":RemoveLink]");
 		emiItemRemoveLink.bind('click', function() {
@@ -309,9 +341,7 @@ $(document).ready(function(){
 	    });
 	}
 	
-
-	
-	//Add Items
+	//Add Items //XXX
 	var emiItemAddLink = $("a[id=itemForm:addEmiQuestionAnswerCombinationsLink]");
 	emiItemAddLink.bind('click', function(){
 		var j=+0;
@@ -358,7 +388,6 @@ $(document).ready(function(){
 		return false;
 	});
 	
-
 	//Update CorrectOptionsLabels and RequiredOptionsCount 
 	var all_option = $("input[id=all]").val();
 	for (i=0; i<=highestItemId; i++) {
@@ -369,7 +398,7 @@ $(document).ready(function(){
 			var requiredOptionsCountSelect = $("select[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":requiredOptionsCount]");
 			var currentSelection = requiredOptionsCountSelect.val();
 			
-			var correctOpts = $(this).val();
+			var correctOpts = $(this).val().toUpperCase();
 			var maxOptions = +0;
 			for (var iMax=0; iMax<correctOpts.length; iMax++) {
 				var currCorrectLabel = correctOpts.substring(iMax, iMax+1);
@@ -392,7 +421,6 @@ $(document).ready(function(){
 	    });
 		emiCorrectOptionLabelsInput.trigger('change');
 	}
-
 	
 	//Validate Items
 	for (j=0; j<=highestItemId; j++) {
@@ -402,13 +430,6 @@ $(document).ready(function(){
 		});
 		labelInput.trigger('change');
 	}
-	
-	
-	
-	//trigger startup events
-	var radioSimpleOrRichChecked = $("input[name=itemForm:emiAnswerOptionsSimpleOrRich]:checked");
-	radioSimpleOrRichChecked.trigger('click');
-	
 	
 	//hide excess Options at start
 	var firstOptionText = $("input[id=itemForm:emiAnswerOptions:" + 0 + ":Text]");
@@ -429,7 +450,6 @@ $(document).ready(function(){
 		}
 	}
 	
-
 	//hide excess Items at start
 	//var firstItemText = $("textarea[id^=itemForm:emiQuestionAnswerCombinations:0]");
 	isAllNull = true;
@@ -464,21 +484,14 @@ $(document).ready(function(){
 		}
 	}
 
-	
-	//Vertically Align the Pasted Options Table Container
-	$("textarea[id=itemForm:emiAnswerOptionsPaste]").parent().parent().parent().parent().parent().css('vertical-align','top');
-	$("table[id=itemForm:emiAnswerOptions]").parent().css('vertical-align','top');
-
 	//Make the container visible after all processing
 	$("div[id=portletContent]").css('display','block');
-	
-
-	
-	function messageDialog(message) {
+		
+	function messageDialog(message) {//XXX
 		jAlert(message, 'Warning', null, 'confirm');
 	}
 	
-	function setContainerHeight() {
+	function setContainerHeight() {//XXX
 		var containerFrame = $("iframe[class=portletMainIframe]", parent.document.body);
 		containerFrame.height($(document.body).height() + 30);
 	}

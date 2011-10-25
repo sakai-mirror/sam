@@ -42,8 +42,8 @@
 	href="/samigo-app/css/ui-lightness/jquery-ui-1.7.2.custom.css"
 	rel="Stylesheet" />
 <script type="text/javascript">
-				var emiAuthoring = true;
-			</script>
+	var emiAuthoring = true;
+</script>
 
 <samigo:script path="/js/jquery-1.3.2.min.js" />
 <samigo:script path="/js/jquery-ui-1.7.2.custom.min.js" />
@@ -213,9 +213,21 @@
 						<h:outputLabel id="pasteLabel"
 							value="#{authorMessages.answer_options_paste}" />
 					</div>
-					<h:inputTextarea id="emiAnswerOptionsPaste" rows="6" cols="50"
-						value="#{itemauthor.currentItem.emiAnswerOptionsPaste}">
-					</h:inputTextarea>
+					<table>
+						<tr>
+							<td>
+								<h:inputTextarea id="emiAnswerOptionsPaste" rows="6" cols="50"
+									value="#{itemauthor.currentItem.emiAnswerOptionsPaste}">
+								</h:inputTextarea>
+							</td>
+							<td>
+								<table>
+									<tbody id='emiAnswerOptionsPasteLabelsTable'>
+									</tbody>
+								</table>
+							</td>
+						</tr>
+					</table>
 				</div>
 
 				<!-- 3.1(c) ANSWER RICH - TABLE/GRAPHIC -->
