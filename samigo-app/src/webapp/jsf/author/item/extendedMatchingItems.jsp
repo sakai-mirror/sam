@@ -201,9 +201,15 @@
 						</h:column>
 					</h:dataTable>
 
-					<h:outputLink id="addEmiAnswerOptionsLink" styleClass="iconAdd">
+					<h:outputLink id="addEmiAnswerOptionsLink" value="#" styleClass="iconAdd">
 						<h:outputText value="#{authorMessages.add_more_options}" />
 					</h:outputLink>
+					<h:selectOneMenu id="addEmiAnswerOptionsSelect" value="1">
+						<f:selectItem itemLabel="1" itemValue="1" />
+						<f:selectItem itemLabel="2" itemValue="2" />
+						<f:selectItem itemLabel="3" itemValue="3" />
+						<!-- This gets created by js... -->
+					</h:selectOneMenu>
 				</div>
 
 				<!-- 3.1(b) ANSWER OPTIONS - SIMPLE TEXT PASTE -->
@@ -424,7 +430,7 @@
 									<br />
 								</f:verbatim>
 								<h:selectOneMenu id="requiredOptionsCount"
-									onchange="this.form.onsubmit(); clickAddEmiAnswerOptionsCountLink();"
+									onchange="this.form.onsubmit();"
 									value="#{answer.requiredOptionsCount}">
 									<f:selectItem itemLabel="#{authorMessages.all}" itemValue="0" />
 									<f:selectItem itemLabel="1" itemValue="1" />
@@ -470,10 +476,20 @@
 				<f:verbatim>
 					<br />
 				</f:verbatim>
-				<h:outputLink id="addEmiQuestionAnswerCombinationsLink"
+				<h:outputLink id="addEmiQuestionAnswerCombinationsLink" value="#" 
 					rendered="true" styleClass="iconAdd">
 					<h:outputText value="#{authorMessages.add_more_items}" />
 				</h:outputLink>
+				<h:selectOneMenu id="addEmiQuestionAnswerCombinationsSelect" value="1">
+					<f:selectItem itemLabel="1" itemValue="1" />
+					<f:selectItem itemLabel="2" itemValue="2" />
+					<f:selectItem itemLabel="3" itemValue="3" />
+					<!-- 
+						...
+						...
+						This gets created by js... 
+					-->
+				</h:selectOneMenu>
 				</div>
 			</div>
 			<br />
