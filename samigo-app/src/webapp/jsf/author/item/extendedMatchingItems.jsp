@@ -48,6 +48,7 @@
 <samigo:script path="/js/jquery-1.3.2.min.js" />
 <samigo:script path="/js/jquery-ui-1.7.2.custom.min.js" />
 <samigo:script path="/js/authoring.js" />
+<samigo:script path="/js/utils-emi.js" />
 <samigo:script path="/js/authoring-emi.js" />
 </head>
 <body onload="<%=request.getAttribute("html.body.onload")%>">

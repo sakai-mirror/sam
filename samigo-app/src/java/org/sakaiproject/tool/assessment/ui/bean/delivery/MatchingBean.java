@@ -23,6 +23,7 @@
 
 package org.sakaiproject.tool.assessment.ui.bean.delivery;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -315,9 +316,8 @@ public class AnswerLabelWithCorrectStatus {
 				String q = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","q");     
 				if (!parent.getItemData().isValidEmiAnswerOptionLabel(label)) {
 					((UIInput)toValidate).setValid(false);
-					String invalid_response = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","invalid_response");     
 					String please_select_from_available = ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.DeliveryMessages","please_select_from_available");     
-					FacesMessage message = new FacesMessage(invalid_response + " '" + response + "' " + please_select_from_available + " - " + q + " " + parent.getNumber() + "(" + itemText.getSequence() + ")" );
+					FacesMessage message = new FacesMessage(MessageFormat.format(please_select_from_available, new Object[]{response, parent.getNumber(), itemText.getSequence(), parent.getItemData().getEmiAnswerOptionLabels()}));
 					context.addMessage(toValidate.getClientId(context), message);
 					break;
 				}

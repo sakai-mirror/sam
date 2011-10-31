@@ -24,34 +24,7 @@ should be included in file importing DeliveryMessages
 **********************************************************************************/
 --%>
 -->
-<script type="text/javascript">
-//This does frontend validation for the emi options entered
-	
-	function checkEMIOptions(element, validEMIOptions, event){
-		//no space
-		if(event.charCode == 32){
-			return false;
-		}
-		//ignore all the other withspace keys
-		//48 = 0
-		if(event.charCode < 48){
-			return true;
-		}
-		var keychar = String.fromCharCode(event.charCode).toUpperCase();
-		//don't use if it is not in the options
-		if(validEMIOptions.indexOf(keychar) == -1){
-			return false;
-		}
-		//now check that it is not a duplicate
-		var index = element.value.toUpperCase().indexOf(keychar);
-		if(index == -1){
-			return true;
-		}else{
-			//check that the duplicate is not selected, then we can replace
-			return (element.selectionStart <= index && element.selectionEnd > index);
-		}
-	}
-</script>
+  <samigo:script path="/js/utils-emi.js" />
   <f:verbatim></h5><h3></f:verbatim><h:outputText value="#{question.themeText}"  escape="false"/>
   <f:verbatim></h3><br /></f:verbatim>
   
