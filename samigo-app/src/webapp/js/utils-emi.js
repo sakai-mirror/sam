@@ -39,6 +39,9 @@ function isValidOption(element, validEMIOptions, charCode){
 		return false;
 	}
 	// now check that it is not a duplicate
+	if (typeof element.value === 'undefined') {
+		element.value = element.val();
+	}
 	var index = element.value.toUpperCase().indexOf(keychar);
 	if (index == -1) {
 		return true;
