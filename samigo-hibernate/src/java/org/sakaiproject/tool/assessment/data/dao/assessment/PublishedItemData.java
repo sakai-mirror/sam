@@ -40,11 +40,10 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
-import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 
 public class PublishedItemData
-    implements java.io.Serializable, ItemDataIfc, Comparable, AssessmentConstantsIfc {
+    implements java.io.Serializable, ItemDataIfc, Comparable {
   static Category errorLogger = Category.getInstance("errorLogger");
   static ResourceBundle rb = ResourceBundle.getBundle("org.sakaiproject.tool.assessment.bundle.Messages");
 

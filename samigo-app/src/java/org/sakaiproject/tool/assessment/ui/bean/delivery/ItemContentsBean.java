@@ -55,7 +55,6 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.grading.ItemGradingAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.grading.ItemGradingIfc;
 import org.sakaiproject.tool.assessment.data.ifc.grading.MediaIfc;
-import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.ItemFacade;
@@ -80,7 +79,7 @@ import org.sakaiproject.util.ResourceLoader;
  * </p>
  */
 
-public class ItemContentsBean implements Serializable, AssessmentConstantsIfc {
+public class ItemContentsBean implements Serializable {
 	/**
 	 * 
 	 */

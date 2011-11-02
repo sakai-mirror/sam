@@ -266,8 +266,6 @@ public class ItemAddListener
 		boolean tooFewAnswerOptions = false;
 		boolean richTextOptionsError = false;
 		
-		
-		// gopalrc TODO - more validation required if rich options ???
 		if(item.getAnswerOptionsSimpleOrRich().equals("2")) {//Simple Paste
 			if (item.getEmiAnswerOptionsPaste() != null
 					&& !item.getEmiAnswerOptionsPaste().trim().equals("")) {

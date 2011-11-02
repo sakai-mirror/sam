@@ -46,7 +46,6 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemFeedbackIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
-import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.osid.assessment.impl.ItemImpl;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
@@ -56,7 +55,7 @@ import org.sakaiproject.tool.assessment.services.PersistenceService;
  * ItemFacade implements ItemDataIfc that encapsulates our out of bound (OOB)
  * agreement.
  */
-public class ItemFacade implements Serializable, ItemDataIfc, Comparable, AssessmentConstantsIfc {
+public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
   private static Log log = LogFactory.getLog(ItemFacade.class);
 
   private static final long serialVersionUID = 7526471155622776147L;

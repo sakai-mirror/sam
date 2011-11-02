@@ -19,13 +19,12 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemFeedbackIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
-import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 
 
 public class ItemData
     implements java.io.Serializable,
-    ItemDataIfc, Comparable, AssessmentConstantsIfc {
+    ItemDataIfc, Comparable {
   static Category errorLogger = Category.getInstance("errorLogger");
   static ResourceBundle rb = ResourceBundle.getBundle("org.sakaiproject.tool.assessment.bundle.Messages");
 

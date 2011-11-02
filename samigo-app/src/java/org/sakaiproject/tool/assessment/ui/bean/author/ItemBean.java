@@ -42,7 +42,6 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
-import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.tool.assessment.facade.TypeFacade;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
@@ -58,7 +57,7 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.FavoriteColChoicesIt
  * $Id$
  */
 public class ItemBean
-  implements Serializable, AssessmentConstantsIfc
+  implements Serializable
 {
   //private static Log log = LogFactory.getLog(ItemBean.class);
 

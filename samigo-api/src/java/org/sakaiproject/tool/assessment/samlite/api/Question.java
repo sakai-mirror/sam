@@ -5,10 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 
-//import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
-import org.sakaiproject.tool.assessment.data.ifc.shared.AssessmentConstantsIfc;
-
-public class Question implements AssessmentConstantsIfc{
+public class Question {
 	public static final int UNDEFINED_QUESTION = 0;
 	public static final int MULTIPLE_CHOICE_QUESTION = 10;
 	public static final int MULTIPLE_CHOICE_MULTIPLE_ANSWER_QUESTION = 15;
