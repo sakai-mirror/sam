@@ -232,7 +232,7 @@ INSERT INTO SAM_ASSESSACCESSCONTROL_T ("ASSESSMENTID" ,
     "UNLIMITEDSUBMISSIONS" )
     VALUES (1 ,NULL,1 ,1 , NULL , NULL , NULL , NULL ,1 ,
     NULL, NULL, NULL, NULL, NULL,
-    1 ,2 ,1 ,'' ,'' ,'' ,'' ,'' ,
+    0 ,2 ,1 ,'' ,'' ,'' ,'' ,'' ,
     1  )
 ;
 INSERT INTO SAM_ASSESSMETADATA_T ("ASSESSMENTMETADATAID", "ASSESSMENTID","LABEL",
@@ -418,7 +418,7 @@ INSERT INTO SAM_ASSESSACCESSCONTROL_T (ASSESSMENTID,
      AND TYPEID='142' AND ISTEMPLATE=1),
                       NULL,1 ,1 , NULL , NULL , NULL , NULL ,1 ,
                       NULL, NULL, NULL, NULL, NULL,
-                      1 ,2 ,1 ,'' ,'' ,'' ,'' ,'' ,
+                      0 ,2 ,1 ,'' ,'' ,'' ,'' ,'' ,
                       1  )
 ;
 INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
@@ -647,7 +647,7 @@ INSERT INTO SAM_ASSESSACCESSCONTROL_T (ASSESSMENTID,
      AND TYPEID='142' AND ISTEMPLATE=1),
                       1,1 ,3 , NULL , NULL , NULL , NULL ,2 ,
                       NULL, NULL, NULL, NULL, NULL,
-                      1 ,1 ,1 ,'' ,'' ,'' ,'' ,'' ,
+                      0 ,1 ,1 ,'' ,'' ,'' ,'' ,'' ,
                       0  )
 ;
 INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
@@ -877,7 +877,7 @@ INSERT INTO SAM_ASSESSACCESSCONTROL_T (ASSESSMENTID,
      AND TYPEID='142' AND ISTEMPLATE=1),
                       NULL,1 ,2 , NULL , NULL , NULL , NULL ,1 ,
                       NULL, NULL, NULL, NULL, NULL,
-                      1 ,2 ,1 ,'' ,'' ,'' ,'' ,'' ,
+                      0 ,2 ,1 ,'' ,'' ,'' ,'' ,'' ,
                       1  )
 ;
 INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
@@ -1107,7 +1107,7 @@ INSERT INTO SAM_ASSESSACCESSCONTROL_T (ASSESSMENTID,
      AND TYPEID='142' AND ISTEMPLATE=1),
                       1,1 ,1 , NULL , NULL , NULL , NULL ,1 ,
                       NULL, NULL, NULL, NULL, NULL,
-                      1 ,2 ,1 ,'' ,'' ,'' ,'' ,'' ,
+                      0 ,2 ,1 ,'' ,'' ,'' ,'' ,'' ,
                       0  )
 ;
 INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
@@ -1337,7 +1337,7 @@ INSERT INTO SAM_ASSESSACCESSCONTROL_T (ASSESSMENTID,
      AND TYPEID='142' AND ISTEMPLATE=1),
                       1,1 ,1 , NULL , NULL , NULL , NULL ,2 ,
                       NULL, NULL, NULL, NULL, NULL,
-                      1 ,1 ,1 ,'' ,'' ,'' ,'' ,'' ,
+                      0 ,1 ,1 ,'' ,'' ,'' ,'' ,'' ,
                       0  )
 ;
 INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,
@@ -1573,7 +1573,7 @@ INSERT INTO SAM_ASSESSACCESSCONTROL_T (ASSESSMENTID,
      AND TYPEID='142' AND ISTEMPLATE=1),
                       1,1 ,1 , NULL , NULL , NULL , NULL ,2 ,
                       NULL, NULL, NULL, NULL, NULL,
-                      1 ,1 ,1 ,'' ,'' ,'' ,'' ,'' ,
+                      0 ,1 ,1 ,'' ,'' ,'' ,'' ,'' ,
                       0  )
 ;
 INSERT INTO SAM_ASSESSMETADATA_T (ASSESSMENTMETADATAID, ASSESSMENTID, LABEL,

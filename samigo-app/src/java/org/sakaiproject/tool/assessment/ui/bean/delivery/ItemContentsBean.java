@@ -32,7 +32,6 @@ import java.util.Set;
 import javax.faces.model.SelectItem;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -417,7 +416,7 @@ public class ItemContentsBean implements Serializable {
 		Iterator iter = itemgradingdataArray.iterator();
 		int itemgradingsize =itemgradingdataArray.size();
 		int publishedanswer_notnull = 0;
-		if (getItemData().getTypeId().toString().equals("9")) 
+		if (getItemData().getTypeId().equals(TypeIfc.MATCHING)) 
 			// SAM-776: Every choice has to be filled in before a question is considered answered 
 		{
 			while (iter.hasNext()) {
@@ -436,8 +435,10 @@ public class ItemContentsBean implements Serializable {
 		else {
 		while (iter.hasNext()) {
 			ItemGradingData data = (ItemGradingData) iter.next();
-			if (getItemData().getTypeId().toString().equals("8")
-					|| getItemData().getTypeId().toString().equals("11")) // SAM-330
+			if (getItemData().getTypeId().equals(TypeIfc.ESSAY_QUESTION)
+					|| getItemData().getTypeId().equals(TypeIfc.FILL_IN_BLANK)
+					|| getItemData().getTypeId().equals(TypeIfc.FILL_IN_NUMERIC) // SAM-330
+					) 
 			{
 				if (data.getAnswerText() != null
 						&& !data.getAnswerText().equals("")) {
@@ -902,24 +903,6 @@ public class ItemContentsBean implements Serializable {
 
 	public void setSelectionArray(ArrayList newArray) {
 		selectionArray = newArray;
-	}
-	
-	public List<SelectItem> getSelectItemPartsMC() {
-		List<SelectItem> selectItemParts = new ArrayList<SelectItem>();
-
-		String text = null;
-		for(SelectionBean selection: selectionArray) {
-			if (selection.getAnswer().getLabel() != null && !selection.getAnswer().getLabel().equals("")) {
-				text = " " + selection.getAnswer().getLabel() + ". " + selection.getAnswer().getText();
-			}
-			else {
-				text = " " + selection.getAnswer().getText();
-			}
-
-			selectItemParts.add(new SelectItem(selection.getAnswerId(), text));
-		}
-
-		return selectItemParts;
 	}
 
 	public ArrayList getMatrixArray() {

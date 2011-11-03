@@ -534,59 +534,6 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
       return 0;
     }
   }
-
-  
-  public HashMap getSubmissionSizeOfAllPublishedAssessments(){
-
-	// modified by gopalrc to take account of group release
-	//ArrayList groupIds = getSiteGroupIds(AgentFacade.getCurrentSiteId());
-	
-	/*
-	String groupsIdStr = "(";
-	Iterator groupIdIter = groupIds.iterator();
-	while (groupIdIter.hasNext()) {
-		groupsIdStr += "'" + groupIdIter.next().toString() + "', ";
-	}
-	groupsIdStr += "'none')";
-    */
-	
-	
-	HashMap h = new HashMap();
-	
-    Object [] values = {"OWN_PUBLISHED_ASSESSMENT", AgentFacade.getCurrentSiteId(), Boolean.valueOf(true)};
-    
-    //List list = getHibernateTemplate().find("select new PublishedAssessmentData(a.publishedAssessmentId, count(a)) from AssessmentGradingData a where a.forGrade=? group by a.publishedAssessmentId", Boolean.valueOf(true));
-    List list = getHibernateTemplate().find(
-    		"select new PublishedAssessmentData(ag.publishedAssessmentId, count(ag.publishedAssessmentId)) " +
-            "from AssessmentGradingData ag, AuthorizationData au " +
-            "where au.functionId = ? and au.agentIdString = ? " +
-            "and ag.publishedAssessmentId = au.qualifierId and ag.forGrade=? " +
-            "group by ag.publishedAssessmentId", values);
-
-    
-    //"where au.functionId = ? and (au.agentIdString = ?  or au.agentIdString in (?)) " +
-
-    
-    Iterator iter = list.iterator();
-    while (iter.hasNext()){
-      PublishedAssessmentData o = (PublishedAssessmentData)iter.next();
-      h.put(o.getPublishedAssessmentId(), Integer.valueOf(o.getSubmissionSize()));
-    }
-    return h;
-  }
-
-  public HashMap getAGDataSizeOfAllPublishedAssessments() {
-		HashMap agDataSizeMap = new HashMap();
-		List list = getHibernateTemplate()
-				.find(
-						"select a.publishedAssessmentId, count(a) from AssessmentGradingData a group by a.publishedAssessmentId");
-		Iterator iter = list.iterator();
-		while (iter.hasNext()) {
-			Object o[] = (Object[]) iter.next();
-			agDataSizeMap.put(o[0], o[1]);
-		}
-		return agDataSizeMap;
-  }
   
   public Long saveMedia(byte[] media, String mimeType){
     log.debug("****"+AgentFacade.getAgentString()+"saving media...size="+media.length+" "+(new Date()));
@@ -2923,18 +2870,13 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    					adata.setFinalScore(0f);
 	    				}
 	    				// SAM-1088
-	    				if (adata.getSubmittedDate() == null) {
-	    					adata.setIsAutoSubmitted(Boolean.TRUE);
-	    				}
-	    				else if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
+	    				if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
 	    						adata.getSubmittedDate().after(assessment.getDueDate())) {
 	    					adata.setIsLate(true);
 	    				}
-	    				else if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
-	    						adata.getSubmittedDate().before(assessment.getDueDate())) {
-	    					adata.setIsAutoSubmitted(Boolean.TRUE);
-	    				}
-	    				adata.setSubmittedDate(new Date());
+	    				
+	    				//adata.setSubmittedDate(new Date());
+	    				adata.setIsAutoSubmitted(Boolean.TRUE);
 	    				adata.setStatus(Integer.valueOf(1));
 	    				toBeAutoSubmittedList.add(adata);
 	    				completeItemGradingData(adata, sectionSetMap);
@@ -2955,18 +2897,13 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     					adata.setFinalScore(0f);
     				}
 	    			// SAM-1088
-    				if (adata.getSubmittedDate() == null) {
-    					adata.setIsAutoSubmitted(Boolean.TRUE);
-    				}
-    				else if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
+    				if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
     						adata.getSubmittedDate().after(assessment.getDueDate())) {
     					adata.setIsLate(true);
     				}
-    				else if (adata.getSubmittedDate() != null && assessment != null && assessment.getDueDate() != null &&
-    						adata.getSubmittedDate().before(assessment.getDueDate())) {
-    					adata.setIsAutoSubmitted(Boolean.TRUE);
-    				}
-	    			adata.setSubmittedDate(new Date());
+    				
+	    			//adata.setSubmittedDate(new Date());
+    				adata.setIsAutoSubmitted(Boolean.TRUE);
 	    			adata.setStatus(Integer.valueOf(1));
 	    			toBeAutoSubmittedList.add(adata);
 	    			completeItemGradingData(adata, sectionSetMap);

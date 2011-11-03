@@ -158,6 +158,8 @@ public class Item extends ASIBaseClass
     if(item == null) {
     	return;
     }
+    //XXX Jaques, this is the qti export stuff
+    
     // metadata
     setFieldentry("ITEM_OBJECTIVE",
       item.getItemMetaDataByLabel(ItemMetaDataIfc.OBJECTIVE ));
