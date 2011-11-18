@@ -596,7 +596,7 @@ public class PublishedItemData
 				ItemTextIfc itemText = (ItemTextIfc) itemTextIter.next();
 				if (itemText.isEmiQuestionItemText()) {
 				   answerKey += itemText.getSequence() + ":";
-				   ArrayList emiItems = itemText.getAnswerArraySorted();
+				   List emiItems = itemText.getAnswerArraySorted();
 				   Iterator emiItemsIter = emiItems.iterator();
 				   while (emiItemsIter.hasNext()) {
 					   AnswerIfc answer = (AnswerIfc)emiItemsIter.next();
@@ -611,14 +611,14 @@ public class PublishedItemData
 		}
 	   
 		
-		ArrayList answerArray = ((ItemTextIfc) itemTextArray.get(0))
+		List answerArray = ((ItemTextIfc) itemTextArray.get(0))
 				.getAnswerArraySorted();
 		HashMap h = new HashMap();
 		
 		
 		for (int i = 0; i < itemTextArray.size(); i++) {
 			ItemTextIfc text = (ItemTextIfc) itemTextArray.get(i);
-			ArrayList answers = text.getAnswerArraySorted();
+			List answers = text.getAnswerArraySorted();
 			for (int j = 0; j < answers.size(); j++) {
 				AnswerIfc a = (AnswerIfc) answers.get(j);
 				if (!this.getPartialCreditFlag() && (Boolean.TRUE).equals(a.getIsCorrect())) {
@@ -852,7 +852,7 @@ public class PublishedItemData
 	
 	
 	  //gopalrc - Aug 2010
-	  public ArrayList getEmiAnswerOptions() {
+	  public List getEmiAnswerOptions() {
 		  if (!typeId.equals(TypeD.EXTENDED_MATCHING_ITEMS)) return null;
 		  ItemTextIfc itemText = getItemTextBySequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE);  
 		  if (itemText != null) {
@@ -953,8 +953,8 @@ public class PublishedItemData
   public List<Integer> getColumnIndexList() {
 
 	  List<Integer> columnIndexList = new ArrayList<Integer>();
-	  ArrayList itemTextArray = getItemTextArraySorted();
-	  ArrayList answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();  
+	  List itemTextArray = getItemTextArraySorted();
+	  List answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();  
 	  List<String> stringList = new ArrayList<String>();
 
 	  for(int i=0; i<answerArray.size();i++) {
@@ -970,8 +970,8 @@ public class PublishedItemData
   }
 
   public String[] getColumnChoices() {
-	  ArrayList itemTextArray = getItemTextArraySorted();
-	  ArrayList answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();   
+	  List itemTextArray = getItemTextArraySorted();
+	  List answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted();   
 	  List<String> stringList = new ArrayList<String>();
 
 	  for(int i=0; i<answerArray.size();i++) {

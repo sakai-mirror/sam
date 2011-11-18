@@ -32,6 +32,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -56,6 +57,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 /**
@@ -317,16 +322,33 @@ public class XmlStringBuffer
     else
     {
       ByteArrayOutputStream out = new ByteArrayOutputStream();
-      Source xmlSource = new DOMSource(document);
-      Result outputTarget = new StreamResult(out);
-      Transformer tf;
-	  try {
-		tf = TransformerFactory.newInstance().newTransformer();
-	    tf.transform(xmlSource, outputTarget);
-	  } catch (TransformerException e) {
-		log.error(e.getMessage(), e);
-	  }
-      return out.toString();	
+//      Source xmlSource = new DOMSource(document);
+//      Result outputTarget = new StreamResult(out);
+//      Transformer tf;
+//	  try {
+//		tf = TransformerFactory.newInstance().newTransformer();
+//		tf.setOutputProperty(OutputKeys.INDENT, "yes");
+//		tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+//	    tf.transform(xmlSource, outputTarget);
+//	  } catch (TransformerException e) {
+//		log.error(e.getMessage(), e);
+//	  }
+
+		try {
+			DOMImplementationRegistry registry = DOMImplementationRegistry
+					.newInstance();
+			DOMImplementationLS impl = (DOMImplementationLS) registry
+					.getDOMImplementation("LS");
+			LSSerializer writer = impl.createLSSerializer();
+			writer.getDomConfig().setParameter("format-pretty-print",
+					Boolean.TRUE);
+			LSOutput output = impl.createLSOutput();
+			output.setByteStream(out);
+			writer.write(document, output);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+		return out.toString();	
     }
   }
 
@@ -446,6 +468,16 @@ public class XmlStringBuffer
 	  }
 	  return result;
   }
+  
+	public String getValueOf(String xpath) {
+		try {
+			XPath path = new DOMXPath(xpath);
+			return path.stringValueOf(this.getDocument());
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return null;
+		}
+	}
 
   /**
    * perform Update on this object
@@ -653,7 +685,7 @@ public class XmlStringBuffer
    *
    * @return
    */
-  private final Element createChildElement(String childXpath)
+  protected final Element createChildElement(String childXpath)
   {
     int index = childXpath.indexOf("/");
     String elementName = childXpath;
@@ -670,7 +702,6 @@ public class XmlStringBuffer
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
       DocumentBuilder db = dbf.newDocumentBuilder();
       Document document = db.newDocument();
-      element = document.createElement(elementName);
       element = document.createElement(elementName);
       if(child != null)
       {

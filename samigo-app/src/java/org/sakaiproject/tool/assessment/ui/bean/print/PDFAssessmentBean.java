@@ -155,7 +155,7 @@ public class PDFAssessmentBean implements Serializable {
 				itemContents.setNumber(numberQuestion++);
 
 				// Order answers in order (A, B, C, D)
-				ArrayList question = itemContents.getItemData().getItemTextArraySorted();
+				List question = itemContents.getItemData().getItemTextArraySorted();
 				for (int k=0; k<question.size(); k++) {
 					PublishedItemText itemtext = (PublishedItemText)question.get(k);
 					ArrayList answers = itemtext.getAnswerArray();
@@ -444,7 +444,7 @@ public class PDFAssessmentBean implements Serializable {
 						item.getItemData().getTypeId().equals(TypeIfc.TRUE_FALSE) ||
 						item.getItemData().getTypeId().equals(TypeIfc.MATRIX_CHOICES_SURVEY)) {
 
-					ArrayList question = item.getItemData().getItemTextArraySorted();
+					List question = item.getItemData().getItemTextArraySorted();
 					for (int k=0; k<question.size(); k++) {
 						PublishedItemText itemtext = (PublishedItemText)question.get(k);
 						ArrayList answers = itemtext.getAnswerArraySorted();

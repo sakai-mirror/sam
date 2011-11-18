@@ -781,8 +781,8 @@ public class HistogramListener
 
     //int numAnswers = 0;
     ItemDataIfc item = (ItemDataIfc) publishedItemHash.get(qbean.getItemId());
-    ArrayList text = item.getItemTextArraySorted();
-    ArrayList answers = null;
+    List text = item.getItemTextArraySorted();
+    List answers = null;
     
     //gopalrc - added Sept 2010
 	//keys number of correct answers required by sub-question (ItemText)
@@ -850,8 +850,8 @@ public class HistogramListener
    * calculates statistics for EMI questions
    */
   private void getEMIScores(HashMap publishedItemHash,
-			HashMap publishedAnswerHash, HashMap emiRequiredCorrectAnswersCount, ArrayList scores,
-			HistogramQuestionScoresBean qbean, ArrayList answers) {
+			HashMap publishedAnswerHash, HashMap emiRequiredCorrectAnswersCount, List scores,
+			HistogramQuestionScoresBean qbean, List answers) {
 		ResourceLoader rb = new ResourceLoader(
 				"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
 		
@@ -1383,8 +1383,8 @@ public class HistogramListener
   
 
   private void getFIBMCMCScores(HashMap publishedItemHash,
-			HashMap publishedAnswerHash, ArrayList scores,
-			HistogramQuestionScoresBean qbean, ArrayList answers) {
+			HashMap publishedAnswerHash, List scores,
+			HistogramQuestionScoresBean qbean, List answers) {
 		ResourceLoader rb = new ResourceLoader(
 				"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
 		HashMap texts = new HashMap();
@@ -1522,10 +1522,10 @@ public class HistogramListener
 					// it would count as a correct response
 
 					try {
-						ArrayList itemTextArray = ((ItemDataIfc) publishedItemHash
+						List itemTextArray = ((ItemDataIfc) publishedItemHash
 								.get(item.getPublishedItemId()))
 								.getItemTextArraySorted();
-						ArrayList answerArray = ((ItemTextIfc) itemTextArray
+						List answerArray = ((ItemTextIfc) itemTextArray
 								.get(0)).getAnswerArraySorted();
 
 						int corranswers = 0;
@@ -1685,8 +1685,8 @@ public class HistogramListener
 	 * correctresponses/(float) responses) * 100))); }
 	 */
 
-  private void getTFMCScores(HashMap publishedAnswerHash, ArrayList scores,
-			HistogramQuestionScoresBean qbean, ArrayList answers) {
+  private void getTFMCScores(HashMap publishedAnswerHash, List scores,
+			HistogramQuestionScoresBean qbean, List answers) {
 		ResourceLoader rb = new ResourceLoader(
 				"org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
 		HashMap texts = new HashMap();
@@ -1830,7 +1830,7 @@ public class HistogramListener
 
 
   private void getMatchingScores(HashMap publishedItemTextHash, HashMap publishedAnswerHash,
-    ArrayList scores, HistogramQuestionScoresBean qbean, ArrayList labels)
+		  List scores, HistogramQuestionScoresBean qbean, List labels)
   {
 	ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.EvaluationMessages");
 	ResourceLoader rc = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.CommonMessages");
@@ -1978,7 +1978,7 @@ public class HistogramListener
   }
 
   private void getMatrixSurveyScores(HashMap publishedItemTextHash, HashMap publishedAnswerHash, 
-		  ArrayList scores, HistogramQuestionScoresBean qbean, ArrayList labels)
+		  List scores, HistogramQuestionScoresBean qbean, List labels)
   {
 	  ResourceLoader rb = new ResourceLoader(
 	  "org.sakaiproject.tool.assessment.bundle.EvaluationMessages");

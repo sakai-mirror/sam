@@ -1174,7 +1174,7 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
   
   
   //gopalrc - Aug 2010
-	public ArrayList getEmiAnswerOptions() {
+	public List getEmiAnswerOptions() {
 		try {
 			this.data = (ItemDataIfc) item.getData();
 		} catch (AssessmentException ex) {
@@ -1184,7 +1184,7 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
 	}
 
   //gopalrc - Aug 2010
-	public ArrayList getEmiQuestionAnswerCombinations() {
+	public List getEmiQuestionAnswerCombinations() {
 		try {
 			this.data = (ItemDataIfc) item.getData();
 		} catch (AssessmentException ex) {

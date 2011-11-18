@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.sakaiproject.tool.assessment.data.dao.shared.TypeD;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
@@ -36,8 +36,8 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 
 public class ItemText
-    implements Serializable, ItemTextIfc, Comparable {
-  static Category errorLogger = Category.getInstance("errorLogger");
+    implements Serializable, ItemTextIfc, Comparable<ItemTextIfc> {
+  static Logger errorLogger = Logger.getLogger("errorLogger");
 
   private static final long serialVersionUID = 7526471155622776147L;
 
@@ -45,17 +45,17 @@ public class ItemText
   private ItemDataIfc item;
   private Long sequence;
   private String text;
-  private Set answerSet;
+  private Set<AnswerIfc> answerSet;
 
   //gopalrc - added Aug 2010
-  private Set itemTextAttachmentSet;
+  private Set<ItemTextAttachmentIfc> itemTextAttachmentSet;
   private Integer requiredOptionsCount;
   
 
   
   public ItemText() {}
 
-  public ItemText(ItemData item, Long sequence, String text, Set answerSet) {
+  public ItemText(ItemData item, Long sequence, String text, Set<AnswerIfc> answerSet) {
     this.item = item;
     this.sequence = sequence;
     this.text = text;
@@ -94,11 +94,11 @@ public class ItemText
     this.text = text;
   }
 
-  public Set getAnswerSet() {
+  public Set<AnswerIfc> getAnswerSet() {
     return answerSet;
   }
 
-  public void setAnswerSet(Set answerSet) {
+  public void setAnswerSet(Set<AnswerIfc> answerSet) {
     this.answerSet = answerSet;
 
     //gopalrc Added 27 Nov 2009
@@ -115,47 +115,40 @@ public class ItemText
     in.defaultReadObject();
   }
 
-  public ArrayList getAnswerArray() {
-    ArrayList list = new ArrayList();
+  public List<AnswerIfc> getAnswerArray() {
+    List<AnswerIfc> list = new ArrayList<AnswerIfc>();
     list.addAll(answerSet);
-    /* gopalrc - above more efficient?
-    Iterator iter = answerSet.iterator();
-    while (iter.hasNext()){
-      list.add(iter.next());
-    }
-    */
     return list;
   }
 
-  public int compareTo(Object o) {
-      ItemText a = (ItemText)o;
-      return sequence.compareTo(a.sequence);
+  public int compareTo(ItemTextIfc o) {
+      return sequence.compareTo(o.getSequence());
   }
 
-  public ArrayList getAnswerArraySorted() {
-    ArrayList list = getAnswerArray();
+  public List<AnswerIfc> getAnswerArraySorted() {
+    List<AnswerIfc> list = getAnswerArray();
     Collections.sort(list);
     return list;
   }
   
   
     //gopalrc - added Aug 2010
-	public Set getItemTextAttachmentSet() {
+	public Set<ItemTextAttachmentIfc> getItemTextAttachmentSet() {
 		return itemTextAttachmentSet;
 	}
 
     //gopalrc - added Aug 2010
-	public void setItemTextAttachmentSet(Set itemTextAttachmentSet) {
+	public void setItemTextAttachmentSet(Set<ItemTextAttachmentIfc> itemTextAttachmentSet) {
 		this.itemTextAttachmentSet = itemTextAttachmentSet;
 	}
 
     //gopalrc - added Aug 2010
-	public List getItemTextAttachmentList() {
-		ArrayList list = new ArrayList();
+	public List<ItemTextAttachmentIfc> getItemTextAttachmentList() {
+		ArrayList<ItemTextAttachmentIfc> list = new ArrayList<ItemTextAttachmentIfc>();
 		if (itemTextAttachmentSet != null) {
-			Iterator iter = itemTextAttachmentSet.iterator();
+			Iterator<ItemTextAttachmentIfc> iter = itemTextAttachmentSet.iterator();
 			while (iter.hasNext()) {
-				ItemTextAttachmentIfc a = (ItemTextAttachmentIfc) iter.next();
+				ItemTextAttachmentIfc a = iter.next();
 				list.add(a);
 			}
 		}
@@ -195,14 +188,17 @@ public class ItemText
 		if (!this.isEmiQuestionItemText()) return null;
 		if (answerSet==null) return null;
 		String correctOptionLabels = "";
-		Iterator iter = getAnswerArraySorted().iterator();
+		Iterator<AnswerIfc> iter = getAnswerArraySorted().iterator();
 		while (iter.hasNext()) {
-			AnswerIfc answer = (AnswerIfc)iter.next();
+			AnswerIfc answer = iter.next();
 			if (answer.getIsCorrect()) {
 				correctOptionLabels += answer.getLabel();
 			}
 		}
 		return correctOptionLabels;	
 	}
-
+	
+	public String toString(){
+		return getText();
+	}
 }

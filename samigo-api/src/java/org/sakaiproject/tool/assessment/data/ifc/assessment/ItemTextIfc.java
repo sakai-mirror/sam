@@ -23,12 +23,11 @@
 
 package org.sakaiproject.tool.assessment.data.ifc.assessment;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public interface ItemTextIfc
-    extends java.io.Serializable
+    extends Comparable<ItemTextIfc>, java.io.Serializable
 {
 	
 	
@@ -54,19 +53,19 @@ public interface ItemTextIfc
 
   void setText(String text);
 
-  Set getAnswerSet();
+  Set<AnswerIfc> getAnswerSet();
 
-  void setAnswerSet(Set answerSet);
+  void setAnswerSet(Set<AnswerIfc> answerSet);
 
-  ArrayList getAnswerArray();
+  List<AnswerIfc> getAnswerArray();
 
-  ArrayList getAnswerArraySorted();
+  List<AnswerIfc> getAnswerArraySorted();
   
-  Set getItemTextAttachmentSet();
+  Set<ItemTextAttachmentIfc> getItemTextAttachmentSet();
 
-  void setItemTextAttachmentSet(Set itemTextAttachmentSet);
+  void setItemTextAttachmentSet(Set<ItemTextAttachmentIfc> itemTextAttachmentSet);
 
-  List getItemTextAttachmentList();
+  List<ItemTextAttachmentIfc> getItemTextAttachmentList();
 
   
   //gopalrc - added Aug 2010

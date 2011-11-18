@@ -1126,7 +1126,7 @@ public class DeliveryActionListener
     		Iterator itemTextIter = item.getItemTextArray().iterator();
     		while (itemTextIter.hasNext()){
     			ItemTextIfc itemText = (ItemTextIfc) itemTextIter.next();
-    			ArrayList answerArray = itemText.getAnswerArray();
+    			List answerArray = itemText.getAnswerArray();
     			
     			if (answerArray != null){
     				for (int indexAnswer =0; indexAnswer<answerArray.size(); indexAnswer++){
@@ -1988,8 +1988,8 @@ public class DeliveryActionListener
 	  ArrayList matrixArray = new ArrayList();
 
 	  List<Integer> columnIndexList = new ArrayList<Integer>();
-	  ArrayList itemTextArray = item.getItemTextArraySorted();
-	  ArrayList answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted(); 
+	  List itemTextArray = item.getItemTextArraySorted();
+	  List answerArray = ((ItemTextIfc)itemTextArray.get(0)).getAnswerArraySorted(); 
 	  MatrixSurveyBean mbean = null;
 
 	  List<String> stringList = new ArrayList<String>();
@@ -2019,7 +2019,7 @@ public class DeliveryActionListener
 	  for(int i=0; i<iList.size(); i++)
 	  {	
 		  ItemTextIfc text = iList.get(i);
-		  ArrayList answers = ((ItemTextIfc)itemTextArray.get(i)).getAnswerArraySorted();
+		  List answers = ((ItemTextIfc)itemTextArray.get(i)).getAnswerArraySorted();
 		  List<AnswerIfc> alist = new ArrayList<AnswerIfc>();
 		  List<String> slist = new ArrayList<String>();
 		  for(int j= 0; j<answers.size(); j++)

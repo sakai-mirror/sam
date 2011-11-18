@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 
 public class Answer
-    implements Serializable, AnswerIfc, Comparable, Cloneable { //gopalrc - added cloneable 27 Nov 2009
+    implements Serializable, AnswerIfc, Comparable<AnswerIfc>, Cloneable { //gopalrc - added cloneable 27 Nov 2009
   static Category errorLogger = Category.getInstance("errorLogger");
 
   private static final long serialVersionUID = 7526471155622776147L;
@@ -225,9 +225,8 @@ public class Answer
     return getAnswerFeedback(AnswerFeedbackIfc.ANSWER_FEEDBACK);
   }
 
-  public int compareTo(Object o) {
-      Answer a = (Answer)o;
-      return sequence.compareTo(a.sequence);
+  public int compareTo(AnswerIfc o) {
+      return sequence.compareTo(o.getSequence());
   }
 
   //Huong's adding for checking not empty feedback

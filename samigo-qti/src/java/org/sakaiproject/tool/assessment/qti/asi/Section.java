@@ -24,10 +24,8 @@
 package org.sakaiproject.tool.assessment.qti.asi;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -40,8 +38,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.sakaiproject.tool.assessment.data.dao.assessment.AttachmentData;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
@@ -62,7 +64,6 @@ public class Section extends ASIBaseClass
 {
   private static Log log = LogFactory.getLog(Section.class);
   public String basePath;
-  private Map items;
 
   /**
    * Explicitly setting serialVersionUID insures future versions can be
@@ -102,13 +103,14 @@ public class Section extends ASIBaseClass
    * set section ident (id)
    * @param ident
    */
-  public void setIdent(String ident)
+  @SuppressWarnings("unchecked")
+public void setIdent(String ident)
   {
     String xpath = "section";
-    List list = this.selectNodes(xpath);
+    List<Element> list = this.selectNodes(xpath);
     if (list.size() > 0)
     {
-      Element element = (Element) list.get(0);
+      Element element = list.get(0);
       element.setAttribute("ident", ident);
     }
   }
@@ -116,13 +118,14 @@ public class Section extends ASIBaseClass
    * set section title
    * @param title
    */
-  public void setTitle(String title)
+  @SuppressWarnings("unchecked")
+public void setTitle(String title)
   {
     String xpath = "section";
-    List list = this.selectNodes(xpath);
+    List<Element> list = this.selectNodes(xpath);
     if (list.size() > 0)
     {
-      Element element = (Element) list.get(0);
+      Element element = list.get(0);
       element.setAttribute("title", escapeXml(title));
     }
   }
@@ -131,7 +134,8 @@ public class Section extends ASIBaseClass
    * Update XML from persistence
    * @param section
    */
-  public void update(SectionDataIfc section)
+  @SuppressWarnings("unchecked")
+public void update(SectionDataIfc section)
   {
     // identity
     setIdent("" + section.getSectionId());
@@ -150,144 +154,15 @@ public class Section extends ASIBaseClass
     setFieldentry("ATTACHMENT", getAttachment(section));
     
     // items
-    ArrayList items = section.getItemArray();
-    addItems(items);
+    addItems(section.getItemArray());
   }
-
-//  /**
-//   * @deprecated hardcoded to support only QTIVersion.VERSION_1_2
-//   * select and order
-//   */
-//  public void selectAndOrder()
-//  {
-//    log.debug("selectAndOrder()");
-//    ArrayList selectedList = this.selectItems();
-//    this.orderItems(selectedList);
-//    ArrayList selectedSections = this.selectSections(basePath);
-//    this.orderSections(basePath, selectedSections, QTIVersion.VERSION_1_2);
-//  }
-
-  /**
-   * select items
-   *
-   * @return return arraylist of items
-   */
   
-  /*
-  private ArrayList selectItems()
-  {
-    log.debug("selectItems()");
-
-    ArrayList items = new ArrayList();
-
-    //    try
-    //    {
-    String xpath = basePath + "/" + QTIConstantStrings.SELECTION_ORDERING +
-                   "/";
-    String selectionXPath = xpath + QTIConstantStrings.SELECTION;
-    String orderingXPath = xpath + QTIConstantStrings.ORDER;
-
-    List selectNodes = this.selectNodes(selectionXPath);
-    List orderNodes = this.selectNodes(orderingXPath);
-
-    int selectNodeSize = selectNodes.size();
-    for (int i = 0; i < selectNodeSize; i++)
-    {
-      Element selectElement = (Element) selectNodes.get(i);
-  //      items.addAll(processSelectElement(selectElement));
-    }
-
-    if (selectNodeSize == 0)
-    {
-      items.addAll(this.getAllItems());
-    }
-
-    //    }
-    //    catch(Exception ex)
-    //    {
-    //      log.error(ex.getMessage(), ex);
-    //    }
-    removeItems();
-
-    return items;
-  }
-*/
-
-  /**
-   * get all items
-   *
-   * @return list of items
-   */
-  /*
-  private List getAllItems()
-  {
-    log.debug("getAllItems()");
-
-    String xpath = basePath + "/" + QTIConstantStrings.ITEM;
-
-    return this.selectNodes(xpath);
-  }
-
-*/
-  /**
-   * remove items
-   */
-  /*
-  private void removeItems()
-  {
-    log.debug("removeItems()");
-
-    String xpath = basePath + "/" + QTIConstantStrings.ITEM;
-    this.removeElement(xpath);
-  }
-*/
-  /**
-   * order items
-   *
-   * @param items list of items
-   */
-  /*
-  private void orderItems(ArrayList items)
-  {
-    if (log.isDebugEnabled())
-    {
-      log.debug("orderItems(ArrayList " + items + ")");
-    }
-
-    String xpath = basePath + "/" + QTIConstantStrings.SELECTION_ORDERING +
-                   "/";
-    String orderingXPath = xpath + QTIConstantStrings.ORDER;
-    List orderNodes = this.selectNodes(orderingXPath);
-    if ( (orderNodes != null) && (orderNodes.size() > 0))
-    {
-      Element order = (Element) orderNodes.get(0);
-      String orderType = order.getAttribute(QTIConstantStrings.ORDER_TYPE);
-      if ("Random".equalsIgnoreCase(orderType))
-      {
-        //Randomly order items.
-        long seed = System.currentTimeMillis();
-        Random rand = new Random(seed);
-        int size = items.size();
-        for (int i = 0; i < size; i++)
-        {
-          int randomNum = rand.nextInt(size);
-          Object temp = items.get(i);
-          items.set(i, items.get(randomNum));
-          items.set(randomNum, temp);
-          log.debug("switch item " + i + " with " + randomNum);
-        }
-      }
-    }
-
-    addItems(items);
-  }
-*/
   /**
    * Add item list to this section document.
    *
    * @param items list of ItemDataIfc
    */
-  private void addItems(ArrayList items)
+  private void addItems(List<ItemDataIfc> items)
   {
     if (log.isDebugEnabled())
     {
@@ -301,11 +176,12 @@ public class Section extends ASIBaseClass
     try
     {
       String xpath = basePath;
-      for (int i = 0; i < items.size(); i++)
+      for (ItemDataIfc item: items)
       {
-        ItemDataIfc item = (ItemDataIfc) items.get(i);
-        //TypeIfc type = item.getType();
         Long type = item.getTypeId();
+        if(14 == type.intValue()){
+        	printItem(item);
+        }
         Item itemXml;
         if ( (TypeIfc.MULTIPLE_CHOICE_SURVEY).equals(type))
         {
@@ -325,7 +201,7 @@ public class Section extends ASIBaseClass
         // update item data
         itemXml.setIdent(item.getItemIdString());
         itemXml.update(item);
-        Element itemElement = (Element) itemXml.getDocument().
+        Element itemElement = itemXml.getDocument().
                               getDocumentElement();
         log.debug(
           "Item ident is: " + itemElement.getAttribute("ident"));
@@ -491,7 +367,7 @@ public class Section extends ASIBaseClass
    *
    * @param itemRefIds list of ref ids
    */
-  public void orderItemRefs(ArrayList itemRefIds)
+  public void orderItemRefs(List<String> itemRefIds)
   {
     if (log.isDebugEnabled())
     {
@@ -502,7 +378,7 @@ public class Section extends ASIBaseClass
     int size = itemRefIds.size();
     for (int i = 0; i < size; i++)
     {
-      this.addItemRef( (String) itemRefIds.get(i));
+      this.addItemRef(itemRefIds.get(i));
     }
   }
 
@@ -522,7 +398,8 @@ public class Section extends ASIBaseClass
    *
    * @return list of section refs
    */
-  public List getSectionRefs()
+  @SuppressWarnings("unchecked")
+public List<Element> getSectionRefs()
   {
     log.debug("getSectionRefs()");
     String xpath = basePath + "/" + QTIConstantStrings.SECTIONREF;
@@ -535,14 +412,14 @@ public class Section extends ASIBaseClass
    *
    * @return list of section ref ids
    */
-  public List getSectionRefIds()
+  public List<String> getSectionRefIds()
   {
-    List refs = this.getSectionRefs();
-    List ids = new ArrayList();
+    List<Element> refs = this.getSectionRefs();
+    List<String> ids = new ArrayList<String>();
     int size = refs.size();
     for (int i = 0; i < size; i++)
     {
-      Element ref = (Element) refs.get(0);
+      Element ref = refs.get(0);
       String idString = ref.getAttribute(QTIConstantStrings.LINKREFID);
       ids.add(idString);
     }
@@ -568,28 +445,245 @@ public class Section extends ASIBaseClass
     this.basePath = basePath;
   }
   
-  private String getAttachment(SectionDataIfc section) {
-	  Set attachmentSet = (Set) section.getSectionAttachmentSet();
-   	  if (attachmentSet != null && attachmentSet.size() != 0) { 
-   		Iterator iter = attachmentSet.iterator();
-   		AttachmentData attachmentData = null;
-   		StringBuffer attachment = new StringBuffer();
-   		while (iter.hasNext())
-   		{
-   			attachmentData = (AttachmentData) iter.next();
-   			attachment.append(attachmentData.getResourceId().replaceAll(" ", ""));
-   			attachment.append("|");
-   			attachment.append(attachmentData.getFilename());
-   			attachment.append("|");
-   			attachment.append(attachmentData.getMimeType());
-   			attachment.append("\n");
-   		}
-   		return attachment.toString();
+  @SuppressWarnings("unchecked")
+private String getAttachment(SectionDataIfc section) {
+	  Set<AttachmentData> attachmentSet = section.getSectionAttachmentSet();
+	  StringBuilder attachment = new StringBuilder();
+	  for(AttachmentData attachmentData: attachmentSet){
+   		attachment.append(attachmentData.getResourceId().replaceAll(" ", ""));
+   		attachment.append("|");
+   		attachment.append(attachmentData.getFilename());
+   		attachment.append("|");
+   		attachment.append(attachmentData.getMimeType());
+   		attachment.append("\n");
    	  }
-   	  else {
-   		return null;
-   	  }
+	  return attachment.toString();
   }
+
+  	private StringBuilder buf = new StringBuilder();
+	private void printItem(ItemDataIfc item) {
+		pNewItem(item);
+		p("ItemId", item.getItemId());//item/@ident
+		p("ThemeText", item.getThemeText());//item/@label
+		p("IsAnswerOptionsSimple", item.getIsAnswerOptionsSimple());//item/presentation/@label
+		p("LeadInText", item.getLeadInText());//item/presentation/flow/material/mattext
+		p("Sequence", item.getSequence());//item/presentation/flow/response_lid/@ident
+		p("Score", item.getScore());//item/resprocessing/outcomes/decvar/@maxvalue
+		p("Discount", item.getDiscount());//item/resprocessing/outcomes/decvar/@minvalue
+		
+		p("AnswerKey", item.getAnswerKey());
+		p("AnswerOptionsRichCount", item.getAnswerOptionsRichCount());
+//		p("CorrectItemFeedback", item.getCorrectItemFeedback());
+		p("CreatedBy", item.getCreatedBy());
+		p("CreatedDate", item.getCreatedDate());
+//		p("Description", item.getDescription());
+//		p("Duration", item.getDuration());
+		p("EmiAnswerOptionLabels", item.getEmiAnswerOptionLabels());
+		p("EmiAnswerOptionsRichText", item.getEmiAnswerOptionsRichText());
+//		p("GeneralItemFeedback", item.getGeneralItemFeedback());
+//		p("Grade", item.getGrade());
+//		p("HasRationale", item.getHasRationale());
+//		p("Hint", item.getHint());
+//		p("InCorrectItemFeedback", item.getInCorrectItemFeedback());
+//		p("Instruction", item.getInstruction());
+//		p("IsTrue", item.getIsTrue());
+		p("ItemIdString", item.getItemIdString());
+		p("LastModifiedBy", item.getLastModifiedBy());
+		p("LastModifiedDate", item.getLastModifiedDate());
+		p("NumberOfCorrectEmiOptions", item.getNumberOfCorrectEmiOptions());
+		p("PartialCreditFlag", item.getPartialCreditFlag());
+		p("Status", item.getStatus());
+//		p("Text", item.getText());
+//		p("TriesAllowed", item.getTriesAllowed());
+//		p("Type", item.getType());
+//		p("TypeId", item.getTypeId());
+//		pNewData("EmiAnswerOptions");///
+//		for (AnswerIfc answer : item.getEmiAnswerOptions()) {
+////			p("CorrectAnswerFeedback", answer.getCorrectAnswerFeedback());
+//			p("Discount", answer.getDiscount());
+////			p("GeneralAnswerFeedback", answer.getGeneralAnswerFeedback());
+//			p("Grade", answer.getGrade());
+//			p("Id", answer.getId());
+////			p("InCorrectAnswerFeedback", answer.getInCorrectAnswerFeedback());
+//			p("IsCorrect", answer.getIsCorrect());
+//			p("Label", answer.getLabel());
+//			p("PartialCredit", answer.getPartialCredit());
+//			p("Score", answer.getScore());
+//			p("Sequence", answer.getSequence());
+//			p("Text", answer.getText());
+//			p("ItemText", answer.getItemText());
+////			pNewData("AnswerFeedbackSet");
+////			for(AnswerFeedbackIfc af: answer.getAnswerFeedbackSet()){
+////				p("", af.getId());
+////				p("", af.getText());
+////				p("", af.getTypeId());
+////			}
+////			pEndData();//AnswerFeedbackSet
+//		}
+//		pEndData();//EmiAnswerOptions
+//		pNewData("EmiQuestionAnswerCombinations");XXX
+//		for(ItemTextIfc it: item.getEmiQuestionAnswerCombinations()){
+//			p(it.getId().toString(), it);
+//		}
+//		pEndData();//EmiQuestionAnswerCombinations
+		pNewData("ItemAttachmentSet");
+		for(ItemAttachmentIfc ia: item.getItemAttachmentSet()){
+			p("AttachmentId", ia.getAttachmentId());
+			p("AttachmentType", ia.getAttachmentType());
+			p("CreatedBy", ia.getCreatedBy());
+			p("CreatedDate", ia.getCreatedDate());
+			p("Description", ia.getDescription());
+			p("Filename", ia.getFilename());
+			p("FileSize", ia.getFileSize());
+			p("IsLink", ia.getIsLink());
+			p("LastModifiedBy", ia.getLastModifiedBy());
+			p("LastModifiedDate", ia.getLastModifiedDate());
+			p("Location", ia.getLocation());
+			p("MimeType", ia.getMimeType());
+			p("ResourceId", ia.getResourceId());
+			p("Status", ia.getStatus());
+		}
+		pEndData();//ItemAttachmentSet
+//		pNewData("ItemFeedbackSet");
+//		for(ItemFeedbackIfc ifb: item.getItemFeedbackSet()){
+//			p("Id", ifb.getId());
+//			p("Text", ifb.getText());
+//			p("TypeId", ifb.getTypeId());
+//		}
+//		pEndData();//ItemFeedbackSet
+//		pNewData("ItemMetaDataSet");//handled by global Item?
+//		for(ItemMetaDataIfc im: item.getItemMetaDataSet()){
+//			//p("Id", im.getId());
+//			p("Label", im.getLabel());
+//			p("Entry", im.getEntry());
+//		}
+//		pEndData();//ItemMetaDataSet
+		pNewData("ItemTextSet");
+		for(ItemTextIfc it: item.getItemTextSet()){
+			p(it.getId().toString(), it);
+		}
+		pEndData();//ItemTextSet
+		pEndData();//item
+		log.fatal(buf.toString());
+		buf.setLength(0);
+	}
+	
+	private void p(String label, ItemTextIfc itemText){
+		pNewData(label);
+		p("EmiCorrectOptionLabels", itemText.getEmiCorrectOptionLabels());
+		p("Id", itemText.getId());
+		p("RequiredOptionsCount", itemText.getRequiredOptionsCount());
+		p("Sequence", itemText.getSequence());
+		p("Text", itemText.getText());
+		p("HasAttachment", itemText.getHasAttachment());
+		p("isEmiQuestionItemText", itemText.isEmiQuestionItemText());
+		pNewData("AnswerSet");
+		for(AnswerIfc answer: itemText.getAnswerSet()){
+			pNewData(answer.getSequence().toString());
+			p("Id", answer.getId());
+			p("Sequence", answer.getSequence());
+			p("Label", answer.getLabel());
+			p("Text", answer.getText());
+			
+			p("IsCorrect", answer.getIsCorrect());
+			p("Score", answer.getScore());
+			p("Discount", answer.getDiscount());
+			
+//			p("CorrectAnswerFeedback", answer.getCorrectAnswerFeedback());
+//			p("GeneralAnswerFeedback", answer.getGeneralAnswerFeedback());
+//			p("Grade", answer.getGrade());
+//			p("InCorrectAnswerFeedback", answer.getInCorrectAnswerFeedback());
+//			p("PartialCredit", answer.getPartialCredit());
+//			p("ItemText", answer.getItemText());//XXX Bad circular ref
+//			pNewData("AnswerFeedbackSet");
+//			for(AnswerFeedbackIfc af: answer.getAnswerFeedbackSet()){
+//				p("", af.getId());
+//				p("", af.getText());
+//				p("", af.getTypeId());
+//			}
+//			pEndData();//AnswerFeedbackSet
+			pEndData();//Answer
+		}
+		pEndData();//AnswerSet
+		pNewData("ItemTextAttachmentSet");
+		for(ItemTextAttachmentIfc ita: itemText.getItemTextAttachmentSet()){
+			p("AttachmentId", ita.getAttachmentId());
+			p("AttachmentType", ita.getAttachmentType());
+			p("CreatedBy", ita.getCreatedBy());
+			p("CreatedDate", ita.getCreatedDate());
+			p("Description", ita.getDescription());
+			p("Filename", ita.getFilename());
+			p("FileSize", ita.getFileSize());
+			p("IsLink", ita.getIsLink());
+			p("LastModifiedBy", ita.getLastModifiedBy());
+			p("LastModifiedDate", ita.getLastModifiedDate());
+			p("Location", ita.getLocation());
+			p("MimeType", ita.getMimeType());
+			p("ResourceId", ita.getResourceId());
+			p("Status", ita.getStatus());
+		}
+		pEndData();//ItemTextAttachmentSet
+		pEndData();//ItemTextIfc
+	}
+	
+	private int pTab = 0;
+
+	private void pNewItem(ItemDataIfc item) {
+		pTab = 0;
+		p("************ " + item.getItemIdString() + ": " + item.getThemeText()
+				+ " **************");
+	}
+
+	private void pNewData(String text) {
+		p("----- " + text + " -----");
+		pTab++;
+	}
+
+	private void pEndData() {
+		pTab--;
+		p("----- End -----");
+	}
+	
+	@SuppressWarnings("unused")
+	private void p(String label, Object text) {
+		p(label, (text==null?"Object":text.getClass().getSimpleName()), (text==null?"null":text.toString()));
+	}
+
+	private void p(String label, String text) {
+		p(label, "String", text);
+	}
+
+	private void p(String label, Boolean text) {
+		p(label, "Boolean", String.valueOf(text));
+	}
+
+	private void p(String label, Integer text) {
+		p(label, "Integer", String.valueOf(text));
+	}
+
+	private void p(String label, Long text) {
+		p(label, "Long", String.valueOf(text));
+	}
+
+	private void p(String label, Float text) {
+		p(label, "Float", String.valueOf(text));
+	}
+
+	private void p(String label, Date text) {
+		p(label, "Date", String.valueOf(text));
+	}
+
+	private void p(String label, String type, String text) {
+		p(label + "(" + type + "): " + text);
+	}
+
+	private void p(String text) {
+		for(int i = 0; i < pTab; i++){
+			buf.append("\t");
+		}
+		buf.append(text);
+		buf.append("\n");
+	}
 }
 
 

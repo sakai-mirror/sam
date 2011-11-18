@@ -1008,7 +1008,7 @@ public class GradingService
               break;
       case 2: // MC Multiple Correct
               ItemTextIfc itemText = (ItemTextIfc) publishedItemTextHash.get(itemGrading.getPublishedItemTextId());
-              ArrayList answerArray = itemText.getAnswerArray();
+              List answerArray = itemText.getAnswerArray();
               int correctAnswers = 0;
               if (answerArray != null){
                 for (int i =0; i<answerArray.size(); i++){

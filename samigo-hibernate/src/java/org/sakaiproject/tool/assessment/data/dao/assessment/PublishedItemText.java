@@ -32,7 +32,7 @@ import java.util.*;
 import org.apache.log4j.*;
 
 public class PublishedItemText
-    implements Serializable, ItemTextIfc, Comparable {
+    implements Serializable, ItemTextIfc, Comparable<ItemTextIfc> {
   static Category errorLogger = Category.getInstance("errorLogger");
 
   private static final long serialVersionUID = 7526471155622776147L;
@@ -123,9 +123,8 @@ public class PublishedItemText
     return list;
   }
 
-  public int compareTo(Object o) {
-      PublishedItemText a = (PublishedItemText)o;
-      return sequence.compareTo(a.sequence);
+  public int compareTo(ItemTextIfc o) {
+      return sequence.compareTo(o.getSequence());
   }
   
   

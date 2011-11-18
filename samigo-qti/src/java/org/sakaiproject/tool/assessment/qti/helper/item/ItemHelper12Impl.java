@@ -35,10 +35,12 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.qti.asi.Item;
 import org.sakaiproject.tool.assessment.qti.constants.AuthoringConstantStrings;
@@ -113,7 +115,7 @@ public class ItemHelper12Impl extends ItemHelperBase
       score = Float.valueOf(0);
     }
     currentMaxScore = score;
-    updateItemXml(itemXml, xPath, "" + score.toString());
+    updateItemXml(itemXml, xPath, score.toString());
   }
 
   /**
@@ -357,7 +359,7 @@ public class ItemHelper12Impl extends ItemHelperBase
    * @param itemTextList lvalue of matches
    * @param itemXml
    */
-  private void setItemTextMatching(List itemTextList, Item itemXml)
+  private void setItemTextMatching(List<ItemTextIfc> itemTextList, Item itemXml)
   {
     String xpath = MATCH_XPATH;
     Map allTargets = new HashMap();
@@ -448,7 +450,7 @@ public class ItemHelper12Impl extends ItemHelperBase
     updateAllSourceMatchGroup(itemXml);
   }
 
-  private void setItemTextMatrix(List itemTextList, Item itemXml)
+  private void setItemTextMatrix(List<ItemTextIfc> itemTextList, Item itemXml)
   {
 	  String xpath = MATCH_XPATH;
 	  Map allTargets = new HashMap();
@@ -496,6 +498,124 @@ public class ItemHelper12Impl extends ItemHelperBase
 	  updateAllSourceMatchGroup(itemXml);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Extended Matching Items
+  //////////////////////////////////////////////////////////////////////////////
+  
+	/**
+	 * This set the options for Extended Matching Items
+	 * 
+	 * @param itemTextList
+	 * @param itemXml
+	 */
+	private void setItemTextEMI(List<ItemTextIfc> itemTextList, Item itemXml) {
+		//itemTextList should have only one itemText, but we check for 
+		//in case someone change the code
+		// add all options
+		for(ItemTextIfc itemText: itemTextList){//should only be once
+			if(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE.equals(itemText.getSequence())){
+				for (AnswerIfc answer : itemText.getAnswerArraySorted()) {
+					addEMIOption(answer.getLabel(), answer.getText(), itemXml);
+				}
+			}
+		}
+	}
+	
+	private void addEMIOption(String ident, String text, Item itemXml) {
+		Element response_label = createElement("response_label", itemXml);
+		response_label.setAttribute("ident", ident);
+		Element material = createElement("material", itemXml);
+		response_label.appendChild(material);
+		Element mattext = createElement("mattext", itemXml);
+		material.appendChild(mattext);
+		mattext.setTextContent(text);
+		itemXml.addElement("item/presentation/flow/response_lid/render_choice", response_label);
+	}
+	
+	private Element createElement(String name, Item itemXml){
+		try {
+			return itemXml.getDocument().createElement(name);
+		} catch (Exception e) {
+			log.error("Could not create element!", e);
+			return null;
+		}
+	}
+	
+	private void setAnswersEMI(List<ItemTextIfc> itemTextList, Item itemXml){
+		//set individual answers
+		String ident = itemXml.getValueOf("item/presentation/flow/response_lid/@ident");
+		for(ItemTextIfc itemText: itemTextList){
+			//just check to make sure we get the right stuff
+			if (itemText.isEmiQuestionItemText()) {
+				addEMIItem(ident, itemText, itemXml);
+			}
+		}
+	}
+	
+	private void addEMIItem(String ident, ItemTextIfc itemText, Item itemXml) {
+		//main node resprocessing
+		Element resprocessing = createElement("resprocessing", itemXml);
+		itemXml.addElement("item", resprocessing);
+		//qti comment, contain the fill text
+		Element qticomment = createElement("qticomment", itemXml);
+		qticomment.setTextContent(XmlUtil.convertStrforCDATA(itemText.getText()));
+		resprocessing.appendChild(qticomment);
+		//outcomes with the scores and required count
+		Element outcomes = createElement("outcomes", itemXml);
+		resprocessing.appendChild(outcomes);
+		//decvar for score
+		Element decvarScore = createElement("decvar", itemXml);
+		decvarScore.setAttribute("defaultval", "0");
+		decvarScore.setAttribute("varname", "SCORE");
+		decvarScore.setAttribute("vartype", "Float");
+		outcomes.appendChild(decvarScore);
+		//decvar for required count
+		Element decvarRequired = createElement("decvar", itemXml);
+		decvarRequired.setAttribute("defaultval", itemText.getRequiredOptionsCount().toString());
+		decvarRequired.setAttribute("maxvalue", itemText.getRequiredOptionsCount().toString());
+		decvarRequired.setAttribute("minvalue", "0");
+		decvarRequired.setAttribute("varname", "requiredOptionsCount");
+		decvarRequired.setAttribute("vartype", "Integer");
+		outcomes.appendChild(decvarRequired);
+		
+		float score = 0.0f;
+		float discount = 0.0f;
+		//respcondition for every correct option
+		for(AnswerIfc answer: itemText.getAnswerArraySorted()){
+			Element respcondition = createElement("respcondition", itemXml);
+			respcondition.setAttribute("continue", "Yes");
+			resprocessing.appendChild(respcondition);
+			//conditionvar for correct answers
+			Element conditionvar = createElement("conditionvar", itemXml);
+			respcondition.appendChild(conditionvar);
+			Element varequal = createElement("varequal", itemXml);
+			varequal.setAttribute("case", "Yes");
+			varequal.setAttribute("respident", ident);
+			varequal.setTextContent(answer.getLabel());
+			conditionvar.appendChild(varequal);
+			//setvar for action
+			Element setvar = createElement("setvar", itemXml);
+			if(answer.getIsCorrect()){
+				setvar.setAttribute("action", "Add");
+				setvar.setTextContent(String.valueOf(getFloat(answer.getScore())));
+				score += getFloat(answer.getScore());
+			}else{
+				setvar.setAttribute("action", "Subtract");
+				setvar.setTextContent(String.valueOf(getFloat(answer.getDiscount())));
+				discount += getFloat(Math.abs(answer.getDiscount()));
+			}
+			setvar.setAttribute("varname", "SCORE");
+			respcondition.appendChild(setvar);
+		}
+		
+		//set the scores
+		decvarScore.setAttribute("maxvalue", String.valueOf(getFloat(score)));
+		decvarScore.setAttribute("minvalue", String.valueOf(getFloat(discount)));
+	}
+	private float getFloat(Float f){
+		return f==null?0.0f:f.floatValue();
+	}
+  
   //////////////////////////////////////////////////////////////////////////////
   // FILL IN THE BLANK
   //////////////////////////////////////////////////////////////////////////////
@@ -1407,25 +1527,31 @@ public class ItemHelper12Impl extends ItemHelperBase
 
     return storeParts;
   }
-  
-  
-  /*
-  
-  private static String[] getPossibleCorrectResponses(String inputStr)
-  {
-    String patternStr = ",";
-    String[] responses = inputStr.split(patternStr);
-    for (int i = 0; i < responses.length; i++)
-    {
-      responses[i] = responses[i].trim();
-    }
-    Arrays.sort(responses);
 
-    return responses;
-  }
-  
-  */
+	public void setItemLabel(String itemLabel, Item itemXml) {
+		try {
+			itemXml.update("item/@label", itemLabel);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
 
+	public void setPresentationLabel(String presentationLabel, Item itemXml) {
+		try {
+			itemXml.update("item/presentation/@label", presentationLabel);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
+	public void setPresentationFlowResponseIdent(String presentationFlowResponseIdent, Item itemXml) {
+		try {
+			itemXml.update("item/presentation/flow/response_lid/@ident", presentationFlowResponseIdent);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+  
   /**
    * Set the item text.
    * This is valid for all undelimited single item texts.
@@ -1458,7 +1584,7 @@ public class ItemHelper12Impl extends ItemHelperBase
    * @param itemXml
    * @param itemText text to be updated
    */
-  public void setItemTexts(ArrayList itemTextList, Item itemXml)
+  public void setItemTexts(List<ItemTextIfc> itemTextList, Item itemXml)
   {
     if (itemTextList.size() < 1)
     {
@@ -1468,30 +1594,26 @@ public class ItemHelper12Impl extends ItemHelperBase
     if (itemXml.isMatching())
     {
       setItemTextMatching(itemTextList, itemXml);
-      return;
     }
     else if (itemXml.isMXSURVEY()) {
 	        setItemTextMatrix(itemTextList, itemXml);
-	        return;
     }
-    
-    String text = ( (ItemTextIfc) itemTextList.get(0)).getText();
-    if (itemXml.isFIB())
+    else if (itemXml.isEMI())
     {
-      setItemTextFIB(text, itemXml);
-      return;
+    	setItemTextEMI(itemTextList, itemXml);
+    }
+    else if (itemXml.isFIB())
+    {
+      setItemTextFIB(itemTextList.get(0).getText(), itemXml);
     }
     else if (itemXml.isFIN())
     {
-        setItemTextFIN(text, itemXml);
-        return;
+        setItemTextFIN(itemTextList.get(0).getText(), itemXml);
     }
     else
     {
-      setItemText(text, itemXml);
-      return;
+      setItemText(itemTextList.get(0).getText(), itemXml);
     }
-
   }
 
   /**
@@ -1512,11 +1634,15 @@ public class ItemHelper12Impl extends ItemHelperBase
    * @param itemTextList the text(s) for item
    */
 
-  public void setAnswers(ArrayList itemTextList, Item itemXml)
+  public void setAnswers(List<ItemTextIfc> itemTextList, Item itemXml)
   {
 
     log.debug("entered setAnswers()");
     log.debug("size=" + itemTextList.size());
+    if(itemXml.isEMI()){
+    	setAnswersEMI(itemTextList, itemXml);
+    	return;
+    }
     // other types either have no answer or include them in their template, or,
     // in matching, generate all in setItemTextMatching()
     if (!itemXml.isFIB() && !itemXml.isMCSC() && !itemXml.isFIN()
@@ -1613,7 +1739,7 @@ public class ItemHelper12Impl extends ItemHelperBase
    * @param itemXml
    */
 
-  public void setFeedback(ArrayList itemTextList, Item itemXml)
+  public void setFeedback(List<ItemTextIfc> itemTextList, Item itemXml)
   {
     //log.info("setFeedback()");
 
@@ -1856,44 +1982,6 @@ public class ItemHelper12Impl extends ItemHelperBase
                responseNo + "]' to '" + value + "'");
     }
   }
-
-  /**
-   * Add the matching item feedback.
-   *
-   * @param itemXml
-   * @param feedbackIdent
-   * @param responseNo
-   */
-  
-  /*
-  private void addMatchingItemfeedback(
-    Item itemXml, String feedbackIdent, String responseNo)
-  {
-    String xpath = "item";
-
-    String nextNode = "itemfeedback[" + responseNo + "]";
-    itemXml.insertElement(nextNode, xpath, "itemfeedback");
-    itemXml.add(
-      xpath + "/itemfeedback[" + responseNo + "]", "flow_mat/material/mattext");
-
-    String newPath = xpath + "/itemfeedback[" + responseNo + "]";
-    itemXml.addAttribute(newPath, "ident");
-    newPath = xpath + "/itemfeedback[" + responseNo + "]/@ident";
-
-    updateItemXml(itemXml, newPath, feedbackIdent);
-
-    //Add placeholder for image
-    xpath = xpath + "/itemfeedback[" + responseNo + "]/flow_mat";
-    itemXml.add(xpath, "material/matimage");
-    xpath = xpath + "/flow_mat/material[2]/matimage";
-
-    //Image attributes
-    itemXml.addAttribute(xpath, "uri");
-    itemXml.addAttribute(xpath, "imagetype");
-    xpath = xpath + "/@imagetype";
-    updateItemXml(itemXml, xpath, "text/html");
-  }
-*/
   
   /**
    * Add matching response condition.

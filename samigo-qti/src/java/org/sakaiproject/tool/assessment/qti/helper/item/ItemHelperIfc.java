@@ -24,8 +24,9 @@
 package org.sakaiproject.tool.assessment.qti.helper.item;
 
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
 
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.qti.asi.Item;
 
@@ -172,8 +173,15 @@ public interface ItemHelperIfc
    * @param itemXml
    * @param itemText text to be updated
    */
-  public void setItemTexts(ArrayList itemTextList, Item itemXml);
-
+  public void setItemTexts(List<ItemTextIfc> itemTextList, Item itemXml);
+	
+  /**
+   * Set the label for the item.
+   * @param itemLabel
+   * @param itemXml
+   */
+  public void setItemLabel(String itemLabel, Item itemXml);
+  
   /**
    * Set the (usually instructional text) for trhe item.
    * @param itemText
@@ -181,6 +189,21 @@ public interface ItemHelperIfc
    */
   public void setItemText(String itemText, Item itemXml);
 
+  /**
+   * Set the presentation label.
+   * 
+   * @param presentationLabel
+   * @param itemXml
+   */
+  public void setPresentationLabel(String presentationLabel, Item itemXml);
+  
+  /**
+   * Set the public void Presentation Flow Response Ident
+   * @param presentationFlowResponseIdent
+   * @param itemXml
+   */
+  public void setPresentationFlowResponseIdent(String presentationFlowResponseIdent, Item itemXml);
+  
   /**
    * @param itemXml
    * @return type as string
@@ -191,11 +214,11 @@ public interface ItemHelperIfc
    * Set the answer texts for item.
    * @param itemTextList the text(s) for item
    */
-  public void setAnswers(ArrayList itemTextList, Item itemXml);
+  public void setAnswers(List<ItemTextIfc> itemTextList, Item itemXml);
 
   /**
    * Set the feedback texts for item.
    * @param itemTextList the text(s) for item
    */
-  public void setFeedback(ArrayList itemTextList, Item itemXml);
+  public void setFeedback(List<ItemTextIfc> itemTextList, Item itemXml);
 }

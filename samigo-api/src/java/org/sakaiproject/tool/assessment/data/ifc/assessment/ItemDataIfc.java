@@ -22,7 +22,7 @@
 
 
 package org.sakaiproject.tool.assessment.data.ifc.assessment;
-import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
@@ -116,23 +116,23 @@ public interface ItemDataIfc extends java.io.Serializable {
 
   void setLastModifiedDate(Date lastModifiedDate);
 
-  Set getItemTextSet();
+  Set<ItemTextIfc> getItemTextSet();
 
-  void setItemTextSet(Set itemTextSet) ;
+  void setItemTextSet(Set<ItemTextIfc> itemTextSet) ;
 
-  void addItemText(String itemText, Set answerSet);
+  void addItemText(String itemText, Set<AnswerIfc> answerSet);
 
-  Set getItemMetaDataSet();
+  Set<ItemMetaDataIfc> getItemMetaDataSet();
 
-  void setItemMetaDataSet(Set itemMetaDataSet);
+  void setItemMetaDataSet(Set<ItemMetaDataIfc> itemMetaDataSet);
 
-  HashMap getItemMetaDataMap(Set itemMetaDataSet) ;
+  HashMap<String, String> getItemMetaDataMap(Set<ItemMetaDataIfc> itemMetaDataSet) ;
 
-  Set getItemFeedbackSet();
+  Set<ItemFeedbackIfc> getItemFeedbackSet();
 
-  void setItemFeedbackSet(Set itemFeedbackSet);
+  void setItemFeedbackSet(Set<ItemFeedbackIfc> itemFeedbackSet);
 
-  HashMap getItemFeedbackMap(Set itemFeedbackSet) ;
+  HashMap<String, String> getItemFeedbackMap(Set<ItemFeedbackIfc> itemFeedbackSet) ;
 
   String getItemMetaDataByLabel(String label);
 
@@ -164,17 +164,17 @@ public interface ItemDataIfc extends java.io.Serializable {
 
   TypeIfc getType();
 
-  ArrayList getItemTextArray();
+  List<ItemTextIfc> getItemTextArray();
 
-  ArrayList getItemTextArraySorted();
+  List<ItemTextIfc> getItemTextArraySorted();
 
   String getAnswerKey();
 
-  Set getItemAttachmentSet();
+  Set<ItemAttachmentIfc> getItemAttachmentSet();
 
-  void setItemAttachmentSet(Set itemAttachmentSet);
+  void setItemAttachmentSet(Set<ItemAttachmentIfc> itemAttachmentSet);
 
-  List getItemAttachmentList();
+  List<ItemAttachmentIfc> getItemAttachmentList();
   
   
   
@@ -187,8 +187,8 @@ public interface ItemDataIfc extends java.io.Serializable {
   public boolean isValidEmiAnswerOptionLabel(String label);
 
   //gopalrc - Aug 2010
-  public ArrayList getEmiAnswerOptions();
-  public ArrayList getEmiQuestionAnswerCombinations();
+  public List<AnswerIfc> getEmiAnswerOptions();
+  public List<ItemTextIfc> getEmiQuestionAnswerCombinations();
 
   //gopalrc - Aug 2010
   public ItemTextIfc getItemTextBySequence(Long itemTextSequence);

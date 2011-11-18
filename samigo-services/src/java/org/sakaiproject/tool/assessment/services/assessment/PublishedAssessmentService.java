@@ -430,7 +430,7 @@ public class PublishedAssessmentService extends AssessmentService{
       ArrayList itemArray = section.getItemArray();
       for (int j=0;j<itemArray.size(); j++){
         ItemDataIfc item = (ItemDataIfc)itemArray.get(j);
-        ArrayList itemTextArray = item.getItemTextArray();
+        List itemTextArray = item.getItemTextArray();
         for (int k=0;k<itemTextArray.size(); k++){
           ItemTextIfc itemText = (ItemTextIfc)itemTextArray.get(k);
           map.put(itemText.getId(), itemText);
@@ -463,10 +463,10 @@ public class PublishedAssessmentService extends AssessmentService{
       ArrayList itemArray = section.getItemArray();
       for (int j=0;j<itemArray.size(); j++){
         ItemDataIfc item = (ItemDataIfc)itemArray.get(j);
-        ArrayList itemTextArray = item.getItemTextArray();
+        List itemTextArray = item.getItemTextArray();
         for (int k=0;k<itemTextArray.size(); k++){
           ItemTextIfc itemText = (ItemTextIfc)itemTextArray.get(k);
-          ArrayList answerArray = itemText.getAnswerArraySorted();
+          List answerArray = itemText.getAnswerArraySorted();
           for (int m=0;m<answerArray.size(); m++){
             AnswerIfc answer = (AnswerIfc)answerArray.get(m);
             // SAK-14820: Sync with the scores from item. 
