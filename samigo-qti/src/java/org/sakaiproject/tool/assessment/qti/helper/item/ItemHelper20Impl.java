@@ -448,6 +448,10 @@ public class ItemHelper20Impl extends ItemHelperBase
   { //todo
   }
   
+  public void setItemText(String itemText, String flowClass, Item itemXml){
+	  //todo
+  }
+  
   public void setPresentationLabel(String presentationLabel, Item itemXml){
 	  //todo
   }

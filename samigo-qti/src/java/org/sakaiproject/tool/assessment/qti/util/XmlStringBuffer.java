@@ -506,7 +506,12 @@ public class XmlStringBuffer
       Element newElement = null;
       Attr newAttribute = null;
       List newElementList = this.selectNodes(xpath);
-      int aIndex = xpath.indexOf("@");
+      //only look at the last part of the path
+      int aIndex = xpath.lastIndexOf("/");
+      if(aIndex == -1){
+    	  aIndex = 0;
+      }
+      aIndex = xpath.indexOf("@", aIndex);
       int size = newElementList.size();
       if(size > 1)
       {
@@ -730,11 +735,8 @@ public class XmlStringBuffer
         "addElement(String " + parentXpath + ", Element " + element + ")");
     }
 
-    List nodes = this.selectNodes(parentXpath);
-    Iterator iterator = nodes.iterator();
-    while(iterator.hasNext())
-    {
-      Element parent = (Element) iterator.next();
+    List<Element> nodes = this.selectNodes(parentXpath);
+    for(Element parent: nodes){
       if(! parent.getOwnerDocument().equals(element.getOwnerDocument()))
       {
         element = (Element) parent.getOwnerDocument().importNode(element, true);

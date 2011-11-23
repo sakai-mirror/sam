@@ -179,7 +179,7 @@ public void update(SectionDataIfc section)
       for (ItemDataIfc item: items)
       {
         Long type = item.getTypeId();
-        if(14 == type.intValue()){
+        if(false && 14 == type.intValue()){//XXX
         	printItem(item);
         }
         Item itemXml;

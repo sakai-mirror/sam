@@ -45,17 +45,19 @@
 		</material>
 	</rubric>
 	<presentation label="">
-		<flow>
+		<flow class="Options">
 			<material>
 				<mattext />
-			</material>
-			<material><!-- XXX should the img tags stay? -->
-				<matimage imagtype="text/html" uri="" />
 			</material>
 			<response_lid ident="" rcardinality="Multiple">
 				<render_choice shuffle="No">
 				</render_choice>
 			</response_lid>
+		</flow>
+		<flow class="Leadin">
+			<material>
+				<mattext />
+			</material>
 		</flow>
 	</presentation>
 	<resprocessing>

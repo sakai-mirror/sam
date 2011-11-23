@@ -24,8 +24,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.text.StringCharacterIterator;
+
 import javax.servlet.ServletContext;
 
+import org.osid.shared.StringIterator;
 import org.sakaiproject.util.FormattedText;
 import org.springframework.core.io.ClassPathResource;
 
@@ -632,6 +635,12 @@ public final class XmlUtil
 	  return finalValue;
   }
   
+  /**
+ * @param myString
+ * @return
+ * @deprecated use convertToSingleCDATA
+ */
+@Deprecated
   public static String convertStrforCDATA(String myString)
   {
 	  StringBuffer sbuff = new StringBuffer("<![CDATA[");
@@ -652,4 +661,25 @@ public final class XmlUtil
 	  sbuff.append("]]>");
 	  return sbuff.toString();
   } 
+  
+  public static String convertToSingleCDATA(String text){
+	  return "<![CDATA[" + text + "]]>";
+//	  StringBuffer buff = new StringBuffer("<![CDATA[");
+//	  
+//	  StringCharacterIterator i = new StringCharacterIterator(
+//			  text.replaceAll("]]>", "]]&gt;").replace("<![CDATA[", "&lt;![CDATA["));
+//	  char c = StringCharacterIterator.DONE;
+//	  while((c = i.next()) != StringCharacterIterator.DONE){
+//		  if (c < 32 || c == 127){
+//			  buff.append("&#");
+//			  buff.append((int)c);
+//			  buff.append(";");
+//		  }
+//		  else{
+//			  buff.append(Character.toString(c));
+//		  }
+//	  }
+//	  buff.append("]]>");
+//	  return buff.toString();
+  }
 }

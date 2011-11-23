@@ -188,6 +188,13 @@ public interface ItemHelperIfc
    * @param itemXml
    */
   public void setItemText(String itemText, Item itemXml);
+  
+  /**
+   * Set the (usually instructional text) for the item for the specified flow.
+   * @param itemText
+   * @param itemXml
+   */
+  public void setItemText(String itemText, String flowClass, Item itemXml);
 
   /**
    * Set the presentation label.

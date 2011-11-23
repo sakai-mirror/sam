@@ -23,21 +23,18 @@
 
 package org.sakaiproject.tool.assessment.qti.asi;
 
-import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
+import org.sakaiproject.tool.assessment.data.dao.assessment.Answer;
+import org.sakaiproject.tool.assessment.data.dao.assessment.ItemText;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
@@ -223,15 +220,31 @@ public class Item extends ASIBaseClass
     
     if(this.isEMI()){
     	helper.setItemLabel(item.getThemeText(), this);
-		helper.setItemText(item.getLeadInText(), this);
 		helper.setPresentationLabel(item.getIsAnswerOptionsSimple()?"Simple":"Rich", this);
 		String ident = "EMI" + item.getSequence();
 		helper.setPresentationFlowResponseIdent(ident, this);
 		//set the options
-		setItemTexts(Collections.singletonList(
-				item.getItemTextBySequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE)));
+		if(item.getIsAnswerOptionsSimple()){
+			setItemTexts(Collections.singletonList(
+					item.getItemTextBySequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE)));
+		}else{
+			ItemText it = new ItemText();
+			it.setSequence(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE);
+			it.setText(item.getEmiAnswerOptionsRichText());
+			Set<AnswerIfc> answerSet = new HashSet<AnswerIfc>();
+			String labels = item.getEmiAnswerOptionLabels();
+			for(int i = 0; i < item.getAnswerOptionsRichCount(); i++){
+				Answer a = new Answer();
+				a.setSequence(Long.valueOf(i));
+				a.setLabel(labels.substring(i, i+1));
+				answerSet.add(a);
+			}
+			it.setAnswerSet(answerSet);
+			setItemTexts(Collections.singletonList((ItemTextIfc)it));
+		}
+		helper.setItemText(item.getLeadInText(), "Leadin", this);
 		setAnswers(item.getEmiQuestionAnswerCombinations());
-    	return;
+    	return;//already setting text and answers, EMI has no feedback.
     }
     List<ItemTextIfc> itemTexts = item.getItemTextArraySorted();
 

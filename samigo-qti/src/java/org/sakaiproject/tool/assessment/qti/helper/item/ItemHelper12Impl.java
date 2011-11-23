@@ -41,6 +41,7 @@ import org.w3c.dom.Node;
 
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.qti.asi.Item;
 import org.sakaiproject.tool.assessment.qti.constants.AuthoringConstantStrings;
@@ -514,6 +515,9 @@ public class ItemHelper12Impl extends ItemHelperBase
 		// add all options
 		for(ItemTextIfc itemText: itemTextList){//should only be once
 			if(ItemTextIfc.EMI_ANSWER_OPTIONS_SEQUENCE.equals(itemText.getSequence())){
+				if(itemText.getText() != null && !itemText.getText().trim().isEmpty()){
+					addEMIOptionText(itemText.getText(), itemXml);
+				}
 				for (AnswerIfc answer : itemText.getAnswerArraySorted()) {
 					addEMIOption(answer.getLabel(), answer.getText(), itemXml);
 				}
@@ -521,6 +525,11 @@ public class ItemHelper12Impl extends ItemHelperBase
 		}
 	}
 	
+	private void addEMIOptionText(String text, Item itemXml) {
+		updateItemXml(itemXml, "item/presentation/flow[@class='Options']/material/mattext", 
+				XmlUtil.convertToSingleCDATA(text));
+	}
+
 	private void addEMIOption(String ident, String text, Item itemXml) {
 		Element response_label = createElement("response_label", itemXml);
 		response_label.setAttribute("ident", ident);
@@ -528,8 +537,10 @@ public class ItemHelper12Impl extends ItemHelperBase
 		response_label.appendChild(material);
 		Element mattext = createElement("mattext", itemXml);
 		material.appendChild(mattext);
-		mattext.setTextContent(text);
-		itemXml.addElement("item/presentation/flow/response_lid/render_choice", response_label);
+		if(text != null){
+			mattext.setTextContent(text);
+		}
+		itemXml.addElement("item/presentation/flow[@class='Options']/response_lid/render_choice", response_label);
 	}
 	
 	private Element createElement(String name, Item itemXml){
@@ -557,9 +568,9 @@ public class ItemHelper12Impl extends ItemHelperBase
 		Element resprocessing = createElement("resprocessing", itemXml);
 		itemXml.addElement("item", resprocessing);
 		//qti comment, contain the fill text
-		Element qticomment = createElement("qticomment", itemXml);
-		qticomment.setTextContent(XmlUtil.convertStrforCDATA(itemText.getText()));
-		resprocessing.appendChild(qticomment);
+//		Element qticomment = createElement("qticomment", itemXml);
+//		qticomment.setTextContent(XmlUtil.convertToSingleCDATA(itemText.getText()));
+//		resprocessing.appendChild(qticomment);
 		//outcomes with the scores and required count
 		Element outcomes = createElement("outcomes", itemXml);
 		resprocessing.appendChild(outcomes);
@@ -577,6 +588,39 @@ public class ItemHelper12Impl extends ItemHelperBase
 		decvarRequired.setAttribute("varname", "requiredOptionsCount");
 		decvarRequired.setAttribute("vartype", "Integer");
 		outcomes.appendChild(decvarRequired);
+		//Item Text
+		Element interpretvar = createElement("interpretvar", itemXml);//Testing
+		outcomes.appendChild(interpretvar);//Testing
+		Element material = createElement("material", itemXml);//Testing
+		interpretvar.appendChild(material);//Testing
+		Element mattext = createElement("mattext", itemXml);//Testing
+		mattext.setTextContent(XmlUtil.convertToSingleCDATA(itemText.getText()));//Testing
+		material.appendChild(mattext);//Testing
+		if(itemText.getHasAttachment()){
+			for(ItemTextAttachmentIfc attach: itemText.getItemTextAttachmentSet()){
+				Element mat = null;
+				if(attach.getMimeType().startsWith("text")){
+					mat = createElement("mattext", itemXml);
+					mat.setAttribute("texttype", attach.getMimeType());
+				}else if(attach.getMimeType().startsWith("image")){
+					mat = createElement("matimage", itemXml);
+					mat.setAttribute("imagtype", attach.getMimeType());
+				}else if(attach.getMimeType().startsWith("audio")){
+					mat = createElement("mataudio", itemXml);
+					mat.setAttribute("audiotype", attach.getMimeType());
+				}else if(attach.getMimeType().startsWith("video")){
+					mat = createElement("matvideo", itemXml);
+					mat.setAttribute("videotype", attach.getMimeType());
+				}else if(attach.getMimeType().startsWith("application")){
+					mat = createElement("matapplication", itemXml);
+					mat.setAttribute("apptype", attach.getMimeType());
+				}else{
+					throw new IllegalArgumentException("Don't know this Mime-type: " + attach.getMimeType());
+				}
+				mat.setAttribute("uri", attach.getLocation());
+				material.appendChild(mat);
+			}
+		}
 		
 		float score = 0.0f;
 		float discount = 0.0f;
@@ -584,6 +628,7 @@ public class ItemHelper12Impl extends ItemHelperBase
 		for(AnswerIfc answer: itemText.getAnswerArraySorted()){
 			Element respcondition = createElement("respcondition", itemXml);
 			respcondition.setAttribute("continue", "Yes");
+			respcondition.setAttribute("title", answer.getIsCorrect()?"CORRECT":"INCORRECT");
 			resprocessing.appendChild(respcondition);
 			//conditionvar for correct answers
 			Element conditionvar = createElement("conditionvar", itemXml);
@@ -601,8 +646,8 @@ public class ItemHelper12Impl extends ItemHelperBase
 				score += getFloat(answer.getScore());
 			}else{
 				setvar.setAttribute("action", "Subtract");
-				setvar.setTextContent(String.valueOf(getFloat(answer.getDiscount())));
-				discount += getFloat(Math.abs(answer.getDiscount()));
+				setvar.setTextContent(String.valueOf(Math.abs(getFloat(answer.getDiscount()))));
+				discount += getFloat(answer.getDiscount());
 			}
 			setvar.setAttribute("varname", "SCORE");
 			respcondition.appendChild(setvar);
@@ -1561,21 +1606,26 @@ public class ItemHelper12Impl extends ItemHelperBase
    */
   public void setItemText(String itemText, Item itemXml)
   {
-    String xpath = "item/presentation/flow/material/mattext";
+    setItemText(itemText, null, itemXml);
+  }
+  
+  public void setItemText(String itemText, String flowClass, Item itemXml){
+	  String xpath = "item/presentation/flow" +
+	  		(flowClass==null?"":"[@class='" + flowClass + "']")
+	  		+ "/material/mattext";
 
-    List list = itemXml.selectNodes(xpath);
-    log.debug("in ItemHelper12Impl.java: setItemText() text = " + itemText);
-    itemText = XmlUtil.convertStrforCDATA(itemText);
-    log.debug("in ItemHelperBase.java: setItemText() wrapped CDATA text is = " + itemText);
+	    log.debug("in ItemHelper12Impl.java: setItemText() text = " + itemText);
+	    itemText = XmlUtil.convertToSingleCDATA(itemText);
+	    log.debug("in ItemHelperBase.java: setItemText() wrapped CDATA text is = " + itemText);
 
-    try
-    {
-      itemXml.update(xpath, itemText);
-    }
-    catch (Exception ex)
-    {
-      log.error(ex.getMessage(), ex);
-    }
+	    try
+	    {
+	      itemXml.update(xpath, itemText);
+	    }
+	    catch (Exception ex)
+	    {
+	      log.error(ex.getMessage(), ex);
+	    }
   }
 
   /**
