@@ -25,7 +25,9 @@ package org.sakaiproject.tool.assessment.qti.helper.item;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.qti.asi.Item;
@@ -228,4 +230,6 @@ public interface ItemHelperIfc
    * @param itemTextList the text(s) for item
    */
   public void setFeedback(List<ItemTextIfc> itemTextList, Item itemXml);
+
+  public void setAttachments(Set<? extends AttachmentIfc> attachmentSet, Item item);
 }

@@ -28,6 +28,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.api.SamigoApiFactory;
+import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingComparatorByScoreAndUniqueIdentifier;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
@@ -326,8 +327,8 @@ public class HistogramListener
 
 			  assessmentName = pub.getTitle();
 
-			  ArrayList parts = pub.getSectionArraySorted();
-                          histogramScores.setAssesmentParts(parts);
+			  List<? extends SectionDataIfc> parts = pub.getSectionArraySorted();
+                          histogramScores.setAssesmentParts((List<PublishedSectionData>)parts);
 			  ArrayList info = new ArrayList();
 			  Iterator partsIter = parts.iterator();
 			  int secseq = 1;
@@ -394,9 +395,9 @@ public class HistogramListener
 				  String title = rb.getString("part") + " "
 				  + section.getSequence().toString();
 				  title += ", " + rb.getString("question") + " ";
-				  ArrayList itemset = section.getItemArraySortedForGrading();
+				  List<ItemDataIfc> itemset = section.getItemArraySortedForGrading();
 				  int seq = 1;
-				  Iterator itemsIter = itemset.iterator();
+				  Iterator<ItemDataIfc> itemsIter = itemset.iterator();
 
 				  // Iterate through the assessment questions (items)
 				  while (itemsIter.hasNext()) {
@@ -405,7 +406,7 @@ public class HistogramListener
 					  //if this part is a randompart , then set randompart = true
 					  questionScores.setRandomType(isRandompart);
                       questionScores.setPoolName(poolName);
-					  ItemDataIfc item = (ItemDataIfc) itemsIter.next();
+					  ItemDataIfc item = itemsIter.next();
 
 					  //String type = delegate.getTextForId(item.getTypeId());
 					  String type = getType(item.getTypeId().intValue());

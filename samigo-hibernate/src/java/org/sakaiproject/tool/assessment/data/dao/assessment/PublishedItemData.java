@@ -43,7 +43,7 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 
 public class PublishedItemData
-    implements java.io.Serializable, ItemDataIfc, Comparable {
+    implements java.io.Serializable, ItemDataIfc, Comparable<ItemDataIfc> {
   static Category errorLogger = Category.getInstance("errorLogger");
   static ResourceBundle rb = ResourceBundle.getBundle("org.sakaiproject.tool.assessment.bundle.Messages");
 
@@ -679,9 +679,8 @@ public class PublishedItemData
 		return answerKey;
 	}
 
-  public int compareTo(Object o) {
-      PublishedItemData a = (PublishedItemData)o;
-      return sequence.compareTo(a.sequence);
+  public int compareTo(ItemDataIfc o) {
+      return sequence.compareTo(o.getSequence());
   }
 
     /*

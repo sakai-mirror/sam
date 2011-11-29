@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
@@ -63,11 +61,9 @@ public class HistogramScoresBean
   private String questionNumber;
   private String allSubmissions;
   private String partNumber;//Note: this is sequence number
-  private Integer parts;//???
   private String mean;
   private String median;
   private String mode;
-  private String highestRange;
   private String standDev;
   private String lowerQuartile; //medidan of lowest-median
   private String upperQuartile; //median of median-highest
@@ -89,8 +85,6 @@ public class HistogramScoresBean
   private boolean randomType;   // true = has at least one random draw part
   private List<PublishedSectionData> assesmentParts = new ArrayList<PublishedSectionData>();
   private List<SelectItem> selectItemParts = new ArrayList<SelectItem>();
-  
-  private static Log log = LogFactory.getLog(HistogramScoresBean.class);
 
 
   /**

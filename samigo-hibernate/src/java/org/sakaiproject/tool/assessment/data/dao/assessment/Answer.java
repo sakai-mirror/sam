@@ -59,6 +59,9 @@ public class Answer
 
   public Answer() {}
 
+  public Answer(ItemTextIfc itemText, String text, Long sequence, String label) {
+	  this(itemText, text, sequence, label, null, null, null, null, null);
+  }
 	public Answer(ItemTextIfc itemText, String text, Long sequence, String label,
 			Boolean isCorrect, String grade, Float score, Float partialCredit, Float discount) {
 		this(itemText, text, sequence, label, isCorrect, grade, score, partialCredit, discount, null);

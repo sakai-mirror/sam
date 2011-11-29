@@ -55,7 +55,7 @@ import org.sakaiproject.tool.assessment.services.PersistenceService;
  * ItemFacade implements ItemDataIfc that encapsulates our out of bound (OOB)
  * agreement.
  */
-public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
+public class ItemFacade implements Serializable, ItemDataIfc, Comparable<ItemDataIfc> {
   private static Log log = LogFactory.getLog(ItemFacade.class);
 
   private static final long serialVersionUID = 7526471155622776147L;
@@ -1049,9 +1049,8 @@ public class ItemFacade implements Serializable, ItemDataIfc, Comparable {
    return ((ItemData)this.data).getAnswerKey();
   }
 
-  public int compareTo(Object o) {
-      ItemFacade a = (ItemFacade)o;
-      return sequence.compareTo(a.sequence);
+  public int compareTo(ItemDataIfc o) {
+      return sequence.compareTo(o.getSequence());
   }
 
   public Set getItemAttachmentSet() {

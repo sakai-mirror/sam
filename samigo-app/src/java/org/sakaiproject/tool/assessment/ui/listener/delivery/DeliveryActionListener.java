@@ -781,10 +781,10 @@ public class DeliveryActionListener
 
       //questionCount = secFacade.getItemSet().size();
       // need to  get ItemArraySort, insteand of getItemSet, to return corr number for random draw parts
-      ArrayList itemlist = secFacade.getItemArray();
+      List<ItemDataIfc> itemlist = secFacade.getItemArray();
       long seed = getSeed(secFacade, delivery, (long) AgentFacade.getAgentString().hashCode());
 
-      ArrayList sortedlist = getItemArraySortedWithRandom(secFacade, itemlist, seed); 
+      List<ItemDataIfc> sortedlist = getItemArraySortedWithRandom(secFacade, itemlist, seed); 
       questionCount = sortedlist.size();
 
       if ((delivery.getNoQuestions() || questionCount != 0) && itemIndex > (questionCount - 1) && sectionCount == sectionIndex) {
@@ -860,8 +860,8 @@ public class DeliveryActionListener
     // daisy change to use this existing constructor instead 11/09/05
     SectionContentsBean sec = new SectionContentsBean(part);
 
-    ArrayList itemSet = null;
-    ArrayList itemlist = part.getItemArray();
+    List<ItemDataIfc> itemSet = null;
+    List<ItemDataIfc> itemlist = part.getItemArray();
     long seed = 0;
     if (delivery.getActionMode()==DeliveryBean.GRADE_ASSESSMENT) {
       StudentScoresBean studentscorebean = (StudentScoresBean) ContextUtil.lookupBean("studentScores");
@@ -953,9 +953,9 @@ public class DeliveryActionListener
 
     //SectionContentsBean sec = new SectionContentsBean();
     SectionContentsBean sec = new SectionContentsBean(part);
-    ArrayList itemlist = part.getItemArray();
+    List<ItemDataIfc> itemlist = part.getItemArray();
     long seed = getSeed(part, delivery, (long) AgentFacade.getAgentString().hashCode());
-    ArrayList itemSet= getItemArraySortedWithRandom(part, itemlist, seed);
+    List<ItemDataIfc> itemSet= getItemArraySortedWithRandom(part, itemlist, seed);
 
     sec.setQuestions(itemSet.size());
 
@@ -2285,7 +2285,7 @@ public class DeliveryActionListener
     		SectionDataIfc section = (SectionDataIfc) i1.next();
     		Iterator i2 = null;
 
-    		ArrayList itemlist = section.getItemArray();
+    		List<ItemDataIfc> itemlist = section.getItemArray();
     		long seed = 0;
     		if (delivery.getActionMode()==DeliveryBean.GRADE_ASSESSMENT) {
     			StudentScoresBean studentscorebean = (StudentScoresBean) ContextUtil.lookupBean("studentScores");
@@ -2294,7 +2294,7 @@ public class DeliveryActionListener
     		else {
     			seed = getSeed(section, delivery, (long) AgentFacade.getAgentString().hashCode());
     		}
-    		ArrayList sortedlist = getItemArraySortedWithRandom(section, itemlist, seed);
+    		List<ItemDataIfc> sortedlist = getItemArraySortedWithRandom(section, itemlist, seed);
     		i2 = sortedlist.iterator();
 
     		while (i2.hasNext()) {
@@ -2476,7 +2476,7 @@ public class DeliveryActionListener
   
   /* this method takes the list returned from the data/dao class, and checks for part type and returns a sorted list of items. If part type is not random then return the original list
   */
-  private ArrayList getItemArraySortedWithRandom(SectionDataIfc part, ArrayList list, long seed) {
+  private List<ItemDataIfc> getItemArraySortedWithRandom(SectionDataIfc part, List<ItemDataIfc> list, long seed) {
 
     Integer numberToBeDrawn= null;
 

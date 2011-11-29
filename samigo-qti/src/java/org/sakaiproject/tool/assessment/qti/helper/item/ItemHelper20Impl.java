@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
 import org.sakaiproject.tool.assessment.qti.asi.Item;
 import org.sakaiproject.tool.assessment.qti.constants.AuthoringConstantStrings;
@@ -459,4 +460,9 @@ public class ItemHelper20Impl extends ItemHelperBase
   public void setPresentationFlowResponseIdent(String presentationFlowResponseIdent, Item itemXml){
 	  //todo
   }
+
+public void setAttachments(Set<? extends AttachmentIfc> attachmentSet, Item item) {
+	// todo
+	
+}
 }

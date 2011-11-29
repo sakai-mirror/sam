@@ -37,13 +37,13 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import org.sakaiproject.tool.assessment.data.dao.assessment.AttachmentData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionMetaDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
@@ -134,8 +134,7 @@ public void setTitle(String title)
    * Update XML from persistence
    * @param section
    */
-  @SuppressWarnings("unchecked")
-public void update(SectionDataIfc section)
+  public void update(SectionDataIfc section)
   {
     // identity
     setIdent("" + section.getSectionId());
@@ -179,9 +178,6 @@ public void update(SectionDataIfc section)
       for (ItemDataIfc item: items)
       {
         Long type = item.getTypeId();
-        if(false && 14 == type.intValue()){//XXX
-        	printItem(item);
-        }
         Item itemXml;
         if ( (TypeIfc.MULTIPLE_CHOICE_SURVEY).equals(type))
         {
@@ -445,11 +441,10 @@ public List<Element> getSectionRefs()
     this.basePath = basePath;
   }
   
-  @SuppressWarnings("unchecked")
-private String getAttachment(SectionDataIfc section) {
-	  Set<AttachmentData> attachmentSet = section.getSectionAttachmentSet();
+  private String getAttachment(SectionDataIfc section) {
+	  Set<SectionAttachmentIfc> attachmentSet = section.getSectionAttachmentSet();
 	  StringBuilder attachment = new StringBuilder();
-	  for(AttachmentData attachmentData: attachmentSet){
+	  for(SectionAttachmentIfc attachmentData: attachmentSet){
    		attachment.append(attachmentData.getResourceId().replaceAll(" ", ""));
    		attachment.append("|");
    		attachment.append(attachmentData.getFilename());
@@ -459,231 +454,6 @@ private String getAttachment(SectionDataIfc section) {
    	  }
 	  return attachment.toString();
   }
-
-  	private StringBuilder buf = new StringBuilder();
-	private void printItem(ItemDataIfc item) {
-		pNewItem(item);
-		p("ItemId", item.getItemId());//item/@ident
-		p("ThemeText", item.getThemeText());//item/@label
-		p("IsAnswerOptionsSimple", item.getIsAnswerOptionsSimple());//item/presentation/@label
-		p("LeadInText", item.getLeadInText());//item/presentation/flow/material/mattext
-		p("Sequence", item.getSequence());//item/presentation/flow/response_lid/@ident
-		p("Score", item.getScore());//item/resprocessing/outcomes/decvar/@maxvalue
-		p("Discount", item.getDiscount());//item/resprocessing/outcomes/decvar/@minvalue
-		
-		p("AnswerKey", item.getAnswerKey());
-		p("AnswerOptionsRichCount", item.getAnswerOptionsRichCount());
-//		p("CorrectItemFeedback", item.getCorrectItemFeedback());
-		p("CreatedBy", item.getCreatedBy());
-		p("CreatedDate", item.getCreatedDate());
-//		p("Description", item.getDescription());
-//		p("Duration", item.getDuration());
-		p("EmiAnswerOptionLabels", item.getEmiAnswerOptionLabels());
-		p("EmiAnswerOptionsRichText", item.getEmiAnswerOptionsRichText());
-//		p("GeneralItemFeedback", item.getGeneralItemFeedback());
-//		p("Grade", item.getGrade());
-//		p("HasRationale", item.getHasRationale());
-//		p("Hint", item.getHint());
-//		p("InCorrectItemFeedback", item.getInCorrectItemFeedback());
-//		p("Instruction", item.getInstruction());
-//		p("IsTrue", item.getIsTrue());
-		p("ItemIdString", item.getItemIdString());
-		p("LastModifiedBy", item.getLastModifiedBy());
-		p("LastModifiedDate", item.getLastModifiedDate());
-		p("NumberOfCorrectEmiOptions", item.getNumberOfCorrectEmiOptions());
-		p("PartialCreditFlag", item.getPartialCreditFlag());
-		p("Status", item.getStatus());
-//		p("Text", item.getText());
-//		p("TriesAllowed", item.getTriesAllowed());
-//		p("Type", item.getType());
-//		p("TypeId", item.getTypeId());
-//		pNewData("EmiAnswerOptions");///
-//		for (AnswerIfc answer : item.getEmiAnswerOptions()) {
-////			p("CorrectAnswerFeedback", answer.getCorrectAnswerFeedback());
-//			p("Discount", answer.getDiscount());
-////			p("GeneralAnswerFeedback", answer.getGeneralAnswerFeedback());
-//			p("Grade", answer.getGrade());
-//			p("Id", answer.getId());
-////			p("InCorrectAnswerFeedback", answer.getInCorrectAnswerFeedback());
-//			p("IsCorrect", answer.getIsCorrect());
-//			p("Label", answer.getLabel());
-//			p("PartialCredit", answer.getPartialCredit());
-//			p("Score", answer.getScore());
-//			p("Sequence", answer.getSequence());
-//			p("Text", answer.getText());
-//			p("ItemText", answer.getItemText());
-////			pNewData("AnswerFeedbackSet");
-////			for(AnswerFeedbackIfc af: answer.getAnswerFeedbackSet()){
-////				p("", af.getId());
-////				p("", af.getText());
-////				p("", af.getTypeId());
-////			}
-////			pEndData();//AnswerFeedbackSet
-//		}
-//		pEndData();//EmiAnswerOptions
-//		pNewData("EmiQuestionAnswerCombinations");XXX
-//		for(ItemTextIfc it: item.getEmiQuestionAnswerCombinations()){
-//			p(it.getId().toString(), it);
-//		}
-//		pEndData();//EmiQuestionAnswerCombinations
-		pNewData("ItemAttachmentSet");
-		for(ItemAttachmentIfc ia: item.getItemAttachmentSet()){
-			p("AttachmentId", ia.getAttachmentId());
-			p("AttachmentType", ia.getAttachmentType());
-			p("CreatedBy", ia.getCreatedBy());
-			p("CreatedDate", ia.getCreatedDate());
-			p("Description", ia.getDescription());
-			p("Filename", ia.getFilename());
-			p("FileSize", ia.getFileSize());
-			p("IsLink", ia.getIsLink());
-			p("LastModifiedBy", ia.getLastModifiedBy());
-			p("LastModifiedDate", ia.getLastModifiedDate());
-			p("Location", ia.getLocation());
-			p("MimeType", ia.getMimeType());
-			p("ResourceId", ia.getResourceId());
-			p("Status", ia.getStatus());
-		}
-		pEndData();//ItemAttachmentSet
-//		pNewData("ItemFeedbackSet");
-//		for(ItemFeedbackIfc ifb: item.getItemFeedbackSet()){
-//			p("Id", ifb.getId());
-//			p("Text", ifb.getText());
-//			p("TypeId", ifb.getTypeId());
-//		}
-//		pEndData();//ItemFeedbackSet
-//		pNewData("ItemMetaDataSet");//handled by global Item?
-//		for(ItemMetaDataIfc im: item.getItemMetaDataSet()){
-//			//p("Id", im.getId());
-//			p("Label", im.getLabel());
-//			p("Entry", im.getEntry());
-//		}
-//		pEndData();//ItemMetaDataSet
-		pNewData("ItemTextSet");
-		for(ItemTextIfc it: item.getItemTextSet()){
-			p(it.getId().toString(), it);
-		}
-		pEndData();//ItemTextSet
-		pEndData();//item
-		log.fatal(buf.toString());
-		buf.setLength(0);
-	}
-	
-	private void p(String label, ItemTextIfc itemText){
-		pNewData(label);
-		p("EmiCorrectOptionLabels", itemText.getEmiCorrectOptionLabels());
-		p("Id", itemText.getId());
-		p("RequiredOptionsCount", itemText.getRequiredOptionsCount());
-		p("Sequence", itemText.getSequence());
-		p("Text", itemText.getText());
-		p("HasAttachment", itemText.getHasAttachment());
-		p("isEmiQuestionItemText", itemText.isEmiQuestionItemText());
-		pNewData("AnswerSet");
-		for(AnswerIfc answer: itemText.getAnswerSet()){
-			pNewData(answer.getSequence().toString());
-			p("Id", answer.getId());
-			p("Sequence", answer.getSequence());
-			p("Label", answer.getLabel());
-			p("Text", answer.getText());
-			
-			p("IsCorrect", answer.getIsCorrect());
-			p("Score", answer.getScore());
-			p("Discount", answer.getDiscount());
-			
-//			p("CorrectAnswerFeedback", answer.getCorrectAnswerFeedback());
-//			p("GeneralAnswerFeedback", answer.getGeneralAnswerFeedback());
-//			p("Grade", answer.getGrade());
-//			p("InCorrectAnswerFeedback", answer.getInCorrectAnswerFeedback());
-//			p("PartialCredit", answer.getPartialCredit());
-//			p("ItemText", answer.getItemText());//XXX Bad circular ref
-//			pNewData("AnswerFeedbackSet");
-//			for(AnswerFeedbackIfc af: answer.getAnswerFeedbackSet()){
-//				p("", af.getId());
-//				p("", af.getText());
-//				p("", af.getTypeId());
-//			}
-//			pEndData();//AnswerFeedbackSet
-			pEndData();//Answer
-		}
-		pEndData();//AnswerSet
-		pNewData("ItemTextAttachmentSet");
-		for(ItemTextAttachmentIfc ita: itemText.getItemTextAttachmentSet()){
-			p("AttachmentId", ita.getAttachmentId());
-			p("AttachmentType", ita.getAttachmentType());
-			p("CreatedBy", ita.getCreatedBy());
-			p("CreatedDate", ita.getCreatedDate());
-			p("Description", ita.getDescription());
-			p("Filename", ita.getFilename());
-			p("FileSize", ita.getFileSize());
-			p("IsLink", ita.getIsLink());
-			p("LastModifiedBy", ita.getLastModifiedBy());
-			p("LastModifiedDate", ita.getLastModifiedDate());
-			p("Location", ita.getLocation());
-			p("MimeType", ita.getMimeType());
-			p("ResourceId", ita.getResourceId());
-			p("Status", ita.getStatus());
-		}
-		pEndData();//ItemTextAttachmentSet
-		pEndData();//ItemTextIfc
-	}
-	
-	private int pTab = 0;
-
-	private void pNewItem(ItemDataIfc item) {
-		pTab = 0;
-		p("************ " + item.getItemIdString() + ": " + item.getThemeText()
-				+ " **************");
-	}
-
-	private void pNewData(String text) {
-		p("----- " + text + " -----");
-		pTab++;
-	}
-
-	private void pEndData() {
-		pTab--;
-		p("----- End -----");
-	}
-	
-	@SuppressWarnings("unused")
-	private void p(String label, Object text) {
-		p(label, (text==null?"Object":text.getClass().getSimpleName()), (text==null?"null":text.toString()));
-	}
-
-	private void p(String label, String text) {
-		p(label, "String", text);
-	}
-
-	private void p(String label, Boolean text) {
-		p(label, "Boolean", String.valueOf(text));
-	}
-
-	private void p(String label, Integer text) {
-		p(label, "Integer", String.valueOf(text));
-	}
-
-	private void p(String label, Long text) {
-		p(label, "Long", String.valueOf(text));
-	}
-
-	private void p(String label, Float text) {
-		p(label, "Float", String.valueOf(text));
-	}
-
-	private void p(String label, Date text) {
-		p(label, "Date", String.valueOf(text));
-	}
-
-	private void p(String label, String type, String text) {
-		p(label + "(" + type + "): " + text);
-	}
-
-	private void p(String text) {
-		for(int i = 0; i < pTab; i++){
-			buf.append("\t");
-		}
-		buf.append(text);
-		buf.append("\n");
-	}
 }
 
 

@@ -689,12 +689,12 @@ public class ItemAuthorBean
     
     ResourceLoader rb = new ResourceLoader("org.sakaiproject.tool.assessment.bundle.AuthorMessages");
     AssessmentBean assessbean = (AssessmentBean) ContextUtil.lookupBean("assessmentBean");
-    ArrayList sectionSet = assessbean.getSections();
-    Iterator iter = sectionSet.iterator();
+    List<SectionContentsBean> sectionSet = assessbean.getSections();
+    Iterator<SectionContentsBean> iter = sectionSet.iterator();
     int i =0;
     while (iter.hasNext()){
       i = i + 1;
-      SectionContentsBean part = (SectionContentsBean) iter.next();
+      SectionContentsBean part = iter.next();
       SelectItem selection = new SelectItem();
 
       // need to filter out all the random draw parts
@@ -765,12 +765,12 @@ public class ItemAuthorBean
 				"org.sakaiproject.tool.assessment.bundle.AuthorMessages");
 		AssessmentBean assessbean = (AssessmentBean) ContextUtil
 				.lookupBean("assessmentBean");
-		ArrayList sectionSet = assessbean.getSections();
-		Iterator iter = sectionSet.iterator();
+		List<SectionContentsBean> sectionSet = assessbean.getSections();
+		Iterator<SectionContentsBean> iter = sectionSet.iterator();
 		int i = 0;
 		while (iter.hasNext()) {
 			i = i + 1;
-			SectionContentsBean part = (SectionContentsBean) iter.next();
+			SectionContentsBean part = iter.next();
 
 			// need to filter out all the random draw parts
 			if (part.getSectionAuthorType().equals(

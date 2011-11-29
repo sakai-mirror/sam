@@ -91,20 +91,4 @@ public  interface AnswerIfc
 
   String getGeneralAnswerFeedback();
   
-  
-  //gopalrc added 30 Nov 2009
-  //String getEmiCorrectOptionLabelsAsString();
-  //public String getEmiTextWithoutCorrectOptionLabels();
-//  boolean isEmiOptionCorrect(String optionLabel);
-//  ArrayList getEmiSelectionOptions();
-//  void setEmiSelectionOptions(ArrayList emiSelectionOptions);
-//  int getNumberOfCorrectEmiOptions();
-
-	
-  //gopalrc Jan 2010 - for EMI questions
-//  public String getCorrectOptionLabels();
-//  public void setCorrectOptionLabels(String correctOptionLabels);
-
-
-  
 }

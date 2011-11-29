@@ -113,7 +113,7 @@ file = File Upload
   // I'm just adding an "" to make FIN the itemTypes[11].  This is used in ItemTypeExtractionStrategy.getValidType()
   
   public static final String[] itemTypes =
-  { "Unknown Type", MCSC, MCMC, SURVEY, TF, ESSAY, FILE, AUDIO, FIB, MATCHING,"", FIN, MCMCSS, EMI, MATRIX};
+  { "Unknown Type", MCSC, MCMC, SURVEY, TF, ESSAY, FILE, AUDIO, FIB, MATCHING,"", FIN, MCMCSS, MATRIX, EMI};
   
 
   // Feedback Type

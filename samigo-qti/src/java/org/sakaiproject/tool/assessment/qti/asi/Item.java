@@ -223,6 +223,8 @@ public class Item extends ASIBaseClass
 		helper.setPresentationLabel(item.getIsAnswerOptionsSimple()?"Simple":"Rich", this);
 		String ident = "EMI" + item.getSequence();
 		helper.setPresentationFlowResponseIdent(ident, this);
+		//set attachments
+		helper.setAttachments(item.getItemAttachmentSet(), this);
 		//set the options
 		if(item.getIsAnswerOptionsSimple()){
 			setItemTexts(Collections.singletonList(

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<item ident="174" label="QTI Attachments" title="Extended Matching Items">
+	<qticomment>
+		This is a QTI implementation for Extended Matching Items (EMIs).
+		Note that this is only valid for Samigo's import export of EMI's.
+	</qticomment>
+	<itemmetadata>
+		<qtimetadata>
+			<qtimetadatafield>
+				<fieldlabel>qmd_itemtype</fieldlabel>
+				<fieldentry>Extended Matching Items</fieldentry>
+			</qtimetadatafield>
+			<qtimetadatafield>
+				<fieldlabel>TEXT_FORMAT</fieldlabel>
+				<fieldentry>HTML</fieldentry>
+			</qtimetadatafield>
+			<qtimetadatafield>
+				<fieldlabel>ITEM_OBJECTIVE</fieldlabel>
+				<fieldentry />
+			</qtimetadatafield>
+			<qtimetadatafield>
+				<fieldlabel>ITEM_KEYWORD</fieldlabel>
+				<fieldentry />
+			</qtimetadatafield>
+			<qtimetadatafield>
+				<fieldlabel>ITEM_RUBRIC</fieldlabel>
+				<fieldentry />
+			</qtimetadatafield>
+			<qtimetadatafield>
+				<fieldlabel>ATTACHMENT</fieldlabel>
+				<fieldentry>/attachment/84099603-076b-436d-afb8-69d8a820ee11/Tests_Quizzes/fd5236b0-e0d7-45bc-8e6d-1fb21d341f50/OC_name+logo+slogan_.png|OC(name+logo+slogan).png|image/png
+				</fieldentry>
+			</qtimetadatafield>
+			<qtimetadatafield>
+				<fieldlabel>hasRationale</fieldlabel>
+				<fieldentry>false</fieldentry>
+			</qtimetadatafield>
+			<qtimetadatafield>
+				<fieldlabel>RANDOMIZE</fieldlabel>
+				<fieldentry>false</fieldentry>
+			</qtimetadatafield>
+		</qtimetadata>
+	</itemmetadata>
+	<rubric view="All">
+		<material>
+			<mattext charset="ascii-us" texttype="text/plain" xml:space="default" />
+		</material>
+	</rubric>
+	<presentation label="Rich">
+		<flow class="Options">
+			<material>
+				<mattext charset="ascii-us" texttype="text/plain" xml:space="default"><![CDATA[See the attachment]]></mattext>
+				<matimage embedded="base64" imagtype="image/png" label="OC(name+logo+slogan).png" size="90"
+					uri="/access/content/attachment/84099603-076b-436d-afb8-69d8a820ee11/Tests%20_%20Quizzes/fd5236b0-e0d7-45bc-8e6d-1fb21d341f50/OC_name%2Blogo%2Bslogan_.png" />
+			</material>
+			<response_lid ident="EMI4" rcardinality="Multiple"
+				rtiming="No">
+				<render_choice shuffle="No">
+					<response_label ident="A" rarea="Ellipse" rrange="Exact"
+						rshuffle="Yes">
+						<material>
+							<mattext charset="ascii-us" texttype="text/plain"
+								xml:space="default" />
+						</material>
+					</response_label>
+					<response_label ident="B" rarea="Ellipse" rrange="Exact"
+						rshuffle="Yes">
+						<material>
+							<mattext charset="ascii-us" texttype="text/plain"
+								xml:space="default" />
+						</material>
+					</response_label>
+					<response_label ident="C" rarea="Ellipse" rrange="Exact"
+						rshuffle="Yes">
+						<material>
+							<mattext charset="ascii-us" texttype="text/plain"
+								xml:space="default" />
+						</material>
+					</response_label>
+					<response_label ident="D" rarea="Ellipse" rrange="Exact"
+						rshuffle="Yes">
+						<material>
+							<mattext charset="ascii-us" texttype="text/plain"
+								xml:space="default" />
+						</material>
+					</response_label>
+				</render_choice>
+			</response_lid>
+		</flow>
+		<flow class="Leadin">
+			<material>
+				<mattext charset="ascii-us" texttype="text/plain" xml:space="default"><![CDATA[The following default text will be used unless you click on this box and enter your own. <br/>
+&lt;br/&gt;Default text:&lt;br/&gt;  For each of the items below, select the most appropriate answer option(s) above. Each answer option may be used once, more then once, or not at all.]]></mattext>
+			</material>
+		</flow>
+	</presentation>
+	<resprocessing>
+		<qticomment>Overall Score</qticomment>
+		<outcomes>
+			<decvar defaultval="0" maxvalue="11.0" minvalue="0.0" varname="SCORE"
+				vartype="Integer" />
+		</outcomes>
+		<respcondition continue="Yes" title="Score">
+			<conditionvar>
+				<unanswered respident="SCORE" />
+			</conditionvar>
+		</respcondition>
+	</resprocessing>
+	<resprocessing>
+		<outcomes>
+			<decvar defaultval="0" maxvalue="0.0" minvalue="0.0" varname="SCORE"
+				vartype="Float" />
+			<decvar defaultval="1" maxvalue="1" minvalue="0"
+				varname="requiredOptionsCount" vartype="Integer" />
+			<interpretvar varname="SCORE" view="All">
+				<material>
+					<mattext charset="ascii-us" texttype="text/plain"
+						xml:space="default"><![CDATA[Logo Bmp for A]]></mattext>
+					<matimage embedded="base64" imagtype="image/bmp" label="OC(logo).bmp" size="5169"
+						uri="/access/content/attachment/84099603-076b-436d-afb8-69d8a820ee11/Tests%20_%20Quizzes/7789d48a-9f63-48f6-a7d0-7b890fab0afa/OC_logo_.bmp" />
+				</material>
+			</interpretvar>
+		</outcomes>
+		<respcondition continue="Yes" title="CORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">A</varequal>
+			</conditionvar>
+			<setvar action="Add" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">B</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">C</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">D</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+	</resprocessing>
+	<resprocessing>
+		<outcomes>
+			<decvar defaultval="0" maxvalue="0.0" minvalue="0.0" varname="SCORE"
+				vartype="Float" />
+			<decvar defaultval="1" maxvalue="1" minvalue="0"
+				varname="requiredOptionsCount" vartype="Integer" />
+			<interpretvar varname="SCORE" view="All">
+				<material>
+					<mattext charset="ascii-us" texttype="text/plain"
+						xml:space="default"><![CDATA[Logo and Slogan for B]]></mattext>
+					<matimage embedded="base64" imagtype="image/bmp" label="OC(logo+slogan).bmp" size="14803"
+						uri="/access/content/attachment/84099603-076b-436d-afb8-69d8a820ee11/Tests%20_%20Quizzes/b4444c0d-7bea-48ec-812b-70999490558d/OC_logo%2Bslogan_.bmp" />
+				</material>
+			</interpretvar>
+		</outcomes>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">A</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="CORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">B</varequal>
+			</conditionvar>
+			<setvar action="Add" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">C</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">D</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+	</resprocessing>
+	<resprocessing>
+		<outcomes>
+			<decvar defaultval="0" maxvalue="0.0" minvalue="0.0" varname="SCORE"
+				vartype="Float" />
+			<decvar defaultval="1" maxvalue="1" minvalue="0"
+				varname="requiredOptionsCount" vartype="Integer" />
+			<interpretvar varname="SCORE" view="All">
+				<material>
+					<mattext charset="ascii-us" texttype="text/plain"
+						xml:space="default"><![CDATA[Logo Name for C]]></mattext>
+					<matimage embedded="base64" imagtype="image/bmp" label="OC(name).bmp" size="10325"
+						uri="/access/content/attachment/84099603-076b-436d-afb8-69d8a820ee11/Tests%20_%20Quizzes/6f15f356-c81a-4cda-bd9b-9dd03e2230e0/OC_name_.bmp" />
+				</material>
+			</interpretvar>
+		</outcomes>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">A</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">B</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="CORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">C</varequal>
+			</conditionvar>
+			<setvar action="Add" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">D</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+	</resprocessing>
+	<resprocessing>
+		<outcomes>
+			<decvar defaultval="0" maxvalue="0.0" minvalue="0.0" varname="SCORE"
+				vartype="Float" />
+			<decvar defaultval="1" maxvalue="1" minvalue="0"
+				varname="requiredOptionsCount" vartype="Integer" />
+			<interpretvar varname="SCORE" view="All">
+				<material>
+					<mattext charset="ascii-us" texttype="text/plain"
+						xml:space="default"><![CDATA[Koala.jpg for D]]></mattext>
+					<matimage embedded="base64" imagtype="image/jpeg" label="Koala.jpg" size="762"
+						uri="/access/content/attachment/84099603-076b-436d-afb8-69d8a820ee11/Tests%20_%20Quizzes/21dd3a51-09c9-48a7-90fa-764a91e123e4/Koala.jpg" />
+				</material>
+			</interpretvar>
+		</outcomes>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">A</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">B</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="INCORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">C</varequal>
+			</conditionvar>
+			<setvar action="Subtract" varname="SCORE">0.0</setvar>
+		</respcondition>
+		<respcondition continue="Yes" title="CORRECT">
+			<conditionvar>
+				<varequal case="Yes" respident="EMI4">D</varequal>
+			</conditionvar>
+			<setvar action="Add" varname="SCORE">0.0</setvar>
+		</respcondition>
+	</resprocessing>
+</item>

@@ -24,7 +24,7 @@ import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 
 public class ItemData
     implements java.io.Serializable,
-    ItemDataIfc, Comparable<ItemData> {
+    ItemDataIfc, Comparable<ItemDataIfc> {
   static Logger errorLogger = Logger.getLogger("errorLogger");
   static ResourceBundle rb = ResourceBundle.getBundle("org.sakaiproject.tool.assessment.bundle.Messages");
 
@@ -631,9 +631,11 @@ public ItemData() {}
 
   public List<ItemTextIfc> getItemTextArray() {
     ArrayList<ItemTextIfc> list = new ArrayList<ItemTextIfc>();
-    Iterator<ItemTextIfc> iter = itemTextSet.iterator();
-    while (iter.hasNext()){
-      list.add(iter.next());
+    if(itemTextSet != null){
+    	Iterator<ItemTextIfc> iter = itemTextSet.iterator();
+    	while (iter.hasNext()){
+    		list.add(iter.next());
+    	}
     }
     return list;
   }
@@ -772,8 +774,8 @@ public ItemData() {}
 
   }
 
-  public int compareTo(ItemData o) {
-      return sequence.compareTo(o.sequence);
+  public int compareTo(ItemDataIfc o) {
+      return sequence.compareTo(o.getSequence());
   }
 
   public boolean getGeneralItemFbIsNotEmpty(){
@@ -857,6 +859,9 @@ public ItemData() {}
   private void setThemeAndLeadInText() {
 	if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId())) {
 		boolean themeTextIsSet = false, leadInTextIsSet = false;
+		if(itemTextSet == null){
+			return;
+		}
 		Iterator<ItemTextIfc> iter = itemTextSet.iterator();
 		while (iter.hasNext()) {
 			ItemTextIfc itemText= (ItemTextIfc) iter.next();
@@ -881,6 +886,9 @@ public ItemData() {}
   //gopalrc - total number of correct EMI answers
 	public int getNumberOfCorrectEmiOptions() {
 		int count=0;
+		if (itemTextSet == null){
+			return count;
+		}
 		Iterator<ItemTextIfc> itemTextIter = itemTextSet.iterator();
 		while (itemTextIter.hasNext()) {
 			ItemTextIfc itemText = itemTextIter.next();
@@ -902,10 +910,12 @@ public ItemData() {}
 		if (TypeD.EXTENDED_MATCHING_ITEMS.equals(getTypeId())) {
 			if (getIsAnswerOptionsSimple()) {
 				emiAnswerOptionLabels = "";
-				Iterator<AnswerIfc> iter = getEmiAnswerOptions().iterator();
-				while (iter.hasNext()) {
-					AnswerIfc answer = iter.next();
-					emiAnswerOptionLabels += answer.getLabel();
+				if (getEmiAnswerOptions() != null) {
+					Iterator<AnswerIfc> iter = getEmiAnswerOptions().iterator();
+					while (iter.hasNext()) {
+						AnswerIfc answer = iter.next();
+						emiAnswerOptionLabels += answer.getLabel();
+					}
 				}
 			}
 			else { // Rich
@@ -956,6 +966,9 @@ public ItemData() {}
 	  //gopalrc - Aug 2010
 	  public ItemTextIfc getItemTextBySequence(Long itemTextSequence) {
 		  ItemTextIfc itemText = null;  
+		  if(itemTextSet == null){
+			  return null;
+		  }
 		  Iterator<ItemTextIfc> itemTextIter = itemTextSet.iterator();
 		  while (itemTextIter.hasNext()) {
 			  itemText = itemTextIter.next();

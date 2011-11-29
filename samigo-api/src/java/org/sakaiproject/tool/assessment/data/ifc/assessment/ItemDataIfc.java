@@ -31,7 +31,7 @@ import java.util.List;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 
 
-public interface ItemDataIfc extends java.io.Serializable {
+public interface ItemDataIfc extends Comparable<ItemDataIfc>, java.io.Serializable {
 
   public static Integer ACTIVE_STATUS = Integer.valueOf(1);
   public static Integer INACTIVE_STATUS = Integer.valueOf(0);

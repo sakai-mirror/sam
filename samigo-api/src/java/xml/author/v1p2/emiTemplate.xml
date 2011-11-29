@@ -2,6 +2,7 @@
 	<qticomment>
 		This is a QTI implementation for Extended Matching Items (EMIs).
 		Note that this is only valid for Samigo's import export of EMI's.
+		This is not FULL QTI Standard
 	</qticomment>
 	<itemmetadata>
 		<qtimetadata>

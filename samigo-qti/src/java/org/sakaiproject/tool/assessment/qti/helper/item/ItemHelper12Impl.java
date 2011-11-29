@@ -40,6 +40,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.AttachmentIfc;
+import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
@@ -597,29 +599,7 @@ public class ItemHelper12Impl extends ItemHelperBase
 		mattext.setTextContent(XmlUtil.convertToSingleCDATA(itemText.getText()));//Testing
 		material.appendChild(mattext);//Testing
 		if(itemText.getHasAttachment()){
-			for(ItemTextAttachmentIfc attach: itemText.getItemTextAttachmentSet()){
-				Element mat = null;
-				if(attach.getMimeType().startsWith("text")){
-					mat = createElement("mattext", itemXml);
-					mat.setAttribute("texttype", attach.getMimeType());
-				}else if(attach.getMimeType().startsWith("image")){
-					mat = createElement("matimage", itemXml);
-					mat.setAttribute("imagtype", attach.getMimeType());
-				}else if(attach.getMimeType().startsWith("audio")){
-					mat = createElement("mataudio", itemXml);
-					mat.setAttribute("audiotype", attach.getMimeType());
-				}else if(attach.getMimeType().startsWith("video")){
-					mat = createElement("matvideo", itemXml);
-					mat.setAttribute("videotype", attach.getMimeType());
-				}else if(attach.getMimeType().startsWith("application")){
-					mat = createElement("matapplication", itemXml);
-					mat.setAttribute("apptype", attach.getMimeType());
-				}else{
-					throw new IllegalArgumentException("Don't know this Mime-type: " + attach.getMimeType());
-				}
-				mat.setAttribute("uri", attach.getLocation());
-				material.appendChild(mat);
-			}
+			setAttachments(itemText.getItemTextAttachmentSet(), itemXml, material);
 		}
 		
 		float score = 0.0f;
@@ -2175,5 +2155,42 @@ public class ItemHelper12Impl extends ItemHelperBase
 	  updateItemXml(itemXml,
 			  respCond + "/displayfeedback[2]/@linkrefid", "AnswerFeedback");
 	  updateItemXml(itemXml, respCond + "/displayfeedback[2]", value);
+  }
+  
+  public void setAttachments(Set<? extends AttachmentIfc> attachmentSet, Item itemXml){
+	  if(attachmentSet == null || attachmentSet.isEmpty()){
+		  return;
+	  }
+	  List<Element> nodeList = itemXml.selectNodes("//item/presentation/flow[position()=1]/material");
+	  Element material = nodeList.get(0);
+	  setAttachments(attachmentSet, itemXml, material);
+  }
+  
+  private void setAttachments(Set<? extends AttachmentIfc> attachmentSet, Item itemXml, Element material){
+	  for(AttachmentIfc attach: attachmentSet){
+			Element mat = null;
+			if(attach.getMimeType().startsWith("text")){
+				mat = createElement("mattext", itemXml);
+				mat.setAttribute("texttype", attach.getMimeType());
+			}else if(attach.getMimeType().startsWith("image")){
+				mat = createElement("matimage", itemXml);
+				mat.setAttribute("imagtype", attach.getMimeType());
+			}else if(attach.getMimeType().startsWith("audio")){
+				mat = createElement("mataudio", itemXml);
+				mat.setAttribute("audiotype", attach.getMimeType());
+			}else if(attach.getMimeType().startsWith("video")){
+				mat = createElement("matvideo", itemXml);
+				mat.setAttribute("videotype", attach.getMimeType());
+			}else if(attach.getMimeType().startsWith("application")){
+				mat = createElement("matapplication", itemXml);
+				mat.setAttribute("apptype", attach.getMimeType());
+			}else{
+				throw new IllegalArgumentException("Don't know this Mime-type: " + attach.getMimeType());
+			}
+			mat.setAttribute("label", attach.getFilename());
+			mat.setAttribute("size", String.valueOf(attach.getFileSize()));
+			mat.setAttribute("uri", attach.getLocation());
+			material.appendChild(mat);
+		}
   }
 }

@@ -1,0 +1,280 @@
+﻿************ 172: QTI Simple with Richtext **************
+ThemeText(String): QTI Simple with Richtext
+IsAnswerOptionsSimple(Boolean): true
+LeadInText(String): <b>Here </b>are <i>some </i>rich <u>text</u>:
+<ul>
+    <li>Bullet A</li>
+    <li>Bullet B</li>
+</ul>
+<img alt=""  src="http://localhost:8080/library/editor/FCKeditor/editor/images/smiley/msn/wink_smile.gif" /><br/>
+<img alt=""  src="http://localhost:8080/access/content/group/84099603-076b-436d-afb8-69d8a820ee11/OC(logo).bmp"  style="width: 282px; height: 228px;" />
+Sequence(Integer): 2
+Score(Float): 6.0
+Discount(Float): 0.0
+AnswerKey(String): 1:A 2:B 3:C 4:D 
+AnswerOptionsRichCount(Integer): 0
+EmiAnswerOptionLabels(String): ABCD
+EmiAnswerOptionsRichText(String): 
+NumberOfCorrectEmiOptions(Integer): 4
+PartialCreditFlag(Boolean): false
+Status(Integer): 1
+----- ItemTextSet -----
+	----- 1472 -----
+		EmiCorrectOptionLabels(String): null
+		RequiredOptionsCount(Integer): null
+		Sequence(Long): -3
+		Text(String): <b>Here </b>are <i>some </i>rich <u>text</u>:
+<ul>
+    <li>Bullet A</li>
+    <li>Bullet B</li>
+</ul>
+<img alt=""  src="http://localhost:8080/library/editor/FCKeditor/editor/images/smiley/msn/wink_smile.gif" /><br/>
+<img alt=""  src="http://localhost:8080/access/content/group/84099603-076b-436d-afb8-69d8a820ee11/OC(logo).bmp"  style="width: 282px; height: 228px;" />
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): false
+	----- End -----
+	----- 1469 -----
+		EmiCorrectOptionLabels(String): null
+		RequiredOptionsCount(Integer): null
+		Sequence(Long): -2
+		Text(String): 
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): false
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): false
+				Score(Float): null
+				Discount(Float): 0.0
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): false
+				Score(Float): null
+				Discount(Float): 0.0
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): false
+				Score(Float): null
+				Discount(Float): 0.0
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): false
+				Score(Float): null
+				Discount(Float): 0.0
+			----- End -----
+		----- End -----
+	----- End -----
+	----- 1470 -----
+		EmiCorrectOptionLabels(String): null
+		RequiredOptionsCount(Integer): null
+		Sequence(Long): -1
+		Text(String): QTI Simple with Richtext
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): false
+	----- End -----
+	----- 1468 -----
+		EmiCorrectOptionLabels(String): A
+		RequiredOptionsCount(Integer): 1
+		Sequence(Long): 1
+		Text(String): <span style="font-size: xx-large;" ><span style="background-color: rgb(0, 255, 0);" ><span style="color: rgb(255, 0, 0);" ><b>Give me a A!</b></span></span><br/>
+</span>
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): true
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): true
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+		----- End -----
+	----- End -----
+	----- 1471 -----
+		EmiCorrectOptionLabels(String): B
+		RequiredOptionsCount(Integer): 1
+		Sequence(Long): 2
+		Text(String): <a  href="http://www.givemeab.co.za"  target="_blank" >www.givemeab.co.za</a><br/>
+<table border="1"  cellpadding="1"  cellspacing="1"  width="200" >
+    <tbody>
+        <tr>
+            <td>give</td>
+            <td>a</td>
+        </tr>
+        <tr>
+            <td>b</td>
+            <td>to</td>
+        </tr>
+        <tr>
+            <td>this</td>
+            <td>question</td>
+        </tr>
+    </tbody>
+</table>
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): true
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): true
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+		----- End -----
+	----- End -----
+	----- 1467 -----
+		EmiCorrectOptionLabels(String): C
+		RequiredOptionsCount(Integer): 1
+		Sequence(Long): 3
+		Text(String): <div style="margin-left:18.0pt;text-indent:-18.0pt;" ><b><font size="6" ><a name="_Toc302475719" ><span>1.<span style="font:7.0pt &quot;Times New Roman&quot;" >&nbsp;&nbsp;&nbsp; </span></span>Overview</a></font></b> and CCCCCCCC</div>
+<div>This document will describe the Proof of Concept (POC) for the new development of Sakai OLE (Offline Learning Environment) previously known as SOLO. There are two main reasons why SOLO is redeveloped to create Sakai OLE.</div>
+<div>Firstly, SOLO was born because of the need to use Sakai offline. Thus users can either download the data or install it from CD to view it later while not connected to the internet. SOLO used Google Gears to accomplish this, but with the <a  href="http://gearsblog.blogspot.com/2010/02/hello-html5.html"  target="_blank" >change in focus</a> of the major market players (including Google) to grow and support HTML5 and related technologies <a  href="http://gearsblog.blogspot.com/2011/03/stopping-gears.html"  target="_blank" >Google decided to stop Gears</a> development and also eventually all Gears support.</div>
+<div>Secondly, the need has evolved, users need more mobility. Users need to use multiple PC&rsquo;s and multiple users use a single, maybe public, PC. This means that users should have the ability to &lsquo;take&rsquo; their offline data with them or share it between many PC&rsquo;s. The users should also be protected from high bandwidth usage, only download what is needed once.</div>
+<div>&nbsp;</div>
+<br/>
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): true
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): true
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+		----- End -----
+	----- End -----
+	----- 1466 -----
+		EmiCorrectOptionLabels(String): D
+		RequiredOptionsCount(Integer): 1
+		Sequence(Long): 4
+		Text(String): K?<br/>
+<sub>adfadfdf<sup>adfadfadfadf<span style="background-color: Lime;" >fadfadfad</span></sup></sub><span style="background-color: Lime;" ><sup>dfadafadf</sup><tt>adfadfadf</tt></span><br/>
+adfadf<br/>
+O dont forget DDDDD
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): true
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): false
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): true
+				Score(Float): 1.5
+				Discount(Float): -1.5
+			----- End -----
+		----- End -----
+	----- End -----
+----- End -----
+----- End -----

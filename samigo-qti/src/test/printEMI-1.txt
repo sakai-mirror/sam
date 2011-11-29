@@ -1,0 +1,243 @@
+﻿************ 171: QTI Simple **************
+ThemeText(String): QTI Simple
+IsAnswerOptionsSimple(Boolean): true
+LeadInText(String): For each of the items below, select the most appropriate answer option(s) above. Each answer option may be used once, more then once, or not at all.
+Sequence(Integer): 1
+Score(Float): 5.0
+Discount(Float): 0.0
+AnswerKey(String): 1:A 2:B 3:C 4:D 
+AnswerOptionsRichCount(Integer): 0
+EmiAnswerOptionLabels(String): ABCD
+EmiAnswerOptionsRichText(String): 
+NumberOfCorrectEmiOptions(Integer): 4
+PartialCreditFlag(Boolean): false
+Status(Integer): 1
+----- ItemTextSet -----
+	----- 1463 -----
+		EmiCorrectOptionLabels(String): null
+		RequiredOptionsCount(Integer): null
+		Sequence(Long): -3
+		Text(String): For each of the items below, select the most appropriate answer option(s) above. Each answer option may be used once, more then once, or not at all.
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): false
+	----- End -----
+	----- 1459 -----
+		EmiCorrectOptionLabels(String): null
+		RequiredOptionsCount(Integer): null
+		Sequence(Long): -2
+		Text(String): 
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): false
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): false
+				Score(Float): null
+				Discount(Float): 0.0
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): false
+				Score(Float): null
+				Discount(Float): 0.0
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): false
+				Score(Float): null
+				Discount(Float): 0.0
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): false
+				Score(Float): null
+				Discount(Float): 0.0
+			----- End -----
+		----- End -----
+	----- End -----
+	----- 1460 -----
+		EmiCorrectOptionLabels(String): null
+		RequiredOptionsCount(Integer): null
+		Sequence(Long): -1
+		Text(String): QTI Simple
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): false
+	----- End -----
+	----- 1461 -----
+		EmiCorrectOptionLabels(String): A
+		RequiredOptionsCount(Integer): 1
+		Sequence(Long): 1
+		Text(String): Choose A
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): true
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): true
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+		----- End -----
+	----- End -----
+	----- 1462 -----
+		EmiCorrectOptionLabels(String): B
+		RequiredOptionsCount(Integer): 1
+		Sequence(Long): 2
+		Text(String): Choose B
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): true
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): true
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+		----- End -----
+	----- End -----
+	----- 1465 -----
+		EmiCorrectOptionLabels(String): C
+		RequiredOptionsCount(Integer): 1
+		Sequence(Long): 3
+		Text(String): Choose C
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): true
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): true
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+		----- End -----
+	----- End -----
+	----- 1464 -----
+		EmiCorrectOptionLabels(String): D
+		RequiredOptionsCount(Integer): 1
+		Sequence(Long): 4
+		Text(String): Choose D
+		HasAttachment(Boolean): false
+		isEmiQuestionItemText(Boolean): true
+		----- AnswerSet -----
+			----- 1 -----
+				Sequence(Long): 1
+				Label(String): A
+				Text(String): Option A
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 2 -----
+				Sequence(Long): 2
+				Label(String): B
+				Text(String): Option B
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 3 -----
+				Sequence(Long): 3
+				Label(String): C
+				Text(String): Option C
+				IsCorrect(Boolean): false
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+			----- 4 -----
+				Sequence(Long): 4
+				Label(String): D
+				Text(String): Option D
+				IsCorrect(Boolean): true
+				Score(Float): 1.25
+				Discount(Float): -1.25
+			----- End -----
+		----- End -----
+	----- End -----
+----- End -----
+----- End -----
