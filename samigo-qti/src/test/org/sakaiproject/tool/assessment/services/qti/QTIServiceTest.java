@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.util.Arrays;
 
 import javax.xml.transform.OutputKeys;
@@ -27,14 +28,6 @@ public class QTIServiceTest extends TestCase {
 	private static final Logger log = Logger.getLogger("XXX");
 	private static int[] ignore = {0,4};
 
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-
 	public void testCreateImportedAssessment() throws Exception {
 		for(int index = 1; index <= 4; index++){
 			testCreateImportedAssessment(index);
@@ -42,7 +35,12 @@ public class QTIServiceTest extends TestCase {
 	}
 	
 	private void testCreateImportedAssessment(int index) throws Exception {
-		String file = QTIServiceTest.class.getClassLoader().getResource("exportEMI-"+index+".xml").getPath();
+		URL url = QTIServiceTest.class.getClassLoader().getResource("exportEMI-"+index+".xml");
+		if(url == null){
+			log.warn("Could not find the test file, exportEMI-"+index+".xml! Stopping test.");
+			return;
+		}
+		String file = url.getPath();
 		log.info("File: " + file);
 		Document document = XmlUtil.readDocument(file, true);
 		ExtractionHelper exHelper = new ExtractionHelper(QTIVersion.VERSION_1_2);
