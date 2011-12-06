@@ -28,7 +28,8 @@ $(document).ready(function(){
 	var maxAvailableItems = +30;
 	var minOptions = +2;
 	var currentOptions = 0;
-	var showAtStart = +4;
+	var optionsAtStart = +8;
+	var itemsAtStart = +4;
 	var removeLabel = "X";
 	var ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -226,7 +227,7 @@ $(document).ready(function(){
 		}
 	}
 	if (isAllNull) {
-		for (i=0; i<showAtStart; i++) {
+		for (i=0; i<optionsAtStart; i++) {
 			$("table[id=itemForm:emiAnswerOptions:" + i + ":Row]").parent().parent().show();
 			currentOptions++;
 		}
@@ -391,8 +392,8 @@ $(document).ready(function(){
 	}
 	var itemsToShow=+0;
 	if (isAllNull) {
-		itemsToShow = +showAtStart;
-		emiVisibleItems.val(showAtStart);
+		itemsToShow = +itemsAtStart;
+		emiVisibleItems.val(itemsToShow);
 	}
 	else {
 		itemsToShow = +emiVisibleItems.val();
