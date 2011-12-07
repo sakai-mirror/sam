@@ -24,8 +24,6 @@ Headings for item edit pages, needs to have msg=AuthorMessages.properties.
 --%>
 -->
 <!-- Core files -->
-<script src="/samigo-app/js/jquery.alerts-1.1.js" type="text/javascript"></script>
-<link href="/samigo-app/css/jquery.alerts-1.1/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/JavaScript">
 <!--
 function changeTypeLink(field){
@@ -43,23 +41,7 @@ document.links[newindex].onclick();
 
 //Display the EMI question example
 function displayEMIHelp(){
-	jQuery.ajax({
-		url: '../../../../../../samigo-app/emi/help.txt',
-		data: '',
-		success: displayEMIHelpCallback,
-		dataType: 'html'
-	});
-}
-
-function displayEMIHelpCallback(data, textStatus, jqXHR){
-	if(textStatus == 'success'){
-		jAlert(data, jQuery('#EMIHelp').text());
-		jQuery("#popup_container").css({
-				top: 20 + 'px'
-			});
-	}else{
-		alert('Help display Error: ' + textStatus);
-	}
+	window.open('../../../../../../samigo-app/emi/help.txt', '_blank', 'location=no,menubar=no,status=no,toolbar=no');
 }
 //-->
 </script>
@@ -175,10 +157,11 @@ listener set selectFromQuestionPool, eliminating the rendered attribute
 </h:commandLink>
 
 &nbsp;
-<a id="EMIHelp" href="#"
-	onclick="displayEMIHelp()" >
-	<h:outputText value="#{authorMessages.example_emi_question}" rendered="#{itemauthor.currentItem.itemType == 14}" />
-</a> 
+<h:outputLink title="#{authorMessages.example_emi_question}" value="#" rendered="#{itemauthor.currentItem.itemType == 14}" 
+		onclick="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" 
+		onkeypress="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" >
+	<h:outputText  value=" (#{authorMessages.example_emi_question})"/>
+</h:outputLink>
 
 <h:message rendered="#{questionpool.importToAuthoring == 'true' && itemauthor.target == 'assessment'}" for="changeQType1" infoClass="messageSamigo" warnClass="validation" errorClass="messageSamigo" fatalClass="messageSamigo"/>
 <h:message rendered="#{questionpool.importToAuthoring == 'false' && itemauthor.target == 'assessment'}" for="changeQType2" infoClass="messageSamigo" warnClass="messageSamigo" errorClass="messageSamigo" fatalClass="messageSamigo"/>

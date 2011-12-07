@@ -105,6 +105,11 @@
 			<div>
 				<h3>
 					<h:outputText value="#{authorMessages.answer_point_value}" />
+					<h:outputLink title="#{authorMessages.emi_whats_this}" value="#" 
+							onclick="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=point#point','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" 
+							onkeypress="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=point#point','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" >
+						<h:outputText  value=" (#{authorMessages.emi_whats_this})"/>
+					</h:outputLink>
 					<h:inputText id="answerptr"
 						value="#{itemauthor.currentItem.itemScore}" required="true"
 						size="6" onchange="toPoint(this.id);">
@@ -128,6 +133,11 @@
 			<!-- 2 QUESTION THEME TEXT -->
 			<h3>
 				<h:outputText value="#{authorMessages.question_theme_text}" />
+				<h:outputLink title="#{authorMessages.emi_whats_this}" value="#" 
+						onclick="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=theme#theme','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" 
+						onkeypress="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=theme#theme','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" >
+					<h:outputText  value=" (#{authorMessages.emi_whats_this})"/>
+				</h:outputLink>
 			</h3>
 			<h:inputText id="themetext"
 				value="#{itemauthor.currentItem.itemText}" required="true" size="60"></h:inputText>
@@ -141,6 +151,11 @@
 			<div class="act greyBox">
 				<h3>
 					<h:outputText value="#{authorMessages.options_text}" />
+					<h:outputLink title="#{authorMessages.emi_whats_this}" value="#" 
+							onclick="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=options#options','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" 
+							onkeypress="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=options#options','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" >
+						<h:outputText  value=" (#{authorMessages.emi_whats_this})"/>
+					</h:outputLink>
 				</h3>
 				<f:verbatim>
 					<br />
@@ -327,6 +342,11 @@
 			<!-- 4 LEAD IN STATEMENT -->
 			<h3>
 				<h:outputText value="#{authorMessages.lead_in_statement}" />
+				<h:outputLink title="#{authorMessages.emi_whats_this}" value="#" 
+						onclick="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=leadin#leadin','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" 
+						onkeypress="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=leadin#leadin','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" >
+					<h:outputText  value=" (#{authorMessages.emi_whats_this})"/>
+				</h:outputLink>
 			</h3>
 			<!-- WYSIWYG -->
 			<h:panelGrid>
@@ -342,6 +362,11 @@
 			<div class="act greyBox">
 				<h3><h:outputText
 						value="#{authorMessages.question_answer_combinations} " />
+					<h:outputLink title="#{authorMessages.emi_whats_this}" value="#" 
+							onclick="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=items#items','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" 
+							onkeypress="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=items#items','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" >
+						<h:outputText  value=" (#{authorMessages.emi_whats_this})"/>
+					</h:outputLink>
 				</h3>
 				<f:verbatim>
 					<br />
