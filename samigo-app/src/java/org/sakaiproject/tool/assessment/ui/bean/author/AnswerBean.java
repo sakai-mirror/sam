@@ -75,7 +75,13 @@ public class AnswerBean implements Serializable, Comparable{
   private String correctOptionLabels;
   //gopalrc Jul 2010 - for EMI questions
   private String requiredOptionsCount;
-  
+  //for EMI questions
+  private Float score = new Float(0.0f);
+  /**
+   * Whether the user set the score or it was auto set
+   */
+  private Boolean scoreUserSet = Boolean.FALSE;
+
   //gopalrc Aug 2010 - Attachments for EMI questions
   private List attachmentList;
 
@@ -95,7 +101,7 @@ public class AnswerBean implements Serializable, Comparable{
     this.label = plabel;
     this.feedback= pfdbk;
     this.isCorrect = pcorr;
-
+    this.score = pscore;
   }
 
   public String getText() {
@@ -286,6 +292,22 @@ public class AnswerBean implements Serializable, Comparable{
 	
 	public void setRequiredOptionsCount(String requiredOptionsCount) {
 		this.requiredOptionsCount = requiredOptionsCount;
+	}
+	
+	public Float getScore() {
+		return score;
+	}
+	
+	public void setScore(Float score) {
+		this.score = score;
+	}
+	  
+	public Boolean getScoreUserSet() {
+		return scoreUserSet;
+	}
+
+	public void setScoreUserSet(Boolean scoreUserSet) {
+		this.scoreUserSet = scoreUserSet;
 	}
 	
  	  //gopalrc - Aug 2010 - for EMI - Attachments at Answer Level

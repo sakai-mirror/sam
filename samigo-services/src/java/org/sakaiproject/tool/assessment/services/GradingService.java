@@ -1113,12 +1113,19 @@ public class GradingService
             itemTextCountMap.put(itemTextId, answerCount);
           }
           itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
-          if(answerCount > itemText.getRequiredOptionsCount()){
-            //there is already enough answers for the item option
-              //just ignore this
-              autoScore = 0.0F;
+          autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
+          if(answerCount > itemText.getRequiredOptionsCount()){//XXX
+        	  //cannot get more
+            //can have discounts
+              if(autoScore > 0.0F){
+            	  autoScore = 0.0F;
+              }
           }else{
-            autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
+        	  //can get points
+        	  //no discount
+        	  if(autoScore < 0.0F){
+        		  autoScore = 0.0F;
+        	  }
           }
           
           //overridescore

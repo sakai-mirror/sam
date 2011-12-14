@@ -644,11 +644,6 @@ public class SamLiteServiceImpl implements SamLiteService {
 		
 		buildItemFeedback(item, "Correct");
 		buildItemFeedback(item, "InCorrect");
-		
-		
-		
-		
-		
 	}
 	
 	

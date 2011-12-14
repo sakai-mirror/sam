@@ -60,11 +60,6 @@ function toPoint(id)
 
 </script>
 
-<!--   
-**************** GOPALRC - TEST/TEMP - gradeStudentResults.jsp  (includes the deliverXXXX.jsp files for different question types) ***************
--->
-
-
  <div class="portletBody">
 <h:form id="editStudentResults">
   <h:inputHidden id="publishedIdd" value="#{studentScores.publishedId}" />

@@ -110,25 +110,14 @@
 							onkeypress="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=point#point','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" >
 						<h:outputText  value=" (#{authorMessages.emi_whats_this})"/>
 					</h:outputLink>
-					<h:inputText id="answerptr"
+					<h:inputText id="answerptr" disabled="true"  
 						value="#{itemauthor.currentItem.itemScore}" required="true"
-						size="6" onchange="toPoint(this.id);">
+						size="6" >
 						<f:validateDoubleRange minimum="0" />
 					</h:inputText>
 					<h:message for="answerptr" styleClass="validate" />
 				</h3>
 			</div>
-
-			<!-- XXX Removed since this is calculated
-			<div id="discountDiv" class="shorttext">
-  				<h:outputLabel value="#{authorMessages.negative_point_value}"/>
-  				<h:inputText id="answerdsc" value="#{itemauthor.currentItem.itemDiscount}" required="true"  size="6" onchange="toPoint(this.id);">
-    				<f:validateDoubleRange minimum="0"/>
-  				</h:inputText>
-  				<h:message for="answerdsc" styleClass="validate"/>
-			</div>
-			<br/>
-			-->
 
 			<!-- 2 QUESTION THEME TEXT -->
 			<h3>
@@ -486,6 +475,25 @@
 									<f:selectItem itemLabel="25" itemValue="25" />
 									<f:selectItem itemLabel="26" itemValue="26" />
 								</h:selectOneMenu>
+								<f:verbatim>
+									<br />
+									<br />
+								</f:verbatim>
+								
+								<h:outputLabel value="#{authorMessages.emi_pt}" />
+								<h:outputLink title="#{authorMessages.emi_whats_this}" value="#" 
+										onclick="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=point#point','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" 
+										onkeypress="javascript:window.open('/samigo-app/jsf/author/item/emiWhatsThis.faces?item=point#point','EMIWhatsThis','width=800,height=660,scrollbars=yes, resizable=yes');" >
+									<h:outputText  value=" (#{authorMessages.emi_whats_this})"/>
+								</h:outputLink>
+								<f:verbatim>
+									<br />
+								</f:verbatim>
+								<h:inputText id="itemScore" value="#{answer.score}" onchange="toPoint(this.id);"
+									style="" size="4" maxlength="4" >
+									<f:validateDoubleRange minimum="0.00"/>
+								</h:inputText>
+								<h:inputHidden id="itemScoreUserSet" value="#{answer.scoreUserSet}" />
 							</h:panelGroup>
 
 							<h:panelGroup>

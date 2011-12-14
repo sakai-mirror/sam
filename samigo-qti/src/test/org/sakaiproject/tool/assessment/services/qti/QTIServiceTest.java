@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 import junit.framework.TestCase;
 
 public class QTIServiceTest extends TestCase {
-	private static final Logger log = Logger.getLogger("XXX");
+	private static final Logger log = Logger.getLogger(QTIServiceTest.class);
 	private static int[] ignore = {0,4};
 
 	public void testCreateImportedAssessment() throws Exception {

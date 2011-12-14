@@ -14,6 +14,7 @@ if (typeof $ === 'undefined') {
 //	for all the events						//
 //------------------------------------------//
 $(document).ready(function(){
+	var inReadyCall = true;
 	
 	//only applies to EMI authoring
 	//this value is set in extendedMatchingItems.jsp
@@ -32,7 +33,7 @@ $(document).ready(function(){
 	var itemsAtStart = +4;
 	var removeLabel = "X";
 	var ANSWER_OPTION_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
+	
 	//----------------------------------------------//
 	//	VALIDATION									//
 	//	set the validation variables from hidden	//
@@ -40,11 +41,9 @@ $(document).ready(function(){
 	//----------------------------------------------//
 	var answer_point_value_error = $("input[id=answer_point_value_error]").val();
 	var theme_text_error = $("input[id=theme_text_error]").val();
-	var simple_text_options_blank_error = $("input[id=simple_text_options_blank_error]").val();//XXX
 	var number_of_rich_text_options_error = $("input[id=number_of_rich_text_options_error]").val();
 	var blank_or_non_integer_item_sequence_error = $("input[id=blank_or_non_integer_item_sequence_error]").val();
 	var correct_option_labels_error = $("input[id=correct_option_labels_error]").val();
-	var item_text_not_entered_error = $("input[id=item_text_not_entered_error]").val();//XXX
 	var correct_option_labels_invalid_error = $("input[id=correct_option_labels_invalid_error]").val();
 	var at_least_two_options_required_error = $("input[id=at_least_two_options_required_error]").val();
 	var at_least_two_pasted_options_required_error = $("input[id=at_least_two_pasted_options_required_error]").val();
@@ -64,6 +63,7 @@ $(document).ready(function(){
 	//	Validation function on save					//
 	//----------------------------------------------//
 	$("input[value=Save]").bind('click', function(){
+		updateAnswerPointScore();
 		$errorMessageTable.removeClass('messageSamigo');
 		$('#emiErrorMessageTable > tr').remove();
 		var errorMessages = new Array();
@@ -90,7 +90,6 @@ $(document).ready(function(){
 				var optionText = $("input[id=itemForm:emiAnswerOptions:" + j + ":Text]");
 				if (optionText.is(':visible') && (optionText.val()==null || optionText.val().trim()=="") ) {
 					//ignore
-					//errorMessages[errorNumber++] = simple_text_options_blank_error;
 					//break;
 				}
 				else if (optionText.is(':visible')) {
@@ -517,21 +516,26 @@ $(document).ready(function(){
 		}
 	}
 	
-	//------------------------------------------------------//
-	//	CorrectOptionsLabels and RequiredOptionsCount		//
-	//	This looks at the correctOptionLabels and			//
-	//	then set the number of select options on 			//
-	//	the requiredOptionsCount select.					//
-	//	Also add a valadator to the CorrectOptionsLabels	//
-	//	fields so only valid options can be entered			//
-	//------------------------------------------------------//
+	//--------------------------------------------------------------//
+	//	CorrectOptionsLabels, RequiredOptionsCount and ItemPoints	//
+	//	This looks at the correctOptionLabels and then set the		//
+	//	number of select options on the requiredOptionsCount		//
+	//	select.														//
+	//	It also looks at the requiredOptionsCount and update the	//
+	//	item point value.											//
+	//	Also add a validator to the CorrectOptionsLabels fields 	//
+	//	so only valid options can be entered						//
+	//--------------------------------------------------------------//
 	var all_option = $("input[id=all]").val();
 	for (i=0; i<=highestItemId; i++) {
 		var emiCorrectOptionLabelsInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":correctOptionLabels]");
+		var requiredOptionsCountSelect = $("select[id=itemForm:emiQuestionAnswerCombinations:" + i + ":requiredOptionsCount]");
+		var itemScoreInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + i + ":itemScore]");
 		if (emiCorrectOptionLabelsInput==null) break;
+		//update required select
 		emiCorrectOptionLabelsInput.bind('change', function() {
 			var itemId = +($(this).attr("id").split(":")[2]);
-			var requiredOptionsCountSelect = $("select[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":requiredOptionsCount]");
+			requiredOptionsCountSelect = $("select[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":requiredOptionsCount]");
 			var currentSelection = requiredOptionsCountSelect.val();
 			
 			var correctOpts = $(this).val().toUpperCase();
@@ -553,17 +557,69 @@ $(document).ready(function(){
 					requiredOptionsCountSelect.append('<option value="'+ j +'">'+ j +'</option>');
 				}
 			}
+			//set score
+			if(currentSelection == 0 || currentSelection > maxOptions){
+				setItemScore(itemId, maxOptions);
+			}else{
+				setItemScore(itemId, currentSelection);
+			}
 			return false;
 	    });
 		emiCorrectOptionLabelsInput.trigger('change');
+		//update item point value
+		requiredOptionsCountSelect.bind('change', function() {
+			var itemId = +($(this).attr("id").split(":")[2]);
+			if($(this).val() == 0){
+				setItemScore(itemId, $("input[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":correctOptionLabels]").val().length);
+			}else{
+				setItemScore(itemId, $(this).val());
+			}
+		});
+		//update overall score
+		itemScoreInput.keyup(function(event) {
+			updateAnswerPointScore();
+		});
+		itemScoreInput.keypress(function(event){
+			var itemId = +($(this).attr("id").split(":")[2]);
+			$("input[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":itemScoreUserSet]").val(true);
+		});
+		
 		//------------------------------------------//
 		//	Correct Option Labels					//
 		//	This does frontend validation for the	//
 		//	correct options labels entered			//
 		//------------------------------------------//
 		emiCorrectOptionLabelsInput.keypress(function(event) {
-			return checkEMIOptions($(this).context, ANSWER_OPTION_LABELS, event);
+			return checkEMIOptions($(this).context, ANSWER_OPTION_LABELS.substring(0,currentOptions), event);
 		});
+	}
+	
+	function setItemScore(itemId, score){
+		var itemScoreUserSet = $("input[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":itemScoreUserSet]").val();
+		var itemScoreInput = $("input[id=itemForm:emiQuestionAnswerCombinations:" + itemId + ":itemScore]");
+		if(itemScoreUserSet === "true"){
+			//don't override value, use the user value
+			score = itemScoreInput.val();
+			//trim the unneeded values
+			while(score.lastIndexOf("0") == score.length-1 || score.lastIndexOf(".") == score.length-1){
+				score = score.substring(0, score.length-1);
+			}
+		}
+		itemScoreInput.val(score);
+		updateAnswerPointScore();
+	}
+	
+	function updateAnswerPointScore(){
+		var total = 0;
+		for (j=0; j<=highestItemId; j++) {
+			var row = $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]");
+			if (row && row.is(':visible')){
+				total += parseInt($("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":itemScore]").val());
+			}
+		}
+		if(!inReadyCall){
+			$("input[name=itemForm:answerptr]").val(total);
+		}
 	}
 	
 	//--------------------------------------//
@@ -586,4 +642,5 @@ $(document).ready(function(){
 		var containerFrame = $("iframe[class=portletMainIframe]", parent.document.body);
 		containerFrame.height($(document.body).height() + 30);
 	}
+	inReadyCall = false;
 });

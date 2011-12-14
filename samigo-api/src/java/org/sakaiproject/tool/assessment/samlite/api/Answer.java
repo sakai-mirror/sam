@@ -1,9 +1,5 @@
 package org.sakaiproject.tool.assessment.samlite.api;
 
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-
-
 public class Answer {
 	private String id;
 	private String text;
@@ -34,14 +30,4 @@ public class Answer {
 			text = text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]")).trim();
 		}
 	}
-	
-	//gopalrc added 3 Dec 2009
-	/*
-	public String getCorrectEmiOptions() {
-		return text.substring(text.lastIndexOf("[")+1, text.lastIndexOf("]")).trim();
-	}
-	*/
-
-
-	
 }

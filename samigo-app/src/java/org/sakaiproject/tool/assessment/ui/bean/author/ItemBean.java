@@ -1281,29 +1281,6 @@ public class ItemBean
     return "matchingItem";
   }
 
-  
-
-
-/* not used
-
-  public ArrayList getMultipleChoiceAnswerSelectList() {
-
-	ArrayList list = getMultipleChoiceAnswers();
-      Iterator iter = list.iterator();
-      while(iter.hasNext())
-      {
-      SelectItem selection = new SelectItem();
-	AnswerBean answerbean = (AnswerBean)iter.next();
-      selection.setLabel(answerbean.getLabel());
-      selection.setValue(answerbean.getLabel());
-      list.add(selection);
-    }
-
-    return list;
-  }
-
-*/
-
    
   /**
    * for fib, case sensitive for grading?
@@ -1695,19 +1672,6 @@ public class ItemBean
 		}
 		return emiAnswerOptionLabelsSorted;
 	}
-	
-	//gopalrc - Jan 2010
-/*	
- * very process-expensive to do it this way
-	public boolean isValidEmiAnswerOptionLabel(String label) {
-		if (label == null) return false;
-		String emiAnswerOptionLabels = getEmiAnwerOptionLabels();
-		if (emiAnswerOptionLabels.contains(label)) {
-			return true;
-		}
-		return false;
-	}
-*/
 
 	//gopalrc - July 2010
 	public String getEmiAnswerOptionsRich() {

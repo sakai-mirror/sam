@@ -1125,10 +1125,10 @@ public class ItemAddListener
 		AnswerIfc answer = null;
 		while (iter.hasNext()) {
 			AnswerBean answerbean = (AnswerBean) iter.next();
-			answer = new Answer(textAnswerOptions,
-					stripPtags(answerbean.getText()), answerbean
-					.getSequence(), answerbean.getLabel(),
-					Boolean.FALSE, null, null, null, null, null);
+			answer = new Answer(textAnswerOptions, stripPtags(answerbean.getText()),
+					answerbean.getSequence(), answerbean.getLabel(),
+					Boolean.FALSE, null,
+					null, null, null, null);
 			answerSet1.add(answer);
 		}
 		
@@ -1147,6 +1147,7 @@ public class ItemAddListener
                 int answerCombinations = emiQuestionAnswerCombinations.size();
                 iter = emiQuestionAnswerCombinations.iterator();
 		AnswerBean qaCombo = null;
+		Float itemScore = 0.0f;
 		while (iter.hasNext()) {
 			qaCombo = (AnswerBean) iter.next();
 			
@@ -1154,127 +1155,56 @@ public class ItemAddListener
 			itemText.setItem(item.getData());
 			itemText.setSequence(qaCombo.getSequence());
 			itemText.setText(qaCombo.getText());
-                        int requiredOptions = (Integer.valueOf(qaCombo.getRequiredOptionsCount())).intValue();
+			int requiredOptions = (Integer.valueOf(qaCombo.getRequiredOptionsCount())).intValue();
 			if (requiredOptions == 0) {
 				requiredOptions = qaCombo.correctOptionsCount();
 			}
 			itemText.setRequiredOptionsCount(requiredOptions);
+			itemScore += qaCombo.getScore();
 
-			//for emi the score per correct answer is total/combinations/requiredOptions
-			//the discount is the negitive of that
-			Float score = item.getScore()/answerCombinations/requiredOptions;
+			//for emi the score per correct answer is itemTotal/requiredOptions
+			//the discount is 1/2 the negative of that for answers more then required
 			HashSet answerSet = new HashSet();
 			
 			if (Integer.valueOf(bean.getAnswerOptionsSimpleOrRich()).equals(ItemDataIfc.ANSWER_OPTIONS_SIMPLE) ) {
 				Iterator selectionOptions = textAnswerOptions.getAnswerArraySorted().iterator();
 				while (selectionOptions.hasNext()) {
 					AnswerIfc selectOption = (AnswerIfc) selectionOptions.next();
-					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(selectOption.getLabel());
-
-					AnswerIfc actualAnswer = new Answer(itemText,
-							selectOption.getText(), selectOption
-							.getSequence(), selectOption.getLabel(),
-							isCorrect, null, score, null,
-							-score, null);
-
-/*					
-					HashSet answerFeedbackSet1 = new HashSet();
-					answerFeedbackSet1.add(new AnswerFeedback(actualAnswer,
-							AnswerFeedbackIfc.GENERAL_FEEDBACK,
-							stripPtags(qaCombo.getFeedback())));
-					actualAnswer.setAnswerFeedbackSet(answerFeedbackSet1);
-*/
-					
-					answerSet.add(actualAnswer);
+					answerSet.add(getAnswer(qaCombo, itemText, selectOption.getText(),
+							selectOption.getSequence(), selectOption.getLabel(), requiredOptions));
 				}
 			}
 			else { // ANSWER_OPTION_RICH
 				int answerOptionsCount = Integer.valueOf(bean.getAnswerOptionsRichCount());
 				for (int i=0; i<answerOptionsCount; i++) {
 					String label = ItemDataIfc.ANSWER_OPTION_LABELS.substring(i, i+1);
-					boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
-
-					Float discount = 0.0F;
-					if (!isCorrect) {
-						discount = Float.valueOf(bean.getItemDiscount());
-					}
-					AnswerIfc actualAnswer = new Answer(itemText,
-							label, Long.valueOf(i), label,
-							isCorrect, null, null, null,
-							discount, null);
-					
-/*					
-					HashSet answerFeedbackSet1 = new HashSet();
-					answerFeedbackSet1.add(new AnswerFeedback(actualAnswer,
-							AnswerFeedbackIfc.GENERAL_FEEDBACK,
-							stripPtags(qaCombo.getFeedback())));
-					actualAnswer.setAnswerFeedbackSet(answerFeedbackSet1);
-*/
-					
-					answerSet.add(actualAnswer);
+					answerSet.add(getAnswer(qaCombo, itemText, label,
+							Long.valueOf(i), label, requiredOptions));
 				}
 			}
-			
 			itemText.setAnswerSet(answerSet);
 			textSet.add(itemText);
 			
 		}
+		item.setScore(itemScore);
 					
 		return textSet;
 	}
   
+	private AnswerIfc getAnswer(AnswerBean qaCombo, ItemTextIfc itemText, String text, Long sequence, String label, int requiredOptions) {
+		boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
 
-  /*
-    
-   		//gopalrc - added 25 Nov 2009
-		else if (item.getTypeId().equals(TypeFacade.EXTENDED_MATCHING_ITEMS)) {
+		// item option score
+		// a little math so we get nice rounded values
+		Float score = ((float) Math
+				.round((qaCombo.getScore() / requiredOptions) * 10)) / 10;
+		
+		return new Answer(itemText, text,
+				sequence, label, isCorrect,
+				qaCombo.getScoreUserSet() ? "user" : "auto", 
+				isCorrect ? score : 0.0f, null, isCorrect ? 0.0f : -score / 2, null);
+	}
 
-			Iterator iter = bean.getEmiAnswerOptionsClean().iterator();
-			Answer answer = null;
-			while (iter.hasNext()) {
-				AnswerBean answerbean = (AnswerBean) iter.next();
-				answer = new Answer(text1,
-						stripPtags(answerbean.getText()), answerbean
-						.getSequence(), answerbean.getLabel(),
-						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), null, Float.valueOf(bean.getItemDiscount()), null);
-				
-				HashSet answerFeedbackSet1 = new HashSet();
-				answerFeedbackSet1.add(new AnswerFeedback(answer,
-						AnswerFeedbackIfc.GENERAL_FEEDBACK,
-						stripPtags(answerbean.getFeedback())));
-				answer.setAnswerFeedbackSet(answerFeedbackSet1);
-
-				answerSet1.add(answer);
-			}
-
-			
-			iter = bean.getEmiQuestionAnswerCombinationsClean().iterator();
-			answer = null;
-			while (iter.hasNext()) {
-				AnswerBean answerbean = (AnswerBean) iter.next();
-				answer = new Answer(text1,
-						stripPtags(answerbean.getText()), answerbean
-						.getSequence(), answerbean.getLabel(),
-						Boolean.FALSE, null, Float.valueOf(bean.getItemScore()), null,Float.valueOf(bean.getItemDiscount()), null);
-						
-						
-				HashSet answerFeedbackSet1 = new HashSet();
-				answerFeedbackSet1.add(new AnswerFeedback(answer,
-						AnswerFeedbackIfc.GENERAL_FEEDBACK,
-						stripPtags(answerbean.getFeedback())));
-				answer.setAnswerFeedbackSet(answerFeedbackSet1);
-
-				answerSet1.add(answer);
-			}			
-
-			text1.setAnswerSet(answerSet1);
-			textSet.add(text1);
-
-		}
-
-    
-    
-   */
   
   private String[] returnMatrixChoices(ItemBean bean,String str){
 	  String[] result=null,temp=null;
@@ -2096,35 +2026,8 @@ public class ItemAddListener
 		
       Set oldTextSet = item.getItemTextSet();
 	  item.setItemTextSet(textSet);
-	  
-
-		// ///////////////////////////////////////////////////////////
-		//
-        // Remove Old Items and Answers
-		//
-		/////////////////////////////////////////////////////////////
-	    /*
-		Iterator textIter = oldTextSet.iterator();
-		HashMap itemTextMap = new HashMap();
-		while (textIter.hasNext()) {
-			ItemTextIfc itemText = (ItemTextIfc) textIter.next();
-			Set oldAnswerSet = itemText.getAnswerSet();
-			if (oldAnswerSet != null) {
-				delegate.deleteSet(oldAnswerSet);
-			}
-		}
-		*/
-
-	  // gopalrc - TODO - Check that the following PublishedItemText deletions 
-	  // are cascaded to the associated answers or if a manual cleanup (see above is required)
 	  delegate.deleteSet(oldTextSet);
-	  
 	}
-  
-  
-  
-  
-  
   
   private void preparePublishedTextForOthers(ItemFacade item, ItemBean bean) {
 	  ItemTextIfc text = null;

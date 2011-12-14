@@ -12,11 +12,11 @@
 function checkEMIOptions(element, validEMIOptions, event) {
 	var charCode = event.charCode;
 	//A-Z
-	if (charCode >= 65 && charCode <= 90){
+	if (isCharAlphaUpper(charCode)){
 		return isValidOption(element, validEMIOptions, charCode);
 	}
 	//a-z
-	if (charCode >= 97 && charCode <= 122){
+	if (isCharAlphaLower(charCode)){
 		return isValidOption(element, validEMIOptions, charCode);
 	}
 	//if the keycode is 0 it is invalid
@@ -25,6 +25,19 @@ function checkEMIOptions(element, validEMIOptions, event) {
 	}
 	return true;
 }
+
+function isCharAlphaUpper(charCode){
+	return (charCode >= 65 && charCode <= 90);
+}
+
+function isCharAlphaLower(charCode){
+	return (charCode >= 97 && charCode <= 122);
+}
+
+function isCharAlpha(charCode){
+	return (isCharAlphaUpper(charCode) || isCharAlphaLower(charCode));
+}
+
 /**
  * Check if the key selected is valid.
  * @param element

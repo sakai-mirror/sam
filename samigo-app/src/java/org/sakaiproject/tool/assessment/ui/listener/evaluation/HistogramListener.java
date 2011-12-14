@@ -557,8 +557,8 @@ public class HistogramListener
 						  || questionScores.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString()) //gopalrc - Jan 2010 - EMI
 				  ) {
 					  questionScores.setShowIndividualAnswersInDetailedStatistics(true);
-					  //XXX This is just a header line
-                                          //detailedStatistics.add(questionScores);
+					  //This is just a header line
+					  //detailedStatistics.add(questionScores);
 					  if (questionScores.getHistogramBars() != null && !questionScores.getQuestionType().equals(TypeIfc.EXTENDED_MATCHING_ITEMS.toString())) {
 						  maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
 					  }
@@ -606,8 +606,6 @@ public class HistogramListener
                               if (val != 0) {
                                   return val;
                               }
-                              Long h1SS = h1.getSubQuestionSequence();//XXX remove
-                              Long h2SS = h2.getSubQuestionSequence();//XXX remove
                               if (h1.getSubQuestionSequence() == null) {
                                   return -1;
                               } else if (h2.getSubQuestionSequence() == null) {
@@ -619,13 +617,6 @@ public class HistogramListener
 			  histogramScores.setDetailedStatistics(detailedStatistics);
 			  histogramScores.setMaxNumberOfAnswers(maxNumOfAnswers);
 			  // above - gopalrc Dec 2007
-
-
-			  /*
-			   * gopalrc - moved up (1)
-				// here scores contain AssessmentGradingData 
-				Map assessmentMap = getAssessmentStatisticsMap(scores);
-			   */
 
 			  // test to see if it gets back empty map
 			  if (assessmentMap.isEmpty()) {

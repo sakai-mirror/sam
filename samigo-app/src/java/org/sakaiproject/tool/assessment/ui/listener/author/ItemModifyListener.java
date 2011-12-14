@@ -609,13 +609,22 @@ public class ItemModifyListener implements ActionListener
 				  AnswerIfc[] answerArray = new AnswerIfc[count];
 				  int seq = 0;
 				  List correctAnswerOptions = new ArrayList();
+				  Float itemAnswerScore = 0.0f;
+				  boolean itemScoreUserSet = false;
 				  while(ansIter.hasNext())
 				  {
 					  AnswerIfc answerobj = (AnswerIfc) ansIter.next();
 					  if (answerobj.getIsCorrect()) {
 						  correctAnswerOptions.add(answerobj.getLabel());
+						  itemAnswerScore = answerobj.getScore();
+						  itemScoreUserSet = "user".equals(answerobj.getGrade());
 					  }
 				  }
+				  if(itemAnswerScore == null){
+					  itemAnswerScore = 0.0f;
+				  }
+				  answerbean.setScore(((float)Math.round((itemAnswerScore * itemText.getRequiredOptionsCount())*10))/10);
+				  answerbean.setScoreUserSet(itemScoreUserSet);
 				  Collections.sort(correctAnswerOptions);
 				  Iterator correctAnsLabels = correctAnswerOptions.iterator();
 				  String correctOptionLabels = "";

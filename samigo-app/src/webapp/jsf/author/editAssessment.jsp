@@ -351,7 +351,7 @@ document.links[newindex].onclick();
      
 
      <h:outputText value=" #{authorMessages.dash} " />
-     <h:inputText id="answerptr" value="#{question.updatedScore}" required="true" size="6" onkeydown="inIt()" onchange="toPoint(this.id);" rendered="#{question.itemData.typeId!= 3}">
+     <h:inputText id="answerptr" value="#{question.updatedScore}" required="true" size="6" onkeydown="inIt()" onchange="toPoint(this.id);" rendered="#{question.itemData.typeId!= 3}" disabled="#{question.itemData.typeId== 14}">
 	<f:validateDoubleRange minimum="0.00"/></h:inputText>
     <h:outputText rendered="#{question.itemData.typeId== 3}" value="#{question.updatedScore}"/>
 

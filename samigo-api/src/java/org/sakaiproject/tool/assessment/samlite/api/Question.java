@@ -113,30 +113,6 @@ public class Question {
 	public boolean hasPoints() {
 		return hasPoints;
 	}
-
-/*	
- * gopalrg
-	public String getQuestionTypeAsString() {
-		switch (questionType) {
-		case MULTIPLE_CHOICE_QUESTION:
-			return "Multiple Choice";
-		case MULTIPLE_CHOICE_MULTIPLE_ANSWER_QUESTION:
-			return "Multiple Correct Choices";
-		case FILL_IN_THE_BLANK_QUESTION:
-			return "Fill in the Blank";
-		case TRUE_FALSE_QUESTION:
-			return "True/False";
-		case SHORT_ESSAY_QUESTION:
-			return "Short Essay";
-			
-		//gopalrc - added 11 Nov 2009	
-		case EXTENDED_MATCHING_ITEMS_QUESTION:
-			return "Extended Matching Items";
-		};
-		return "Unrecognized Type";
-	}
-*/	
-	
 	
 	public int getQuestionType() {
 		return questionType;
@@ -213,18 +189,8 @@ public class Question {
 
   //gopalrc - added 3 Dec 2009
   public void setThemeAndLeadInText() {
-	//String text = (String)questionLines.get(1) + (String)questionLines.get(2);  
-	/*
-	if (getQuestionType() == EXTENDED_MATCHING_ITEMS_QUESTION &&
-			text.indexOf(LEAD_IN_STATEMENT_DEMARCATOR) > -1) {
-		String[] itemTextElements = text.split(LEAD_IN_STATEMENT_DEMARCATOR);
-		themeText = itemTextElements[0];
-		leadInText = itemTextElements[1];
-	}
-	*/
 	themeText = (String)questionLines.get(1);
 	leadInText = (String)questionLines.get(2);
-
   }
 	  
 	  	

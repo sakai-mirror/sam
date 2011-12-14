@@ -109,10 +109,11 @@ should be included in file importing DeliveryMessages
            <h:outputText value="#{responseAndCorrectStatus.answerLabel}" escape="false" />
         </h:column>
       </h:dataTable>
-      <h:inputText id="responseAnswer" value="#{matching.response}" size="3" style="text-transform:uppercase;"
-       rendered="#{delivery.actionString ne 'reviewAssessment'
-             && delivery.actionString ne 'gradeAssessment'}"
-             validator="#{matching.validateEmiResponse}" onkeypress="return checkEMIOptions(this, '#{question.itemData.emiAnswerOptionLabels}', event)"> 
+      <h:inputText id="responseAnswer" value="#{matching.response}" size="3" style="text-transform:uppercase;" 
+       		rendered="#{delivery.actionString ne 'reviewAssessment' && delivery.actionString ne 'gradeAssessment'}"
+            validator="#{matching.validateEmiResponse}" 
+            onkeypress="return checkEMIOptions(this, '#{question.itemData.emiAnswerOptionLabels}', event)">
+            <!-- maxlength="XXX" --> 
       </h:inputText>
    </h:column>
 
