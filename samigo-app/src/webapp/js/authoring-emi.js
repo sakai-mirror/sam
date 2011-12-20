@@ -548,14 +548,32 @@ $(document).ready(function(){
 			}
 			
 			requiredOptionsCountSelect.empty();
-			requiredOptionsCountSelect.append('<option value="0">' + all_option + '</option>');
-			for (j=1; j<=maxOptions-1; j++) {
+			if(maxOptions == 0){
+				requiredOptionsCountSelect.append('<option value="0">' + all_option + '</option>');
+			}else{
+			for (j=1; j<=maxOptions+3; j++) {
+				var optionTag = '<option';
 				if (j == currentSelection) {
-					requiredOptionsCountSelect.append('<option selected="selected" value="'+ j +'">'+ j +'</option>');
+					optionTag = optionTag + ' selected="selected"';
 				}
-				else {
-					requiredOptionsCountSelect.append('<option value="'+ j +'">'+ j +'</option>');
+				optionTag = optionTag + ' value="';
+				if(j == maxOptions){
+					optionTag = optionTag + '0"';
+					if(currentSelection == 0){
+						optionTag = optionTag + ' selected="selected"';
+					}
+				}else{
+					optionTag = optionTag + j + '"';
 				}
+				optionTag = optionTag + '>';
+				if(j == maxOptions){
+					optionTag = optionTag + all_option + '(' + j + ')';
+				}else{
+					optionTag = optionTag + j;
+				}
+				optionTag = optionTag + '</option>';
+				requiredOptionsCountSelect.append(optionTag);
+			}
 			}
 			//set score
 			if(currentSelection == 0 || currentSelection > maxOptions){
@@ -614,7 +632,7 @@ $(document).ready(function(){
 		for (j=0; j<=highestItemId; j++) {
 			var row = $("table[id=itemForm:emiQuestionAnswerCombinations:" + j + ":Row]");
 			if (row && row.is(':visible')){
-				total += parseInt($("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":itemScore]").val());
+				total += parseFloat($("input[id=itemForm:emiQuestionAnswerCombinations:" + j + ":itemScore]").val());
 			}
 		}
 		if(!inReadyCall){

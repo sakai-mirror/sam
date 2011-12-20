@@ -31,8 +31,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.text.DecimalFormat;
@@ -771,7 +773,8 @@ public class GradingService
       // not be included in the answers for the other mutually exclusive blanks.
       // For EMI: This keeps track of how many answers were given so we don't give
       // extra marks for to many answers.
-      HashMap fibEmiAnswersMap = new HashMap();
+      Map fibEmiAnswersMap = new HashMap();
+      Map<Long, Map<Long,Set<EMIScore>>> emiScoresMap = new HashMap<Long, Map<Long,Set<EMIScore>>>();
       
       //change algorithm based on each question (SAK-1930 & IM271559) -cwen
       HashMap totalItems = new HashMap();
@@ -807,7 +810,7 @@ public class GradingService
         // note that totalItems & fibAnswersMap would be modified by the following method
         try {
         	autoScore = getScoreByQuestionType(itemGrading, item, itemType, publishedItemTextHash, 
-                               totalItems, fibEmiAnswersMap, publishedAnswerHash, regrade);
+                               totalItems, fibEmiAnswersMap, emiScoresMap, publishedAnswerHash, regrade);
         }
         catch (FinFormatException e) {
         	autoScore = 0f;
@@ -860,7 +863,7 @@ public class GradingService
         Long itemType2 = item.getTypeId();
         //float autoScore = (float) 0;
         
-        // gopalrc - this does not apply to EMI
+        // this does not apply to EMI
         // just create a short-list and handle differently below
         if ((TypeIfc.EXTENDED_MATCHING_ITEMS).equals(itemType2)) {
             emiItemGradings.add(itemGrading);
@@ -877,22 +880,22 @@ public class GradingService
       log.debug("****x3.1 "+(new Date()).getTime());
 
       // Loop 1: this procedure ensure total score awarded per EMI item
-      // is no less than 0
-      // this currently only applies to EMI question type - gopalrc
-      iter = emiItemGradings.iterator();
-      while(iter.hasNext())
-      {
-        ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
-        Long itemTextId = itemGrading.getPublishedItemTextId();
-        ItemTextIfc itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
-        Map totalItemTextScores2 = (Map)totalItems.get(itemGrading.getPublishedItemId());
-        float itemTextScore = ((Float) totalItemTextScores2.get(itemTextId)).floatValue();
-        if(itemTextScore < 0) {
-        	itemGrading.setAutoScore( Float.valueOf(0));
-        }
+      // is correct
+      // For emi's there are multiple gradings per item per question,
+      // for the grading we only know scores after grading so we need
+      // to reset the grading score here to the correct scores
+      // this currently only applies to EMI question type
+      if (emiItemGradings != null && !emiItemGradings.isEmpty()) {
+    	  Map<Long, Map<Long, Map<Long, EMIScore>>> emiOrderedScoresMap = reorderEMIScoreMap(emiScoresMap);
+    	  iter = emiItemGradings.iterator();
+    	  while (iter.hasNext()) {
+    		  ItemGradingIfc itemGrading = (ItemGradingIfc) iter.next();
+    		  itemGrading.setAutoScore(emiOrderedScoresMap
+    				  .get(itemGrading.getPublishedItemId())
+    				  .get(itemGrading.getPublishedItemTextId())
+    				  .get(itemGrading.getPublishedAnswerId()).effectiveScore);
+    	  }
       }
-      
-      
       
       log.debug("****x4. "+(new Date()).getTime());
 
@@ -976,9 +979,9 @@ public class GradingService
   }
   
   private float getScoreByQuestionType(ItemGradingIfc itemGrading, ItemDataIfc item,
-                                       Long itemType, HashMap publishedItemTextHash, 
-                                       HashMap totalItems, HashMap fibEmiAnswersMap,
-                                       HashMap publishedAnswerHash, boolean regrade) throws FinFormatException {
+                                       Long itemType, Map publishedItemTextHash, 
+                                       Map totalItems, Map fibAnswersMap, Map<Long, Map<Long,Set<EMIScore>>> emiScoresMap,
+                                       Map publishedAnswerHash, boolean regrade) throws FinFormatException {
     //float score = (float) 0;
     float initScore = (float) 0;
     float autoScore = (float) 0;
@@ -1059,7 +1062,7 @@ public class GradingService
               break;
 
       case 8: // FIB
-              autoScore = getFIBScore(itemGrading, fibEmiAnswersMap, item, publishedAnswerHash) / (float) ((ItemTextIfc) item.getItemTextSet().toArray()[0]).getAnswerSet().size();
+              autoScore = getFIBScore(itemGrading, fibAnswersMap, item, publishedAnswerHash) / (float) ((ItemTextIfc) item.getItemTextSet().toArray()[0]).getAnswerSet().size();
               //overridescore - cwen
               if (itemGrading.getOverrideScore() != null)
                 autoScore += itemGrading.getOverrideScore().floatValue();
@@ -1092,57 +1095,9 @@ public class GradingService
           }
           break;
 
-      case 14: //gopalrc EMI
-    	  if (!totalItems.containsKey(itemId)){
-              totalItems.put(itemId, new HashMap());
-              fibEmiAnswersMap.put(itemId, new HashMap());
-    	  }
-
-          //update the fibEmiAnswersMap so we can keep track
-          //of how many answers were given
-    	  Map itemTextCountMap = (Map)fibEmiAnswersMap.get(itemId);
-          Long itemTextId = itemGrading.getPublishedItemTextId();
-          AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(itemGrading.getPublishedAnswerId());
-          int answerCount = 0;
-          if(answer.getIsCorrect()){
-            if(itemTextCountMap.containsKey(itemTextId)){
-              answerCount = ((Integer)itemTextCountMap.get(itemTextId))+1;
-            }else{
-              answerCount = 1;
-            }
-            itemTextCountMap.put(itemTextId, answerCount);
-          }
-          itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
-          autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
-          if(answerCount > itemText.getRequiredOptionsCount()){//XXX
-        	  //cannot get more
-            //can have discounts
-              if(autoScore > 0.0F){
-            	  autoScore = 0.0F;
-              }
-          }else{
-        	  //can get points
-        	  //no discount
-        	  if(autoScore < 0.0F){
-        		  autoScore = 0.0F;
-        	  }
-          }
-          
-          //overridescore
-          if (itemGrading.getOverrideScore() != null)
-            autoScore += itemGrading.getOverrideScore().floatValue();
-          
-          HashMap totalItemTextScores = (HashMap)totalItems.get(itemId);
-          if (!totalItemTextScores.containsKey(itemTextId))
-        	  totalItemTextScores.put(itemTextId, Float.valueOf(autoScore));
-          else {
-              accumelateScore = ((Float)totalItemTextScores.get(itemTextId)).floatValue();
-              accumelateScore += autoScore;
-              totalItemTextScores.put(itemTextId, Float.valueOf(accumelateScore));
-          }
+      case 14: // EMI
+    	  autoScore = getEMIScore(itemGrading, itemId, totalItems, emiScoresMap, publishedItemTextHash, publishedAnswerHash);
           break;
-          
-          
       case 5: // SAQ
       case 6: // file upload
       case 7: // audio recording
@@ -1164,14 +1119,14 @@ public class GradingService
     return autoScore;
   }
 
-  /**
+/**
    * This grades multiple choice and true false questions.  Since
    * multiple choice/multiple select has a separate ItemGradingIfc for
    * each choice, they're graded the same way the single choice are.
    * Choices should be given negative score values if one wants them
    * to lose points for the wrong choice.
    */
-  public float getAnswerScore(ItemGradingIfc data, HashMap publishedAnswerHash)
+  public float getAnswerScore(ItemGradingIfc data, Map publishedAnswerHash)
   {
     AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
     if (answer == null || answer.getScore() == null) {
@@ -1348,7 +1303,7 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 
   */
   
-  public float getFIBScore(ItemGradingIfc data, HashMap fibmap,  ItemDataIfc itemdata, HashMap publishedAnswerHash)
+  public float getFIBScore(ItemGradingIfc data, Map fibmap,  ItemDataIfc itemdata, Map publishedAnswerHash)
   {
     String studentanswer = "";
     boolean matchresult = false;
@@ -1506,7 +1461,7 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
   }
   
   
-  public float getFINScore(ItemGradingIfc data,  ItemDataIfc itemdata, HashMap publishedAnswerHash) throws FinFormatException
+  public float getFINScore(ItemGradingIfc data,  ItemDataIfc itemdata, Map publishedAnswerHash) throws FinFormatException
   {
 	  float totalScore = (float) 0;
 	  boolean matchresult = getFINResult(data, itemdata, publishedAnswerHash);
@@ -1517,7 +1472,7 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	  
   }
 	  
-  public boolean getFINResult (ItemGradingIfc data,  ItemDataIfc itemdata, HashMap publishedAnswerHash) throws FinFormatException
+  public boolean getFINResult (ItemGradingIfc data,  ItemDataIfc itemdata, Map publishedAnswerHash) throws FinFormatException
   {
 	  String studentanswer = "";
 	  boolean range;
@@ -1648,9 +1603,78 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	  }
 
 	  return map;
-  }
+	}
+
+  /**
+   * EMI score processing
+   * 
+   */
+	private float getEMIScore(ItemGradingIfc itemGrading, Long itemId,
+			Map totalItems, Map<Long, Map<Long, Set<EMIScore>>> emiScoresMap,
+			Map publishedItemTextHash, Map publishedAnswerHash) {
+
+		float autoScore = 0.0f;
+		if (!totalItems.containsKey(itemId)) {
+			totalItems.put(itemId, new HashMap());
+			emiScoresMap.put(itemId, new HashMap<Long, Set<EMIScore>>());
+		}
+
+		autoScore = getAnswerScore(itemGrading, publishedAnswerHash);
+		AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(itemGrading
+				.getPublishedAnswerId());
+		Long itemTextId = itemGrading.getPublishedItemTextId();
+
+		// update the fibEmiAnswersMap so we can keep track
+		// of how many answers were given
+		Map<Long, Set<EMIScore>> emiItemScoresMap = emiScoresMap.get(itemId);
+		// place the answer scores in a sorted set.
+		// so now we can mark the correct ones and discount the extra incorrect
+		// ones.
+		Set<EMIScore> scores = null;
+		if (emiItemScoresMap.containsKey(itemTextId)) {
+			scores = emiItemScoresMap.get(itemTextId);
+		} else {
+			scores = new TreeSet<EMIScore>();
+			emiItemScoresMap.put(itemTextId, scores);
+		}
+		scores.add(new EMIScore(itemId, itemTextId, itemGrading
+				.getPublishedAnswerId(), answer.getIsCorrect(), autoScore));
+
+		ItemTextIfc itemText = (ItemTextIfc) publishedItemTextHash.get(itemTextId);
+		int numberCorrectAnswers = itemText.getEmiCorrectOptionLabels()
+				.length();
+		int requiredCount = itemText.getRequiredOptionsCount();
+		// re-calculate the scores over for the whole item
+		autoScore = 0.0f;
+		int c = 0;
+		for (EMIScore s : scores) {
+			c++;
+			s.effectiveScore = 0.0f;
+			if (c <= numberCorrectAnswers && c <= requiredCount) {
+				// if correct and in count then add score
+				s.effectiveScore = s.correct ? s.score : 0.0f;
+			} else if (c > numberCorrectAnswers) {
+				// if incorrect and over count add discount
+				s.effectiveScore = !s.correct ? s.score : 0.0f;
+			}
+			if (autoScore + s.effectiveScore < 0.0f) {
+				// the current item tipped it to negative,
+				// we cannot do this, so add zero
+				s.effectiveScore = 0.0f;
+			}
+			autoScore += s.effectiveScore;
+		}
+
+		// override score
+		if (itemGrading.getOverrideScore() != null)
+			autoScore += itemGrading.getOverrideScore().floatValue();
+
+		HashMap totalItemTextScores = (HashMap) totalItems.get(itemId);
+		totalItemTextScores.put(itemTextId, Float.valueOf(autoScore));
+		return autoScore;
+	}
   
-  public float getTotalCorrectScore(ItemGradingIfc data, HashMap publishedAnswerHash)
+  public float getTotalCorrectScore(ItemGradingIfc data, Map publishedAnswerHash)
   {
     AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
     if (answer == null || answer.getScore() == null)
@@ -2113,7 +2137,7 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
    * Choices should be given negative score values if one wants them
    * to lose points for the wrong choice.
    */
-  public float getAnswerScoreMCQ(ItemGradingIfc data, HashMap publishedAnswerHash)
+  public float getAnswerScoreMCQ(ItemGradingIfc data, Map publishedAnswerHash)
   {
 	  AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(data.getPublishedAnswerId());
 	  if (answer == null || answer.getScore() == null) {
@@ -2124,7 +2148,78 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 	  }
 	  return (answer.getItem().getScore().floatValue()*answer.getPartialCredit().floatValue())/100f;
   }
+  
+  private Map<Long, Map<Long, Map<Long, EMIScore>>> reorderEMIScoreMap(Map<Long, Map<Long,Set<EMIScore>>> emiScoresMap){
+	  Map<Long, Map<Long, Map<Long, EMIScore>>> scoresMap = new HashMap<Long, Map<Long, Map<Long, EMIScore>>>();
+	  for(Map<Long,Set<EMIScore>> emiItemScoresMap: emiScoresMap.values()){
+		  for(Set<EMIScore> scoreSet: emiItemScoresMap.values()){
+			  for(EMIScore s: scoreSet){
+				  Map<Long, Map<Long, EMIScore>> scoresItem = scoresMap.get(s.itemId);
+				  if(scoresItem == null){
+					  scoresItem = new HashMap<Long, Map<Long, EMIScore>>();
+					  scoresMap.put(s.itemId, scoresItem);
+				  }
+				  Map<Long, EMIScore> scoresItemText = scoresItem.get(s.itemTextId);
+				  if(scoresItemText == null){
+					  scoresItemText = new HashMap<Long, EMIScore>();
+					  scoresItem.put(s.itemTextId, scoresItemText);
+				  }
+				  scoresItemText.put(s.answerId, s);
+			  }
+		  }
+	  }
+	  return scoresMap;
+  }
 
 }
+class EMIScore implements Comparable<EMIScore>{
+	long itemId = 0;
+	long itemTextId = 0;
+	long answerId = 0;
+	boolean correct = false;
+	float score = 0.0f;
+	float effectiveScore = 0.0f;
+	
+	public EMIScore(long itemId, long itemTextId, long answerId, boolean correct, float score){
+		this.itemId = itemId;
+		this.itemTextId = itemTextId;
+		this.answerId = answerId;
+		this.correct = correct;
+		this.score = score;
+	}
 
+	public int compareTo(EMIScore o) {
+		//we want the correct higher scores first
+		if(correct == o.correct){
+			int c = Float.compare(o.score, score);
+			if (c == 0){
+				if(itemId != o.itemId){
+					return (int)(itemId - o.itemId);
+				}
+				if(itemTextId != o.itemTextId){
+					return (int)(itemTextId - o.itemTextId);
+				}
+				if(answerId != o.answerId){
+					return (int)(answerId - o.answerId);
+				}
+				return hashCode() - o.hashCode();
+			}else{
+				return c;
+			}
+		}else{
+			return correct?-1:1;
+		}
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null) return false;
+		return (this == obj);
+	}
+	
+	@Override
+	public String toString() {
+		return itemId + ":" + itemTextId + ":" + answerId + "(" + correct + ":" + score + ":" + effectiveScore + ")";
+	}
+}
 

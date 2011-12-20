@@ -1192,12 +1192,12 @@ public class ItemAddListener
 	}
   
 	private AnswerIfc getAnswer(AnswerBean qaCombo, ItemTextIfc itemText, String text, Long sequence, String label, int requiredOptions) {
+		String correctLabels = qaCombo.getCorrectOptionLabels();
+		int correctRequiredCount = correctLabels.length()<requiredOptions?correctLabels.length():requiredOptions;
 		boolean isCorrect = qaCombo.getCorrectOptionLabels().contains(label);
 
 		// item option score
-		// a little math so we get nice rounded values
-		Float score = ((float) Math
-				.round((qaCombo.getScore() / requiredOptions) * 10)) / 10;
+		Float score = qaCombo.getScore() / correctRequiredCount;
 		
 		return new Answer(itemText, text,
 				sequence, label, isCorrect,
@@ -1959,13 +1959,6 @@ public class ItemAddListener
 							.getSequence(), selectOption.getLabel(),
 							isCorrect, null, null, null,
 							discount, null);
-/*					
-					HashSet answerFeedbackSet = new HashSet();
-				    answerFeedbackSet.add(new PublishedAnswerFeedback(actualAnswer,
-				                                             AnswerFeedbackIfc.GENERAL_FEEDBACK,
-				                                             stripPtags(qaCombo.getFeedback())));
-				    actualAnswer.setAnswerFeedbackSet(answerFeedbackSet);
-*/	
 					
 					answerSet.add(actualAnswer);
 				}
@@ -1985,13 +1978,6 @@ public class ItemAddListener
 							isCorrect, null, null, null,
 							discount, null);
 	
-/*					
-					HashSet answerFeedbackSet = new HashSet();
-				    answerFeedbackSet.add(new PublishedAnswerFeedback(actualAnswer,
-				                                             AnswerFeedbackIfc.GENERAL_FEEDBACK,
-				                                             stripPtags(qaCombo.getFeedback())));
-				    actualAnswer.setAnswerFeedbackSet(answerFeedbackSet);
-*/
 				    answerSet.add(actualAnswer);
 				}
 			}

@@ -623,7 +623,9 @@ public class ItemModifyListener implements ActionListener
 				  if(itemAnswerScore == null){
 					  itemAnswerScore = 0.0f;
 				  }
-				  answerbean.setScore(((float)Math.round((itemAnswerScore * itemText.getRequiredOptionsCount())*10))/10);
+				  int correctRequiredCount = correctAnswerOptions.size()<itemText.getRequiredOptionsCount().intValue()?
+						  correctAnswerOptions.size():itemText.getRequiredOptionsCount().intValue();
+				  answerbean.setScore(((float)Math.round((itemAnswerScore * correctRequiredCount)*100))/100);
 				  answerbean.setScoreUserSet(itemScoreUserSet);
 				  Collections.sort(correctAnswerOptions);
 				  Iterator correctAnsLabels = correctAnswerOptions.iterator();

@@ -26,6 +26,10 @@ function checkEMIOptions(element, validEMIOptions, event) {
 	return true;
 }
 
+function isCharNumber(charCode){
+	return (charCode >= 48 && charCode <= 57);
+}
+
 function isCharAlphaUpper(charCode){
 	return (charCode >= 65 && charCode <= 90);
 }

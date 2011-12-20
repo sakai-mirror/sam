@@ -112,8 +112,7 @@ should be included in file importing DeliveryMessages
       <h:inputText id="responseAnswer" value="#{matching.response}" size="3" style="text-transform:uppercase;" 
        		rendered="#{delivery.actionString ne 'reviewAssessment' && delivery.actionString ne 'gradeAssessment'}"
             validator="#{matching.validateEmiResponse}" 
-            onkeypress="return checkEMIOptions(this, '#{question.itemData.emiAnswerOptionLabels}', event)">
-            <!-- maxlength="XXX" --> 
+            onkeypress="return checkEMIOptions(this, '#{question.itemData.emiAnswerOptionLabels}', event)" maxlength="#{matching.itemText.requiredOptionsCount}" > 
       </h:inputText>
    </h:column>
 
