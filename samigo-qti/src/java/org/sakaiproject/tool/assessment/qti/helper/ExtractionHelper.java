@@ -2933,8 +2933,11 @@ public class ExtractionHelper
 		long seq = 1;
 		for (String itemdata : items) {
 			itemdata = itemdata.trim();
-			int index = itemdata.indexOf("]");
+			int index = itemdata.indexOf("|");
 			int required = Integer.valueOf(itemdata.substring(1, index));
+			itemdata = itemdata.substring(index + 1).trim();
+			index = itemdata.indexOf("]");
+			String grade = itemdata.substring(0, index);
 			itemdata = itemdata.substring(index + 1).trim();
 			index = itemdata.indexOf("@ATTACH@");
 			String text = itemdata.substring(0, index).trim();
@@ -2957,8 +2960,8 @@ public class ExtractionHelper
 				float score = Float.valueOf(itemdata.substring(
 						itemdata.indexOf("|") + 1, index));
 				answers.add(new Answer(itemText, optionMap.get(label),
-						answerSeq++, label, correct, null, score, null,
-						score == 0.0 ? score : -score, null));
+						answerSeq++, label, correct, grade, correct?score:0.0f, null,
+						correct?0.0f:-score));
 				itemdata = itemdata.substring(index + 1).trim();
 				index = itemdata.indexOf("[");
 			}

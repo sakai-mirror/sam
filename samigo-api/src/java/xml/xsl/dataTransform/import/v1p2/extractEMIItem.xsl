@@ -56,7 +56,7 @@
 			<xsl:for-each
 				select="//item/resprocessing[not(qticomment)]">
 				<items type="list">
-					[<xsl:value-of select="outcomes/decvar[@varname='requiredOptionsCount']/@defaultval" />]<xsl:value-of select="outcomes/interpretvar/material/mattext" />
+					[<xsl:value-of select="outcomes/decvar[@varname='requiredOptionsCount']/@maxvalue" />|<xsl:value-of select="outcomes/decvar[@varname='scoreUserSet']/@defaultval" />]<xsl:value-of select="outcomes/interpretvar/material/mattext" />
 					@ATTACH@
 					<xsl:for-each
 						select="outcomes/interpretvar/material/matimage">

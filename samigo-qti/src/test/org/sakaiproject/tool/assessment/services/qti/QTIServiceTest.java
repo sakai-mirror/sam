@@ -28,26 +28,22 @@ public class QTIServiceTest extends TestCase {
 	private static final Logger log = Logger.getLogger(QTIServiceTest.class);
 	private static int[] ignore = {0,4};
 
-	public void testCreateImportedAssessment() throws Exception {
+	public void xtestImport() throws Exception {
+		Document document = getDocument("exportAssessment.xml");
+		ItemFacade item = extractItem(document);
+		String output = PrintUtil.printItem(item);
+		log.info(output);
+	}
+
+	public void xtestCreateImportedAssessment() throws Exception {
 		for(int index = 1; index <= 4; index++){
 			testCreateImportedAssessment(index);
 		}
 	}
 	
 	private void testCreateImportedAssessment(int index) throws Exception {
-		URL url = QTIServiceTest.class.getClassLoader().getResource("exportEMI-"+index+".xml");
-		if(url == null){
-			log.warn("Could not find the test file, exportEMI-"+index+".xml! Stopping test.");
-			return;
-		}
-		String file = url.getPath();
-		log.info("File: " + file);
-		Document document = XmlUtil.readDocument(file, true);
-		ExtractionHelper exHelper = new ExtractionHelper(QTIVersion.VERSION_1_2);
-		ItemFacade item = new ItemFacade();
-		Item itemXml = new Item(document, QTIVersion.VERSION_1_2);
-//		printDocument(itemXml.getDocument(), System.err);
-		exHelper.updateItem(item, itemXml);
+		Document document = getDocument("exportEMI-"+index+".xml");
+		ItemFacade item = extractItem(document);
 		String output = PrintUtil.printItem(item);
 		log.info(output);
 		String[] outputLines = output.split("\n");
@@ -82,6 +78,24 @@ public class QTIServiceTest extends TestCase {
 
 	    transformer.transform(new DOMSource(doc), 
 	         new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+	}
+	
+	private Document getDocument(String fileName) throws Exception {
+		URL url = QTIServiceTest.class.getClassLoader().getResource(fileName);
+		if(url == null){
+			throw new IllegalArgumentException("Could not find the test file, " + fileName + "! Stopping test.");
+		}
+		String file = url.getPath();
+		log.info("File: " + file);
+		return XmlUtil.readDocument(file, true);
+	}
+
+	private ItemFacade extractItem(Document document) {
+		ExtractionHelper exHelper = new ExtractionHelper(QTIVersion.VERSION_1_2);
+		ItemFacade item = new ItemFacade();
+		Item itemXml = new Item(document, QTIVersion.VERSION_1_2);
+		exHelper.updateItem(item, itemXml);
+		return item;
 	}
 
 }

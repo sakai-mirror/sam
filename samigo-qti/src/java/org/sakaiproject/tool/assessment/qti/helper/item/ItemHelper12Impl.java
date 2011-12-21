@@ -565,14 +565,10 @@ public class ItemHelper12Impl extends ItemHelperBase
 		}
 	}
 	
-	private void addEMIItem(String ident, ItemTextIfc itemText, Item itemXml) {
+	private void addEMIItem(String ident, ItemTextIfc itemText, Item itemXml) {//XXX
 		//main node resprocessing
 		Element resprocessing = createElement("resprocessing", itemXml);
 		itemXml.addElement("item", resprocessing);
-		//qti comment, contain the fill text
-//		Element qticomment = createElement("qticomment", itemXml);
-//		qticomment.setTextContent(XmlUtil.convertToSingleCDATA(itemText.getText()));
-//		resprocessing.appendChild(qticomment);
 		//outcomes with the scores and required count
 		Element outcomes = createElement("outcomes", itemXml);
 		resprocessing.appendChild(outcomes);
@@ -584,12 +580,17 @@ public class ItemHelper12Impl extends ItemHelperBase
 		outcomes.appendChild(decvarScore);
 		//decvar for required count
 		Element decvarRequired = createElement("decvar", itemXml);
-		decvarRequired.setAttribute("defaultval", itemText.getRequiredOptionsCount().toString());
+		decvarRequired.setAttribute("defaultval", String.valueOf(itemText.getEmiCorrectOptionLabels().length()));
 		decvarRequired.setAttribute("maxvalue", itemText.getRequiredOptionsCount().toString());
 		decvarRequired.setAttribute("minvalue", "0");
 		decvarRequired.setAttribute("varname", "requiredOptionsCount");
 		decvarRequired.setAttribute("vartype", "Integer");
 		outcomes.appendChild(decvarRequired);
+		//decvar for score user set
+		Element decvarScoreUserSet = createElement("decvar", itemXml);
+		decvarScoreUserSet.setAttribute("varname", "scoreUserSet");
+		decvarScoreUserSet.setAttribute("vartype", "String");
+		outcomes.appendChild(decvarScoreUserSet);
 		//Item Text
 		Element interpretvar = createElement("interpretvar", itemXml);//Testing
 		outcomes.appendChild(interpretvar);//Testing
@@ -606,6 +607,7 @@ public class ItemHelper12Impl extends ItemHelperBase
 		float discount = 0.0f;
 		//respcondition for every correct option
 		for(AnswerIfc answer: itemText.getAnswerArraySorted()){
+			decvarScoreUserSet.setAttribute("defaultval", answer.getGrade());
 			Element respcondition = createElement("respcondition", itemXml);
 			respcondition.setAttribute("continue", "Yes");
 			respcondition.setAttribute("title", answer.getIsCorrect()?"CORRECT":"INCORRECT");
@@ -635,7 +637,7 @@ public class ItemHelper12Impl extends ItemHelperBase
 		
 		//set the scores
 		decvarScore.setAttribute("maxvalue", String.valueOf(getFloat(score)));
-		decvarScore.setAttribute("minvalue", String.valueOf(getFloat(discount)));
+		decvarScore.setAttribute("minvalue", "0");//String.valueOf(getFloat(discount)));
 	}
 	private float getFloat(Float f){
 		return f==null?0.0f:f.floatValue();
