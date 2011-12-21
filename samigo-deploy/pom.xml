@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.sakaiproject.samigo</groupId>
         <artifactId>samigo</artifactId>
-        <version>2.9-SNAPSHOT</version>
+        <version>2.10-SNAPSHOT</version>
     </parent>
 
     <name>Sakai Samigo Deploy POM</name>
@@ -27,6 +27,12 @@
     
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math</artifactId>
+                <version>2.2</version>
+                <scope>compile</scope>
+            </dependency>
             <dependency>
                 <groupId>OKI</groupId>
                 <artifactId>OkiOSID</artifactId>

@@ -1,1 +1,1 @@
-mvn clean install sakai:deploy -Psakai29 -Dmaven.test.skip=true %1
+mvn clean install sakai:deploy -Psakai210 -Dmaven.test.skip=true %1

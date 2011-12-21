@@ -24,11 +24,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.text.StringCharacterIterator;
-
 import javax.servlet.ServletContext;
 
-import org.osid.shared.StringIterator;
 import org.sakaiproject.util.FormattedText;
 import org.springframework.core.io.ClassPathResource;
 
@@ -52,7 +49,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import java.io.FileReader;
-import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 

@@ -451,3 +451,10 @@ a.hideDivision {
 {
   color: #aaa;
 }
+.submissionInfoCol1{
+    width: 200px; 
+}
+
+.submissionInfoCol2{
+    width: 650px; 
+}
