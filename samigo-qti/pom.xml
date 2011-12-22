@@ -100,5 +100,16 @@
 	</dependencies>
 	<build>
 		<resources />
+		<testResources>
+			<testResource>
+				<directory>src/test</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
 	</build>
 </project>
