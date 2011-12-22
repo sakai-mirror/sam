@@ -74,7 +74,7 @@ public class PrintUtil {
 		// // pEndData();//AnswerFeedbackSet
 		// }
 		// pEndData();//EmiAnswerOptions
-		// pNewData("EmiQuestionAnswerCombinations");XXX
+		// pNewData("EmiQuestionAnswerCombinations");
 		// for(ItemTextIfc it: item.getEmiQuestionAnswerCombinations()){
 		// p(it.getId().toString(), it);
 		// }
@@ -169,7 +169,7 @@ public class PrintUtil {
 			// p("InCorrectAnswerFeedback",
 			// answer.getInCorrectAnswerFeedback());
 			// p("PartialCredit", answer.getPartialCredit());
-			// p("ItemText", answer.getItemText());//XXX Bad circular ref
+			// p("ItemText", answer.getItemText());// Bad circular ref
 			// pNewData("AnswerFeedbackSet");
 			// for(AnswerFeedbackIfc af: answer.getAnswerFeedbackSet()){
 			// p("", af.getId());

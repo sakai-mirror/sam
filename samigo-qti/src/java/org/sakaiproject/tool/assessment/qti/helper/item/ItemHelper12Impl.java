@@ -565,7 +565,7 @@ public class ItemHelper12Impl extends ItemHelperBase
 		}
 	}
 	
-	private void addEMIItem(String ident, ItemTextIfc itemText, Item itemXml) {//XXX
+	private void addEMIItem(String ident, ItemTextIfc itemText, Item itemXml) {
 		//main node resprocessing
 		Element resprocessing = createElement("resprocessing", itemXml);
 		itemXml.addElement("item", resprocessing);

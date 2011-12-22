@@ -2818,7 +2818,7 @@ public class ExtractionHelper
 				null));
 		// attachments
 //		item.setItemAttachmentSet(makeEMIAttachments(item,
-////				getList(itemMap, "richOptionAttachImage"),XXX
+////				getList(itemMap, "richOptionAttachImage"),
 ////				getList(itemMap, "richOptionAttachAudio"),
 ////				getList(itemMap, "richOptionAttachVideo"),
 //				getList(itemMap, "richOptionAttach")));

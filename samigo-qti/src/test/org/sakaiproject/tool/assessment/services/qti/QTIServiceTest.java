@@ -1,11 +1,8 @@
 package org.sakaiproject.tool.assessment.services.qti;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.util.Arrays;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -13,7 +10,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.tool.assessment.facade.ItemFacade;
 import org.sakaiproject.tool.assessment.qti.asi.Item;
 import org.sakaiproject.tool.assessment.qti.asi.PrintUtil;
@@ -25,46 +21,18 @@ import org.w3c.dom.Document;
 import junit.framework.TestCase;
 
 public class QTIServiceTest extends TestCase {
-	private static final Logger log = Logger.getLogger(QTIServiceTest.class);
-	private static int[] ignore = {0,4};
 
-	public void xtestImport() throws Exception {
+	public void testImportExport() throws Exception {
 		Document document = getDocument("exportAssessment.xml");
 		ItemFacade item = extractItem(document);
-		String output = PrintUtil.printItem(item);
-		log.info(output);
-	}
-
-	public void xtestCreateImportedAssessment() throws Exception {
-		for(int index = 1; index <= 4; index++){
-			testCreateImportedAssessment(index);
-		}
-	}
-	
-	private void testCreateImportedAssessment(int index) throws Exception {
-		Document document = getDocument("exportEMI-"+index+".xml");
-		ItemFacade item = extractItem(document);
-		String output = PrintUtil.printItem(item);
-		log.info(output);
-		String[] outputLines = output.split("\n");
-		BufferedReader in = new BufferedReader(new InputStreamReader(QTIServiceTest.class.getClassLoader().getResourceAsStream("printEMI-"+index+".txt")));
-		String line = null;
-		boolean inAtt = false;
-		for(int i = 0; (line = in.readLine()) != null && i < outputLines.length; i++){
-			if(line.contains("AttachmentSet")){
-				inAtt = true;
-			}
-			if(inAtt){
-				if(line.contains("----- End -----")){
-					inAtt = false;
-				}
-				continue;
-			}
-			if(Arrays.binarySearch(ignore, i) >= 0) continue;
-			if(line.trim().startsWith("-----")) continue;
-			if(line.trim().startsWith("Sequence(")) continue;
-			assertEquals("Test " + index + ": Line " + (i+1), line, outputLines[i]);
-		}
+//		String output = PrintUtil.printItem(item);
+		assertEquals("Extended Matching Items", item.getDescription());
+		assertEquals("Grading A", item.getThemeText());
+		assertEquals("The Leadin Text.", item.getLeadInText());
+		assertEquals(Float.valueOf(48.0f), item.getScore());
+		assertEquals(Float.valueOf(0.0f), item.getDiscount());
+		assertEquals("1:AB 2:AB 3:AB 4:AB 5:AB 6:AB 7:AB 8:AB 9:AB 10:AB 11:AB 12:AB ", item.getAnswerKey());
+		assertEquals("ABCDEF", item.getEmiAnswerOptionLabels());
 	}
 	
 	public static void printDocument(Document doc, OutputStream out) throws Exception {
@@ -86,7 +54,6 @@ public class QTIServiceTest extends TestCase {
 			throw new IllegalArgumentException("Could not find the test file, " + fileName + "! Stopping test.");
 		}
 		String file = url.getPath();
-		log.info("File: " + file);
 		return XmlUtil.readDocument(file, true);
 	}
 

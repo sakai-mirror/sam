@@ -959,7 +959,7 @@ public class HistogramListener
 			AnswerIfc answer = (AnswerIfc) iter.next();
 			sequenceList.add(answer.getItemText().getSequence() + "-" + answer.getSequence());
 		}
-                //XXX sort the sequence
+                // sort the sequence
 		Collections.sort(sequenceList, new Comparator<String>(){
 
                     public int compare(String o1, String o2) {
