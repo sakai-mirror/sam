@@ -3,23 +3,25 @@
 	<modelVersion>4.0.0</modelVersion>
 	
     <parent>
-        <groupId>org.sakaiproject.purepoms</groupId>
-        <artifactId>sakai-edu-tool</artifactId>
-        <version>2.9-SNAPSHOT</version>
+        <groupId>org.sakaiproject</groupId>
+        <artifactId>master</artifactId>
+        <version>2.9.0-b01</version>
     </parent>
 	
 	<name>Sakai Samigo Project (base POM)</name>
 	<groupId>org.sakaiproject.samigo</groupId>
 	<artifactId>samigo</artifactId>
-	<version>2.9-SNAPSHOT</version>
+	<version>2.9.0-b01</version>
 	<packaging>pom</packaging>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+<!--
         <sakai.calendar.version>2.9-SNAPSHOT</sakai.calendar.version>
         <sakai.common.version>1.2-SNAPSHOT</sakai.common.version>
         <sakai.edu-services.version>1.2-SNAPSHOT</sakai.edu-services.version>
         <sakai.jsf.version>2.9-SNAPSHOT</sakai.jsf.version>
+-->
     </properties>
 	
 	<modules>
@@ -38,9 +40,9 @@
 	</modules>
 	
 	<scm>
-		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/trunk</connection>
-		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/trunk</developerConnection>
-		<url>https://source.sakaiproject.org/svn/sam/trunk</url>
+		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.0-b01</connection>
+		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.0-b01</developerConnection>
+		<url>https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.0-b01</url>
 	</scm>
 	
 	<distributionManagement>
