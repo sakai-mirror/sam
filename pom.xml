@@ -40,9 +40,9 @@
 	</modules>
 	
 	<scm>
-		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/trunk</connection>
-		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/trunk</developerConnection>
-		<url>https://source.sakaiproject.org/svn/sam/trunk</url>
+		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x</connection>
+		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x</developerConnection>
+		<url>https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x</url>
 	</scm>
 	
 	<distributionManagement>
