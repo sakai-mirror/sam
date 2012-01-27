@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.sakaiproject</groupId>
         <artifactId>master</artifactId>
-        <version>2.9.0-b01</version>
+        <version>2.9.0-b02</version>
     </parent>
 	
 	<name>Sakai Samigo Project (base POM)</name>
 	<groupId>org.sakaiproject.samigo</groupId>
 	<artifactId>samigo</artifactId>
-	<version>2.9-SNAPSHOT</version>
+	<version>2.9.0-b02</version>
 	<packaging>pom</packaging>
     
     <properties>
@@ -40,9 +40,9 @@
 	</modules>
 	
 	<scm>
-		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.0-b02</connection>
-		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.0-b02</developerConnection>
-		<url>https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.0-b02</url>
+		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.0-b02</connection>
+		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.0-b02</developerConnection>
+		<url>https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.0-b02</url>
 	</scm>
 	
 	<distributionManagement>
