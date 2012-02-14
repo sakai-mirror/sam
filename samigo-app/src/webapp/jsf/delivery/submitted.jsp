@@ -83,8 +83,8 @@ window.close();
 <h:form id="submittedForm">
 <h:messages styleClass="messageSamigo" rendered="#{! empty facesContext.maximumSeverity}" layout="table"/>
 
-	<h:outputText value="#{deliveryMessages.submission_confirmation_message_1}" rendered="#{!delivery.actionString=='takeAssessmentViaUrl' || !delivery.anonymousLogin}"/>
-    <h:outputText value="#{deliveryMessages.submission_confirmation_message_4}" rendered="#{delivery.actionString=='takeAssessmentViaUrl' && delivery.anonymousLogin}"/>
+	<h:outputText value="#{deliveryMessages.submission_confirmation_message_1}" rendered="#{!delivery.actionString=='takeAssessmentViaUrl'}"/>
+    <h:outputText value="#{deliveryMessages.submission_confirmation_message_4}" rendered="#{delivery.actionString=='takeAssessmentViaUrl'}"/>
     <h:outputText escape="false" value="<br /> #{delivery.submissionMessage}" />
 
   <f:verbatim><p/></f:verbatim>
@@ -132,10 +132,6 @@ window.close();
   <h:panelGrid columns="2" cellpadding="3" cellspacing="3">
     <h:commandButton type="submit" value="#{deliveryMessages.button_continue}" action="select"
        rendered="#{delivery.actionString=='takeAssessment'}" />
-
-    <h:commandButton value="#{deliveryMessages.button_continue}" type="button" 
-       rendered="#{delivery.actionString=='takeAssessmentViaUrl' && !delivery.anonymousLogin}"
-       style="act" onclick="javascript:window.open('#{delivery.selectURL}','_top')" onkeypress="javascript:window.open('#{delivery.selectURL}','_top')" />
 
     <h:commandButton value="#{deliveryMessages.review_results}" type="button" id="reviewAssessment"
        rendered="#{delivery.actionString=='takeAssessmentViaUrl' && delivery.anonymousLogin && (delivery.feedbackComponent.showImmediate || delivery.feedbackComponent.showOnSubmission || delivery.feedbackOnDate) && delivery.feedbackComponentOption=='2'}" 
