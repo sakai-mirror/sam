@@ -41,8 +41,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,16 +54,16 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
-import org.sakaiproject.site.cover.SiteService;
+import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResource;
-import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.memory.api.Cache;
+import org.sakaiproject.memory.api.MemoryService;
 import org.sakaiproject.service.gradebook.shared.GradebookService;
 import org.sakaiproject.spring.SpringBeanLocator;
-import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAssessmentData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
@@ -73,7 +73,6 @@ import org.sakaiproject.tool.assessment.data.dao.grading.MediaData;
 import org.sakaiproject.tool.assessment.data.dao.grading.StudentGradingSummaryData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAttachmentIfc;
-import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemTextIfc;
@@ -91,7 +90,7 @@ import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
-import org.sakaiproject.user.cover.UserDirectoryService;
+import org.sakaiproject.user.api.UserDirectoryService;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -99,6 +98,29 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   private static Log log = LogFactory.getLog(AssessmentGradingFacadeQueries.class);
 
   public AssessmentGradingFacadeQueries () {
+  }
+
+  public MemoryService memoryService;
+  public void setMemoryService(MemoryService memoryService) {
+	this.memoryService = memoryService;
+  }
+
+  public ContentHostingService contentHostingService;
+  public void setContentHostingService(ContentHostingService contentHostingService) {
+	this.contentHostingService = contentHostingService;
+  }
+  
+  private UserDirectoryService userDirectoryService;
+  public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
+	this.userDirectoryService = userDirectoryService;
+}
+
+private Cache assesmentGradingDataCache;
+  
+  public void init() {
+	  log.info("init()");
+	  
+	  assesmentGradingDataCache =  memoryService.newCache("memory.org.sakaiproject.samigo.assemesment.facade.AssessmentGradingFacadeQueries.assesmentGradingDataCache");
   }
 
   public List getTotalScores(final String publishedId, String which) {
@@ -406,10 +428,10 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
    * This returns a hashmap of all the submitted items, keyed by
    * item id for easy retrieval.
    */
-  public HashMap getStudentGradingData(String assessmentGradingId)
+  public Map<Long, List<ItemGradingData>> getStudentGradingData(String assessmentGradingId)
   {
     try {
-      HashMap map = new HashMap();
+      Map<Long, List<ItemGradingData>> map = new HashMap<Long, List<ItemGradingData>>();
       AssessmentGradingData gdata = load(new Long(assessmentGradingId));
       log.debug("****#6, gdata="+gdata);
       //log.debug("****#7, item size="+gdata.getItemGradingSet().size());
@@ -417,17 +439,16 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
       while (iter.hasNext())
       {
         ItemGradingData data = (ItemGradingData) iter.next();
-        ArrayList thisone = (ArrayList)
-          map.get(data.getPublishedItemId());
+        List<ItemGradingData> thisone = map.get(data.getPublishedItemId());
         if (thisone == null)
-          thisone = new ArrayList();
+          thisone = new ArrayList<ItemGradingData>();
         thisone.add(data);
         map.put(data.getPublishedItemId(), thisone);
       }
       return map;
     } catch (Exception e) {
       e.printStackTrace();
-      return new HashMap();
+      return new HashMap<Long, List<ItemGradingData>>();
     }
   }
 
@@ -833,9 +854,15 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     return (ItemGradingData) itemGradings.get(0);
   }
 
+  
   public AssessmentGradingData load(Long id) {
+	 if (assesmentGradingDataCache.containsKey(id)) {
+		 log.info("getting assementGradingData " + id.toString() + " from cache");
+		 return (AssessmentGradingData) assesmentGradingDataCache.get(id);
+	 }
     AssessmentGradingData gdata = (AssessmentGradingData) getHibernateTemplate().load(AssessmentGradingData.class, id);
     gdata.setItemGradingSet(getItemGradingSet(gdata.getAssessmentGradingId()));
+    assesmentGradingDataCache.put(id, gdata);
     return gdata;
   }
 
@@ -2014,9 +2041,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 				  useridSet.remove(assessmentGradingData.getAgentId());
 				  canBeExported = true;
 				  try {
-					  agentEid = UserDirectoryService.getUser(assessmentGradingData.getAgentId()).getEid();
-					  firstName = UserDirectoryService.getUser(assessmentGradingData.getAgentId()).getFirstName();
-					  lastName = UserDirectoryService.getUser(assessmentGradingData.getAgentId()).getLastName();
+					  agentEid = userDirectoryService.getUser(assessmentGradingData.getAgentId()).getEid();
+					  firstName = userDirectoryService.getUser(assessmentGradingData.getAgentId()).getFirstName();
+					  lastName = userDirectoryService.getUser(assessmentGradingData.getAgentId()).getLastName();
 				  } catch (Exception e) {
 					  log.error("Cannot get user");
 				  }
@@ -2067,7 +2094,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 			  
 			  Long assessmentGradingId = assessmentGradingData.getAssessmentGradingId();
 
-			  HashMap studentGradingMap = getStudentGradingData(assessmentGradingData.getAssessmentGradingId().toString());
+			  Map studentGradingMap = getStudentGradingData(assessmentGradingData.getAssessmentGradingId().toString());
 			  ArrayList grades = new ArrayList();
 			  grades.addAll(studentGradingMap.values());
 
@@ -2310,9 +2337,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		  while (iter.hasNext()) {
 			  String id = (String) iter.next();
 			  try {
-				  agentEid = UserDirectoryService.getUser(id).getEid();
-				  firstName = UserDirectoryService.getUser(id).getFirstName();
-				  lastName = UserDirectoryService.getUser(id).getLastName();
+				  agentEid = userDirectoryService.getUser(id).getEid();
+				  firstName = userDirectoryService.getUser(id).getFirstName();
+				  lastName = userDirectoryService.getUser(id).getLastName();
 			  } catch (Exception e) {
 				  log.error("Cannot get user");
 			  }
@@ -2614,7 +2641,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    return al;
   }
 	
-	private SiteService siteService;
+	
 	
 	/**
 	 * added by gopalrc - Nov 2007
@@ -2947,7 +2974,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		ItemGradingAttachment attach = null;
 		Boolean isLink = Boolean.FALSE;
 		try {
-			ContentResource cr = ContentHostingService.getResource(resourceId);
+			ContentResource cr = contentHostingService.getResource(resourceId);
 			if (cr != null) {
 				AssessmentFacadeQueries assessmentFacadeQueries = new AssessmentFacadeQueries();
 				ResourceProperties p = cr.getProperties();

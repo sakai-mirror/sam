@@ -60,11 +60,14 @@ public interface AssessmentGradingFacadeQueriesAPI
    */
   public HashMap getLastItemGradingData(Long publishedId, String agentId);
 
+  
   /**
-   * This returns a hashmap of all the submitted items, keyed by
+   * This returns a map of all the submitted items, keyed by
    * item id for easy retrieval.
+   * @param assessmentGradingId
+   * @return
    */
-  public HashMap getStudentGradingData(String assessmentGradingId);
+  public Map<Long, List<ItemGradingData>> getStudentGradingData(String assessmentGradingId);
 
   public HashMap getSubmitData(Long publishedId, String agentId, Integer scoringoption, Long assessmentGradingId);
   
@@ -126,6 +129,11 @@ public interface AssessmentGradingFacadeQueriesAPI
   public ItemGradingData getItemGradingData(Long assessmentGradingId,
       Long publishedItemId);
 
+  /**
+   * Load a specific item of AssementGrading data
+   * @param id - the id of the item
+   * @return
+   */
   public AssessmentGradingData load(Long id);
 
   public ItemGradingData getItemGrading(Long id);

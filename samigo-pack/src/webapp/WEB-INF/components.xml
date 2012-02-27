@@ -174,8 +174,11 @@
           class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
       <property name="transactionManager"><ref bean="org.sakaiproject.springframework.orm.hibernate.GlobalTransactionManager"/></property>
       <property name="target">
-        <bean class="org.sakaiproject.tool.assessment.facade.AssessmentGradingFacadeQueries">
+        <bean class="org.sakaiproject.tool.assessment.facade.AssessmentGradingFacadeQueries" init-method="init">
           <property name="sessionFactory"><ref bean="org.sakaiproject.springframework.orm.hibernate.GlobalSessionFactory"/></property>
+          <property name="memoryService" ref="org.sakaiproject.memory.api.MemoryService"/>
+          <property name="contentHostingService" ref="org.sakaiproject.content.api.ContentHostingService"/>
+          <property name="userDirectoryService" ref="org.sakaiproject.user.api.UserDirectoryService"/>
 	</bean>
       </property>
       <property name="transactionAttributes">
