@@ -859,7 +859,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   
   public AssessmentGradingData load(Long id) {
 	 if (assesmentGradingDataCache.containsKey(id)) {
-		 log.info("getting assementGradingData " + id.toString() + " from cache");
+		 log.debug("getting assementGradingData " + id.toString() + " from cache");
 		 return (AssessmentGradingData) assesmentGradingDataCache.get(id);
 	 }
     AssessmentGradingData gdata = (AssessmentGradingData) getHibernateTemplate().load(AssessmentGradingData.class, id);
