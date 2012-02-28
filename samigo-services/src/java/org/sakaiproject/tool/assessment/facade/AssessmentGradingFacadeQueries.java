@@ -837,7 +837,7 @@ private Cache assesmentGradingDataCache;
     final HibernateCallback hcb = new HibernateCallback(){
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {
     		Query q = session.createQuery(
-    				"from ItemGradingData i where i.assessmentGradingId = ? and i.publishedItemId=?");
+    				"from ItemGradingData i where i.assessmentGrading = ? and i.publishedItemId=?");
     		q.setLong(0, assessmentGradingId.longValue());
     		q.setLong(1, publishedItemId.longValue());
     		return q.list();
@@ -956,12 +956,16 @@ private Cache assesmentGradingDataCache;
   }
 
 
+ 
   public void saveItemGrading(ItemGradingIfc item) {
-    int retryCount = PersistenceService.getInstance().getRetryCount().intValue();
+    log.debug("saveItemGrading(" + item.getItemGradingId());
+	int retryCount = PersistenceService.getInstance().getRetryCount().intValue();
     while (retryCount > 0){ 
       try {
-        getHibernateTemplate().saveOrUpdate((ItemGradingData)item);
+    	getHibernateTemplate().saveOrUpdate((ItemGradingData)item);
         retryCount = 0;
+        //expire the parent object from the cache
+        assesmentGradingDataCache.remove(item.getAssessmentGrading().getAssessmentGradingId());
       }
       catch (Exception e) {
         log.warn("problem saving itemGrading: "+e.getMessage());
@@ -971,6 +975,7 @@ private Cache assesmentGradingDataCache;
   }
 
   public void saveOrUpdateAssessmentGrading(AssessmentGradingIfc assessment) {
+	log.debug("saveItemGrading(" + assessment.getAssessmentGradingId());
     int retryCount = PersistenceService.getInstance().getRetryCount().intValue();
     while (retryCount > 0){ 
       try {
@@ -980,6 +985,8 @@ private Cache assesmentGradingDataCache;
 	*/ 
         getHibernateTemplate().saveOrUpdate((AssessmentGradingData)assessment);
         retryCount = 0;
+        //remove any cached entries
+        assesmentGradingDataCache.remove(assessment.getAssessmentGradingId());
       }
       catch (Exception e) {
         log.warn("problem inserting/updating assessmentGrading: "+e.getMessage());
@@ -1352,7 +1359,7 @@ private Cache assesmentGradingDataCache;
                    " a.agentId, a.finalScore, a.submittedDate) "+
                    " from ItemGradingData i, AssessmentGradingData a, "+
                    " PublishedItemData p where "+
-                   " i.assessmentGradingId = a.assessmentGradingId and i.publishedItemId = p.itemId and "+
+                   " i.assessmentGrading = a.assessmentGradingId and i.publishedItemId = p.itemId and "+
                    " a.publishedAssessmentId=? " +
                    " order by a.agentId asc, a.finalScore desc";
 
@@ -1402,8 +1409,8 @@ private Cache assesmentGradingDataCache;
   }
 
   public Set getItemGradingSet(final Long assessmentGradingId){
-    final String query = "from ItemGradingData i where i.assessmentGradingId=?";
-
+    final String query = "from ItemGradingData i where i.assessmentGrading=?";
+    //TODO this needs to be cached - on of the highest queries
     final HibernateCallback hcb = new HibernateCallback(){
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {
     		Query q = session.createQuery(query);
@@ -1452,7 +1459,7 @@ private Cache assesmentGradingDataCache;
     HashMap h = new HashMap();
     for (int i=0; i<l.size();i++){
       ItemGradingData o = (ItemGradingData)l.get(i);
-      h.put(o.getItemGradingId(), (AssessmentGradingData)aHash.get(o.getAssessmentGradingId()));
+      h.put(o.getItemGradingId(), (AssessmentGradingData)aHash.get(o.getAssessmentGrading().getAssessmentGradingId()));
     }
     return h;
   }
@@ -2933,7 +2940,6 @@ private Cache assesmentGradingDataCache;
 		Entry entry = null;
 		AssessmentGradingData assessmentGradingData = null;
 		Long publishedAssessmentId = null;
-		GradingService gradingService = new GradingService();
 		GradebookService g = null;
 		if (IntegrationContextFactory.getInstance() != null) {
 			boolean integrated = IntegrationContextFactory.getInstance().isIntegrated();
@@ -3163,7 +3169,7 @@ private Cache assesmentGradingDataCache;
 	  private void saveItemGradingData(AssessmentGradingData assessmentGradingData, Long publishedItemId) {
 		  log.debug("Adding one ItemGradingData...");
 		  ItemGradingData itemGradingData = new ItemGradingData();
-		  itemGradingData.setAssessmentGradingId(assessmentGradingData.getAssessmentGradingId());
+		  itemGradingData.setAssessmentGrading(assessmentGradingData);
 		  itemGradingData.setAgentId(assessmentGradingData.getAgentId());
 		  itemGradingData.setPublishedItemId(publishedItemId);
 		  ItemService itemService = new ItemService();
@@ -3464,5 +3470,16 @@ private Cache assesmentGradingDataCache;
         public List getItemGradingAttachmentList() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+
+		
+		public AssessmentGradingIfc getAssessmentGrading() {
+			return null;
+		}
+
+		
+		public void setAssessmentGrading(AssessmentGradingIfc assessmentGrading) {
+			// TODO Auto-generated method stub
+			
+		}
     }
 }

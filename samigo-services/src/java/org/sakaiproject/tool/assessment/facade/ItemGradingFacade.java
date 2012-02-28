@@ -22,6 +22,7 @@
 package org.sakaiproject.tool.assessment.facade;
 
 //import org.sakaiproject.tool.assessment.data.ifc.grading.AssessmentGradingIfc;
+import org.sakaiproject.tool.assessment.data.ifc.grading.AssessmentGradingIfc;
 import org.sakaiproject.tool.assessment.data.ifc.grading.ItemGradingAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.grading.ItemGradingIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
@@ -46,7 +47,7 @@ public class ItemGradingFacade
 	 */
 	private static final long serialVersionUID = 6779809228748217781L;
 private Long itemGradingId;
-  private Long assessmentGradingId;
+  
   private Long publishedItemId;
   private Long publishedItemTextId;
     //private ItemDataIfc publishedItem;
@@ -74,12 +75,9 @@ private Long itemGradingId;
   public void setItemGradingId(Long itemGradingId) {
     this.itemGradingId = itemGradingId;
   }
-  public Long getAssessmentGradingId() {
-    return assessmentGradingId;
-  }
-  public void setAssessmentGradingId(Long assessmentGradingId) {
-    this.assessmentGradingId = assessmentGradingId;
-  }
+
+  
+  
 
   public Long getPublishedItemId() {
     return publishedItemId;
@@ -211,5 +209,16 @@ private Long itemGradingId;
 		  }
 	  }
 	  return list;
+  }
+
+  private AssessmentGradingIfc assessmentGradingIfc;
+  public AssessmentGradingIfc getAssessmentGrading() {
+	  return assessmentGradingIfc;
+  }
+
+
+  public void setAssessmentGrading(AssessmentGradingIfc assessmentGrading) {
+	  this.assessmentGradingIfc = assessmentGrading;
+
   }
 }

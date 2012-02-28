@@ -31,11 +31,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,13 +44,11 @@ import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.ifc.grading.ItemGradingAttachmentIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
-import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.services.GradebookServiceException;
+import org.sakaiproject.tool.assessment.services.GradingService;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.DeliveryBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.ItemContentsBean;
 import org.sakaiproject.tool.assessment.ui.bean.delivery.SectionContentsBean;
-import org.sakaiproject.tool.assessment.ui.bean.evaluation.AgentResults;
-import org.sakaiproject.tool.assessment.ui.bean.evaluation.QuestionScoresBean;
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.StudentScoresBean;
 import org.sakaiproject.tool.assessment.ui.bean.evaluation.TotalScoresBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
@@ -143,8 +141,8 @@ public class StudentScoreUpdateListener
           while (iter3.hasNext())
           {
             ItemGradingData data = (ItemGradingData) iter3.next();
-            if (adata == null && data.getAssessmentGradingId() != null){
-              adata = delegate.load(data.getAssessmentGradingId().toString());
+            if (adata == null && data.getAssessmentGrading().getAssessmentGradingId() != null){
+              adata = delegate.load(data.getAssessmentGrading().getAssessmentGradingId().toString());
             }
             if (data.getAgentId() == null)
             { // this is a skipped question, set submittedDate=null

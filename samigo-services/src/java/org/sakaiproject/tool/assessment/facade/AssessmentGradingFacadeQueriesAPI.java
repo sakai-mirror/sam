@@ -153,6 +153,10 @@ public interface AssessmentGradingFacadeQueriesAPI
   
   public List getLastSubmittedOrGradedAssessmentGradingList(Long publishedAssessmentId);
 
+  /**
+   * Save a specific item grading object
+   * @param item the item to save
+   */
   public void saveItemGrading(ItemGradingIfc item);
 
   public void saveOrUpdateAssessmentGrading(AssessmentGradingIfc assessment);

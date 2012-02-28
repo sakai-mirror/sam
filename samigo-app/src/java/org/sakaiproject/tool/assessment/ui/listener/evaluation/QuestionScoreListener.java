@@ -344,7 +344,7 @@ public class QuestionScoreListener implements ActionListener,
 						.getPublishedAnswerId());
 
 				ArrayList temp = (ArrayList) scoresByItem.get(idata
-						.getAssessmentGradingId()
+						.getAssessmentGrading().getAssessmentGradingId()
 						+ ":" + idata.getPublishedItemId());
 				if (temp == null)
 					temp = new ArrayList();
@@ -376,7 +376,7 @@ public class QuestionScoreListener implements ActionListener,
 				}
 				if (!added)
 					newList.add(idata);
-				scoresByItem.put(idata.getAssessmentGradingId() + ":"
+				scoresByItem.put(idata.getAssessmentGrading().getAssessmentGradingId() + ":"
 						+ idata.getPublishedItemId(), newList);
 			}
 			log.debug("questionScores(): scoresByItem.size = "
@@ -702,7 +702,7 @@ public class QuestionScoreListener implements ActionListener,
 					} else {
 						results.setItemGradingId(gdata.getItemGradingId());
 						results.setAssessmentGradingId(gdata
-								.getAssessmentGradingId());
+								.getAssessmentGrading().getAssessmentGradingId());
 						if (gdata.getAutoScore() != null) {
 							// for example, if an assessment has one fileupload
 							// question, the autoscore = null

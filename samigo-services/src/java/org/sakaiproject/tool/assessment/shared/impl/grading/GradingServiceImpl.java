@@ -326,7 +326,7 @@ public class GradingServiceImpl implements GradingServiceAPI
       GradingService service = new GradingService();
       String publishedItemId = itemGrading.getPublishedItemId().toString();
       String assessmentGradingId =
-        itemGrading.getAssessmentGradingId().toString();
+        itemGrading.getAssessmentGrading().getAssessmentGradingId().toString();
       ItemGradingData gradingData = service.getItemGradingData(
         assessmentGradingId, publishedItemId);
       return service.getMediaArray(gradingData);

@@ -382,8 +382,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 
 				Iterator iter = adds.iterator();
 				while (iter.hasNext()) {
-					((ItemGradingIfc) iter.next()).setAssessmentGradingId(adata
-							.getAssessmentGradingId());
+					((ItemGradingIfc) iter.next()).setAssessmentGrading(adata);
 				}
 				// make update to old item and insert new item
 				// and we will only update item that has been changed
@@ -779,7 +778,8 @@ public class SubmitToGradingActionListener implements ActionListener {
 		
 		if (delivery.getNavigation().equals("1") && adds.size() ==0 && !"showFeedback".equals(actionCommand)) {
 			log.debug("enter here");
-			Long assessmentGradingId = delivery.getAssessmentGrading().getAssessmentGradingId();
+			AssessmentGradingData assessmentGrading = delivery.getAssessmentGrading();
+			Long assessmentGradingId = assessmentGrading.getAssessmentGradingId();
 			Long publishedItemId = item.getItemData().getItemId();
 			log.debug("assessmentGradingId = " + assessmentGradingId);
 			log.debug("publishedItemId = " + publishedItemId);
@@ -788,7 +788,7 @@ public class SubmitToGradingActionListener implements ActionListener {
 			if (gradingService.getItemGradingData(assessmentGradingId.toString(), publishedItemId.toString()) == null) {
 				log.debug("Create a new (fake) ItemGradingData");
 				ItemGradingData itemGrading = new ItemGradingData();
-				itemGrading.setAssessmentGradingId(assessmentGradingId);
+				itemGrading.setAssessmentGrading(assessmentGrading);
 				itemGrading.setAgentId(AgentFacade.getAgentString());
 				itemGrading.setPublishedItemId(publishedItemId);
 				ItemService itemService = new ItemService();

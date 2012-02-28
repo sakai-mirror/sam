@@ -367,7 +367,7 @@ private static Log log = LogFactory.getLog(UploadAudioMediaServlet.class);
       else; 
 //        attemptsRemaining = (item.getTriesAllowed()).intValue() -1;
       itemGrading = new ItemGradingData();
-      itemGrading.setAssessmentGradingId(adata.getAssessmentGradingId());
+      itemGrading.setAssessmentGrading(adata);
       itemGrading.setPublishedItemId(item.getItemId());
       itemGrading.setPublishedItemTextId(itemText.getId());
       itemGrading.setAgentId(agentId);

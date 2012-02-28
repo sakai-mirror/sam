@@ -647,9 +647,9 @@ public class HistogramListener
       int numStudentsWithZeroAnswers = 0;
       for (ItemGradingData itemGradingData: itemScores) {
           //only count the unique questions answers
-          if(!assessmentGradingIds.contains(itemGradingData.getAssessmentGradingId())){
+          if(!assessmentGradingIds.contains(itemGradingData.getAssessmentGrading().getAssessmentGradingId())){
               responses++;
-              assessmentGradingIds.add(itemGradingData.getAssessmentGradingId());
+              assessmentGradingIds.add(itemGradingData.getAssessmentGrading().getAssessmentGradingId());
 
               if (itemGradingData.getSubmittedDate() == null) {
                   numStudentsWithZeroAnswers++;
@@ -767,12 +767,12 @@ public class HistogramListener
 					num = Integer.valueOf(0);
 
 				ArrayList studentResponseList = (ArrayList) numStudentRespondedMap
-						.get(data.getAssessmentGradingId());
+						.get(data.getAssessmentGrading().getAssessmentGradingId());
 				if (studentResponseList == null) {
 					studentResponseList = new ArrayList();
 				}
 				studentResponseList.add(data);
-				numStudentRespondedMap.put(data.getAssessmentGradingId(),
+				numStudentRespondedMap.put(data.getAssessmentGrading().getAssessmentGradingId(),
 						studentResponseList);
 				// we found a response, and got the existing num , now update
 				// one
@@ -1229,7 +1229,7 @@ private void getCalculatedQuestionScores(List<ItemGradingData> scores, Histogram
     Set<Long> assessmentQuestionIncorrect = new HashSet<Long>();
     for (ItemGradingData score : scores) {
         if (score.getAutoScore() == 0) {
-            assessmentQuestionIncorrect.add(score.getAssessmentGradingId());
+            assessmentQuestionIncorrect.add(score.getAssessmentGrading().getAssessmentGradingId());
         }
     }
     
@@ -1274,12 +1274,12 @@ private void getCalculatedQuestionScores(List<ItemGradingData> scores, Histogram
           num = Integer.valueOf(0);
 
 
-        ArrayList studentResponseList = (ArrayList)numStudentRespondedMap.get(data.getAssessmentGradingId());
+        ArrayList studentResponseList = (ArrayList)numStudentRespondedMap.get(data.getAssessmentGrading().getAssessmentGradingId());
         if (studentResponseList==null) {
             studentResponseList = new ArrayList();
         }
         studentResponseList.add(data);
-        numStudentRespondedMap.put(data.getAssessmentGradingId(), studentResponseList);
+        numStudentRespondedMap.put(data.getAssessmentGrading().getAssessmentGradingId(), studentResponseList);
 
         if (answer.getIsCorrect() != null && answer.getIsCorrect().booleanValue())
         // only store correct responses in the results
@@ -1447,12 +1447,12 @@ private void getCalculatedQuestionScores(List<ItemGradingData> scores, Histogram
 			  if(rCount != null)
 				  rows.put(id, Integer.valueOf(rCount.intValue()+1));
 		  }
-		  ArrayList studentResponseList = (ArrayList)numStudentRespondedMap.get(data.getAssessmentGradingId());
+		  ArrayList studentResponseList = (ArrayList)numStudentRespondedMap.get(data.getAssessmentGrading().getAssessmentGradingId());
 		  if (studentResponseList==null) {
 			  studentResponseList = new ArrayList();
 		  }
 		  studentResponseList.add(data);
-		  numStudentRespondedMap.put(data.getAssessmentGradingId(), studentResponseList);
+		  numStudentRespondedMap.put(data.getAssessmentGrading().getAssessmentGradingId(), studentResponseList);
 		  qbean.addStudentResponded(data.getAgentId());
 	  }
 

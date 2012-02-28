@@ -200,7 +200,7 @@ private static Log log = LogFactory.getLog(DownloadAllMediaServlet.class);
 		  mediaData = (MediaIfc) mediaList.get(i);
 		  itemGradingData = (ItemGradingData) mediaData.getItemGradingData();
 		  agentId = itemGradingData.getAgentId();
-		  assessmentGradingId = itemGradingData.getAssessmentGradingId();
+		  assessmentGradingId = itemGradingData.getAssessmentGrading().getAssessmentGradingId();
 		  log.debug("agentId = " + agentId);
 		  log.debug("assessmentGradingId = " + assessmentGradingId);
 		  if (!userIdMap.containsKey(agentId)) {
@@ -430,7 +430,7 @@ private static Log log = LogFactory.getLog(DownloadAllMediaServlet.class);
 	  StringBuilder filename = new StringBuilder();
 	  ItemGradingData itemGradingData = (ItemGradingData) mediaData.getItemGradingData();
 	  if (anonymous) {
-		  Long assessmentGradingId = itemGradingData.getAssessmentGradingId();
+		  Long assessmentGradingId = itemGradingData.getAssessmentGrading().getAssessmentGradingId();
 		  log.debug("submissionId(assessmentGradingId) = " + assessmentGradingId);
 		  filename.append(assessmentGradingId);
 		  filename.append("_");
