@@ -2850,10 +2850,8 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    HashMap sectionSetMap = new HashMap();
 	    HashMap gradebookMap = new HashMap();
 	    HashMap studentUidsToScores = new HashMap();
-	    ArrayList toGradebookAssessmentsList = new ArrayList();
-	    
+	        
 	    // SAM-1088 getting the assessment so we can check to see if last user attempt was after due date
-	    PublishedAssessmentService assessmentService = new PublishedAssessmentService();
 	    PublishedAssessmentFacade assessment = null;
 	    while (iter.hasNext()) {
 	    	AssessmentGradingData adata = (AssessmentGradingData) iter.next();
