@@ -113,14 +113,16 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   private UserDirectoryService userDirectoryService;
   public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
 	this.userDirectoryService = userDirectoryService;
-}
+  }
 
-private Cache assesmentGradingDataCache;
-  
+  private Cache assesmentGradingDataCache;
+  private Cache itemGradingSetCache;
+
   public void init() {
 	  log.info("init()");
 	  
 	  assesmentGradingDataCache =  memoryService.newCache("memory.org.sakaiproject.samigo.assemesment.facade.AssessmentGradingFacadeQueries.assesmentGradingDataCache");
+	  itemGradingSetCache = memoryService.newCache("memory.org.sakaiproject.samigo.assemesment.facade.AssessmentGradingFacadeQueries.itemGradingSetCache");
   }
 
   public List getTotalScores(final String publishedId, String which) {
@@ -966,6 +968,8 @@ private Cache assesmentGradingDataCache;
         retryCount = 0;
         //expire the parent object from the cache
         assesmentGradingDataCache.remove(item.getAssessmentGrading().getAssessmentGradingId());
+        //expire the set from the cache
+        itemGradingSetCache.remove(item.getAssessmentGrading().getAssessmentGradingId());
       }
       catch (Exception e) {
         log.warn("problem saving itemGrading: "+e.getMessage());
@@ -987,6 +991,8 @@ private Cache assesmentGradingDataCache;
         retryCount = 0;
         //remove any cached entries
         assesmentGradingDataCache.remove(assessment.getAssessmentGradingId());
+        //also clear the cache of child objects as these may have changes
+        itemGradingSetCache.remove(assessment.getAssessmentGradingId());
       }
       catch (Exception e) {
         log.warn("problem inserting/updating assessmentGrading: "+e.getMessage());
@@ -1410,7 +1416,11 @@ private Cache assesmentGradingDataCache;
 
   public Set getItemGradingSet(final Long assessmentGradingId){
     final String query = "from ItemGradingData i where i.assessmentGrading=?";
-    //TODO this needs to be cached - on of the highest queries
+    //This needs to be cached - on of the highest queries
+    if (itemGradingSetCache.containsKey(assessmentGradingId)) {
+    	return (Set)itemGradingSetCache.get(assessmentGradingId);
+    }
+    
     final HibernateCallback hcb = new HibernateCallback(){
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {
     		Query q = session.createQuery(query);
@@ -1419,14 +1429,12 @@ private Cache assesmentGradingDataCache;
     	};
     };
     List itemGradings = getHibernateTemplate().executeFind(hcb);
-
-//    List itemGradings = getHibernateTemplate().find(query,
-//                                                    new Object[] { assessmentGradingId },
-//                                                    new org.hibernate.type.Type[] { Hibernate.LONG });
     HashSet s = new HashSet();
     for (int i=0; i<itemGradings.size();i++){
       s.add(itemGradings.get(i));
     }
+    itemGradingSetCache.put(assessmentGradingId, s);
+    
     return s;
   }
 
