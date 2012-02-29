@@ -1566,7 +1566,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			// given user.
 			if (!a.getPublishedAssessmentId().equals(current)) {
 				current = a.getPublishedAssessmentId();
-				AssessmentGradingFacade f = new AssessmentGradingFacade(a);
+				AssessmentGradingData f = a;
 				assessmentList.add(f);
 			}
 		}
@@ -2227,9 +2227,9 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			
 			if (EvaluationModelIfc.LAST_SCORE.equals(scoringOption)) {
 				if (!a.getPublishedAssessmentId().equals(currentid) || allAssessments) {
-					AssessmentGradingFacade f = new AssessmentGradingFacade(a);
+					AssessmentGradingData f = a;
 					if (!a.getPublishedAssessmentId().equals(currentid)) {
-						f.setIsRecorded(true);
+						f.setRecorded(true);
 					}
 					assessmentList.add(f);
 					currentid = a.getPublishedAssessmentId();
@@ -2272,9 +2272,9 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			
 			if (multiSubmissionAllowed && (EvaluationModelIfc.HIGHEST_SCORE.equals(scoringOption))) {
 				if (!a.getPublishedAssessmentId().equals(currentid) || allAssessments) {
-					AssessmentGradingFacade f = new AssessmentGradingFacade(a);
+					AssessmentGradingData f = a;
 					if (!a.getPublishedAssessmentId().equals(currentid)) {
-						f.setIsRecorded(true);
+						f.setRecorded(true);
 					}
 					assessmentList.add(f);
 					currentid = a.getPublishedAssessmentId();
@@ -2282,7 +2282,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			}
 
 			if (EvaluationModelIfc.AVERAGE_SCORE.equals(scoringOption)) {
-				AssessmentGradingFacade f = new AssessmentGradingFacade(a);
+				AssessmentGradingData f = a;
 				assessmentList.add(f);
 			}
 

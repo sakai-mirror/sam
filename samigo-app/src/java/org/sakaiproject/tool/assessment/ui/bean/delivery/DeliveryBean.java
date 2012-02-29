@@ -67,7 +67,6 @@ import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.MediaData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentBaseIfc;
-import org.sakaiproject.tool.assessment.data.ifc.grading.AssessmentGradingIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
@@ -3101,7 +3100,7 @@ public class DeliveryBean
 		  return false;
 	  }
 	  Integer status = adata.getStatus();
-	  if (status.equals(AssessmentGradingIfc.ASSESSMENT_UPDATED_NEED_RESUBMIT)) {
+	  if (status.equals(AssessmentGradingData.ASSESSMENT_UPDATED_NEED_RESUBMIT)) {
 		  return true;
 	  }
 	  return false;

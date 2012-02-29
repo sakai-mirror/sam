@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 
 public interface ItemGradingIfc
@@ -35,9 +36,9 @@ public interface ItemGradingIfc
 
   void setItemGradingId(Long itemGradingId);
 
-  public AssessmentGradingIfc getAssessmentGrading();
+  public AssessmentGradingData getAssessmentGrading();
   
-  public void setAssessmentGrading(AssessmentGradingIfc assessmentGrading);
+  public void setAssessmentGrading(AssessmentGradingData assessmentGrading);
 
   
 

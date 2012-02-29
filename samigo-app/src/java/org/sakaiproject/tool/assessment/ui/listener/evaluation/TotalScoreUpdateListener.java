@@ -42,7 +42,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
-import org.sakaiproject.tool.assessment.data.ifc.grading.AssessmentGradingIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.services.GradebookServiceException;
 import org.sakaiproject.tool.assessment.services.GradingService;
@@ -89,7 +88,7 @@ public class TotalScoreUpdateListener
   private HashMap prepareAssessmentGradingHash(ArrayList assessmentGradingList){
     HashMap map = new HashMap();
     for (int i=0; i<assessmentGradingList.size(); i++){
-      AssessmentGradingIfc a = (AssessmentGradingIfc)assessmentGradingList.get(i);
+      AssessmentGradingData a = (AssessmentGradingData)assessmentGradingList.get(i);
       map.put(a.getAssessmentGradingId(), a);
     }
     return map;
@@ -290,7 +289,7 @@ public class TotalScoreUpdateListener
     Boolean newIsLate = agentResults.getIsLate(); // if the duedate were postpond, we need to adjust this
     // we will check if there is change of grade. if so, add up new score
     // else skip
-    AssessmentGradingIfc old = (AssessmentGradingIfc)map.get(agentResults.getAssessmentGradingId());
+    AssessmentGradingData old = (AssessmentGradingData)map.get(agentResults.getAssessmentGradingId());
     if (old != null){
         if (agentResults.getTotalOverrideScore()!=null && !("").equals(agentResults.getTotalOverrideScore())){
         	try{

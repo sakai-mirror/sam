@@ -61,7 +61,7 @@
     <property name="lastVisitedPart" type="integer" column="LASTVISITEDPART" not-null="false"/>
     <property name="lastVisitedQuestion" type="integer" column="LASTVISITEDQUESTION" not-null="false"/>
     <set name="itemGradingSet" table="SAM_ITEMGRADING_T" cascade="all" order-by="itemGradingId asc"
-      inverse="true" lazy="true">
+      inverse="true" lazy="false">
       <key column="ASSESSMENTGRADINGID"/>
       <one-to-many class="org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData"/>
     </set>

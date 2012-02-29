@@ -53,7 +53,6 @@ import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AssessmentAccessControlIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.EvaluationModelIfc;
-import org.sakaiproject.tool.assessment.data.ifc.grading.AssessmentGradingIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.PublishedAssessmentFacade;
@@ -660,7 +659,7 @@ log.debug("totallistener: firstItem = " + bean.getFirstItem());
         // The mock up has been updated. For a late submission, the "LATE" will be displayed
         // under Submission Date column instead of Status column. Therefore, we will not treat
         // LATE_SUBMISSION as a status. Comment out the following line for this reason.
-        //results.setStatus(AssessmentGradingIfc.LATE_SUBMISSION);
+        //results.setStatus(AssessmentGradingData.LATE_SUBMISSION);
       }
       
       if (gdata.getIsAutoSubmitted() != null && gdata.getIsAutoSubmitted().equals(Boolean.TRUE)) {
@@ -858,7 +857,7 @@ log.debug("totallistener: firstItem = " + bean.getFirstItem());
       results.setSubmittedDate(null);
       results.setFinalScore("-");
       results.setComments("");
-      results.setStatus(AssessmentGradingIfc.NO_SUBMISSION);  //  no submission
+      results.setStatus(AssessmentGradingData.NO_SUBMISSION);  //  no submission
       agents.add(results);
     }
   }
