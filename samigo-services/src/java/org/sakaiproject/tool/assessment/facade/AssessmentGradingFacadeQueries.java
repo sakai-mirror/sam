@@ -1448,7 +1448,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
     final String query = "select new ItemGradingData(i.itemGradingId, a.assessmentGradingId) "+
                    " from ItemGradingData i, AssessmentGradingData a "+
-                   " where i.assessmentGradingId=a.assessmentGradingId "+
+                   " where i.assessmentGrading=a.assessmentGradingId "+
                    " and a.publishedAssessmentId=?";
 
     final HibernateCallback hcb = new HibernateCallback(){
@@ -1601,7 +1601,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    final HibernateCallback hcb = new HibernateCallback(){
 	    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
 	    		Query q = session.createQuery("select i.publishedItemId from "+
-	    		         " ItemGradingData i where i.assessmentGradingId=?");
+	    		         " ItemGradingData i where i.assessmentGrading=?");
 	    		q.setLong(0, assessmentGradingId.longValue());
 	    		return q.list();
 	    	};
