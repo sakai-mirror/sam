@@ -357,7 +357,13 @@ public class DeliveryActionListener
                   }
                   delivery.setAssessmentGrading(ag);
               }
-              log.debug("**** DeliveryAction, itemgrading size="+ag.getItemGradingSet().size());
+              if (log.isDebugEnabled()) {
+            	  Integer setSize = 0; 
+            	  if (ag.getItemGradingSet() != null) {
+            		  setSize = ag.getItemGradingSet().size();
+            	  }
+            	  log.debug("**** DeliveryAction, itemgrading size="+ setSize);
+              }
               delivery.setAssessmentGradingId(delivery.getAssessmentGrading().getAssessmentGradingId());
               
               // ag can't be null beyond this point and must have persisted to DB
