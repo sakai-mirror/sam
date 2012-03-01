@@ -26,11 +26,10 @@ package org.sakaiproject.tool.assessment.shared.api.grading;
 
 import java.util.List;
 import java.util.Map;
-//import java.util.HashMap;
 
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
+import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.PublishedAssessmentIfc;
-import org.sakaiproject.tool.assessment.data.ifc.grading.ItemGradingIfc;
 import org.sakaiproject.tool.assessment.data.ifc.grading.MediaIfc;
 
 /**
@@ -68,7 +67,7 @@ public interface GradingServiceAPI
    */
   public Map getItemScores(Long publishedId, Long itemId, String which);
   /**
-   * Get the last set of ItemGradingIfc for a student per assessment
+   * Get the last set of ItemGradingData for a student per assessment
    */
   public Map getLastItemGrading(String publishedId, String agentId);
 
@@ -135,7 +134,7 @@ public interface GradingServiceAPI
    * @param i
    * @return
    */
-  public List getMediaArray(ItemGradingIfc i);
+  public List getMediaArray(ItemGradingData i);
 
   /**
    *
@@ -143,7 +142,7 @@ public interface GradingServiceAPI
    * @param agentId
    * @return
    */
-  public ItemGradingIfc getLastItemGradingByAgent(String publishedItemId, String agentId);
+  public ItemGradingData getLastItemGradingByAgent(String publishedItemId, String agentId);
 
   /**
    *
@@ -151,7 +150,7 @@ public interface GradingServiceAPI
    * @param publishedItemId
    * @return
    */
-  public ItemGradingIfc getItemGrading(String assessmentGradingId, String publishedItemId);
+  public ItemGradingData getItemGrading(String assessmentGradingId, String publishedItemId);
 
   /**
    * Load assessment grading information.
@@ -172,7 +171,7 @@ public interface GradingServiceAPI
    * Save item grading information.
    * @param item
    */
-  public void saveItemGrading(ItemGradingIfc item);
+  public void saveItemGrading(ItemGradingData item);
 
   /**
    *

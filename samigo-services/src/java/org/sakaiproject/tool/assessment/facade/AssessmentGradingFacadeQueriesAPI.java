@@ -31,11 +31,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
+import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingAttachment;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.MediaData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.PublishedAssessmentIfc;
-import org.sakaiproject.tool.assessment.data.ifc.grading.ItemGradingAttachmentIfc;
-import org.sakaiproject.tool.assessment.data.ifc.grading.ItemGradingIfc;
 import org.sakaiproject.tool.assessment.data.ifc.grading.StudentGradingSummaryIfc;
 
 public interface AssessmentGradingFacadeQueriesAPI
@@ -156,7 +155,7 @@ public interface AssessmentGradingFacadeQueriesAPI
    * Save a specific item grading object
    * @param item the item to save
    */
-  public void saveItemGrading(ItemGradingIfc item);
+  public void saveItemGrading(ItemGradingData item);
 
   public void saveOrUpdateAssessmentGrading(AssessmentGradingData assessment);
 
@@ -239,7 +238,7 @@ public interface AssessmentGradingFacadeQueriesAPI
   
   public void autoSubmitAssessments();
   
-  public ItemGradingAttachmentIfc createItemGradingtAttachment(ItemGradingIfc itemGrading, String resourceId, String filename, String protocol);
+  public ItemGradingAttachment createItemGradingtAttachment(ItemGradingData itemGrading, String resourceId, String filename, String protocol);
   
   public void removeItemGradingAttachment(Long attachmentId);
   

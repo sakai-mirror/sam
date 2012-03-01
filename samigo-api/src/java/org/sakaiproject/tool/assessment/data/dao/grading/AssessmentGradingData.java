@@ -62,29 +62,29 @@ public class AssessmentGradingData
 
   private static final long serialVersionUID = 7526471155622776147L;
 
-  private Long assessmentGradingId;
-  private String agentId;
+  private Long assessmentGradingId = null;
+  private String agentId = null;
     //private PublishedAssessmentIfc publishedAssessment;
-  private Date submittedDate;
-  private Boolean isLate;
-  private Boolean forGrade;
-  private Float totalAutoScore;
-  private Float totalOverrideScore;
-  private Float finalScore; // final total score
-  private String comments;
-  private Integer status;
-  private String gradedBy;
-  private Date gradedDate;
-  private Set itemGradingSet = new HashSet();
-  private Date attemptDate;
-  private Integer timeElapsed;
-  private int totalSubmitted;
-  private Long publishedAssessmentId;
-  private String publishedAssessmentTitle;
-  private Boolean isAutoSubmitted;
-  private Integer lastVisitedPart = 0;
-  private Integer lastVisitedQuestion = 0;
-  private boolean isRecorded;
+  private Date submittedDate = null;
+  private Boolean isLate = null;
+  private Boolean forGrade = null;
+  private Float totalAutoScore = null;
+  private Float totalOverrideScore = null;
+  private Float finalScore = null; // final total score
+  private String comments = null;
+  private Integer status = null;
+  private String gradedBy = null;
+  private Date gradedDate = null;
+  private Set itemGradingSet =  null;
+  private Date attemptDate = null;
+  private Integer timeElapsed = null;
+  private Integer totalSubmitted = null;
+  private Long publishedAssessmentId = null;
+  private String publishedAssessmentTitle = null;
+  private Boolean isAutoSubmitted = null;
+  private Integer lastVisitedPart =  null;
+  private Integer lastVisitedQuestion = null;
+  private Boolean isRecorded  = null;
   
   
   public AssessmentGradingData() {
@@ -115,6 +115,7 @@ public class AssessmentGradingData
     this.attemptDate = attemptDate;
     this.timeElapsed = timeElapsed;
     this.isAutoSubmitted = isAutoSubmitted;
+    this.isRecorded = false;
   }
 
   public AssessmentGradingData(Long assessmentGradingId,
@@ -149,21 +150,23 @@ public class AssessmentGradingData
 	  this.gradedDate = gradedDate;
 	  this.attemptDate = attemptDate;
 	  this.timeElapsed = timeElapsed;
+	  this.isRecorded = false;
   }
   
   public AssessmentGradingData(Long publishedAssessmentId, int totalSubmitted){
 	  this.publishedAssessmentId = publishedAssessmentId;
 	  this.totalSubmitted = totalSubmitted;
+	  this.isRecorded = false;
   }
 
   
 
-  public boolean isRecorded() {
+  public Boolean isRecorded() {
 	  return isRecorded;
   }
 
 
-  public void setRecorded(boolean isRecorded) {
+  public void setRecorded(Boolean isRecorded) {
 	  this.isRecorded = isRecorded;
   }
 
@@ -402,6 +405,8 @@ public int hashCode() {
 			+ ((isAutoSubmitted == null) ? 0 : isAutoSubmitted.hashCode());
 	result = prime * result + ((isLate == null) ? 0 : isLate.hashCode());
 	result = prime * result
+			+ ((isRecorded == null) ? 0 : isRecorded.hashCode());
+	result = prime * result
 			+ ((lastVisitedPart == null) ? 0 : lastVisitedPart.hashCode());
 	result = prime
 			* result
@@ -427,7 +432,8 @@ public int hashCode() {
 	result = prime
 			* result
 			+ ((totalOverrideScore == null) ? 0 : totalOverrideScore.hashCode());
-	result = prime * result + totalSubmitted;
+	result = prime * result
+			+ ((totalSubmitted == null) ? 0 : totalSubmitted.hashCode());
 	return result;
 }
 
@@ -490,6 +496,11 @@ public boolean equals(Object obj) {
 			return false;
 	} else if (!isLate.equals(other.isLate))
 		return false;
+	if (isRecorded == null) {
+		if (other.isRecorded != null)
+			return false;
+	} else if (!isRecorded.equals(other.isRecorded))
+		return false;
 	if (lastVisitedPart == null) {
 		if (other.lastVisitedPart != null)
 			return false;
@@ -540,7 +551,10 @@ public boolean equals(Object obj) {
 			return false;
 	} else if (!totalOverrideScore.equals(other.totalOverrideScore))
 		return false;
-	if (totalSubmitted != other.totalSubmitted)
+	if (totalSubmitted == null) {
+		if (other.totalSubmitted != null)
+			return false;
+	} else if (!totalSubmitted.equals(other.totalSubmitted))
 		return false;
 	return true;
 }

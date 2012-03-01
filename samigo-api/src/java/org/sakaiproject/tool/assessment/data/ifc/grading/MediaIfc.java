@@ -26,6 +26,8 @@ package org.sakaiproject.tool.assessment.data.ifc.grading;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
+
 public interface MediaIfc
     extends Serializable{
 
@@ -33,9 +35,9 @@ public interface MediaIfc
 
   void setMediaId(Long mediaId);
 
-  ItemGradingIfc getItemGradingData();
+  ItemGradingData getItemGradingData();
 
-  void setItemGradingData(ItemGradingIfc itemGradingData);
+  void setItemGradingData(ItemGradingData itemGradingData);
 
   byte[] getMedia();
 

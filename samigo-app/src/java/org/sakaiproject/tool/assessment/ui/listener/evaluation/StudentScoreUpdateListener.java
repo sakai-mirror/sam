@@ -41,8 +41,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.event.cover.EventTrackingService;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
+import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingAttachment;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
-import org.sakaiproject.tool.assessment.data.ifc.grading.ItemGradingAttachmentIfc;
 import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.services.GradebookServiceException;
 import org.sakaiproject.tool.assessment.services.GradingService;
@@ -291,7 +291,7 @@ public class StudentScoreUpdateListener
     				
     				HashMap map = getAttachmentIdHash(oldList);
     				for (int i=0; i<newList.size(); i++){
-    					ItemGradingAttachmentIfc itemGradingAttachment = (ItemGradingAttachmentIfc) newList.get(i);
+    					ItemGradingAttachment itemGradingAttachment = (ItemGradingAttachment) newList.get(i);
     					if (map.get(itemGradingAttachment.getAttachmentId()) != null){
     						// exist already, remove it from map
     						map.remove(itemGradingAttachment.getAttachmentId());
@@ -328,7 +328,7 @@ public class StudentScoreUpdateListener
     private HashMap getAttachmentIdHash(List list){
     	HashMap map = new HashMap();
     	for (int i=0; i<list.size(); i++){
-    		ItemGradingAttachmentIfc a = (ItemGradingAttachmentIfc)list.get(i);
+    		ItemGradingAttachment a = (ItemGradingAttachment)list.get(i);
     		map.put(a.getAttachmentId(), a);
     	}
     	return map;
