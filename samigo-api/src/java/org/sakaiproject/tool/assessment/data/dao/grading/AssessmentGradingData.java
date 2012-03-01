@@ -92,7 +92,7 @@ public class AssessmentGradingData
   private Integer status = null;
   private String gradedBy = null;
   private Date gradedDate = null;
-  private Set itemGradingSet =  null;
+  private Set<ItemGradingData> itemGradingSet =  null;
   private Date attemptDate = null;
   private Integer timeElapsed = null;
   private Integer totalSubmitted = null;
@@ -315,11 +315,15 @@ public class AssessmentGradingData
     this.status = status;
   }
 
-  public Set getItemGradingSet() {
+  /**
+   * 
+   * @return the set of {@link ItemGradingData} objects or null if none
+   */
+  public Set<ItemGradingData> getItemGradingSet() {
     return itemGradingSet;
   }
 
-  public void setItemGradingSet(Set itemGradingSet) {
+  public void setItemGradingSet(Set<ItemGradingData> itemGradingSet) {
     this.itemGradingSet = itemGradingSet;
   }
 
