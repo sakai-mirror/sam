@@ -30,19 +30,17 @@ import java.util.Set;
 
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
 
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
 
+/**
+ * The response and grading information for a particular quizz item
+ * 
+ *
+ */
 public class ItemGradingData
 implements java.io.Serializable {
 
 	private static final long serialVersionUID = 7526471155622776147L;
+	
 	private Long itemGradingId = null;
 	private AssessmentGradingData assessmentGrading = null;
 	private Long publishedItemId = null;

@@ -22,18 +22,16 @@
 package org.sakaiproject.tool.assessment.data.dao.grading;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2004</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
- */
 
+/**
+ * The response and grading data for a particular quizz.
+ * 
+ * Typically this will contain a students responses for a particulart quizz.
+ * 
+ *
+ */
 public class AssessmentGradingData
     implements java.io.Serializable
 // need to implement org.osid.assessment.ItemTaken in the future
@@ -43,20 +41,39 @@ public class AssessmentGradingData
 	
 	
 	// status = 0: begin a new assessment
-	// status = 1: submit but not grade yet
-	// status = 2: grader has went to total score page and graded + AUTO_GRADED
-	// status = 3: grader has went to total score page and graded + at least one question NEED_HUMAN_ATTENTION
-	// status = 4: the assessment has be republished. This assessment has been submitted. Therefore, this it needs to be resubmit
-	// status = 5: there is no submission but grader update something in the score page
-	// status = 6: the assessment has be republished. This assessment has begun but not yet been submitted (saved/in progress). Therefore, just warn the student about the update ("resubmit" is not applicable here).
+	
 
     // Because of SAK-16456, we no longer need to show the auto/human graded status per submission, I don't think we 
 	// need to distinguish status 2 and 3 anymore. But I just leave them here...
+	
+	
+	/**
+	 * status = 1: submit but not grade yet
+	 */
 	public static final Integer SUBMITTED = Integer.valueOf(1);
+	/**
+	 * status = 2: grader has went to total score page and graded + AUTO_GRADED
+	 */
 	public static final Integer AUTO_GRADED = Integer.valueOf(2);
+	
+	/**
+	 * status = 3: grader has went to total score page and graded + at least one question NEED_HUMAN_ATTENTION
+	 */
 	public static final Integer NEED_HUMAN_ATTENTION = Integer.valueOf(3);
+	
+	/**
+	 * status = 4: the assessment has be republished. This assessment has been submitted. Therefore, this it needs to be resubmit
+	 */
 	public static final Integer ASSESSMENT_UPDATED_NEED_RESUBMIT = Integer.valueOf(4);
+	
+	/**
+	 * status = 5: there is no submission but grader update something in the score page
+	 */
 	public static final Integer NO_SUBMISSION = Integer.valueOf(5);
+	
+	/**
+	 *  status = 6: the assessment has be republished. This assessment has begun but not yet been submitted (saved/in progress). Therefore, just warn the student about the update ("resubmit" is not applicable here).
+	 */
 	public static final Integer ASSESSMENT_UPDATED = Integer.valueOf(6);	
 	
 
