@@ -891,6 +891,7 @@ public class DeliveryBean
    */
   public SettingsDeliveryBean getSettings()
   {
+    /*
     // SAM-1438 - We occasionally see the settings bean as null during
     // submission, within a JSF phase of deliverAssessment.jsp but it is
     // generally not reproducible. This block protects against the bug
@@ -923,7 +924,7 @@ public class DeliveryBean
       log.warn(sb.toString());
       return tempSettings;
     }
-
+    */ 
     return settings;
   }
 
