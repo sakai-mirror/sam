@@ -77,6 +77,7 @@ import org.sakaiproject.tool.assessment.shared.api.assessment.SecureDeliveryServ
 import org.sakaiproject.tool.assessment.shared.api.assessment.SecureDeliveryServiceAPI.PhaseStatus;
 import org.sakaiproject.tool.assessment.ui.bean.shared.PersonBean;
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
+import org.sakaiproject.tool.assessment.ui.listener.delivery.BeginDeliveryActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.delivery.DeliveryActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.delivery.LinearAccessDeliveryActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.delivery.SubmitToGradingActionListener;
@@ -926,7 +927,6 @@ public class DeliveryBean
    */
   public SettingsDeliveryBean getSettings()
   {
-    /*  
     // SAM-1438 - We occasionally see the settings bean as null during
     // submission, within a JSF phase of deliverAssessment.jsp but it is
     // generally not reproducible. This block protects against the bug
@@ -947,7 +947,7 @@ public class DeliveryBean
         sb.append("         - Session is null. Cannot determine user.\n");
       }
       sb.append("         - Published Assessment ID: ");
-      SettingsDeliveryBean tempSettings = new SettingsDeliveryBean();
+      
       if (publishedAssessment == null) {
         sb.append("<null>\n");
       }
@@ -955,12 +955,11 @@ public class DeliveryBean
         sb.append(publishedAssessment.getPublishedAssessmentId()).append("\n");
         sb.append("         - Assessment Title       : ").append(publishedAssessment.getTitle()).append("\n");
         sb.append("         - Assessment Site ID     : ").append(publishedAssessment.getOwnerSiteId());
-        tempSettings.setAssessmentAccessControl(publishedAssessment);
+        BeginDeliveryActionListener listener = new BeginDeliveryActionListener();
+        listener.populateBeanFromPub(this, publishedAssessment);
       }
       log.warn(sb.toString());
-      return tempSettings;
     }
-    */	
     return settings;
   }
 
