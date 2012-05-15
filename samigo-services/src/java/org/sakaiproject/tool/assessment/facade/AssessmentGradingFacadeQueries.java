@@ -862,7 +862,18 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   public AssessmentGradingData load(Long id) {
     AssessmentGradingData gdata = (AssessmentGradingData) getHibernateTemplate().load(AssessmentGradingData.class, id);
     //This is unnecessary as these objects aren't lazy loaded -DH
-    gdata.setItemGradingSet(getItemGradingSet(gdata.getAssessmentGradingId()));
+    Set<ItemGradingData> itemGradingSet = getItemGradingSet(gdata.getAssessmentGradingId());
+	gdata.setItemGradingSet(itemGradingSet);
+    //this is lazy loaded so we may need to explicitly load
+    Iterator<ItemGradingData> iter = itemGradingSet.iterator();
+	while (iter.hasNext()) {
+    	ItemGradingData data = iter.next();
+    	if (data.getHasAttachmentSet() != null && data.getHasAttachmentSet()) {
+    		List<ItemGradingAttachment> list = getItemGradingAttachmentSet(data.getItemGradingId());
+    		data.setItemGradingAttachmentList(list);
+    	}
+    }
+    
     return gdata;
   }
 
@@ -1401,22 +1412,13 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
     return h;
   }
 
-  public Set getItemGradingSet(final Long assessmentGradingId){
-    final String query = "from ItemGradingData i where i.assessmentGradingId=?";
+  public Set<ItemGradingData> getItemGradingSet(final Long assessmentGradingId){
 
-    final HibernateCallback hcb = new HibernateCallback(){
-    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
-    		Query q = session.createQuery(query);
-    		q.setLong(0, assessmentGradingId.longValue());
-    		return q.list();
-    	};
-    };
-    List itemGradings = getHibernateTemplate().executeFind(hcb);
-
-//    List itemGradings = getHibernateTemplate().find(query,
-//                                                    new Object[] { assessmentGradingId },
-//                                                    new org.hibernate.type.Type[] { Hibernate.LONG });
-    HashSet s = new HashSet();
+    ItemGradingData example = new ItemGradingData();
+    example.setAssessmentGradingId(assessmentGradingId);
+    List<ItemGradingData> itemGradings = getHibernateTemplate().findByExample(example);
+    //we need to turn this to a set
+    Set<ItemGradingData> s = new HashSet<ItemGradingData>();
     for (int i=0; i<itemGradings.size();i++){
       s.add(itemGradings.get(i));
     }
@@ -3148,6 +3150,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		  itemGradingData.setPublishedItemId(publishedItemId);
 		  ItemService itemService = new ItemService();
 		  Long itemTextId = itemService.getItemTextId(publishedItemId);
+		  	  
 		  log.debug("itemTextId = " + itemTextId);
 		  itemGradingData.setPublishedItemTextId(itemTextId);
 		  //we're in the DAO su we can use the DAO method directly
@@ -3303,4 +3306,19 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		  }
 
 	  }
+
+	
+	public List<ItemGradingAttachment> getItemGradingAttachmentSet(final Long itemId) {
+		if (itemId == null) {
+			throw new IllegalArgumentException("itemId can't be null");
+		}
+		
+		ItemGradingData item = getItemGrading(itemId);
+		
+		ItemGradingAttachment example = new ItemGradingAttachment();
+		example.setItemGrading(item);
+		List<ItemGradingAttachment> itemGradingAttachments = getHibernateTemplate().findByExample(example);
+		return itemGradingAttachments;
+		
+	}
 }

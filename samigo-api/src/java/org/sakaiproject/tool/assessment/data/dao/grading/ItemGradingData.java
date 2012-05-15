@@ -56,6 +56,23 @@ public class ItemGradingData implements java.io.Serializable {
 	private String lastDuration;
 	private List mediaArray;
 	private Set<ItemGradingAttachment> itemGradingAttachmentSet;
+	private Boolean hasAttachmentSet;
+	
+	/**
+	 * Does this object have an attachment set?
+	 * @return
+	 */
+	public Boolean getHasAttachmentSet() {
+		return hasAttachmentSet;
+	}
+
+	/**
+	 * Does this object have an attachmentset?
+	 * @param hasAttachmentSet
+	 */
+	public void setHasAttachmentSet(Boolean hasAttachmentSet) {
+		this.hasAttachmentSet = hasAttachmentSet;
+	}
 
 	public ItemGradingData() {
 	}
@@ -220,8 +237,17 @@ public class ItemGradingData implements java.io.Serializable {
 	public void setItemGradingAttachmentSet(
 			Set<ItemGradingAttachment> itemGradingAttachmentSet) {
 		this.itemGradingAttachmentSet = itemGradingAttachmentSet;
+		if (this.itemGradingAttachmentSet != null && itemGradingAttachmentSet.size() > 0) {
+			this.hasAttachmentSet = true;
+		} else {
+			this.hasAttachmentSet = false;
+		}
 	}
 
+	/**
+	 * Get the list of attachments of the object
+	 * @return
+	 */
 	public List<ItemGradingAttachment> getItemGradingAttachmentList() {
 		List<ItemGradingAttachment> list = new ArrayList<ItemGradingAttachment>();
 		if (itemGradingAttachmentSet != null) {
@@ -235,12 +261,19 @@ public class ItemGradingData implements java.io.Serializable {
 		return list;
 	}
 
+	/**
+	 * Set the attachment list
+	 * @param itemGradingAttachmentList
+	 */
 	public void setItemGradingAttachmentList(
 			List<ItemGradingAttachment> itemGradingAttachmentList) {
 		Set<ItemGradingAttachment> itemGradingAttachmentSet = new HashSet<ItemGradingAttachment>(
 				itemGradingAttachmentList);
 		this.itemGradingAttachmentSet = itemGradingAttachmentSet;
 	}
+	
+	
+	
 
 	@Override
 	public int hashCode() {
@@ -267,8 +300,7 @@ public class ItemGradingData implements java.io.Serializable {
 				+ ((gradedDate == null) ? 0 : gradedDate.hashCode());
 		result = prime
 				* result
-				+ ((itemGradingAttachmentSet == null) ? 0
-						: itemGradingAttachmentSet.hashCode());
+				+ ((hasAttachmentSet == null) ? 0 : hasAttachmentSet.hashCode());
 		result = prime * result
 				+ ((itemGradingId == null) ? 0 : itemGradingId.hashCode());
 		result = prime * result
@@ -344,11 +376,10 @@ public class ItemGradingData implements java.io.Serializable {
 				return false;
 		} else if (!gradedDate.equals(other.gradedDate))
 			return false;
-		if (itemGradingAttachmentSet == null) {
-			if (other.itemGradingAttachmentSet != null)
+		if (hasAttachmentSet == null) {
+			if (other.hasAttachmentSet != null)
 				return false;
-		} else if (!itemGradingAttachmentSet
-				.equals(other.itemGradingAttachmentSet))
+		} else if (!hasAttachmentSet.equals(other.hasAttachmentSet))
 			return false;
 		if (itemGradingId == null) {
 			if (other.itemGradingId != null)

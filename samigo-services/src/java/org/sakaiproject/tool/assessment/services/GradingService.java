@@ -2679,6 +2679,12 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
 		}
 		return !hasCorrectAnswer;	  
 	}
+	
+	
+	public List<ItemGradingAttachment> getItemGradingAttachments(Long itemId) {
+		return PersistenceService.getInstance().
+        getAssessmentGradingFacadeQueries().getItemGradingAttachmentSet(itemId);
+	}
 }
 
 

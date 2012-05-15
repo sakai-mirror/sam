@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.event.AbortProcessingException;
@@ -39,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.tool.assessment.data.dao.assessment.AssessmentAccessControl;
 import org.sakaiproject.tool.assessment.data.dao.assessment.EvaluationModel;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedAnswer;
+import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingAttachment;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.data.dao.grading.MediaData;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.AnswerIfc;
@@ -509,12 +511,17 @@ public class QuestionScoreListener implements ActionListener,
 				ArrayList answerList = (ArrayList) iter.next();
 				results.setItemGradingArrayList(answerList);
 
-				Iterator iter2 = answerList.iterator();
-				ArrayList itemGradingAttachmentList = new ArrayList();
+				Iterator<ItemGradingData> iter2 = answerList.iterator();
+				List<ItemGradingAttachment> itemGradingAttachmentList = new ArrayList<ItemGradingAttachment>();
 				while (iter2.hasNext()) {
 					ItemGradingData gdata = (ItemGradingData) iter2.next();
-					results.setItemGrading(gdata);
-					itemGradingAttachmentList.addAll(gdata.getItemGradingAttachmentList());
+					//we need to explicitly fetch the attachments to avoid lazy loading errors
+					if (gdata.getHasAttachmentSet() != null && gdata.getHasAttachmentSet()) {
+						GradingService gradingService = new GradingService();
+						List<ItemGradingAttachment> attachments = gradingService.getItemGradingAttachments(gdata.getItemGradingId());
+						results.setItemGrading(gdata);
+						itemGradingAttachmentList.addAll(attachments);
+					}
 					agentResultsByItemGradingIdMap.put(gdata.getItemGradingId(), results);
 										
 					ItemTextIfc gdataPubItemText = (ItemTextIfc) publishedItemTextHash

@@ -26,12 +26,12 @@
     <property name="review" type="boolean" column="REVIEW" not-null="false" />
     <property name="attemptsRemaining" type="integer" column="ATTEMPTSREMAINING" not-null="false" />
     <property name="lastDuration" type="string" length="36" column="LASTDURATION" not-null="false" />
-
+	<property name="hasAttachmentSet" type="boolean" />
 	<set name="itemGradingAttachmentSet" table="SAM_GRADINGATTACHMENT_T" cascade="all" order-by="createdDate asc"
-        inverse="true" lazy="true">
+        inverse="false" lazy="true">
         <cache usage="read-write"/>
         <key column="ITEMGRADINGID"/>
-        <one-to-many class="org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingAttachment"/>
+        <one-to-many class="org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingAttachment" not-found="ignore"/>
     </set>
   </class>
 

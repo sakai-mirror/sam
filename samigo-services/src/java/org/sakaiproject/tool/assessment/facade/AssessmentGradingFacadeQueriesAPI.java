@@ -170,7 +170,7 @@ public interface AssessmentGradingFacadeQueriesAPI
   
   public List getHighestSubmittedOrGradedAssessmentGradingList(Long publishedAssessmentId);
   
-  public Set getItemGradingSet(Long assessmentGradingId);
+  public Set<ItemGradingData> getItemGradingSet(Long assessmentGradingId);
 
   public HashMap getAssessmentGradingByItemGradingId(Long publishedAssessmentId);
 
@@ -245,5 +245,13 @@ public interface AssessmentGradingFacadeQueriesAPI
   
   public List getHighestSubmittedAssessmentGradingList(final Long publishedAssessmentId);
   public Float getAverageSubmittedAssessmentGrading( final Long publishedAssessmentId, final String agentId);
-  public HashMap getAverageAssessmentGradingByPublishedItem(Long publishedAssessmentId);	
+  public HashMap getAverageAssessmentGradingByPublishedItem(Long publishedAssessmentId);
+  
+  
+  /**
+	 * Get the GradingAttachmentSet for an item
+	 * @param itemId
+	 * @return
+	 */
+	public List<ItemGradingAttachment> getItemGradingAttachmentSet(final Long itemId);
 }

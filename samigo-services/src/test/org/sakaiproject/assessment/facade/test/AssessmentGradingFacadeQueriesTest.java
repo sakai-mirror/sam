@@ -22,10 +22,13 @@
 
 package org.sakaiproject.assessment.facade.test;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.sakaiproject.tool.assessment.data.dao.grading.AssessmentGradingData;
+import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingAttachment;
 import org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingData;
 import org.sakaiproject.tool.assessment.facade.AssessmentGradingFacadeQueries;
 import org.sakaiproject.tool.assessment.services.PersistenceHelper;
@@ -33,6 +36,8 @@ import org.springframework.test.AbstractTransactionalSpringContextTests;
 
 public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpringContextTests {
 	
+	private static final String AGENT_ID = "agent";
+
 	protected String[] getConfigLocations() {
 		return new String[] {"/spring-hibernate.xml"};
 	}
@@ -40,6 +45,7 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 	/** our query object */
 	AssessmentGradingFacadeQueries queries = null;
 	Long savedId = null;
+	Long item1Id = null;
 		
 	protected void onSetUpInTransaction() throws Exception {
 		queries = new AssessmentGradingFacadeQueries();
@@ -50,7 +56,7 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		persistenceHelper.setRetryCount(5);
 		queries.setPersistenceHelper(persistenceHelper);
 		
-		
+		loadData();
 
 	}
 	
@@ -73,7 +79,7 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		*/
 		
 		data.setPublishedAssessmentId(Long.valueOf(1));
-		data.setAgentId("agent");
+		data.setAgentId(AGENT_ID);
 		data.setIsLate(false);
 		data.setForGrade(false);
 		data.setStatus(Integer.valueOf(0));
@@ -125,11 +131,24 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		
 		List<AssessmentGradingData> subs = queries.getAllSubmissions("1");
 		assertNotNull(subs);
-		assertEquals(2, subs.size());
+		assertEquals(4, subs.size());
 		
 		
 	}
 
+	
+	public void testGetAttachements() {
+		
+		ItemGradingData item1 = queries.getItemGrading(item1Id);
+		assertTrue(item1.getHasAttachmentSet());
+		
+		List<ItemGradingAttachment> attachments = queries.getItemGradingAttachmentSet(item1Id);
+		assertNotNull(attachments);
+		
+		//assertEquals(2, attachments.size());
+		
+	}
+	
 	/**
 	 * Load some test data
 	 */
@@ -137,11 +156,14 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		//set up some data
 		AssessmentGradingData data = new AssessmentGradingData();
 		data.setPublishedAssessmentId(Long.valueOf(1));
-		data.setAgentId("agent");
+		data.setAgentId(AGENT_ID);
 		data.setIsLate(false);
 		data.setForGrade(false);
 		data.setStatus(Integer.valueOf(0));
+		
 		queries.saveOrUpdateAssessmentGrading(data);
+		
+		
 		
 		
 		AssessmentGradingData data2 = new AssessmentGradingData();
@@ -168,7 +190,25 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		item1.setPublishedItemId(1L);
 		item1.setPublishedItemTextId(1L);
 		
+		ItemGradingAttachment at1 = new ItemGradingAttachment();
+		at1.setStatus(0);
+		at1.setCreatedBy(AGENT_ID);
+		at1.setCreatedDate(new Date());
+		at1.setLastModifiedBy(AGENT_ID);
+		at1.setLastModifiedDate(new Date());
 		
+		ItemGradingAttachment at2 = new ItemGradingAttachment();
+		at2.setStatus(0);
+		at2.setCreatedBy(AGENT_ID);
+		at2.setCreatedDate(new Date());
+		at2.setLastModifiedBy(AGENT_ID);
+		at2.setLastModifiedDate(new Date());
+		
+		
+		List<ItemGradingAttachment> list = new ArrayList<ItemGradingAttachment>();
+		list.add(at1);
+		list.add(at2);
+		item1.setItemGradingAttachmentList(list);
 		
 		ItemGradingData item2 = new ItemGradingData();
 		item2.setAgentId(data.getAgentId());
@@ -179,10 +219,12 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		
 		data.getItemGradingSet().add(item2);
 		data.getItemGradingSet().add(item1);
-		
+		queries.saveItemGrading(item1);
+		queries.saveItemGrading(item2);
 		queries.saveOrUpdateAssessmentGrading(data);
 		
 		savedId = data.getAssessmentGradingId();
+		item1Id = item1.getItemGradingId();
 		
 	}
 	
