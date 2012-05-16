@@ -237,6 +237,13 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		at2.setLastModifiedBy(AGENT_ID);
 		at2.setLastModifiedDate(new Date());
 		
+		ItemGradingAttachment at3 = new ItemGradingAttachment();
+		at3.setStatus(0);
+		at3.setCreatedBy(AGENT_ID);
+		at3.setCreatedDate(new Date());
+		at3.setLastModifiedBy(AGENT_ID);
+		at3.setLastModifiedDate(new Date());
+		at3.setFilename("FILENAME1");
 		
 		
 		List<ItemGradingAttachment> list = new ArrayList<ItemGradingAttachment>();
@@ -244,12 +251,15 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		list.add(at2);
 		item1.setItemGradingAttachmentList(list);
 		
+		List<ItemGradingAttachment> list2 = new ArrayList<ItemGradingAttachment>();
+		list2.add(at3);
+		
 		ItemGradingData item2 = new ItemGradingData();
 		item2.setAgentId(data.getAgentId());
 		item2.setAssessmentGradingId(data.getAssessmentGradingId());
 		item2.setPublishedItemId(2L);
 		item2.setPublishedItemTextId(2L);
-		
+		item2.setItemGradingAttachmentList(list2);
 		
 		data.getItemGradingSet().add(item2);
 		data.getItemGradingSet().add(item1);

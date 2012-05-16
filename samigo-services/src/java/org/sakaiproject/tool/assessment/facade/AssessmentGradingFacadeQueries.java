@@ -51,12 +51,15 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.entity.api.ResourceProperties;
+import org.sakaiproject.entitybroker.entityprovider.search.Restriction;
 import org.sakaiproject.event.cover.EventTrackingService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.PermissionException;
@@ -3350,15 +3353,22 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
 	
 	public List<ItemGradingAttachment> getItemGradingAttachmentSet(final Long itemId) {
+		log.debug("getItemGradingAttachmentSet(" + itemId);
 		if (itemId == null) {
 			throw new IllegalArgumentException("itemId can't be null");
 		}
+		final String query = "from GradingAttachmentData where ITEMGRADINGID = ?";
 		
-		ItemGradingData item = getItemGrading(itemId);
-		
-		ItemGradingAttachment example = new ItemGradingAttachment();
-		example.setItemGrading(item);
-		List<ItemGradingAttachment> itemGradingAttachments = getHibernateTemplate().findByExample(example);
+			 final HibernateCallback hcb = new HibernateCallback(){
+			  public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				  Query q = session.createQuery(query);
+				  q.setLong(0, itemId);
+				  return q.list();
+			  };
+		  };	
+			
+		List<ItemGradingAttachment> itemGradingAttachments = getHibernateTemplate().executeFind(hcb);
+		log.debug("got a list of " + itemGradingAttachments.size());
 		return itemGradingAttachments;
 		
 	}
