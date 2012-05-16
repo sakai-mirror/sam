@@ -2997,6 +2997,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	}
 
 	  public void removeItemGradingAttachment(Long attachmentId) {
+		  log.debug("removeItemGradingAttachment(Long" + attachmentId);
 		  ItemGradingAttachment itemGradingAttachment = (ItemGradingAttachment) getHibernateTemplate()
 				.load(ItemGradingAttachment.class, attachmentId);
 		  removeItemGradingAttachment(itemGradingAttachment);
@@ -3027,19 +3028,20 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		  if (attachment == null) {
 			  return;
 		  }
-
+		  log.debug("removeItemGradingAttachment(Object:" + attachment.getAttachmentId());
 		  
 		  int retryCount = persistenceHelper.getRetryCount()
 		  .intValue();
 		  while (retryCount > 0) {
 			  try {
 				  getHibernateTemplate().delete(attachment);
-
+				  retryCount = 0;
 			  } catch (Exception e) {
 				  log.warn("problem delete assessmentAttachment: "
 						  + e.getMessage());
 				  retryCount = persistenceHelper.retryDeadlock(e,
 						  retryCount);
+				  //FIXME this causes the error to fail unexpetedly if retryCount == 0 then rethrow the exception in a RuntimeException
 			  }
 		  }
 	  }

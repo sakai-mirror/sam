@@ -150,7 +150,7 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		
 		//testDelete
 		//this is failing on the deadlock retry in test mode
-		/*
+		
 		ItemGradingAttachment at = attachments.get(0);
 		try {
 			queries.removeItemGradingAttachment(at);
@@ -159,7 +159,7 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 			e.printStackTrace();
 			fail();
 		}
-		*/
+		
 		
 		
 	}

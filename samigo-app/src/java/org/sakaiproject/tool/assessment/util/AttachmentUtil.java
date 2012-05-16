@@ -83,19 +83,19 @@ public class AttachmentUtil {
 	}
 
 
-	public List prepareReferenceList(List attachmentList){
-		List list = new ArrayList();
+	public List<Reference> prepareReferenceList(List<AttachmentIfc> attachmentList){
+		List<Reference> list = new ArrayList<Reference>();
 		for (int i=0; i<attachmentList.size(); i++){
 			ContentResource cr = null;
-			AttachmentIfc attach = (AttachmentIfc) attachmentList.get(i);
+			AttachmentIfc attach = attachmentList.get(i);
 			try{
 				cr = ContentHostingService.getResource(attach.getResourceId());
 			}
 			catch (PermissionException e) {
-				log.warn("PermissionException from ContentHostingService:"+e.getMessage());
+				log.warn("PermissionException from ContentHostingService:" + e);
 			}
 			catch (IdUnusedException e) {
-				log.warn("IdUnusedException from ContentHostingService:"+e.getMessage());
+				log.warn("IdUnusedException from ContentHostingService:" + e);
 				// <-- bad sign, some left over association of assessment and resource, 
 				// use case: user remove resource in file picker, then exit modification without
 				// proper cancellation by clicking at the left nav instead of "cancel".
