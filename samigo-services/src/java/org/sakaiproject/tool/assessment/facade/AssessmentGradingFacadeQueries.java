@@ -2999,6 +2999,8 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	  public void removeItemGradingAttachment(Long attachmentId) {
 		  ItemGradingAttachment itemGradingAttachment = (ItemGradingAttachment) getHibernateTemplate()
 				.load(ItemGradingAttachment.class, attachmentId);
+		  removeItemGradingAttachment(itemGradingAttachment);
+		/*
 		ItemGradingData itemGrading = itemGradingAttachment.getItemGrading();
 		// String resourceId = assessmentAttachment.getResourceId();
 		int retryCount = persistenceHelper.getRetryCount()
@@ -3017,7 +3019,29 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 				retryCount = persistenceHelper.retryDeadlock(e,
 						retryCount);
 			}
-		}
+		}*/
+	  }
+
+	  
+	  public void removeItemGradingAttachment(ItemGradingAttachment attachment) {
+		  if (attachment == null) {
+			  return;
+		  }
+
+		  
+		  int retryCount = persistenceHelper.getRetryCount()
+		  .intValue();
+		  while (retryCount > 0) {
+			  try {
+				  getHibernateTemplate().delete(attachment);
+
+			  } catch (Exception e) {
+				  log.warn("problem delete assessmentAttachment: "
+						  + e.getMessage());
+				  retryCount = persistenceHelper.retryDeadlock(e,
+						  retryCount);
+			  }
+		  }
 	  }
 
 	  public void saveOrUpdateAttachments(List list) {

@@ -33,13 +33,23 @@ public class PersistenceHelper {
 	
 	private static Log log = LogFactory.getLog(PersistenceHelper.class);
 	
-	
+	/**
+	 * ms between retries
+	 */
 	private Integer deadlockInterval; // in ms
 
-    public void setDeadlockInterval(Integer deadlockInterval){
+    /**
+     * Set the deadlock wait interval in ms
+     * @param deadlockInterval
+     */
+	public void setDeadlockInterval(Integer deadlockInterval){
       this.deadlockInterval = deadlockInterval;
     }
 
+	/**
+	 * 
+	 * @return the deadlockRewaitInterval in ms
+	 */
     public Integer getDeadlockInterval(){
       return deadlockInterval;
     }

@@ -233,7 +233,17 @@ public interface AssessmentGradingFacadeQueriesAPI
   
   public ItemGradingAttachment createItemGradingtAttachment(ItemGradingData itemGrading, String resourceId, String filename, String protocol);
   
+  /**
+   * Remove an attachment from persistence
+   * @param attachmentId the attachment id
+   */
   public void removeItemGradingAttachment(Long attachmentId);
+  
+  /**
+   * Remove an attachment from persistence
+   * @param attachment
+   */
+  public void removeItemGradingAttachment(ItemGradingAttachment attachment);
   
   public void saveOrUpdateAttachments(List list);
   

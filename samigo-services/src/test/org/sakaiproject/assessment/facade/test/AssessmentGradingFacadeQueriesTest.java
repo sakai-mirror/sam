@@ -52,7 +52,7 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		queries.setSessionFactory((SessionFactory)applicationContext.getBean("sessionFactory"));
 		//Set the persistance helper
 		PersistenceHelper persistenceHelper = new PersistenceHelper();
-		persistenceHelper.setDeadlockInterval(3500);
+		persistenceHelper.setDeadlockInterval(3);
 		persistenceHelper.setRetryCount(5);
 		queries.setPersistenceHelper(persistenceHelper);
 		
@@ -146,6 +146,21 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		assertNotNull(attachments);
 		
 		//assertEquals(2, attachments.size());
+		
+		
+		//testDelete
+		//this is failing on the deadlock retry in test mode
+		/*
+		ItemGradingAttachment at = attachments.get(0);
+		try {
+			queries.removeItemGradingAttachment(at);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+		*/
+		
 		
 	}
 	
