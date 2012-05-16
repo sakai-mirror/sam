@@ -57,11 +57,11 @@ import org.hibernate.criterion.Order;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.entity.api.ResourceProperties;
+import org.sakaiproject.event.cover.EventTrackingService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.TypeException;
 import org.sakaiproject.service.gradebook.shared.GradebookExternalAssessmentService;
-import org.sakaiproject.service.gradebook.shared.GradebookService;
 import org.sakaiproject.spring.SpringBeanLocator;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedItemData;
 import org.sakaiproject.tool.assessment.data.dao.assessment.PublishedSectionData;
@@ -81,15 +81,14 @@ import org.sakaiproject.tool.assessment.data.ifc.grading.StudentGradingSummaryIf
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
 import org.sakaiproject.tool.assessment.integration.context.IntegrationContextFactory;
 import org.sakaiproject.tool.assessment.integration.helper.ifc.GradebookServiceHelper;
+import org.sakaiproject.tool.assessment.services.AutoSubmitAssessmentsJob;
 import org.sakaiproject.tool.assessment.services.GradebookServiceException;
 import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.PersistenceHelper;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
-import org.sakaiproject.tool.assessment.services.AutoSubmitAssessmentsJob;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.sakaiproject.event.cover.EventTrackingService;
 
 public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implements AssessmentGradingFacadeQueriesAPI{
   private static Log log = LogFactory.getLog(AssessmentGradingFacadeQueries.class);
@@ -969,6 +968,21 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
   public void saveItemGrading(ItemGradingData item) {
     int retryCount = persistenceHelper.getRetryCount().intValue();
+    
+    if (item.getHasAttachmentSet() == null) {
+    	if (item.getItemGradingAttachmentList() != null && !item.getItemGradingAttachmentList().isEmpty()) {
+    		item.setHasAttachmentSet(true);
+    	} else  {
+    		log.debug("setting flag == false");
+    		item.setHasAttachmentSet(false);
+    	}
+    }
+    
+    //for safety we will switch this to true but never false
+    if (Boolean.valueOf(false).equals(item.getHasAttachmentSet()) && item.getItemGradingAttachmentList() != null && !item.getItemGradingAttachmentList().isEmpty()) {
+    	item.setHasAttachmentSet(true);
+    }
+    
     while (retryCount > 0){ 
       try {
         getHibernateTemplate().saveOrUpdate((ItemGradingData)item);
@@ -3174,6 +3188,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		  itemGradingData.setAssessmentGradingId(assessmentGradingData.getAssessmentGradingId());
 		  itemGradingData.setAgentId(assessmentGradingData.getAgentId());
 		  itemGradingData.setPublishedItemId(publishedItemId);
+		  itemGradingData.setHasAttachmentSet(false);
 		  ItemService itemService = new ItemService();
 		  Long itemTextId = itemService.getItemTextId(publishedItemId);
 		  	  

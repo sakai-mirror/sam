@@ -99,17 +99,32 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		//saving the item should add an ID
 		queries.saveItemGrading(item1);
 		assertNotNull(item1.getItemGradingId());
+		System.out.println("?: " + item1.getHasAttachmentSet());
+		assertFalse(item1.getHasAttachmentSet());
 		
+		//add some Attachments does thi change to true?
+		ItemGradingAttachment at1 = new ItemGradingAttachment();
+		at1.setStatus(0);
+		at1.setCreatedBy(AGENT_ID);
+		at1.setCreatedDate(new Date());
+		at1.setLastModifiedBy(AGENT_ID);
+		at1.setLastModifiedDate(new Date());
 		
+		ItemGradingAttachment at2 = new ItemGradingAttachment();
+		at2.setStatus(0);
+		at2.setCreatedBy(AGENT_ID);
+		at2.setCreatedDate(new Date());
+		at2.setLastModifiedBy(AGENT_ID);
+		at2.setLastModifiedDate(new Date());
 		
-		ItemGradingData item2 = new ItemGradingData();
-		item2.setAgentId(data.getAgentId());
-		item2.setAssessmentGradingId(data.getAssessmentGradingId());
-		item2.setPublishedItemId(1L);
-		item2.setPublishedItemTextId(1L);
+		List<ItemGradingAttachment> list = new ArrayList<ItemGradingAttachment>();
+		list.add(at1);
+		list.add(at2);
+		item1.setItemGradingAttachmentList(list);
 		
+		queries.saveItemGrading(item1);
+		assertTrue(item1.getHasAttachmentSet());
 		
-		data.getItemGradingSet().add(item2);
 		
 		
 		/** saving the parent should save the children **/
@@ -144,6 +159,8 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		
 		List<ItemGradingAttachment> attachments = queries.getItemGradingAttachmentSet(item1Id);
 		assertNotNull(attachments);
+		assertFalse(attachments.isEmpty());
+		assertEquals(2, attachments.size());
 		
 		//assertEquals(2, attachments.size());
 		
@@ -211,6 +228,7 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		at1.setCreatedDate(new Date());
 		at1.setLastModifiedBy(AGENT_ID);
 		at1.setLastModifiedDate(new Date());
+		at1.setFilename("FILENAME1");
 		
 		ItemGradingAttachment at2 = new ItemGradingAttachment();
 		at2.setStatus(0);
@@ -218,6 +236,7 @@ public class AssessmentGradingFacadeQueriesTest extends AbstractTransactionalSpr
 		at2.setCreatedDate(new Date());
 		at2.setLastModifiedBy(AGENT_ID);
 		at2.setLastModifiedDate(new Date());
+		
 		
 		
 		List<ItemGradingAttachment> list = new ArrayList<ItemGradingAttachment>();

@@ -515,8 +515,8 @@ public class QuestionScoreListener implements ActionListener,
 				List<ItemGradingAttachment> itemGradingAttachmentList = new ArrayList<ItemGradingAttachment>();
 				while (iter2.hasNext()) {
 					ItemGradingData gdata = (ItemGradingData) iter2.next();
+					
 					//we need to explicitly fetch the attachments to avoid lazy loading errors
-
 					GradingService gradingService = new GradingService();
 					List<ItemGradingAttachment> attachments = gradingService.getItemGradingAttachments(gdata.getItemGradingId());
 					results.setItemGrading(gdata);
