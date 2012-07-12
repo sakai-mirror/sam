@@ -28,7 +28,7 @@
     <property name="lastDuration" type="string" length="36" column="LASTDURATION" not-null="false" />
 
 	<set name="itemGradingAttachmentSet" table="SAM_GRADINGATTACHMENT_T" cascade="all" order-by="createdDate asc"
-        inverse="true" lazy="false">
+        inverse="true" lazy="true">
         <key column="ITEMGRADINGID"/>
         <one-to-many class="org.sakaiproject.tool.assessment.data.dao.grading.ItemGradingAttachment"/>
     </set>

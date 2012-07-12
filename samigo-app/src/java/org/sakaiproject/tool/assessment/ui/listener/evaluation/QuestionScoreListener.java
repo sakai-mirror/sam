@@ -514,7 +514,8 @@ public class QuestionScoreListener implements ActionListener,
 				while (iter2.hasNext()) {
 					ItemGradingData gdata = (ItemGradingData) iter2.next();
 					results.setItemGrading(gdata);
-					itemGradingAttachmentList.addAll(gdata.getItemGradingAttachmentList());
+					//VULA-1590 we don't want these
+					//itemGradingAttachmentList.addAll(gdata.getItemGradingAttachmentList());
 					agentResultsByItemGradingIdMap.put(gdata.getItemGradingId(), results);
 										
 					ItemTextIfc gdataPubItemText = (ItemTextIfc) publishedItemTextHash

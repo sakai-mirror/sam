@@ -1029,7 +1029,9 @@ function toPoint(id)
 	  </h:panelGroup>
      </f:facet>
      <h:inputTextarea value="#{description.comments}" rows="3" cols="30"/>
-     <%@ include file="/jsf/evaluation/questionScoreAttachment.jsp" %>
+     <!-- VULA-1590
+     include file="/jsf/evaluation/questionScoreAttachment.jsp"
+      -->
     </h:column>
 
     <h:column rendered="#{questionScores.sortType eq 'comments' && questionScores.sortAscending}">
@@ -1053,7 +1055,9 @@ function toPoint(id)
       </f:facet>
 
       <h:inputTextarea value="#{description.comments}" rows="3" cols="30"/>
-      <%@ include file="/jsf/evaluation/questionScoreAttachment.jsp" %>
+      <!-- VULA-1590
+     include file="/jsf/evaluation/questionScoreAttachment.jsp"
+      -->
     </h:column>    
     
     <h:column rendered="#{questionScores.sortType eq 'comments' && !questionScores.sortAscending}">
@@ -1076,7 +1080,9 @@ function toPoint(id)
 	  </h:panelGroup>
       </f:facet>
      <h:inputTextarea value="#{description.comments}" rows="3" cols="30"/>
-     <%@ include file="/jsf/evaluation/questionScoreAttachment.jsp" %>
+     <!-- VULA-1590
+     include file="/jsf/evaluation/questionScoreAttachment.jsp"
+      -->
     </h:column> 
 
   </h:dataTable>
