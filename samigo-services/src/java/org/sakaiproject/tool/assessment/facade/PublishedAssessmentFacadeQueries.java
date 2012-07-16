@@ -227,23 +227,6 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		log.debug("******* published metadata set" + publishedMetaDataSet);
 		publishedAssessment.setAssessmentMetaDataSet(publishedMetaDataSet);
 
-		// let's check if we need a publishedUrl
-		String releaseTo = publishedAccessControl.getReleaseTo();
-		if (releaseTo != null) {
-			boolean anonymousAllowed = ((releaseTo)
-					.indexOf(AuthoringConstantStrings.ANONYMOUS) > -1);
-			if (anonymousAllowed) {
-				// generate an alias to the pub assessment
-				String alias = AgentFacade.getAgentString()
-						+ (new Date()).getTime();
-				PublishedMetaData meta = new PublishedMetaData(
-						publishedAssessment, "ALIAS", alias);
-				publishedMetaDataSet.add(meta);
-				publishedAssessment
-						.setAssessmentMetaDataSet(publishedMetaDataSet);
-			}
-		}
-
 		// IPAddress
 		Set publishedIPSet = preparePublishedSecuredIPSet(publishedAssessment,
 				a.getSecuredIPAddressSet());
@@ -1731,6 +1714,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			PublishedAssessmentData p = (PublishedAssessmentData) l.get(0);
 			p.setSectionSet(getSectionSetForAssessment(p));
 			PublishedAssessmentFacade f = new PublishedAssessmentFacade(p);
+			f.setFeedbackComponentOption(p.getAssessmentFeedback().getFeedbackComponentOption());
 			return f;
 		} else {
 			return null;
@@ -1753,9 +1737,27 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 	}
 
 	public HashMap getFeedbackHash() {
+		final List listAgentId = new ArrayList();
 		String siteId = AgentFacade.getCurrentSiteId();
+		listAgentId.add(siteId);
+
+		try {
+			Site site = SiteService.getSite(siteId);
+				Collection groups = site.getGroups();
+				if (groups != null && groups.size() > 0) {
+					Iterator groupIter = groups.iterator();
+					while (groupIter.hasNext()) {
+						Group group = (Group) groupIter.next();
+						listAgentId.add(group.getId());
+					}
+				}
+			}
+		catch (IdUnusedException ex) {
+			// No site available
+		}
+
 		HashMap h = new HashMap();
-		String query = "select new PublishedFeedback("
+		final String query = "select new PublishedFeedback("
 				+ " p.assessment.publishedAssessmentId,"
 				+ " p.feedbackDelivery,p.feedbackComponentOption,  p.feedbackAuthoring, p.editComponents, p.showQuestionText,"
 				+ " p.showStudentResponse, p.showCorrectResponse,"
@@ -1763,9 +1765,20 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 				+ " p.showQuestionLevelFeedback, p.showSelectionLevelFeedback,"
 				+ " p.showGraderComments, p.showStatistics)"
 				+ " from PublishedFeedback p, AuthorizationData az"
-				+ " where az.qualifierId = p.assessment.publishedAssessmentId and az.agentIdString=? and az.functionId=?";
-		Object [] values = {siteId, "TAKE_PUBLISHED_ASSESSMENT"};
-		List l = getHibernateTemplate().find(query, values);
+				+ " where az.qualifierId = p.assessment.publishedAssessmentId "
+				+ " and (az.agentIdString in (:agentIdString)) "
+				+ " and az.functionId=:functionId ";
+		final HibernateCallback hcb = new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				Query q = session.createQuery(query);
+				q.setParameterList("agentIdString", listAgentId);
+				q.setString("functionId", "TAKE_PUBLISHED_ASSESSMENT");
+				return q.list();
+			};
+		};
+		
+		List l = getHibernateTemplate().executeFind(hcb);
 		for (int i = 0; i < l.size(); i++) {
 			PublishedFeedback f = (PublishedFeedback) l.get(i);
 			h.put(f.getAssessmentId(), f);
@@ -1917,8 +1930,8 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 
 		//final String key = SectionDataIfc.AUTHOR_TYPE;
 		//final String value = SectionDataIfc.QUESTIONS_AUTHORED_ONE_BY_ONE.toString();
-		final String query2 = "select s from PublishedAssessmentData p, PublishedSectionData s, PublishedSectionMetaData m "
-				+ " where p.publishedAssessmentId=? and s = m.section and "
+		final String query2 = "select s from PublishedAssessmentData p, PublishedSectionData s "
+				+ " where p.publishedAssessmentId=? and "
 				+ " p.publishedAssessmentId=s.assessment.publishedAssessmentId ";
 
 		final HibernateCallback hcb2 = new HibernateCallback() {

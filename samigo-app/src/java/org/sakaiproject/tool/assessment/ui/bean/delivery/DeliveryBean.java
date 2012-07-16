@@ -77,6 +77,7 @@ import org.sakaiproject.tool.assessment.shared.api.assessment.SecureDeliveryServ
 import org.sakaiproject.tool.assessment.shared.api.assessment.SecureDeliveryServiceAPI.PhaseStatus;
 import org.sakaiproject.tool.assessment.ui.bean.shared.PersonBean;
 import org.sakaiproject.tool.assessment.ui.bean.util.Validator;
+import org.sakaiproject.tool.assessment.ui.listener.delivery.BeginDeliveryActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.delivery.DeliveryActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.delivery.LinearAccessDeliveryActionListener;
 import org.sakaiproject.tool.assessment.ui.listener.delivery.SubmitToGradingActionListener;
@@ -232,16 +233,10 @@ public class DeliveryBean
   // current agent string (if assigned). SAK-1927: esmiley
   private AgentFacade deliveryAgent;
 
+  private String display_dayDateFormat= ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","output_day_date_no_sec");
+  private SimpleDateFormat dayDisplayFormat = new SimpleDateFormat(display_dayDateFormat, new ResourceLoader().getLocale());
   private String display_dateFormat= ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","output_date_no_sec");
-  private SimpleDateFormat displayFormat = new SimpleDateFormat(display_dateFormat);
-  private static String[] strDays = new String[] { 
-	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","sunday"),
-	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","monday"),
-	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","tuesday"),
-	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","wednesday"),
-	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","thusday"),
-	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","friday"),
-	  ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","saturday")};
+  private SimpleDateFormat displayFormat = new SimpleDateFormat(display_dateFormat, new ResourceLoader().getLocale());
   private boolean noQuestions = false;
 
   // this assessmentGradingId is used to generate seed in getSeed(...) of DeliveryActaionListener.java
@@ -926,6 +921,39 @@ public class DeliveryBean
    */
   public SettingsDeliveryBean getSettings()
   {
+    // SAM-1438 - We occasionally see the settings bean as null during
+    // submission, within a JSF phase of deliverAssessment.jsp but it is
+    // generally not reproducible. This block protects against the bug
+    // by loading up the settings for this assessment. They are not assigned
+    // to the local settings variable as to avoid changing any more behavior
+    // than is needed. This is effectively a failsafe and diagnostic that
+    // should not really be necessary.
+	  
+    if (settings == null) {
+      Session session = SessionManager.getCurrentSession();
+      StringBuilder sb = new StringBuilder(400);
+      sb.append("SAM-1438 - Delivery settings bean is null.\n");
+      if (session != null) {
+        sb.append("         - User EID  : ").append(session.getUserEid()).append("\n");
+        sb.append("         - User ID   : ").append(session.getUserId()).append("\n");
+        sb.append("         - Session ID: ").append(session.getId()).append("\n");
+      } else {
+        sb.append("         - Session is null. Cannot determine user.\n");
+      }
+      sb.append("         - Published Assessment ID: ");
+      
+      if (publishedAssessment == null) {
+        sb.append("<null>\n");
+      }
+      else {
+        sb.append(publishedAssessment.getPublishedAssessmentId()).append("\n");
+        sb.append("         - Assessment Title       : ").append(publishedAssessment.getTitle()).append("\n");
+        sb.append("         - Assessment Site ID     : ").append(publishedAssessment.getOwnerSiteId());
+        BeginDeliveryActionListener listener = new BeginDeliveryActionListener();
+        listener.populateBeanFromPub(this, publishedAssessment);
+      }
+      log.warn(sb.toString());
+    }
     return settings;
   }
 
@@ -1009,20 +1037,25 @@ public class DeliveryBean
     return dateString;
   }
   
-  public String getDueDateDayOfWeek()
+  public String getDayDueDateString()
   {
-    String dayOfWeek = "";
+    String dateString = "";
     if (dueDate == null) {
-      return dayOfWeek;
+      return dateString;
     }
-    
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(dueDate);
-    dayOfWeek = strDays[cal.get(Calendar.DAY_OF_WEEK) - 1];
-    
-    return dayOfWeek;
-  }
 
+    try {
+      TimeUtil tu = new TimeUtil();
+      dateString = tu.getDisplayDateTime(dayDisplayFormat, dueDate);
+    }
+    catch (Exception ex) {
+      // we will leave it as an empty string
+      log.warn("Unable to format date.");
+      ex.printStackTrace();
+    }
+    return dateString;
+  }
+  
   public void setDueDate(java.util.Date dueDate)
   {
     this.dueDate = dueDate;
@@ -1393,8 +1426,14 @@ public class DeliveryBean
 	  if (this.actionMode == PREVIEW_ASSESSMENT) {
 		  return "editAssessment";
 	  }	  
+	  
+	  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.submit.click_sub", "siteId=" + AgentFacade.getCurrentSiteId() + ", submissionId=" + adata.getAssessmentGradingId(), siteId, true, NotificationService.NOTI_REQUIRED)); 
+
 	  String nextAction = checkBeforeProceed(true, isFromTimer);
 	  log.debug("***** next Action="+nextAction);
+	  
+	  EventTrackingService.post(EventTrackingService.newEvent("sam.assessment.submit.checked", "siteId=" + AgentFacade.getCurrentSiteId() + ", submissionId=" + adata.getAssessmentGradingId(), siteId, true, NotificationService.NOTI_REQUIRED)); 
+
 	  if (!("safeToProceed").equals(nextAction)){
 		  return nextAction;
 	  }
@@ -1480,7 +1519,18 @@ public class DeliveryBean
   
 
   public String confirmSubmit()
-  {
+  {	  
+	  if (this.actionMode == TAKE_ASSESSMENT
+			  || this.actionMode == TAKE_ASSESSMENT_VIA_URL)
+	  {
+		  if (adata != null) {
+			  EventTrackingService.post(EventTrackingService.newEvent("sam.submit.from_last_page", "siteId=" + AgentFacade.getCurrentSiteId() + ", submissionId=" + adata.getAssessmentGradingId(), siteId, true, NotificationService.NOTI_REQUIRED)); 
+		  }
+		  else {
+			  EventTrackingService.post(EventTrackingService.newEvent("sam.submit.from_last_page", "siteId=" + AgentFacade.getCurrentSiteId() + ", adata is null", siteId, true, NotificationService.NOTI_REQUIRED)); 
+		  }
+	  }
+	  
 	  String nextAction = checkBeforeProceed();
 	  log.debug("***** next Action="+nextAction);
 	  if (!("safeToProceed").equals(nextAction)){
@@ -1516,6 +1566,17 @@ public class DeliveryBean
   
   public String confirmSubmitTOC()
   {
+	  if (this.actionMode == TAKE_ASSESSMENT
+			  || this.actionMode == TAKE_ASSESSMENT_VIA_URL)
+	  {
+		  if (adata != null) {
+			  EventTrackingService.post(EventTrackingService.newEvent("sam.submit.from_toc", "siteId=" + AgentFacade.getCurrentSiteId() + ", submissionId=" + adata.getAssessmentGradingId(), siteId, true, NotificationService.NOTI_REQUIRED)); 
+		  }
+		  else {
+			  EventTrackingService.post(EventTrackingService.newEvent("sam.submit.from_toc", "siteId=" + AgentFacade.getCurrentSiteId() + ", adata is null", siteId, true, NotificationService.NOTI_REQUIRED)); 
+		  }
+	  }
+	  
 	  String nextAction = checkBeforeProceed();
 	  log.debug("***** next Action="+nextAction);
 	  if (!("safeToProceed").equals(nextAction)){
@@ -2664,6 +2725,9 @@ public class DeliveryBean
   }
 
   public boolean timeExpired(){
+    if (adata == null) {
+    	return false;
+    }
     boolean timeExpired = false;
     TimedAssessmentQueue queue = TimedAssessmentQueue.getInstance();
     TimedAssessmentGradingModel timedAG = (TimedAssessmentGradingModel)queue.
@@ -2993,6 +3057,12 @@ public class DeliveryBean
     int maxSubmissionsAllowed = 9999;
     if ( (Boolean.FALSE).equals(publishedAssessment.getAssessmentAccessControl().getUnlimitedSubmissions())){
       maxSubmissionsAllowed = publishedAssessment.getAssessmentAccessControl().getSubmissionsAllowed().intValue();
+      if ("takeAssessmentViaUrl".equals(actionString) && !anonymousLogin && settings == null) {
+    	  SettingsDeliveryBean settingsDeliveryBean = new SettingsDeliveryBean();
+    	  settingsDeliveryBean.setAssessmentAccessControl(publishedAssessment);
+    	  settingsDeliveryBean.setMaxAttempts(maxSubmissionsAllowed);
+    	  settings = settingsDeliveryBean; 
+      }
     }
     if (totalSubmitted < maxSubmissionsAllowed + numberRetake){
       hasSubmissionLeft = true;
@@ -3381,7 +3451,7 @@ public class DeliveryBean
 	  public void setDisplayFormat()
 	  {
 		  display_dateFormat= ContextUtil.getLocalizedString("org.sakaiproject.tool.assessment.bundle.GeneralMessages","output_date_no_sec");
-		  displayFormat = new SimpleDateFormat(display_dateFormat);
+		  displayFormat = new SimpleDateFormat(display_dateFormat, new ResourceLoader().getLocale());
 	  }
 
 	  public Integer getScoringType()

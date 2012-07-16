@@ -101,9 +101,11 @@
                     alert("You are only allowed one selection per column, please try again.");
                     return;
                   }
+                  else{
+                      return;
+                  }
                 }
               }
-              return;
             }
           }
 		}
@@ -475,7 +477,8 @@ document.links[newindex].onclick();
   <h:commandButton type="submit" value="#{deliveryMessages.button_exit}"
     action="#{delivery.saveAndExit}" id="saveAndExit"
     rendered="#{(delivery.actionString=='previewAssessment'  
-                 || delivery.actionString=='takeAssessment')
+                 || delivery.actionString=='takeAssessment'
+                 || (delivery.actionString=='takeAssessmentViaUrl' && !delivery.anonymousLogin))
               && delivery.navigation ne '1' && !delivery.hasTimeLimit}"  
     onclick="pauseTiming='false'; disableSaveAndExit();" />
 
@@ -489,7 +492,8 @@ document.links[newindex].onclick();
   <h:commandButton type="submit" value="#{deliveryMessages.button_exit}"
     action="#{delivery.saveAndExit}" id="saveAndExit2"
     rendered="#{(delivery.actionString=='previewAssessment'  
-                 ||delivery.actionString=='takeAssessment')
+                 ||delivery.actionString=='takeAssessment'
+                 || (delivery.actionString=='takeAssessmentViaUrl' && !delivery.anonymousLogin))
             && delivery.navigation eq '1' && delivery.continue && !delivery.hasTimeLimit}"
     onclick="disableSaveAndExit2();" />
   </h:panelGrid>

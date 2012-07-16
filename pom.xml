@@ -14,6 +14,16 @@
 	<version>2.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
     
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+<!--
+        <sakai.calendar.version>2.9-SNAPSHOT</sakai.calendar.version>
+        <sakai.common.version>1.2-SNAPSHOT</sakai.common.version>
+        <sakai.edu-services.version>1.2-SNAPSHOT</sakai.edu-services.version>
+        <sakai.jsf.version>2.9-SNAPSHOT</sakai.jsf.version>
+-->
+    </properties>
+	
 	<modules>
 		<module>samigo-api</module>
 		<module>samigo-app</module>
@@ -29,20 +39,12 @@
 		<module>samlite-impl</module>
 	</modules>
 	
-	<scm>
-		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/trunk</connection>
-		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/trunk</developerConnection>
-		<url>https://source.sakaiproject.org/svn/sam/trunk</url>
+	<scm><!-- XXX Set die -->
+		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x</connection>
+		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x</developerConnection>
+		<url>https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x</url>
 	</scm>
 	
-	<distributionManagement>
-        <site>
-            <id>sakai-site</id>
-            <name>Sakai release Site</name>
-            <url>scpexe://source.sakaiproject.org/var/www/html/release/samigo/${project.version}</url>
-        </site>
-    </distributionManagement>
-    
 	<dependencyManagement>
         <dependencies>
             <dependency>

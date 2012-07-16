@@ -21,7 +21,9 @@
 
 package org.sakaiproject.tool.assessment.services.assessment;
 
+
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,7 +70,6 @@ import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.QuestionPoolService;
 import org.sakaiproject.tool.cover.ToolManager;
-import org.sakaiproject.tool.assessment.facade.FavoriteColChoicesFacadeQueries;
 
 /**
  * The AssessmentService calls the service locator to reach the manager on the
@@ -504,7 +505,9 @@ public class AssessmentService {
 				}
 
 				//update meta data for date:
-				section.addSectionMetaData(SectionDataIfc.QUESTIONS_RANDOM_DRAW_DATE, DateFormat.getDateTimeInstance().format(new Date()));
+				//We need this in a standard format so it can be parsed later. This is ISO8601 format -DH
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+				section.addSectionMetaData(SectionDataIfc.QUESTIONS_RANDOM_DRAW_DATE, df.format(new Date()));
 
 				saveOrUpdateSection(section);
 			}else{
@@ -822,13 +825,13 @@ public class AssessmentService {
 				cr_copy = AssessmentService.getContentHostingService().addAttachmentResource(escapedName, 
 						toContext, 
 						ToolManager.getTool("sakai.samigo").getTitle(), cr
-						.getContentType(), cr.getContent(), cr.getProperties());
+						.getContentType(), cr.streamContent(), cr.getProperties());
 			}
 			else {
 				cr_copy = AssessmentService.getContentHostingService().addAttachmentResource(escapedName, 
 						ToolManager.getCurrentPlacement().getContext(), 
 						ToolManager.getTool("sakai.samigo").getTitle(), cr
-						.getContentType(), cr.getContent(), cr.getProperties());
+						.getContentType(), cr.streamContent(), cr.getProperties());
 			}
 		} catch (IdInvalidException e) {
 			log.warn(e.getMessage());
@@ -858,27 +861,27 @@ public class AssessmentService {
 	/** These characters are not allowed in a resource id */
 	public static final String INVALID_CHARS_IN_RESOURCE_ID = "^/\\{}[]()%*?#&=\n\r\t\b\f";
 
-	protected static final String MAP_TO_A = "�����?��";
+	protected static final String MAP_TO_A = "?";
 
-	protected static final String MAP_TO_B = "��";
+	protected static final String MAP_TO_B = "§§";
 
-	protected static final String MAP_TO_C = "�?��";
+	protected static final String MAP_TO_C = "?¢¢";
 
-	protected static final String MAP_TO_E = "�?�?����";
+	protected static final String MAP_TO_E = "??¾®®";
 
-	protected static final String MAP_TO_I = "�����";
+	protected static final String MAP_TO_I = "";
 
-	protected static final String MAP_TO_L = "��";
+	protected static final String MAP_TO_L = "££";
 
-	protected static final String MAP_TO_N = "���";
+	protected static final String MAP_TO_N = "";
 
-	protected static final String MAP_TO_O = "������";
+	protected static final String MAP_TO_O = "";
 
-	protected static final String MAP_TO_U = "��?���";
+	protected static final String MAP_TO_U = "?";
 
-	protected static final String MAP_TO_Y = "ش??";
+	protected static final String MAP_TO_Y = "Ø´??";
 
-	protected static final String MAP_TO_X = "???�����?����?";
+	protected static final String MAP_TO_X = "???¤©»¨±?«µ¦À?";
 
 	/**
 	 * These characters are allowed; but if escapeResourceName() is called, they are escaped (actually, removed) Certain characters cause problems with filenames in certain OSes - so get rid of these characters in filenames

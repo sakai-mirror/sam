@@ -737,7 +737,7 @@ public class GradingService
 		  HashMap publishedItemHash, HashMap publishedItemTextHash,
 		  HashMap publishedAnswerHash, boolean persistToDB) throws GradebookServiceException, FinFormatException {
 	  log.debug("storeGrades (not persistToDB) : data.getSubmittedDate()" + data.getSubmittedDate());
-	  storeGrades(data, false, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash, persistToDB, null, null);
+	  storeGrades(data, regrade, pub, publishedItemHash, publishedItemTextHash, publishedAnswerHash, persistToDB, null, null);
   }
 
   /**
@@ -806,6 +806,11 @@ public class GradingService
         			invalidSALengthList.add(item.getItemId());
         		}
         	}
+        }
+        
+        if (itemType == 8 && itemGrading.getAnswerText() != null) {
+        	String processedAnswerText = TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, itemGrading.getAnswerText().trim());
+        	itemGrading.setAnswerText(processedAnswerText);
         }
         
         // note that totalItems & fibAnswersMap would be modified by the following method
@@ -1332,7 +1337,7 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
         String answer = st.nextToken().trim();
         if ("true".equalsIgnoreCase(casesensitive)) {
           if (data.getAnswerText() != null){
-        	  studentanswer= TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, data.getAnswerText().trim());
+        	  studentanswer= data.getAnswerText().trim();
             matchresult = fibmatch(answer, studentanswer, true);
              
           }
@@ -1340,7 +1345,7 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
         else {
         // case insensitive , if casesensitive is false, or null, or "".
           if (data.getAnswerText() != null){
-        	  studentanswer= TextFormat.convertPlaintextToFormattedTextNoHighUnicode(log, data.getAnswerText().trim());
+        	  studentanswer= data.getAnswerText().trim();
     	    matchresult = fibmatch(answer, studentanswer, false);
            }
         }  // else , case insensitive

@@ -304,6 +304,7 @@ public class AssessmentSettingsBean
           firstTargetSelected = AgentFacade.getCurrentSiteName();
           targetSelected = getTargetSelected(releaseTo);
         }
+        groupsAuthorized = null;
 
         this.timeLimit = accessControl.getTimeLimit(); // in seconds
         if (timeLimit !=null && timeLimit.intValue()>0)
@@ -1595,7 +1596,7 @@ public class AssessmentSettingsBean
   public void setDisplayFormat(String displayDateFormat)
   {
 	  this.displayDateFormat = displayDateFormat;
-      this.displayFormat = new SimpleDateFormat(displayDateFormat);
+      this.displayFormat = new SimpleDateFormat(displayDateFormat, new ResourceLoader().getLocale());
   }
   
   public boolean getIsValidStartDate()
@@ -1718,8 +1719,7 @@ public class AssessmentSettingsBean
    * @return
    */
   public String[] getGroupsAuthorized() {
-	 groupsAuthorized = null;
-	 if (noGroupSelectedError) {
+	 if (noGroupSelectedError || groupsAuthorized != null) {
 		 return groupsAuthorized;
 	 }
 	 AuthzQueriesFacadeAPI authz = PersistenceService.getInstance().getAuthzQueriesFacade();

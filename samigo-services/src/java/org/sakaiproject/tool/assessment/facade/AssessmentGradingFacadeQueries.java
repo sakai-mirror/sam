@@ -92,8 +92,10 @@ import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.PersistenceService;
 import org.sakaiproject.tool.assessment.services.assessment.PublishedAssessmentService;
 import org.sakaiproject.user.cover.UserDirectoryService;
+import org.sakaiproject.tool.assessment.services.AutoSubmitAssessmentsJob;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.sakaiproject.event.cover.EventTrackingService;
 
 public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implements AssessmentGradingFacadeQueriesAPI{
   private static Log log = LogFactory.getLog(AssessmentGradingFacadeQueries.class);
@@ -1573,11 +1575,15 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    final HibernateCallback hcb = new HibernateCallback(){
 	    	public Object doInHibernate(Session session) throws HibernateException, SQLException {
 	    		Query q = session.createQuery(
-	    				"select distinct p " +
+	    				"select pia " +
+	    				"from PublishedItemData pia " +
+	    				"where pia.itemId in (" +
+	    				"select p.itemId " +
 	    				"from PublishedItemData p, AssessmentGradingData a, ItemGradingData i " +
 	    				"where a.publishedAssessmentId=? and a.forGrade=? and p.section.id=? " +
 	    				"and i.assessmentGradingId = a.assessmentGradingId " +
-	    				"and p.itemId = i.publishedItemId ");
+	    				"and p.itemId = i.publishedItemId) ");
+
 	    		q.setLong(0, publishedAssessmentId.longValue());
 	    		q.setBoolean(1, true);
 	    		q.setLong(2, sectionId.longValue());
@@ -2140,7 +2146,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 						  Long sequence = null;
 						  if (answerid != null) {
 							  AnswerIfc answer  = (AnswerIfc)publishedAnswerHash.get(answerid);
-							  sequence = answer.getSequence();
+							  if (answer != null) {
+							      sequence = answer.getSequence();
+							  }
 						  }
 
 						  String temptext = grade.getAnswerText();
@@ -2430,8 +2438,22 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 						.get(aanswerid);
 				banswer = (AnswerIfc) publishedAnswerHash
 						.get(banswerid);
-				aindex = aanswer.getSequence();
-				bindex = banswer.getSequence();
+
+				if (aanswer == null || banswer == null) {
+					return 0;
+				}
+				else {
+					if (aanswer != null) {
+						aindex = aanswer.getSequence();
+					} else {
+						return -1;
+					}
+					if (banswer != null) {
+						bindex = banswer.getSequence();
+					} else {
+						return 1;
+					}
+				}
 			}
 			
 
@@ -2881,6 +2903,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    				toBeAutoSubmittedList.add(adata);
 	    				completeItemGradingData(adata, sectionSetMap);
 	    				updateGradebookMap(adata, studentUidsToScores, gradebookMap);
+	    				EventTrackingService.post(EventTrackingService.newEvent("sam.auto-submit.job", 
+	    						AutoSubmitAssessmentsJob.safeEventLength("publishedAssessmentId=" + adata.getPublishedAssessmentId() + 
+	    								", assessmentGradingId=" + adata.getAssessmentGradingId()), true));		
 	    			}
 	    		}
 	    	}
@@ -2908,6 +2933,9 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 	    			toBeAutoSubmittedList.add(adata);
 	    			completeItemGradingData(adata, sectionSetMap);
 	    			updateGradebookMap(adata, studentUidsToScores, gradebookMap);
+	    			EventTrackingService.post(EventTrackingService.newEvent("sam.auto-submit.job", 
+    						AutoSubmitAssessmentsJob.safeEventLength("publishedAssessmentId=" + adata.getPublishedAssessmentId() + 
+    								", assessmentGradingId=" + adata.getAssessmentGradingId()), true));	
 	    		}
 	    	}
 	    }
