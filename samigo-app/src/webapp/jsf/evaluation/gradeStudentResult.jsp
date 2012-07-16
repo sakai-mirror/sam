@@ -256,9 +256,7 @@ function toPoint(id)
             <h:outputText value="#{evaluationMessages.comment_for_student}#{deliveryMessages.column}"/>
             <h:inputTextarea value="#{question.gradingComment}" rows="3" cols="30"/>
             <h:outputText value=" "/>
-    	    <!-- VULA-1590
-    	     include file="/jsf/evaluation/gradeStudentResultAttachment.jsp" 
-			-->
+    	    <%@ include file="/jsf/evaluation/gradeStudentResultAttachment.jsp" %>
           </h:panelGrid>
           <f:verbatim></div></f:verbatim>
         </h:column>

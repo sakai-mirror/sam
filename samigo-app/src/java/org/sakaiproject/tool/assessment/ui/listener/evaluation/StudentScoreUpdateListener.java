@@ -282,48 +282,47 @@ public class StudentScoreUpdateListener
     			ItemContentsBean question = (ItemContentsBean) iter2.next();
     			ArrayList gradingarray = question.getItemGradingDataArray();
     			log.debug("Gradingarray length2 = " + gradingarray.size());
-    			//VULA-1590 
-//    			Iterator iter3 = gradingarray.iterator();
-//    			while (iter3.hasNext()) {
-//    				ItemGradingData itemGradingData = (ItemGradingData) iter3.next();
-//    				List oldList = itemGradingData.getItemGradingAttachmentList();
-//    				List newList = question.getItemGradingAttachmentList();
-//    				if ((oldList == null || oldList.size() == 0 ) && (newList == null || newList.size() == 0)) {
-//    					continue;
-//    				}
-//    				
-//    				HashMap map = getAttachmentIdHash(oldList);
-//    				for (int i=0; i<newList.size(); i++){
-//    					ItemGradingAttachmentIfc itemGradingAttachment = (ItemGradingAttachmentIfc) newList.get(i);
-//    					if (map.get(itemGradingAttachment.getAttachmentId()) != null){
-//    						// exist already, remove it from map
-//    						map.remove(itemGradingAttachment.getAttachmentId());
-//    					}
-//    					else{
-//    						// new attachments
-//    						itemGradingAttachment.setItemGrading(itemGradingData);
-//    						attachmentList.add(itemGradingAttachment);
-//    					}
-//    				}      
-//    				// save new ones
-//    				GradingService gradingService = new GradingService();
-//    				if (attachmentList.size() > 0) {
-//    					gradingService.saveOrUpdateAttachments(attachmentList);
-//    					EventTrackingService.post(EventTrackingService.newEvent("sam.student.score.update", 
-//    							"siteId=" + AgentFacade.getCurrentSiteId() + ", Adding " + attachmentList.size() + " attachments for itemGradingData id = " + itemGradingData.getItemGradingId(), 
-//    							true));
-//    				}
-//    				
-//    				// remove old ones
-//    				Set set = map.keySet();
-//    				Iterator iter4 = set.iterator();
-//    				while (iter4.hasNext()){
-//    					Long attachmentId = (Long)iter4.next();
-//    					gradingService.removeItemGradingAttachment(attachmentId.toString());
-//    					EventTrackingService.post(EventTrackingService.newEvent("sam.student.score.update", 
-//    							"siteId=" + AgentFacade.getCurrentSiteId() + ", Removing attachmentId = " + attachmentId, true));
-//    				}
-//    			}
+    			Iterator iter3 = gradingarray.iterator();
+    			while (iter3.hasNext()) {
+    				ItemGradingData itemGradingData = (ItemGradingData) iter3.next();
+    				List oldList = itemGradingData.getItemGradingAttachmentList();
+    				List newList = question.getItemGradingAttachmentList();
+    				if ((oldList == null || oldList.size() == 0 ) && (newList == null || newList.size() == 0)) {
+    					continue;
+    				}
+    				
+    				HashMap map = getAttachmentIdHash(oldList);
+    				for (int i=0; i<newList.size(); i++){
+    					ItemGradingAttachmentIfc itemGradingAttachment = (ItemGradingAttachmentIfc) newList.get(i);
+    					if (map.get(itemGradingAttachment.getAttachmentId()) != null){
+    						// exist already, remove it from map
+    						map.remove(itemGradingAttachment.getAttachmentId());
+    					}
+    					else{
+    						// new attachments
+    						itemGradingAttachment.setItemGrading(itemGradingData);
+    						attachmentList.add(itemGradingAttachment);
+    					}
+    				}      
+    				// save new ones
+    				GradingService gradingService = new GradingService();
+    				if (attachmentList.size() > 0) {
+    					gradingService.saveOrUpdateAttachments(attachmentList);
+    					EventTrackingService.post(EventTrackingService.newEvent("sam.student.score.update", 
+    							"siteId=" + AgentFacade.getCurrentSiteId() + ", Adding " + attachmentList.size() + " attachments for itemGradingData id = " + itemGradingData.getItemGradingId(), 
+    							true));
+    				}
+    				
+    				// remove old ones
+    				Set set = map.keySet();
+    				Iterator iter4 = set.iterator();
+    				while (iter4.hasNext()){
+    					Long attachmentId = (Long)iter4.next();
+    					gradingService.removeItemGradingAttachment(attachmentId.toString());
+    					EventTrackingService.post(EventTrackingService.newEvent("sam.student.score.update", 
+    							"siteId=" + AgentFacade.getCurrentSiteId() + ", Removing attachmentId = " + attachmentId, true));
+    				}
+    			}
     		}
     	}
     }

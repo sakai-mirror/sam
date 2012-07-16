@@ -200,7 +200,6 @@ public class QuestionScoreUpdateListener
   }
 
   private void updateAttachment(ItemGradingData itemGradingData, AgentResults agentResults, QuestionScoresBean bean){
-	  return;/* VULA-1590 we aren't using any of this
 	  List oldList = itemGradingData.getItemGradingAttachmentList();
 	  List newList = agentResults.getItemGradingAttachmentList();
 	  if ((oldList == null || oldList.size() == 0 ) && (newList == null || newList.size() == 0)) return;
@@ -237,7 +236,6 @@ public class QuestionScoreUpdateListener
 				  "siteId=" + AgentFacade.getCurrentSiteId() + ", Removing attachmentId = " + attachmentId, true));
 	  }
 	  bean.setIsAnyItemGradingAttachmentListModified(true);
-	  */
   }
 
   private HashMap getAttachmentIdHash(List list){

@@ -1071,8 +1071,7 @@ public class DeliveryActionListener
       if (data.getAttemptsRemaining() !=null ){
         itemBean.setAttemptsRemaining(data.getAttemptsRemaining());
       }
-      //VULA-1590 we're not using this
-      //itemGradingAttachmentList.addAll(data.getItemGradingAttachmentList());
+      itemGradingAttachmentList.addAll(data.getItemGradingAttachmentList());
       //itemBean.setItemGradingAttachmentList(data.getItemGradingAttachmentList());
     }
     itemBean.setItemGradingAttachmentList(itemGradingAttachmentList);
