@@ -2129,6 +2129,9 @@ public class HistogramListener
 	  if (typeId == 11) {
 		  return rb.getString("q_fin");
 	  }
+	  if (typeId == 13) {
+		  return rb.getString("q_matrix_choices_surv");
+	  }
 	  return "";
   }
   
