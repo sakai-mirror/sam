@@ -20,7 +20,6 @@
  **********************************************************************************/
 
 
-
 package org.sakaiproject.tool.assessment.ui.listener.delivery;
 
 import java.util.ArrayList;
