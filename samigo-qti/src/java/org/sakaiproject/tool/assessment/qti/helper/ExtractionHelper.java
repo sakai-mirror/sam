@@ -61,6 +61,7 @@ import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.ItemDataIfc;
 import org.sakaiproject.tool.assessment.data.ifc.assessment.SectionAttachmentIfc;
 import org.sakaiproject.tool.assessment.data.ifc.shared.TypeIfc;
+import org.sakaiproject.tool.assessment.facade.AgentFacade;
 import org.sakaiproject.tool.assessment.facade.AssessmentFacade;
 import org.sakaiproject.tool.assessment.facade.ItemFacade;
 import org.sakaiproject.tool.assessment.facade.QuestionPoolFacade;
@@ -772,16 +773,23 @@ public class ExtractionHelper
         "ASSESSMENT_RELEASED_TO");
 
     // for backwards compatibility with version 1.5 exports.
+    // if release to groups, set to Site
     if (releasedTo != null && releasedTo.indexOf("Authenticated Users") > -1)
     {
       log.debug(
           "Fixing obsolete reference to 'Authenticated Users', setting released to 'Anonymous Users'.");
       releasedTo = AuthoringConstantStrings.ANONYMOUS;
     }
-
-    if (releasedTo != null) {
-      log.debug("control.setReleaseTo(releasedTo)='"+releasedTo+"'.");
-      control.setReleaseTo(releasedTo);
+    else if (releasedTo != null && releasedTo.indexOf("Selected Groups") > -1){
+    	releasedTo = AgentFacade.getCurrentSiteName();
+    }
+    else {
+    	if (AgentFacade.getCurrentSiteName() != null) {
+    		releasedTo = AgentFacade.getCurrentSiteName();
+    	}
+    	else {
+    		control.setReleaseTo(releasedTo);
+    	}
     }
     
     // Timed Assessment
