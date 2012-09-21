@@ -18,44 +18,37 @@
  * limitations under the License.
 *
 **********************************************************************************/
-package test.org.sakaiproject.tool.assessment.jsf;
+package org.sakaiproject.tool.assessment.jsf;
+
 import java.io.Serializable;
 
 /**
- * <p> test bean</p>
+ * <p> </p>
+ * <p> </p>
+ * <p>Copyright: Copyright (c) 2004 Sakai</p>
+ * <p> </p>
  * @author Ed Smiley esmiley@stanford.edu
  * @version $Id$
  */
 
-public class LinksModelBean implements Serializable
+public class TestLink implements Serializable
 {
-  private java.util.ArrayList linkListList;
-
-  public LinksModelBean()
+  private String action;
+  private String text;
+  public String getAction()
   {
-    linkListList = new java.util.ArrayList();
-    for (int i = 0; i < 20; i++) {
-      linkListList.add(new TestLinksBean());
-    }
+    return action;
   }
-
-  public java.util.ArrayList getLinkListList()
+  public void setAction(String action)
   {
-    return linkListList;
+    this.action = action;
   }
-  public void setLinkListList(java.util.ArrayList linkListList)
+  public String getText()
   {
-    this.linkListList = linkListList;
+    return text;
   }
-
-  public static void main(String args[])
+  public void setText(String text)
   {
-    LinksModelBean bean = new LinksModelBean();
-    java.util.ArrayList list = bean.getLinkListList();
-
-    for (int i = 0; i < list.size(); i++) {
-    }
+    this.text = text;
   }
-
-
 }
