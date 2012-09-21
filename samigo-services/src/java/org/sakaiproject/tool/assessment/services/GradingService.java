@@ -45,6 +45,7 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.event.cover.EventTrackingService;
+import org.apache.commons.math.util.MathUtils;
 import org.apache.commons.math.complex.Complex;
 import org.apache.commons.math.complex.ComplexFormat;
 import org.sakaiproject.service.gradebook.shared.GradebookService;
@@ -1172,10 +1173,11 @@ public class GradingService
       }
     }
 
-    //change the final score back to the original score since it may set to average score.
-    if(data.getFinalScore() != originalFinalScore ) {
-	data.setFinalScore(originalFinalScore);
-     }
+    // change the final score back to the original score since it may set to average score.
+    // data.getFinalScore() != originalFinalScore
+    if(!(MathUtils.equalsIncludingNaN(data.getFinalScore(), originalFinalScore, 0.0001))) {
+    	data.setFinalScore(originalFinalScore);
+    }
     } else {
        if(log.isDebugEnabled()) log.debug("Not updating the gradebook.  toGradebook = " + toGradebook);
     }
