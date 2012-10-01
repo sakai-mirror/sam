@@ -1394,6 +1394,10 @@ public class HistogramListener
 	  while(iter.hasNext()){
 		  Long id = (Long)iter.next();
 		  AnswerIfc answer = (AnswerIfc) publishedAnswerHash.get(id);
+		  if (!qbean.getItemId().equals(answer.getItem().getItemId())) {
+			  continue;
+		  }
+		  isIn = false;
 		  //log.info("kim debug: publishedAnswerHash: key value " + id + answer.getText());
 		  for(int i=0; i< answerTextList.size(); i++){
 			  if((((String)answer.getText()).trim()).equals(((String)answerTextList.get(i)).trim())){
