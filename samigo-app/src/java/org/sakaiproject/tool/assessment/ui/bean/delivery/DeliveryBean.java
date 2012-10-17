@@ -2712,8 +2712,8 @@ public class DeliveryBean
   {
 	  this.noQuestions = noQuestions;
   }
-
-  public String checkBeforeProceed(boolean isSubmitForGrade){
+  
+  public String checkBeforeProceed(boolean isSubmitForGrade, boolean isViaUrlLogin){
     // public method, who know if publishedAssessment is set, so check
     // to be sure
     if (getPublishedAssessment() == null){
@@ -2791,7 +2791,9 @@ public class DeliveryBean
         ACCEPT_LATE_SUBMISSION.equals(publishedAssessment.getAssessmentAccessControl().getLateHandling());
 
     // check 7: has dueDate arrived? if so, does it allow late submission?
-    // SAM-1591: timed assessments taken via URL should not allow the user to start if acceptLateSubmission=false
+    // If it is a timed assessment and "No Late Submission" and not during a Retake, always go through. Because in this case the
+   	// assessment will be auto-submitted anyway - when time is up or when current date reaches due date (if the time limited is
+   	// longer than due date,) for either case, we want to redirect to the normal "submision successful page" after submitting.
     if (pastDueDate()){
     	// If Accept Late and there is no submission yet, go through
     	if (acceptLateSubmission && totalSubmitted == 0) {
@@ -2801,9 +2803,13 @@ public class DeliveryBean
     		log.debug("take from bean: actualNumberRetake =" + actualNumberRetake);
     		// Not during a Retake
     		if (actualNumberRetake == numberRetake) {
+    			// When taking the assessment via URL (from LoginServlet), if pass due date, throw an error 
+    			if (isViaUrlLogin) {
+    				return "noLateSubmission";
+    			}
     	    	// If No Late, this is a timed assessment, and not during a Retake, go through (see above reason)
-    			if (acceptLateSubmission) {
-    				log.debug("Allowing the late submission by the user");
+    			else if (!acceptLateSubmission && this.isTimedAssessment()) {
+    				log.debug("No Late Submission && timedAssessment"); 
     			}
     			else {
     				log.debug("noLateSubmission");
@@ -2829,8 +2835,16 @@ public class DeliveryBean
     else return "safeToProceed";
   }
   
+  public String checkFromViaUrlLogin(){
+	  return checkBeforeProceed(false, true);
+  }
+  
   public String checkBeforeProceed(){
 	  return checkBeforeProceed(false);
+  }
+  
+  public String checkBeforeProceed(boolean isSubmitForGrade){
+	  return checkBeforeProceed(isSubmitForGrade, false);
   }
 
   private boolean getHasSubmissionLeft(int totalSubmitted, int numberRetake){
