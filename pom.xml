@@ -52,6 +52,19 @@
                 <type>jar</type>
             </dependency>
             <dependency>
+                <artifactId>samigo-api</artifactId>   
+                <version>${project.version}</version>  
+                <type>jar</type>  
+                <scope>provided</scope>  
+            </dependency>
+            <dependency>  
+                <groupId>org.sakaiproject.samigo</groupId>   
+                <artifactId>samigo-services</artifactId>  
+                <version>${project.version}</version>  
+                <type>jar</type>  
+                <scope>provided</scope>  
+            </dependency>
+            <dependency>
                 <groupId>org.sakaiproject.samigo</groupId>
                 <artifactId>samigo-hibernate</artifactId>
                 <version>${project.version}</version>
