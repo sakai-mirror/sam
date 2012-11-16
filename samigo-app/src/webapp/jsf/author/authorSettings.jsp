@@ -42,7 +42,6 @@
 
 
 <script style="text/JavaScript">
-<!--
 function validateUrl(){
   var list =document.getElementsByTagName("input");
   for (var i=0; i<list.length; i++){
@@ -300,9 +299,6 @@ function setBlockDivs()
    //document.forms[0].elements['assessmentSettingsAction:blockDivs'].value = "_id224";
    document.forms[0].elements['assessmentSettingsAction:blockDivs'].value = blockDivs;
 }
-
-
-//-->
 </script>
 
 
