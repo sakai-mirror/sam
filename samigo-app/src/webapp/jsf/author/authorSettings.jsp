@@ -41,7 +41,7 @@
       <samigo:script path="/js/authoring.js"/>
 
 
-<script style="text/JavaScript">
+<script type="text/JavaScript">
 function validateUrl(){
   var list =document.getElementsByTagName("input");
   for (var i=0; i<list.length; i++){
@@ -1015,8 +1015,7 @@ function setBlockDivs()
 </h:form>
 <!-- end content -->
 </div>
-         <script style="text/JavaScript">retainHideUnhideStatus('none');showHideReleaseGroups();</script>
-
+         <script type="text/JavaScript">retainHideUnhideStatus('none');showHideReleaseGroups();</script>
       </body>
     </html>
   </f:view>

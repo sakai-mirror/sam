@@ -42,7 +42,7 @@
       </head>
     <body onload="<%= request.getAttribute("html.body.onload") %>">
 
-<script style="text/JavaScript">
+<script type="text/JavaScript">
 function updateItemNavigation(isFromItemNavigation)
 {
   var inputhidden = document.getElementById("assessmentSettingsAction:itemNavigationUpdated");
@@ -980,8 +980,7 @@ function uncheckOther(field){
 <!-- end content -->
 <f:verbatim></div></f:verbatim>
 
-        <script style="text/JavaScript">retainHideUnhideStatus('none');showHideReleaseGroups();</script>
-        
+        <script type="text/JavaScript">retainHideUnhideStatus('none');showHideReleaseGroups();</script>
       </body>
     </html>
   </f:view>
