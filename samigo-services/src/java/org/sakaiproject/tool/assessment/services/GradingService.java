@@ -2190,9 +2190,58 @@ class EMIScore implements Comparable<EMIScore>{
 	}
 	
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((answerId == null) ? 0 : answerId.hashCode());
+		result = prime * result + (correct ? 1231 : 1237);
+		result = prime * result
+				+ ((effectiveScore == null) ? 0 : effectiveScore.hashCode());
+		result = prime * result + ((itemId == null) ? 0 : itemId.hashCode());
+		result = prime * result
+				+ ((itemTextId == null) ? 0 : itemTextId.hashCode());
+		result = prime * result + ((score == null) ? 0 : score.hashCode());
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
-		if(obj == null) return false;
-		return (this == obj);
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EMIScore other = (EMIScore) obj;
+		if (answerId == null) {
+			if (other.answerId != null)
+				return false;
+		} else if (!answerId.equals(other.answerId))
+			return false;
+		if (correct != other.correct)
+			return false;
+		if (effectiveScore == null) {
+			if (other.effectiveScore != null)
+				return false;
+		} else if (!effectiveScore.equals(other.effectiveScore))
+			return false;
+		if (itemId == null) {
+			if (other.itemId != null)
+				return false;
+		} else if (!itemId.equals(other.itemId))
+			return false;
+		if (itemTextId == null) {
+			if (other.itemTextId != null)
+				return false;
+		} else if (!itemTextId.equals(other.itemTextId))
+			return false;
+		if (score == null) {
+			if (other.score != null)
+				return false;
+		} else if (!score.equals(other.score))
+			return false;
+		return true;
 	}
 	
 	@Override
