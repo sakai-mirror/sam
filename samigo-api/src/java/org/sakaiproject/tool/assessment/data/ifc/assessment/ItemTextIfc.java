@@ -68,14 +68,28 @@ public interface ItemTextIfc
   List<ItemTextAttachmentIfc> getItemTextAttachmentList();
 
   
-  //gopalrc - added Aug 2010
-  //This is an actual EMI Question Item (i.e. not Theme or Lead In Text or Complete Answer Options List) 
+  /**
+   *This is an actual EMI Question Item (i.e. not Theme or Lead In Text or Complete Answer Options List) 
+   * @return
+   * @author gopalrc
+   * @since 2.10
+   */
   public boolean isEmiQuestionItemText();
   
-	// gopalrc - added Aug 2010
-	public Integer getRequiredOptionsCount();
+
+	/**
+	 * Get the number of required option 
+	 * @return the number of required options or 1 if not defined
+	 * @author gopalrc
+	 * @since 2.10
+	 */
+  	public Integer getRequiredOptionsCount();
 	public void setRequiredOptionsCount(Integer requiredOptionsCount);
 	public String getEmiCorrectOptionLabels();
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean getHasAttachment();
 
   

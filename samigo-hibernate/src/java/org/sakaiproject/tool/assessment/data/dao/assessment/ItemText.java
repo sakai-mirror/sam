@@ -174,6 +174,10 @@ public class ItemText
 	  
 	// gopalrc - added Aug 2010
 	public Integer getRequiredOptionsCount() {
+		if (requiredOptionsCount == null) {
+			return Integer.valueOf(1);
+		}
+		
 		return requiredOptionsCount;
 	}
 
