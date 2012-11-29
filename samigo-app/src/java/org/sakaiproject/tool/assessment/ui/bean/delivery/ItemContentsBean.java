@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import javax.faces.model.SelectItem;
 
 import javax.faces.model.SelectItem;
 import javax.faces.context.ExternalContext;
@@ -989,6 +990,16 @@ public class ItemContentsBean implements Serializable {
 		}
 	}	
 
+	public List<SelectItem> getSelectItemPartsMC() {
+		List<SelectItem> selectItemParts = new ArrayList<SelectItem>();
+		
+		for(SelectionBean selection: selectionArray) {			
+			selectItemParts.add(new SelectItem(selection.getAnswerId(), ""));
+		}
+		
+		return selectItemParts;
+	}
+ 
 	public ArrayList getAnswers()
 	{
 		return answers;
