@@ -249,4 +249,8 @@ li.last {
         border: 0 none;
 }
 
+.answerkeyFeedbackCommentLabel {
+	FONT-WEIGHT: bold;
+    COLOR:#860000;
+} 
 

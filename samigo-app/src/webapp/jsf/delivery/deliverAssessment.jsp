@@ -250,12 +250,13 @@ String.prototype.endsWith = function(txt)
 
       <h:dataTable width="100%" value="#{part.itemContents}" var="question">
         <h:column>
-<f:verbatim><h5></f:verbatim>
+
 <h:panelGrid columns="2" width="100%" columnClasses="navView,navList">
          <h:panelGroup>
            <h:outputText value="<a name='p#{part.number}q#{question.number}'></a>" escape="false" />
 
         <h:outputText value="#{deliveryMessages.q} #{question.sequence} #{deliveryMessages.of} #{part.numbering}"/>
+<f:verbatim><h5></f:verbatim>
 </h:panelGroup>
 <h:panelGroup>
 <h:outputText value=" #{question.pointsDisplayString} #{question.maxPoints} #{deliveryMessages.pt}" rendered="#{delivery.actionString=='reviewAssessment'}"/>
