@@ -3154,9 +3154,12 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 		  ItemService itemService = new ItemService();
 		  Long itemTextId = itemService.getItemTextId(publishedItemId);
 		  log.debug("itemTextId = " + itemTextId);
-		  itemGradingData.setPublishedItemTextId(itemTextId);
-		  GradingService gradingService = new GradingService();
-		  gradingService.saveItemGrading(itemGradingData);
+
+		  if(itemTextId != -1){
+			  itemGradingData.setPublishedItemTextId(itemTextId);
+			  GradingService gradingService = new GradingService();
+			  gradingService.saveItemGrading(itemGradingData);
+		  }
 	  }
 	  
 	  /***
