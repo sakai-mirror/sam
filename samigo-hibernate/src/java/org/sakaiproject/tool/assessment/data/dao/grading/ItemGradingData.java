@@ -68,6 +68,7 @@ public class ItemGradingData
   // these two properties are used by audio question in Samigo 2.2
   private Integer attemptsRemaining;
   private String lastDuration;
+  private Boolean isCorrect;
   private ArrayList mediaArray;
   private Set itemGradingAttachmentSet;
   
@@ -218,6 +219,17 @@ public class ItemGradingData
   }
   public void setLastDuration(String lastDuration) {
     this.lastDuration = lastDuration;
+  }
+    
+  public Boolean getIsCorrect() {
+    if (isCorrect == null) {
+      isCorrect = Boolean.FALSE;
+    }
+    return isCorrect;
+  }
+
+  public void setIsCorrect(Boolean isCorrect) {
+    this.isCorrect = isCorrect;
   }
 
   public ArrayList getMediaArray(){

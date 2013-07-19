@@ -129,4 +129,7 @@ public interface ItemGradingIfc
 
   public List getItemGradingAttachmentList();
 
+  public Boolean getIsCorrect();
+
+    public void setIsCorrect(Boolean isCorrect);
 }
