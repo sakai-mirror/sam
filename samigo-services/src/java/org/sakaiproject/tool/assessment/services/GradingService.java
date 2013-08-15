@@ -1439,6 +1439,7 @@ Here are the definition and 12 cases I came up with (lydia, 01/2006):
   
   public float getFINScore(ItemGradingIfc data,  ItemDataIfc itemdata, HashMap publishedAnswerHash) throws FinFormatException
   {
+	  data.setIsCorrect(Boolean.FALSE);
 	  float totalScore = (float) 0;
 	  boolean matchresult = getFINResult(data, itemdata, publishedAnswerHash);
 	  if (matchresult){

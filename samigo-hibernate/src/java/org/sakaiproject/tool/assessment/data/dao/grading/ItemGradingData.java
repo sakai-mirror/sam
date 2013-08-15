@@ -222,9 +222,6 @@ public class ItemGradingData
   }
     
   public Boolean getIsCorrect() {
-    if (isCorrect == null) {
-      isCorrect = Boolean.FALSE;
-    }
     return isCorrect;
   }
 
