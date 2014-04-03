@@ -53,6 +53,12 @@
                             <alias>${sakai.samigo-audio.jarsign.alias}</alias>
                             <storepass>${sakai.samigo-audio.jarsign.password}</storepass>
                             <verify>true</verify>
+                            <archive>
+								<index>true</index>
+								<manifestEntries>
+									<Permissions>all-permissions</Permissions>
+								</manifestEntries>
+							</archive>
                         </configuration>
                     </plugin>
                 </plugins>
