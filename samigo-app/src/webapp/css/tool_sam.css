@@ -569,11 +569,6 @@ table.listHierEventLog {
 	height: 100%;
 }
 
-.mcAnswerText {
-	display:inline-table;
-	width: 80%;
-}
-
 #timer-expired-warning{
 	text-align: center;	
 }
@@ -907,3 +902,25 @@ background-color:#DBDBDB;
 }
 
 
+/* rte fixup */ 
+.samMcAnswerTable td {
+    vertical-align: top;
+}
+
+.samMcAnswerTable p {
+    margin-top: 0;
+}
+
+.samMcAnswerTable input[type="checkbox"],
+.samMcAnswerTable input[type="radio"] {
+    margin-top: 0;
+    padding-top: 0; 
+}
+
+.samMcCheckboxImg {
+    margin-top: -3px;
+}
+
+.samMcRadioImg {
+    margin-top: -1px;
+}

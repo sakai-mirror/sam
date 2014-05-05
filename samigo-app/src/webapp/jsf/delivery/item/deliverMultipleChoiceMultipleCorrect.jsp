@@ -27,7 +27,7 @@ should be included in file importing DeliveryMessages
   <!-- ATTACHMENTS -->
   <%@ include file="/jsf/delivery/item/attachment.jsp" %>
 
-  <h:dataTable value="#{question.selectionArray}" var="selection" width="100%">
+  <h:dataTable value="#{question.selectionArray}" var="selection" styleClass="samMcAnswerTable">
     <h:column rendered="#{delivery.feedback eq 'true' &&
        delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
       <h:graphicImage id="image"
@@ -41,14 +41,16 @@ should be included in file importing DeliveryMessages
       </h:graphicImage>
     </h:column>
     <h:column>
-     <f:verbatim><label></f:verbatim>
      <h:selectBooleanCheckbox value="#{selection.response}"
         disabled="#{delivery.actionString=='reviewAssessment'
                  || delivery.actionString=='gradeAssessment'}" />
+    </h:column>
+    <h:column>
      <h:outputText value=" #{selection.answer.label}" escape="false" />
      <h:outputText value="#{deliveryMessages.dot}" rendered="#{selection.answer.label ne ''}" />
-     <h:outputText value=" #{selection.answer.text}" styleClass="mcAnswerText" escape="false" />
-     <f:verbatim></label></f:verbatim>
+    </h:column>
+    <h:column>
+     <h:outputText value=" #{selection.answer.text}" escape="false" />
     </h:column>
     <h:column>
       <h:panelGroup rendered="#{delivery.feedback eq 'true' &&

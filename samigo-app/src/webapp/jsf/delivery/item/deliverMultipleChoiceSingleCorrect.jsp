@@ -50,7 +50,7 @@ should be included in file importing DeliveryMessages
   <f:verbatim></div></f:verbatim>
 
 
-  <h:dataTable value="#{question.selectionArray}" var="selection" width="100%">
+  <h:dataTable value="#{question.selectionArray}" var="selection" styleClass="samMcAnswerTable">
     <h:column rendered="#{delivery.feedback eq 'true' &&
        delivery.feedbackComponent.showCorrectResponse && !delivery.noFeedback=='true'}">
       <h:graphicImage id="image"
@@ -67,8 +67,10 @@ should be included in file importing DeliveryMessages
 	</h:column> 	 
 	<h:column> 	 
 	  <h:outputText value=" #{selection.answer.label}" escape="false" /> 	 
-	  <h:outputText value=". " rendered="#{selection.answer.label ne ''}" /> 	 
-	  <h:outputText value="#{selection.answer.text}" styleClass="mcAnswerText" escape="false" >
+	  <h:outputText value="." rendered="#{selection.answer.label ne ''}" /> 	 
+	</h:column>
+	<h:column>
+	  <h:outputText value="#{selection.answer.text}" escape="false" >
      	<f:converter converterId="org.sakaiproject.tool.assessment.jsf.convert.AnswerSurveyConverter" />
       </h:outputText>
     </h:column>
@@ -85,7 +87,7 @@ should be included in file importing DeliveryMessages
   </h:dataTable>
 
   <f:verbatim></div></f:verbatim>
-  <f:verbatim><script>$('div.mcscFixUp').each(function(index1,elBlockToFix){$(elBlockToFix).find('div.mcscFixUpSource label').each(function(index,elLabelAndInputToMove){$(elBlockToFix).find('div.mcscFixUpTarget:first').replaceWith($(elLabelAndInputToMove));$(elLabelAndInputToMove).parent('td').next('td').contents().appendTo(elLabelAndInputToMove);$(elLabelAndInputToMove).parent('td').next('td').remove();});$(elBlockToFix).find('div.mcscFixUpSource').remove();});</script></f:verbatim>
+  <f:verbatim><script>$('div.mcscFixUp').each(function(index1,elBlockToFix){$(elBlockToFix).find('div.mcscFixUpSource label').each(function(index,elLabelAndInputToMove){$(elBlockToFix).find('div.mcscFixUpTarget:first').replaceWith($(elLabelAndInputToMove));});$(elBlockToFix).find('div.mcscFixUpSource').remove();});</script></f:verbatim>
 
   <h:panelGroup
     rendered="#{question.itemData.hasRationale && question.itemData.typeId != 3}" >

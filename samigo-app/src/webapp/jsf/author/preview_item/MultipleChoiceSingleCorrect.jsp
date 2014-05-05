@@ -28,18 +28,21 @@ should be included in file importing DeliveryMessages
   <!-- ATTACHMENTS -->
   <%@ include file="/jsf/author/preview_item/attachment.jsp" %>
 
-  <h:dataTable value="#{question.itemData.itemTextArraySorted}" var="itemText" width="100%">
+  <h:dataTable value="#{question.itemData.itemTextArraySorted}" var="itemText">
     <h:column>
-      <h:dataTable value="#{itemText.answerArraySorted}" var="answer" width="100%">
+      <h:dataTable value="#{itemText.answerArraySorted}" var="answer" styleClass="samMcAnswerTable">
         <h:column>
          <h:panelGroup rendered="#{answer.text !=null && answer.text!=''}">
-          <h:graphicImage id="image1" rendered="#{answer.isCorrect}" alt="#{authorMessages.correct}" url="/images/radiochecked.gif"/>
+          <h:graphicImage id="image1" rendered="#{answer.isCorrect}" alt="#{authorMessages.correct}" url="/images/radiochecked.gif" styleClass="samMcRadioImg" />
          
-          <h:graphicImage id="image2" rendered="#{!answer.isCorrect}" alt="#{authorMessages.not_correct}" url="/images/radiounchecked.gif"/>
-        
+          <h:graphicImage id="image2" rendered="#{!answer.isCorrect}" alt="#{authorMessages.not_correct}" url="/images/radiounchecked.gif" styleClass="samMcRadioImg" />
+         </h:panelGroup>
+        </h:column>
+        <h:column rendered="#{answer.text != null && answer.text ne ''}">
           <h:outputText escape="false" value="#{answer.label}. " />
-          <h:outputText escape="false" value="#{answer.text}" styleClass="mcAnswerText"/>
-</h:panelGroup>
+        </h:column>
+        <h:column rendered="#{answer.text !=null && answer.text!=''}">        
+          <h:outputText escape="false" value="#{answer.text}" />
 </h:column><h:column>
  
           <h:panelGroup rendered="#{answer.text ne null && answer.text ne '' && author.isEditPendingAssessmentFlow && assessmentSettings.feedbackAuthoring ne '1' && answer.generalAnswerFbIsNotEmpty}">

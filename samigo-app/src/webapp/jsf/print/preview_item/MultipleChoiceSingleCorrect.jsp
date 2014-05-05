@@ -33,17 +33,20 @@ should be included in file importing DeliveryMessages
   <h:outputText value="<br />" escape="false" />    
   <%@ include file="/jsf/delivery/item/attachment.jsp" %> 
   
-  <h:dataTable value="#{question.itemData.itemTextArraySorted}" var="itemText" width="100%">
+  <h:dataTable value="#{question.itemData.itemTextArraySorted}" var="itemText" styleClass="samMcAnswerTable">
     <h:column>
-     <h:dataTable value="#{itemText.answerArraySorted}" var="answer" width="100%">
+     <h:dataTable value="#{itemText.answerArraySorted}" var="answer">
         <h:column>
-          <%-- inputBlock --%>
-          <h:panelGroup rendered="#{answer.text !=null && answer.text!=''}" styleClass="inputBlock">
-		    <%-- Show answer text --%>
-		    <h:graphicImage id="image1" url="/images/radiounchecked.gif"/>
-		    <h:outputText escape="false" value="#{answer.label}. " />
-			<h:outputText escape="false" value="#{answer.text}" styleClass="mcAnswerText"/>
-          </h:panelGroup>
+		    <%-- Show answer checkbox --%>
+		    <h:graphicImage id="image1" url="/images/radiounchecked.gif" rendered="#{answer.text !=null && answer.text!=''}" styleClass="samMcRadioImg" />
+        </h:column>
+        <h:column>
+		    <%-- show answer label --%>
+		    <h:outputText styleClass="inputBlock" escape="false" value="#{answer.label}. " rendered="#{answer.text !=null && answer.text!=''}" />
+        </h:column>
+        <h:column rendered="#{answer.text !=null && answer.text!=''}">
+          <%-- show answer text --%>
+          <h:outputText styleClass="inputBlock" escape="false" value="#{answer.text}" />
         </h:column>
 		<h:column>
 		  <%-- Show feedback answer --%>

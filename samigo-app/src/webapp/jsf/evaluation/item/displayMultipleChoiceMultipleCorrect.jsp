@@ -26,7 +26,7 @@ include file for displaying multiple choice questions
   <h:outputText value="#{question.text}"  escape="false"/>
   <h:dataTable value="#{question.itemTextArray}" var="itemText">
    <h:column>
-   <h:dataTable value="#{itemText.answerArraySorted}" var="answer" width="100%">
+   <h:dataTable value="#{itemText.answerArraySorted}" var="answer" styleClass="samMcAnswerTable">
     <h:column rendered="#{answer.text!=null && answer.text!=''}">
       <h:graphicImage id="image6" rendered="#{answer.isCorrect}"
         alt="#{evaluationMessages.alt_correct}" url="/images/delivery/checkmark.gif" >
@@ -47,7 +47,7 @@ include file for displaying multiple choice questions
       </h:selectManyCheckbox>
     </h:column>
     <h:column rendered="#{answer.text!=null && answer.text!=''}">
-      <h:outputText styleClass="mcAnswerText" value="#{answer.text}" escape="false" />
+      <h:outputText value="#{answer.text}" escape="false" />
     </h:column>
    </h:dataTable>
    </h:column>
