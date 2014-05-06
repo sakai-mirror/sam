@@ -38,22 +38,23 @@
     <h:outputFormat value=" #{deliveryMessages.audio_recorder_timelimit}" escape="false"> <f:param value="<span id=\"audio-time-allowed\"> </span>" /> </h:outputFormat>
   <f:verbatim></div></f:verbatim>
   <f:verbatim><div class="attempts-allowed"></f:verbatim>
-    <h:outputFormat value=" #{deliveryMessages.audio_recorder_attempts_allowed}" escape="false"/> <f:verbatim><span id="audio-attempts-allowed"> </span></f:verbatim>
+    <h:outputFormat value=" #{deliveryMessages.audio_recorder_attempts_allowed} " escape="false"/> <f:verbatim><span id="audio-attempts-allowed"> </span></f:verbatim>
   <f:verbatim></div></f:verbatim>
   <f:verbatim><div class="attempts-remaining"></f:verbatim>
-    <h:outputFormat value=" #{deliveryMessages.audio_recorder_attempts_remaining}" escape="false"/> <f:verbatim><span id="audio-attempts"> </span></f:verbatim>
+    <h:outputFormat value=" #{deliveryMessages.audio_recorder_attempts_remaining} " escape="false"/> <f:verbatim><span id="audio-attempts"> </span></f:verbatim>
     <f:verbatim><span id="audio-last-attempt" style="display:none"></f:verbatim> <h:outputFormat value=" #{deliveryMessages.audio_recorder_last_attempt} " escape="false"/> <f:verbatim></span></f:verbatim>
   <f:verbatim></div></f:verbatim>
 <f:verbatim></div></f:verbatim>
 
 <f:verbatim>
+<div id="audio-posting" style="display:none"></f:verbatim><h:outputFormat value=" #{deliveryMessages.audio_recorder_posting}" /><f:verbatim></div>
+<div id="audio-finished" style="display:none"></f:verbatim><h:outputFormat value=" #{deliveryMessages.audio_recorder_complete}" /><f:verbatim></div>
+<div id="audio-browser-plea" style="display:none"></f:verbatim><h:outputFormat value=" #{deliveryMessages.audio_recorder_browser_plea}" /><f:verbatim></div>
+<div id="flashrecarea"> </div>
 <div id="audio-visual-container">
-  <div id="flashrecarea"> </div>
   <canvas id="audio-analyzer"></canvas>
 
   <div id="audio-controls">
-    <div id="audio-posting" style="display:none"></f:verbatim><h:outputFormat value=" #{deliveryMessages.audio_recorder_posting}" /><f:verbatim></div>
-    <div id="audio-finished" style="display:none"></f:verbatim><h:outputFormat value=" #{deliveryMessages.audio_recorder_complete}" /><f:verbatim></div>
     <div id="audio-statusbar" style="display:none"> </div>
     <div id="audio-levelbar"> </div>
     <div id="audio-timer-wrapper">
