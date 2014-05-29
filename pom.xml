@@ -18,7 +18,7 @@
 		 It has to use a released signed version otherwise it doesn't work.
     -->
 	<properties>
-		<samigo.audio.version>2.9.3</samigo.audio.version>
+		<samigo.audio.version>2.9.4</samigo.audio.version>
 	</properties>
     
 	<modules>
@@ -57,7 +57,9 @@
 				<module>samigo-audio</module>
 			</modules>
 			<properties>
+				<!--
 				<samigo.audio.version>${project.version}</samigo.audio.version>
+				-->
 			</properties>
 		</profile>
 		<!-- Use this profile if you want to develop on samigo audio -->
