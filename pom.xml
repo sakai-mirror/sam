@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.sakaiproject</groupId>
         <artifactId>master</artifactId>
-        <version>2.9-SNAPSHOT</version>
+        <version>2.9.3</version>
 		<relativePath>../master/pom.xml</relativePath>
     </parent>
 	
 	<name>Sakai Samigo Project (base POM)</name>
 	<groupId>org.sakaiproject.samigo</groupId>
 	<artifactId>samigo</artifactId>
-	<version>2.9.4-SNAPSHOT</version>
+	<version>2.9.4</version>
 	<packaging>pom</packaging>
 	<!-- If you are doing development on this jar you need to set this to ${project.version} or use the samigo-audio profile.
 		 It has to use a released signed version otherwise it doesn't work.
@@ -57,9 +57,7 @@
 				<module>samigo-audio</module>
 			</modules>
 			<properties>
-				<!--
 				<samigo.audio.version>${project.version}</samigo.audio.version>
-				-->
 			</properties>
 		</profile>
 		<!-- Use this profile if you want to develop on samigo audio -->
@@ -80,9 +78,9 @@
         
 	
 	<scm>
-		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x</connection>
-		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x</developerConnection>
-		<url>https://source.sakaiproject.org/svn/sam/branches/samigo-2.9.x</url>
+		<connection>scm:svn:https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.4</connection>
+		<developerConnection>scm:svn:https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.4</developerConnection>
+		<url>https://source.sakaiproject.org/svn/sam/tags/samigo-2.9.4</url>
 	</scm>
 	
 	<dependencyManagement>
