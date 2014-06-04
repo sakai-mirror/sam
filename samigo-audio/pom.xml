@@ -57,6 +57,7 @@
 								<index>true</index>
 								<manifestEntries>
 									<Permissions>all-permissions</Permissions>
+									<Application-Name>Sakai samigo-audio</Application-Name>
 								</manifestEntries>
 							</archive>
                         </configuration>
