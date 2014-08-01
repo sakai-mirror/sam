@@ -65,7 +65,7 @@
 <br/>
 
   <h:panelGrid>
-   <samigo:wysiwyg rows="140" value="#{sectionBean.sectionDescription}" hasToggle="yes">
+   <samigo:wysiwyg rows="140" value="#{sectionBean.sectionDescription}" hasToggle="yes" mode="author">
      <f:validateLength minimum="1" maximum="4000"/>
    </samigo:wysiwyg>
   </h:panelGrid>
