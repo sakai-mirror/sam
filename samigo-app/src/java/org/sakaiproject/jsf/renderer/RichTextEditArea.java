@@ -227,7 +227,7 @@ public class RichTextEditArea extends Renderer
   {
 
 	  String FCK_CollId = getPrivateCollection(); 
-	  String attrb = "fck.private.security.advisor." + FCK_CollId;
+	  String attrb = "ck.security.advisor." + FCK_CollId;
 
 	  SessionManager.getCurrentSession().setAttribute("ck.image.collectionId",FCK_CollId);
 	  SessionManager.getCurrentSession().setAttribute(attrb, new SecurityAdvisor()
