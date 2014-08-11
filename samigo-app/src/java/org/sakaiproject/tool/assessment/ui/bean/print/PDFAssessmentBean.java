@@ -845,7 +845,7 @@ public class PDFAssessmentBean implements Serializable {
 			}
 			single.addCell(cell);
 
-			prevs += single.getTotalHeight() % document.getPageSize().height();
+			prevs += single.getTotalHeight() % document.getPageSize().getHeight();
 			//TODO do we want a new page here ... thus giving the cover page look?
 
 			document.add(single);
@@ -871,7 +871,7 @@ public class PDFAssessmentBean implements Serializable {
 					}
 					single.addCell(cell);
 
-					prevs += single.getTotalHeight() % document.getPageSize().height();
+					prevs += single.getTotalHeight() % document.getPageSize().getHeight();
 					document.add(single);
 				}  
 
@@ -912,7 +912,7 @@ public class PDFAssessmentBean implements Serializable {
 					}
 					table.addCell(rightCell);
 
-					if (table.getTotalHeight() + prevs > document.getPageSize().height())
+					if (table.getTotalHeight() + prevs > document.getPageSize().getHeight())
 						document.newPage();
 
 					document.add(table);
