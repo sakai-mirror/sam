@@ -138,6 +138,9 @@ public class LoginServlet
     delivery.setAssessmentTitle(pub.getTitle());
     delivery.setPublishedAssessment(pub);
 
+    BeginDeliveryActionListener listener = new BeginDeliveryActionListener();
+    listener.populateBeanFromPub(delivery, pub);
+
     RequestDispatcher dispatcher = null;
     String path = "/jsf/delivery/invalidAssessment.faces";
     boolean relativePath = true;
@@ -185,7 +188,6 @@ public class LoginServlet
         // Assessment is available for taking
         else if ("safeToProceed".equals(nextAction)){
           // if assessment is available, set it in delivery bean for display in deliverAssessment.jsp
-          BeginDeliveryActionListener listener = new BeginDeliveryActionListener();
           listener.processAction(null);
           path = "/jsf/delivery/beginTakingAssessment_viaurl.faces";
         }
