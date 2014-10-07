@@ -541,7 +541,13 @@ public class HistogramListener
 				  if (questionScores.getQuestionType().equals("1") 
 						  || questionScores.getQuestionType().equals("2")
 						  || questionScores.getQuestionType().equals("3")
-						  || questionScores.getQuestionType().equals("4")) {
+						  || questionScores.getQuestionType().equals("4")
+						  || questionScores.getQuestionType().equals("8")
+						  || questionScores.getQuestionType().equals("9")
+						  || questionScores.getQuestionType().equals("11")
+						  || questionScores.getQuestionType().equals("12")
+						  || questionScores.getQuestionType().equals("15")
+						) {
 					  detailedStatistics.add(questionScores);
 					  if (questionScores.getHistogramBars() != null) {
 						  maxNumOfAnswers = questionScores.getHistogramBars().length >maxNumOfAnswers ? questionScores.getHistogramBars().length : maxNumOfAnswers;
