@@ -104,7 +104,7 @@ public class PDFAssessmentBean implements Serializable {
 	 * @param intro in html
 	 */
 	public void setIntro(String intro) {
-		this.intro = FormattedText.unEscapeHtml(intro);
+		this.intro = FormattedText.convertPlaintextToFormattedText(FormattedText.convertFormattedTextToPlaintext(FormattedText.unEscapeHtml(intro)));
 	}
 
 	/**
