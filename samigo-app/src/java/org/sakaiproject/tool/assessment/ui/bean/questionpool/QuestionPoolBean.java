@@ -196,7 +196,7 @@ public class QuestionPoolBean implements Serializable
   public QuestionPoolDataModel getCopyQpools()
   {
 //	  if (qpDataModelCopy == null) {
-		  buildTreeCopy();
+		  buildTree();
 		  setQpDataModelByLevelCopy(getSortCopyPoolProperty(), getSortCopyPoolAscending());
 //	  }
 	  log.debug("getCopyQpools()");
