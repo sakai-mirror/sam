@@ -2131,7 +2131,7 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
   }
   
   
-  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String partString, String questionString, String textString, String rationaleString, String itemGradingCommentsString, Map useridMap) {
+  public List getExportResponsesData(String publishedAssessmentId, boolean anonymous, String audioMessage, String fileUploadMessage, String noSubmissionMessage, boolean showPartAndTotalScoreSpreadsheetColumns, String poolString, String partString, String questionString, String textString, String rationaleString, String itemGradingCommentsString, Map useridMap, String responseCommentString) {
 	  ArrayList dataList = new ArrayList();
 	  ArrayList headerList = new ArrayList();
 	  ArrayList finalList = new ArrayList(2);
@@ -2278,7 +2278,10 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 
 				  String maintext = "";
 				  String rationale = "";
+				  String responseComment= "";
+					  
 				  boolean addRationale = false;
+				  boolean addResponseComment = false;
 
 				  boolean matrixChoices = false;
 				  TreeMap responsesMap = new TreeMap();
@@ -2483,6 +2486,17 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 							  }
 						  }
 					  }
+					  
+					  //Survey - Matrix of Choices - Add Comment Field
+					  if (typeId.equals(TypeIfc.MATRIX_CHOICES_SURVEY)) {
+						  PublishedItemData pid = (PublishedItemData) publishedItemData;
+						  if (pid.getAddCommentFlag()) {
+							  addResponseComment = true;
+							  if (responseComment.equals("") && grade.getAnswerText() != null) {
+								  responseComment = grade.getAnswerText();
+							  }
+						  }
+					  }
 				  } // inner for - answers
 
 
@@ -2553,7 +2567,11 @@ public class AssessmentGradingFacadeQueries extends HibernateDaoSupport implemen
 				  if (addRationale) {
 					  responseList.add(rationale);
 				  }
-
+				  
+				  if (addResponseComment) {
+					  responseList.add(responseComment);
+				  }
+				  
 				  // Only set header based on the first item grading data
 				  if (fistItemGradingData) {
                   	//get the pool name
