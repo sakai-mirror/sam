@@ -2145,7 +2145,7 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 			final String agentId, final String siteId, boolean allAssessments) {
 		
 		// take account of group release
-		final ArrayList groupIds = getSiteGroupIdsForCurrentUser(siteId);
+		final ArrayList<String> groupIds = getSiteGroupIdsForSubmittingAgent(agentId, siteId);
 		// sorted by submittedData DESC
 		final String order_last = " order by p.publishedAssessmentId DESC, a.submittedDate DESC";
 		// sorted by finalScore DESC
@@ -2655,17 +2655,17 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		this.siteService = siteService;
 	}
 	
-	private ArrayList getSiteGroupIdsForSubmittingAgent(String agentId, String siteId) {
+	private ArrayList<String> getSiteGroupIdsForSubmittingAgent(String agentId, String siteId) {
 
 		final ArrayList<String> groupIds = new ArrayList<String>();
-		// To accomodate the problem with Hibernate and empty array parameters 
+		// To accommodate the problem with Hibernate and empty array parameters 
 		// TODO: this should probably be handled in a more efficient way
 		groupIds.add("none");  
 		
 		if (siteId == null)
 			return groupIds;
 		
-		Collection siteGroups = null;
+		Collection<Group> siteGroups = null;
 		
 		try {
 			Site s = siteService.getSite(siteId);
@@ -2678,17 +2678,17 @@ public class PublishedAssessmentFacadeQueries extends HibernateDaoSupport
 		}
 
 		if (siteGroups != null) {
-			Iterator groupsIter = siteGroups.iterator();
+			Iterator<Group> groupsIter = siteGroups.iterator();
 			
 			while (groupsIter.hasNext()) {
-				Group group = (Group) groupsIter.next(); 
+				Group group = groupsIter.next(); 
 				groupIds.add(group.getId());
 			}
 		}
 		return groupIds;
 	}
 	
-	private ArrayList getSiteGroupIdsForCurrentUser(final String siteId) {
+	private ArrayList<String> getSiteGroupIdsForCurrentUser(final String siteId) {
 		String currentUserId = UserDirectoryService.getCurrentUser().getId();
 		return getSiteGroupIdsForSubmittingAgent(currentUserId, siteId);
 	}
