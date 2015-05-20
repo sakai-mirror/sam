@@ -31,7 +31,6 @@ public class SpringBeanLocator
   // The job scheduler can run before the webapp has been started and therefore can
   // attempt to get beans out of the tool before the tool has been started up.
   private static Object waitLock = new Object();
-  //private static Log log = LogFactory.getLog(SpringBeanLocator.class);
   private static WebApplicationContext waCtx = null;
   private static ConfigurableApplicationContext caCtx = null;
   private static boolean inWebContext = false;
@@ -90,12 +89,10 @@ public class SpringBeanLocator
     }
     if (inWebContext)
     {
-      //log.info("** context in Locator " + waCtx);
       return waCtx.getBean(name);
     }
     else
     {
-      //log.info("** context in Locator " + caCtx);
       return caCtx.getBean(name);
     }
 
