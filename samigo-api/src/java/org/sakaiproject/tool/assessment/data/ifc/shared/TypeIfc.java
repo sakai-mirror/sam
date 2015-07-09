@@ -41,6 +41,7 @@ public interface TypeIfc extends java.io.Serializable {
   // these are section type available in this site,
   public static Long DEFAULT_SECTION = Long.valueOf(21);
   // these are assessment template type available in this site,
+  public static final Long TEMPLATE_SYSTEM_DEFINED = Long.valueOf(142);
   public static Long TEMPLATE_QUIZ = Long.valueOf(41);
   public static Long TEMPLATE_HOMEWORK = Long.valueOf(42);
   public static Long TEMPLATE_MIDTERM = Long.valueOf(43);

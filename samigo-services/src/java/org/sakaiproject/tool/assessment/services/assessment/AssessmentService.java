@@ -130,7 +130,15 @@ public class AssessmentService {
 			throw new RuntimeException(e);
 		}
 	}
-
+	public AssessmentFacade getBasicInfoOfAnAssessmentFromSectionId(Long sectionId) {
+ 		try {
+ 			return PersistenceService.getInstance().getAssessmentFacadeQueries().getBasicInfoOfAnAssessmentFromSectionId(sectionId);
+ 		} catch (Exception e) {
+ 			log.error(e);
+ 			throw new RuntimeException(e);
+ 		}
+ 	}
+ 
 	public ArrayList getAllAssessmentTemplates() {
 		try {
 			return PersistenceService.getInstance()

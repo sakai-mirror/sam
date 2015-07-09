@@ -1034,8 +1034,8 @@ public class QuestionPoolFacadeQueries
    * @param poolId DOCUMENTATION PENDING
    */
 
-  public List getPoolIdsByAgent(final String agentId) {
-    ArrayList idList = new ArrayList();
+  public List<Long> getPoolIdsByAgent(final String agentId) {
+    ArrayList<Long> idList = new ArrayList<Long>();
 
     final HibernateCallback hcb = new HibernateCallback(){
     	public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -1046,10 +1046,6 @@ public class QuestionPoolFacadeQueries
     };
     List qpaList = getHibernateTemplate().executeFind(hcb);
 
-//    List qpaList = getHibernateTemplate().find(
-//        "select qpa from QuestionPoolAccessData as qpa where qpa.agentId= ?",
-//        new Object[] {agentId}
-//        , new org.hibernate.type.Type[] {Hibernate.STRING});
     try {
       Iterator iter = qpaList.iterator();
       while (iter.hasNext()) {

@@ -835,6 +835,13 @@ public class AssessmentFacadeQueries extends HibernateDaoSupport implements
 		f.setCreatedBy(a.getCreatedBy());
 		return f;
 	}
+	public AssessmentFacade getBasicInfoOfAnAssessmentFromSectionId(Long sectionId) {
+		SectionData section = loadSection(sectionId);
+		AssessmentData a = (AssessmentData) section.getAssessment();
+		AssessmentFacade f = new AssessmentFacade(a.getAssessmentBaseId(), a.getTitle(), a.getLastModifiedDate());
+		f.setCreatedBy(a.getCreatedBy());
+		return f;
+	}
 
 	public ArrayList getSettingsOfAllActiveAssessments(String orderBy) {
 		List list = getHibernateTemplate().find(

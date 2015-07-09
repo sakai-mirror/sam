@@ -44,6 +44,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.upload.FormFile;
@@ -61,6 +62,7 @@ import org.sakaiproject.tool.assessment.services.ItemService;
 import org.sakaiproject.tool.assessment.services.QuestionPoolService;
 import org.sakaiproject.tool.assessment.services.SectionService;
 import org.sakaiproject.tool.assessment.ui.bean.author.ItemAuthorBean;
+import org.sakaiproject.tool.assessment.ui.bean.author.AssessmentBean;
 import org.sakaiproject.tool.assessment.ui.listener.util.ContextUtil;
 import org.sakaiproject.tool.assessment.util.BeanSort;
 import org.sakaiproject.util.ResourceLoader;
@@ -1205,6 +1207,24 @@ public String getAddOrEdit()
 				.getAgentString());
 		Iterator iter = pools.iterator();
 
+		// verify that the sectionId is in the current assessment
+		String sectionId = ContextUtil.lookupParam("sectionId");
+		AssessmentBean assessmentBean = (AssessmentBean) ContextUtil.lookupBean("assessmentBean");
+		List<SelectItem> sectionList = assessmentBean.getSectionList();
+		boolean foundPart = false;
+		for (int i = 0; i < sectionList.size(); i++) {
+		    SelectItem s = sectionList.get(i);
+		    if (sectionId.equals((String)s.getValue())) foundPart = true;
+		}
+		if (!foundPart) {
+		    FacesContext context=FacesContext.getCurrentInstance();
+		    String err;
+		    err=rb.getString("no_pools_error");
+		    context.addMessage(null, new FacesMessage(err));
+		    return "editAssessment";
+		}
+
+
 		if (iter.hasNext()) {
 			// first pool, if there is one
 			QuestionPoolFacade pool = (QuestionPoolFacade) iter.next();
@@ -1212,7 +1232,7 @@ public String getAddOrEdit()
 			buildTree();
 			startEditPoolAgain(poolId);
 			setActionType("item");
-			this.sourcePart = ContextUtil.lookupParam("sectionId");
+			this.sourcePart = sectionId;
 			return "copyPool";
 		}
 		
@@ -1466,6 +1486,13 @@ public String getAddOrEdit()
 
           // Get all data from the database
           QuestionPoolService delegate = new QuestionPoolService();
+
+          // Does the user have permission to copy or move this pool?
+          List<Long> poolsWithAccess = delegate.getPoolIdsByAgent(AgentFacade.getAgentString());
+          if (!poolsWithAccess.contains(pool.getId())) {
+              throw new IllegalArgumentException("User " + AgentFacade.getAgentString() + " does not have access to question pool id " + pool.getId() + " for move or copy");
+          }
+
           QuestionPoolFacade thepool =
             delegate.getPool(
               new Long(qpid), AgentFacade.getAgentString());

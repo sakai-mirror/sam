@@ -132,6 +132,8 @@ public interface AssessmentFacadeQueriesAPI {
 
 	public AssessmentFacade getBasicInfoOfAnAssessment(Long assessmentId);
 
+	public AssessmentFacade getBasicInfoOfAnAssessmentFromSectionId(Long sectionId);
+
 	public ArrayList getSettingsOfAllActiveAssessments(String orderBy);
 
 	public ArrayList getAllAssessments(int pageSize, int pageNumber,

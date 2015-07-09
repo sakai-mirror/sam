@@ -59,7 +59,7 @@ public class AssessmentBean  implements Serializable {
   private String title;
   // ArrayList of SectionContentsBean
   private ArrayList sections = new ArrayList(); // this contains list of SectionFacde
-  private ArrayList sectionList = new ArrayList(); // this contains list of javax.faces.model.SelectItem
+  private ArrayList <SelectItem> sectionList = new ArrayList<SelectItem>(); // this contains list of javax.faces.model.SelectItem
   private ArrayList otherSectionList = new ArrayList(); // contains SectionItem of section except the current section
   private ArrayList partNumbers = new ArrayList();
   private int questionSize=0;
@@ -237,7 +237,7 @@ public class AssessmentBean  implements Serializable {
    */
   public void setSectionList(ArrayList list){
     //this.assessmentTemplateIter = new AssessmentTemplateIteratorFacade(list);
-    this.sectionList = new ArrayList();
+    this.sectionList = new ArrayList<SelectItem>();
     try{
       for (int i=0; i<list.size();i++){
         SectionDataIfc f = (SectionDataIfc) list.get(i);
@@ -257,7 +257,7 @@ public class AssessmentBean  implements Serializable {
     }
   }
 
-  public ArrayList getSectionList(){
+  public ArrayList<SelectItem> getSectionList(){
     return sectionList;
   }
 
