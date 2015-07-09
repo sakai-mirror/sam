@@ -114,6 +114,10 @@ public class BeginDeliveryActionListener implements ActionListener
     
     int action = delivery.getActionMode();
     PublishedAssessmentFacade pub = getPublishedAssessmentBasedOnAction(action, delivery, assessmentId, publishedId);
+
+    AssessmentAccessControlIfc control = pub.getAssessmentAccessControl();
+    boolean releaseToAnonymous = control.getReleaseTo() != null && control.getReleaseTo().indexOf("Anonymous Users")> -1;
+
     if(pub == null){
     	delivery.setOutcome("poolUpdateError");
     	throw new AbortProcessingException("pub is null");
@@ -133,7 +137,7 @@ public class BeginDeliveryActionListener implements ActionListener
       }
     }
     else if (DeliveryBean.REVIEW_ASSESSMENT == action || DeliveryBean.TAKE_ASSESSMENT == action) {
-      if (!authzBean.isUserAllowedToTakeAssessment(pub.getPublishedAssessmentId().toString())) {
+      if (!releaseToAnonymous && !authzBean.isUserAllowedToTakeAssessment(pub.getPublishedAssessmentId().toString())) {
         throw new IllegalArgumentException("User does not have permission to view assessment id " + pub.getPublishedAssessmentId());
       }
     }
