@@ -443,7 +443,7 @@ public class AuthorActionListener
 			  returnValue = false;
 		  }
 
-		  if (retractDate != null && retractDate.before(currentDate)) {
+		  if (acceptLateSubmission && retractDate != null && retractDate.before(currentDate)) {
 			  returnValue = false;
 		  }
 
