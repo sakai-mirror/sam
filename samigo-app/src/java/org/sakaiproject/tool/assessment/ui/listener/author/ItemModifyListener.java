@@ -174,7 +174,7 @@ public class ItemModifyListener implements ActionListener
       }
       else {
           // This item is in a question pool
-          UserDirectoryService userDirectoryService = ComponentManager.get(UserDirectoryService.class);
+          UserDirectoryService userDirectoryService = (UserDirectoryService) ComponentManager.get(UserDirectoryService.class);
           String currentUserId = userDirectoryService.getCurrentUser().getId();
           QuestionPoolService qpdelegate = new QuestionPoolService();
           List<Long> poolIds = qpdelegate.getPoolIdsByItem(itemId);
