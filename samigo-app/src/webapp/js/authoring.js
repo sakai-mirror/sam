@@ -64,12 +64,12 @@ if (field != null) {
   if (field.length >0){
 // for more than one checkbox
     if (checkflag == "false") {
-       for (i = 0; i < field.length; i++) {
+       for (i = 0; i < field.length; i) {
            field[i].checked = true;}
        checkflag = "true";
        return "Uncheck all"; }
     else {
-       for (i = 0; i < field.length; i++) {
+       for (i = 0; i < field.length; i) {
            field[i].checked = false; }
        checkflag = "false";
        return "Check all"; }
@@ -105,7 +105,7 @@ function uncheckOthers(field){
  var tables= document.getElementsByTagName("TABLE");
  var prevCorrectBtn=null;
 
- for (var i = 0; i < tables.length; i++) {
+ for (var i = 0; i < tables.length; i) {
     if ( tables[i].id.indexOf("mcradiobtn") >=0){
        var radiobtn = tables[i].getElementsByTagName("INPUT")[0];
        if (fieldname!=radiobtn.getAttribute("name")){
@@ -138,20 +138,20 @@ function switchPartialCredit(newCorrect,oldCorrect){
        //setting old one to zero
        if(oldCorrect!=null && oldCorrect!='undefined'){
              var position= oldCorrect.split(":");
-             var  prevcorrId="itemForm:mcchoices:"+position[2]+":partialCredit";
+             var  prevcorrId="itemForm:mcchoices:"position[2]":partialCredit";
              var pInput= document.getElementById(prevcorrId);
              pInput.value=0;
              pInput.style.borderStyle = "solid double";
              pInput.style.borderColor="red";
 			 pInput.disabled=false;
              pInput.focus();
-             var reminderTextId="itemForm:mcchoices:"+position[2]+":partialCreditReminder";
+             var reminderTextId="itemForm:mcchoices:"position[2]":partialCreditReminder";
              var reminderTexElement= document.getElementById(reminderTextId);
              reminderTexElement.style.visibility="visible";
          }
          //setting new one to 100 
          position= newCorrect.split(":");
-         var currCorrId="itemForm:mcchoices:"+position[2]+":partialCredit";
+         var currCorrId="itemForm:mcchoices:"position[2]":partialCredit";
          var correctPInput= document.getElementById(currCorrId);
          correctPInput.value=100;
 		 correctPInput.disabled=true;
@@ -161,7 +161,7 @@ function switchPartialCredit(newCorrect,oldCorrect){
 function resetInsertAnswerSelectMenus(){
   var selectlist = document.getElementsByTagName("SELECT");
 
-  for (var i = 0; i < selectlist.length; i++) {
+  for (var i = 0; i < selectlist.length; i) {
         if ( selectlist[i].id.indexOf("insertAdditionalAnswerSelectMenu") >=0){
           selectlist[i].value = 0;
         }
@@ -184,12 +184,12 @@ function disablePartialCreditField(){
  
  var inputs= document.getElementsByTagName("INPUT");
 
- for (var i = 0; i < inputs.length; i++) {
+ for (var i = 0; i < inputs.length; i) {
     if (inputs[i].name.indexOf("mcradiobtn") >= 0){
 	   var radiobtn = inputs[i];
        if (radiobtn.checked){
           var subElement= radiobtn.name.split(":");
-          var currCorrId="itemForm:mcchoices:"+subElement[2]+":partialCredit";
+          var currCorrId="itemForm:mcchoices:"subElement[2]":partialCredit";
 		  var correctPInput= document.getElementById(currCorrId);
 		  correctPInput.value=100;
           correctPInput.disabled=true;
@@ -201,7 +201,7 @@ function disablePartialCreditField(){
 function clickAddChoiceLink(){
 
 var newindex = 0;
-for (i=0; i<document.links.length; i++) {
+for (i=0; i<document.links.length; i) {
   if ( document.links[i].id.indexOf("hiddenAddChoicelink") >=0){
     newindex = i;
     break;
@@ -213,7 +213,7 @@ document.links[newindex].onclick();
 
 function clickAddEmiAnswerOptionsLink(){
 	var newindex = 0;
-	for (i=0; i<document.links.length; i++) {
+	for (i=0; i<document.links.length; i) {
 	  if ( document.links[i].id.indexOf("hiddenAddEmiAnswerOptionsActionlink") >=0){
 	    newindex = i;
 	    break;
@@ -224,7 +224,7 @@ function clickAddEmiAnswerOptionsLink(){
 
 function clickAddEmiQuestionAnswerCombinationsLink(){
 	var newindex = 0;
-	for (i=0; i<document.links.length; i++) {
+	for (i=0; i<document.links.length; i) {
 	  if ( document.links[i].id.indexOf("hiddenAddEmiQuestionAnswerCombinationsActionlink") >=0){
 	    newindex = i;
 	    break;
@@ -236,12 +236,12 @@ function clickAddEmiQuestionAnswerCombinationsLink(){
 function countNum(){
   var spanList= document.getElementsByTagName("SPAN");
   var count=1;
-  for (var i = 0; i < spanList.length; i++) 
+  for (var i = 0; i < spanList.length; i) 
     {
         if(spanList[i].id.indexOf("num")>=0)
          {
            spanList[i].innerHTML = count;
-           count++;
+           count;
          }
     }
   
@@ -306,7 +306,7 @@ function toPoint(id)
  * @param pulldown
  */
 function applyMenuListener(pulldown) {
-	var $pulldownHolder = $("[id='itemForm:" + pulldown + "']");	
+	var $pulldownHolder = $("[id='itemForm:"  pulldown  "']");	
 	$pulldownHolder.change( function() {
 		var $editor = $(this).parent("div").find("div.toggle_link_container").parent("td:last");
 		if (this.value === "*new*") {
@@ -354,7 +354,7 @@ function disableAllFeedbackCheckTemplate(feedbackType)
 	var noFeedback = "3";
 	var feedbacks = document.getElementsByTagName('INPUT');
 
-	for (i=0; i<feedbacks.length; i++)
+	for (i=0; i<feedbacks.length; i)
 	{
 		if (feedbacks[i].name.indexOf(feedbackIdFlag)==0)
 		{
@@ -412,12 +412,12 @@ function disableOtherFeedbackComponentOption(field)
 
 function validateUrl(){
   var list =document.getElementsByTagName("input");
-  for (var i=0; i<list.length; i++){
+  for (var i=0; i<list.length; i){
     if (list[i].id.indexOf("finalPageUrl") >=0){
       var finalPageUrl = list[i].value;
 	  if (finalPageUrl.substring(0,4).toLowerCase().indexOf("http") == -1)
 	  {
-		finalPageUrl = "http://" + finalPageUrl;
+		finalPageUrl = "http://"  finalPageUrl;
 	  }
 	  //alert(finalPageUrl);
       window.open(finalPageUrl,'validateUrl');
@@ -435,7 +435,7 @@ function uncheckOther(field){
  var fieldname = field.getAttribute("name");
  var inputList = document.getElementsByTagName("INPUT");
 
- for(i = 0; i < inputList.length; i++){
+ for(i = 0; i < inputList.length; i){
     if((inputList[i].name.indexOf("background")>=0)&&(inputList[i].name != fieldname))
          inputList[i].checked=false;
       
@@ -460,23 +460,23 @@ function setBlockDivs()
    var divisionNo = ""; 
    var blockDivs = ""; 
    blockElements = document.getElementsByTagName("div");
-   //alert("blockElements.length" + blockElements.length);
-   for (i=0 ; i < blockElements.length; i++)
+   //alert("blockElements.length"  blockElements.length);
+   for (i=0 ; i < blockElements.length; i)
    {
-      divisionNo = "" + blockElements[i].id;
-	  //alert("divisionNo=" + divisionNo);
-	  //alert("display=" + blockElements[i].style.display);
+      divisionNo = ""  blockElements[i].id;
+	  //alert("divisionNo="  divisionNo);
+	  //alert("display="  blockElements[i].style.display);
       if(divisionNo.indexOf("__hide_division_assessmentSettingsAction") >=0 && blockElements[i].style.display == "block")
       { 
-         //alert("divisionNo=" + divisionNo);
+         //alert("divisionNo="  divisionNo);
          var id = divisionNo.substring(41);
 		 if (blockDivs == "") {
             blockDivs = id;
          }
 		 else {
-			 blockDivs = blockDivs + ";" + id; 
+			 blockDivs = blockDivs  ";"  id; 
 		 }
-		 //alert("blockDivs=" + blockDivs);
+		 //alert("blockDivs="  blockDivs);
 	  }
    }
    //document.forms[0].elements['assessmentSettingsAction:blockDivs'].value = "_id224";
@@ -488,7 +488,7 @@ function checkUncheckTimeBox(){
   var timedCheckBoxId;
   var timedHourId;
   var timedMinuteId;
-  for (i = 0; i <inputList.length; i++) 
+  for (i = 0; i <inputList.length; i) 
   {
     if(inputList[i].type=='checkbox')
     {
@@ -497,7 +497,7 @@ function checkUncheckTimeBox(){
     }
   }
   inputList= document.getElementsByTagName("select");
-  for (i = 0; i <inputList.length; i++) 
+  for (i = 0; i <inputList.length; i) 
   {
     if(inputList[i].id.indexOf("timedHours")>=0)
       timedHourId =inputList[i].id;
@@ -510,7 +510,7 @@ function checkUncheckTimeBox(){
     {
       if(document.getElementById(timedHourId) != null)
       {
-        for(i=0; i<document.getElementById(timedHourId).options.length; i++)
+        for(i=0; i<document.getElementById(timedHourId).options.length; i)
         {
           if(i==0)
             document.getElementById(timedHourId).options[i].selected = true;
@@ -521,7 +521,7 @@ function checkUncheckTimeBox(){
       }
       if(document.getElementById(timedMinuteId) != null)
       {
-        for(i=0; i<document.getElementById(timedMinuteId).options.length; i++)
+        for(i=0; i<document.getElementById(timedMinuteId).options.length; i)
         {
           if(i==0)
             document.getElementById(timedMinuteId).options[i].selected = true;
@@ -545,7 +545,7 @@ function checkUncheckTimeBox(){
 function checkUncheckAllReleaseGroups(){
   var checkboxState = document.getElementById("assessmentSettingsAction:checkUncheckAllReleaseGroups").checked;
   var inputList= document.getElementsByTagName("INPUT");
-  for (i = 0; i <inputList.length; i++) 
+  for (i = 0; i <inputList.length; i) 
   {
     if(inputList[i].type=='checkbox')
     {
@@ -595,4 +595,17 @@ function lockdownGradebook(value) {
 	}
 }
 
-
+function checkLastHandling(){
+	var isDisabled=$('input[id*="lateHandling"]:checked').val();
+	var retractDate = $('input[id*="retractDate"]:visible');
+	//$('input[id*="retractDate"]:visible').prop( "disabled", isDisabled);
+	//$('input[id*="retractDate"]:visible').next().show;
+	
+	if(isDisabled==2){
+		$(retractDate).prop( "disabled", true );
+		$(retractDate).next().hide();
+	}else{
+		$(retractDate).prop( "disabled", false );
+		$(retractDate).next().show();
+	}
+}
