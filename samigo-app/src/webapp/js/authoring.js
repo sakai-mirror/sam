@@ -596,8 +596,8 @@ function lockdownGradebook(value) {
 }
 
 function checkLastHandling(){
-	var isDisabled=$('input[id*="lateHandling"]:checked').val();
-	var retractDate = $('input[id*="retractDate"]:visible');
+	var isDisabled=$('input[name*="lateHandling"]:checked').val();
+	var retractDate = $('input[name*="retractDate"]:visible');
 	//$('input[id*="retractDate"]:visible').prop( "disabled", isDisabled);
 	//$('input[id*="retractDate"]:visible').next().show;
 	
