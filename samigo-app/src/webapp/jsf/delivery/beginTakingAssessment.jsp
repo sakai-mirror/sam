@@ -188,8 +188,8 @@
     <h:outputLabel for="baUserName"  value="#{deliveryMessages.username}" rendered="#{delivery.settings.username ne ''}" />
     <h:inputText id="baUserName" value="#{delivery.username}" size="20" rendered="#{delivery.settings.username ne ''}" />
 
-    <h:outputLabel for="baPassword" value="#{deliveryMessages.password}" rendered="#{delivery.settings.username ne ''}" />
-    <h:inputSecret id="baPassword" value="#{delivery.password}" size="20" rendered="#{delivery.settings.username ne ''}" />
+    <h:outputLabel for="baPassword" value="#{deliveryMessages.password}" rendered="#{delivery.settings.password ne ''}" />
+    <h:inputSecret id="baPassword" value="#{delivery.password}" size="20" rendered="#{delivery.settings.password ne ''}" />
 </h:panelGrid>
 
  </div></div>
