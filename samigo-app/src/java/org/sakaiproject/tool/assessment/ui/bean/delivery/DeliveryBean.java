@@ -3812,6 +3812,11 @@ public class DeliveryBean
 		  
 		  return "takeAssessment";
 	  }
+	  
+	  public String cleanAndSaveRadioButton(){
+		  cleanRadioButton();
+		  return save_work();
+	  }
 
 	  /**
 	   *
